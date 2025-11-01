@@ -7,6 +7,10 @@
     <langVersion>preview</langVersion>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+
+  <ItemGroup>
+  	  <Reference Include="References\*.dll" />
+  </ItemGroup>
 	
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
