@@ -9,9 +9,12 @@ internal class StartMultiplayerButtonPatch
 {
     [HarmonyPatch(typeof(StartMultiplayerButton), nameof(StartMultiplayerButton._onButtonClicked))]
     [HarmonyPrefix]
-    internal static bool _onButtonClicked_Prefix()
+    internal static bool OnButtonClicked_Prefix()
     {
+        // Intercept multiplayer button click - create our online lobby instead of default behavior
         NetLobby.CreateLobby();
+
+        // Skip original method to prevent default multiplayer from starting
         return false;
     }
 }

@@ -6,8 +6,18 @@ using ReplantedOnline.Network.Packet;
 
 namespace ReplantedOnline.Network.Online;
 
+/// <summary>
+/// Handles network packet dispatching and reception for ReplantedOnline.
+/// Manages sending packets to connected clients and processing incoming packets via RPC system.
+/// </summary>
 internal class NetworkDispatcher
 {
+    /// <summary>
+    /// Sends a packet to all connected clients in the lobby.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer containing the data to send.</param>
+    /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
+    /// <param name="tag">The packet tag identifying the packet type.</param>
     internal static void Send(PacketWriter packetWriter, bool receiveLocally, PacketTag tag = Items.Enums.PacketTag.None)
     {
         var packet = PacketWriter.Get();
@@ -29,6 +39,12 @@ internal class NetworkDispatcher
         packet.Recycle();
     }
 
+    /// <summary>
+    /// Sends an RPC (Remote Procedure Call) to all connected clients.
+    /// </summary>
+    /// <param name="rpc">The type of RPC to send.</param>
+    /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
+    /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
     internal static void SendRpc(RpcType rpc, PacketWriter packetWriter, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
@@ -41,11 +57,15 @@ internal class NetworkDispatcher
         packet.Recycle();
     }
 
+    /// <summary>
+    /// Processes all available incoming P2P packets.
+    /// Called regularly to handle network communication.
+    /// </summary>
     internal static void Update()
     {
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize))
         {
-            var buffer = PacketBuffer.Get();
+            var buffer = P2PPacketBuffer.Get();
 
             buffer.EnsureCapacity(messageSize);
 
@@ -55,7 +75,7 @@ internal class NetworkDispatcher
             if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid))
             {
                 var sender = SteamNetClient.GetBySteamId(buffer.Steamid);
-                MelonLogger.Msg($"NetworkDispatcher: Received Packet from {sender.Name} -> Size = {buffer.Size}");
+                MelonLogger.Msg($"NetworkDispatcher: Received Packet from {sender?.Name ?? "Unknown"} -> Size = {buffer.Size}");
 
                 if (buffer.Size > 0)
                 {
@@ -77,6 +97,11 @@ internal class NetworkDispatcher
         }
     }
 
+    /// <summary>
+    /// Processes an incoming packet based on its tag and routes it to the appropriate handler.
+    /// </summary>
+    /// <param name="sender">The client that sent the packet.</param>
+    /// <param name="packetReader">The packet reader containing the packet data.</param>
     internal static void Streamline(SteamNetClient sender, PacketReader packetReader)
     {
         var tag = packetReader.GetTag();
@@ -96,6 +121,11 @@ internal class NetworkDispatcher
         packetReader.Recycle();
     }
 
+    /// <summary>
+    /// Processes an incoming RPC packet and routes it to the appropriate RPC handler.
+    /// </summary>
+    /// <param name="sender">The client that sent the RPC.</param>
+    /// <param name="packetReader">The packet reader containing the RPC data.</param>
     private static void StreamlineRpc(SteamNetClient sender, PacketReader packetReader)
     {
         RpcType rpc = (RpcType)packetReader.ReadByte();

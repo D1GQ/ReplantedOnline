@@ -10,6 +10,7 @@ internal static class UserPatch
     [HarmonyPostfix]
     internal static void IsCoopModeAvailable_Postfix(ref bool __result)
     {
+        // Force enable coop mode for online play
         __result = true;
     }
 
@@ -17,6 +18,7 @@ internal static class UserPatch
     [HarmonyPostfix]
     internal static void MULTIPLAYER_UNLOCK_Postfix(ref bool __result)
     {
+        // Unlock multiplayer so players can access online features
         __result = true;
     }
 }
