@@ -4,6 +4,7 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.RPC.Handlers;
 
 namespace ReplantedOnline.Network.Online;
 
@@ -306,7 +307,7 @@ internal static class NetLobby
             var sent = SteamNetworking.SendP2PPacket(steamId, packetWriter.GetBytes(), packetWriter.Length);
             packetWriter.Recycle();
 
-            RPC.SendUpdateGameState(LobbyData.LastGameState, false);
+            UpdateGameStateHandler.Send(LobbyData.LastGameState, false);
 
             if (sent)
             {
@@ -327,7 +328,7 @@ internal static class NetLobby
     /// Kicks a player from the current lobby and terminates P2P connections.
     /// </summary>
     /// <param name="steamId">The Steam ID of the player to kick.</param>
-    /// <param name="ban">Whether to ban the player from rejoining.</param>
+    /// <param name="reason">The reason for the bam.</param>
     internal static void BanPlayer(SteamId steamId, BanReasons reason = BanReasons.ByHost)
     {
         if (!AmInLobby())
@@ -372,6 +373,7 @@ internal static class NetLobby
     /// Try to remove player from the lobby, if not the P2P will terminate ether way
     /// </summary>
     /// <param name="steamId">The Steam ID of the player to remove.</param>
+    /// <param name="reason">The reason for the bam.</param>
     internal static void TryRemoveFromLobby(SteamId steamId, BanReasons reason)
     {
         if (!AmInLobby())

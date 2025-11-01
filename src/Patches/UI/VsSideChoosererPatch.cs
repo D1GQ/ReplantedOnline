@@ -4,6 +4,7 @@ using Il2CppTekly.PanelViews;
 using MelonLoader;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.RPC.Handlers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,22 +36,22 @@ internal static class VsSideChoosererPatch
                 VsSideChooser.RemoveVSButton("Custom"); // Remove original custom button
                 VsSideChooser.SetVSButton("QuickPlay", () =>
                 {
-                    RPC.SendStartGame(SelectionSet.QuickPlay); // Start quick play mode
+                    StartGameHandler.Send(SelectionSet.QuickPlay); // Start quick play mode
                 });
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
-                    RPC.SendStartGame(SelectionSet.CustomAll); // Start custom all mode
+                    StartGameHandler.Send(SelectionSet.CustomAll); // Start custom all mode
                 });
                 VsSideChooser.SetVSButton("Random", () =>
                 {
-                    RPC.SendStartGame(SelectionSet.Random); // Start random mode
+                    StartGameHandler.Send(SelectionSet.Random); // Start random mode
                 });
 
                 VsSideChooser.AddSideButton("SidePlants", () =>
                 {
                     if (NetLobby.LobbyData.LastGameState != GameState.HostChoosePlants)
                     {
-                        RPC.SendUpdateGameState(GameState.HostChoosePlants);
+                        UpdateGameStateHandler.Send(GameState.HostChoosePlants);
                     }
                 });
 
@@ -58,7 +59,7 @@ internal static class VsSideChoosererPatch
                 {
                     if (NetLobby.LobbyData.LastGameState != GameState.HostChooseZombie)
                     {
-                        RPC.SendUpdateGameState(GameState.HostChooseZombie);
+                        UpdateGameStateHandler.Send(GameState.HostChooseZombie);
                     }
                 });
 

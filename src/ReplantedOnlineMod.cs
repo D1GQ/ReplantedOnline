@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
+using ReplantedOnline.Items.Attributes;
 using ReplantedOnline.Network.Online;
 
 namespace ReplantedOnline;
@@ -7,6 +8,11 @@ namespace ReplantedOnline;
 internal class ReplantedOnlineMod : MelonMod
 {
     internal static readonly HarmonyLib.Harmony _Harmony = new(ModInfo.ModGUID);
+
+    public override void OnInitializeMelon()
+    {
+        InstanceAttribute.RegisterAll();
+    }
 
     public override void OnUpdate()
     {

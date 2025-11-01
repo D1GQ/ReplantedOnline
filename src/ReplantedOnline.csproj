@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <langVersion>preview</langVersion>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,7 @@
     <EmbeddedResource Include="Resources\**\*" />
   </ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Patches\Activity\" />
-	</ItemGroup>
+  <ItemGroup>
+    <Folder Include="Patches\Activity\" />
+  </ItemGroup>
 </Project>

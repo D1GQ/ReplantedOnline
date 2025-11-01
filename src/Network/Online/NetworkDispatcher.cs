@@ -1,9 +1,9 @@
-﻿using Il2CppReloaded.Gameplay;
-using Il2CppSteamworks;
+﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.RPC;
 
 namespace ReplantedOnline.Network.Online;
 
@@ -14,10 +14,11 @@ namespace ReplantedOnline.Network.Online;
 internal class NetworkDispatcher
 {
     /// <summary>
-    /// Sends a packet to all connected clients in the lobby.
+    /// Sends a packet to a specific client in the lobby by their Steam ID.
+    /// Automatically skips sending to the local client to prevent self-processing.
     /// </summary>
+    /// <param name="steamId">The Steam ID of the target client to receive the packet.</param>
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
-    /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     internal static void SendTo(SteamId steamId, PacketWriter packetWriter, PacketTag tag = PacketTag.None)
     {
@@ -183,19 +184,6 @@ internal class NetworkDispatcher
     {
         RpcType rpc = (RpcType)packetReader.ReadByte();
         MelonLogger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
-
-        switch (rpc)
-        {
-            case RpcType.StartGame:
-                var selectionSet = (SelectionSet)packetReader.ReadByte();
-                RPC.HandleGameStart(sender, selectionSet);
-                break;
-            case RpcType.UpdateGameState:
-                var state = (GameState)packetReader.ReadByte();
-                RPC.HandleUpdateGameState(sender, state);
-                break;
-            default:
-                break;
-        }
+        RPCHandler.HandleRpc(rpc, sender, packetReader);
     }
 }
