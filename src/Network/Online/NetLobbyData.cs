@@ -1,6 +1,7 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Items.Enums;
-using ReplantedOnline.Network;
+
+namespace ReplantedOnline.Network.Online;
 
 /// <summary>
 /// Represents the network data and state for a ReplantedOnline lobby.
