@@ -90,10 +90,8 @@ internal class NetworkDispatcher
     /// </summary>
     internal static void Update()
     {
-        int packetCount = 0;
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize))
         {
-            packetCount++;
             var buffer = P2PPacketBuffer.Get();
 
             buffer.EnsureCapacity(messageSize);
@@ -110,7 +108,7 @@ internal class NetworkDispatcher
                 }
 
                 var sender = buffer.Steamid.GetNetClient();
-                MelonLogger.Msg($"[NetworkDispatcher] Received packet #{packetCount} from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
+                MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
 
                 if (buffer.Size > 0)
                 {
@@ -129,11 +127,6 @@ internal class NetworkDispatcher
             }
 
             buffer.Recycle();
-        }
-
-        if (packetCount > 0)
-        {
-            MelonLogger.Msg($"[NetworkDispatcher] Processed {packetCount} packets");
         }
     }
 

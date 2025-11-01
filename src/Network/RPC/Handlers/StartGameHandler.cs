@@ -41,10 +41,19 @@ internal sealed class StartGameHandler : RPCHandler
 
             // Configure the game with the host's selected game mode
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
-            Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChoosePlantPacket;
 
-            // Transition to versus scene to begin the game
-            Transitions.ToChooseSeeds();
+            switch (selectionSet)
+            {
+                case SelectionSet.CustomAll:
+                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChoosePlantPacket;
+                    Transitions.ToChooseSeeds();
+                    break;
+                case SelectionSet.Random:
+                case SelectionSet.QuickPlay:
+                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.Gameplay;
+                    Instances.GameplayActivity.StartPlaying();
+                    break;
+            }
         }
         else
         {
