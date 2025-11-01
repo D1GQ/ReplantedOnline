@@ -49,7 +49,7 @@ internal class NetLobbyData
         // Add new members that aren't already in our client list
         foreach (var member in members)
         {
-            if (ids.Contains(member)) continue;
+            if (ids.Contains(member) || Banned.Contains(member)) continue;
             AllClients[member] = new(member);
         }
 
