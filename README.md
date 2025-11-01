@@ -32,9 +32,7 @@ ReplantedOnline adds P2P online multiplayer capabilities to Plants vs. Zombies: 
 ## 🔧 Requirements & Dependencies
 
 This mod requires:
-
 - **MelonLoader** - Mod framework for Unity
-- **[ReplantAPI](https://gamebanana.com/mods/629661)** - Core dependency for Replanted modding
 
 ## 🤝 Contributing
 
