@@ -1,10 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppSource.Utils;
 using MelonLoader;
 using ReplantedOnline.Items.Attributes;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Patches.UI;
 
 namespace ReplantedOnline.Network.RPC.Handlers;
 
@@ -50,8 +52,9 @@ internal sealed class StartGameHandler : RPCHandler
                     break;
                 case SelectionSet.Random:
                 case SelectionSet.QuickPlay:
+                    VsSideChoosererPatch.VsSideChooser?.gameObject?.SetActive(false);
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.Gameplay;
-                    Instances.GameplayActivity.StartPlaying();
+                    StateTransitionUtils.Transition("InGame");
                     break;
             }
 
