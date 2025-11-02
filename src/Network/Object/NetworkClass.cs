@@ -1,6 +1,8 @@
-﻿using Il2CppSteamworks;
+﻿using Il2CppInterop.Runtime.Attributes;
+using Il2CppSteamworks;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Items.Interfaces;
+using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using UnityEngine;
@@ -14,10 +16,26 @@ namespace ReplantedOnline.Network.Object;
 internal class NetworkClass : MonoBehaviour, INetworkClass
 {
     /// <summary>
+    /// Initializes and registers network prefabs used for object spawning across the network.
+    /// This method sets up predefined prefab templates that can be instantiated and synchronized
+    /// between clients during multiplayer sessions.
+    /// </summary>
+    internal static void SetupPrefabs()
+    {
+        CreatePrefabs<CoinControllerNetworked>(1);
+    }
+
+    /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
     /// Key is the prefab ID, value is the NetworkClass prefab reference.
     /// </summary>
     internal static readonly Dictionary<byte, NetworkClass> NetworkPrefabs = [];
+
+    /// <summary>
+    /// Dictionary of registered network prefabs that can be spawned across the network.
+    /// Key is the prefab ID, value is the NetworkClass prefab reference.
+    /// </summary>
+    internal static readonly Dictionary<Type, byte> PrefabIdTypeLookup = [];
 
     /// <summary>
     /// Constant value representing no prefab ID, used for dynamically created network objects.
@@ -28,6 +46,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// Gets or sets the synchronization bits tracker for this network object.
     /// Manages which properties need to be synchronized across the network.
     /// </summary>
+    [HideFromIl2Cpp]
     public SyncedBits SyncedBits { get; set; } = new SyncedBits();
 
     /// <summary>
@@ -133,6 +152,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// <param name="sender">The client that sent the RPC.</param>
     /// <param name="rpcId">The identifier of the RPC method.</param>
     /// <param name="packetReader">The packet reader containing RPC data.</param>
+    [HideFromIl2Cpp]
     public virtual void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader) { }
 
     /// <summary>
@@ -141,6 +161,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// </summary>
     /// <param name="packetWriter">The packet writer to serialize data into.</param>
     /// <param name="init">Whether this is initial serialization or update serialization.</param>
+    [HideFromIl2Cpp]
     public virtual void Serialize(PacketWriter packetWriter, bool init) { }
 
     /// <summary>
@@ -149,6 +170,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// </summary>
     /// <param name="packetReader">The packet reader to deserialize data from.</param>
     /// <param name="init">Whether this is initial deserialization or update deserialization.</param>
+    [HideFromIl2Cpp]
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
@@ -179,10 +201,27 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// <returns>The newly spawned NetworkClass instance.</returns>
     public static T SpawnNew<T>(Action<T> callback = default) where T : NetworkClass
     {
-        T networkClass = new GameObject("NetworkClass(???)").AddComponent<T>();
+        T networkClass = new GameObject($"{typeof(T)}(???)").AddComponent<T>();
         callback?.Invoke(networkClass);
         NetworkDispatcher.Spawn(networkClass, SteamNetClient.LocalClient.SteamId);
-        networkClass.gameObject.name = $"NetworkClass({networkClass.NetworkId})";
+        networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
         return networkClass;
+    }
+
+    /// <summary>
+    /// Creates and registers a network prefab of the specified type with a unique identifier.
+    /// The prefab is marked as hidden and persistent, serving as a template for network instantiation.
+    /// </summary>
+    private static void CreatePrefabs<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
+    {
+        var go = new GameObject($"{typeof(T).Name}_Prefab")
+        {
+            hideFlags = HideFlags.HideAndDontSave
+        };
+        DontDestroyOnLoad(go);
+        var networkClass = go.AddComponent<T>();
+        callback?.Invoke(networkClass);
+        NetworkPrefabs[prefabId] = networkClass;
+        PrefabIdTypeLookup[typeof(T)] = prefabId;
     }
 }

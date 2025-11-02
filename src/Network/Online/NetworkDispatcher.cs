@@ -2,6 +2,7 @@
 using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Items.Enums;
+using ReplantedOnline.Items.Interfaces;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.RPC;
@@ -13,7 +14,7 @@ namespace ReplantedOnline.Network.Online;
 /// Handles network packet dispatching and reception for ReplantedOnline.
 /// Manages sending packets to connected clients and processing incoming packets via RPC system.
 /// </summary>
-internal class NetworkDispatcher
+internal static class NetworkDispatcher
 {
     /// <summary>
     /// Spawns a network class instance and broadcasts it to all connected clients.
@@ -74,13 +75,20 @@ internal class NetworkDispatcher
         int sentCount = 0;
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {
-            if (client.AmLocal && !receiveLocally) continue;
+            if (client.AmLocal) continue;
 
             if (NetLobby.IsPlayerInOurLobby(client.SteamId))
             {
                 bool sent = SteamNetworking.SendP2PPacket(client.SteamId, packet.GetBytes(), packet.Length);
                 if (sent) sentCount++;
             }
+        }
+
+        if (receiveLocally)
+        {
+            var rePacket = PacketReader.Get(packet.GetBytes());
+            Streamline(SteamNetClient.LocalClient, rePacket);
+            rePacket.Recycle();
         }
 
         MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
@@ -93,16 +101,19 @@ internal class NetworkDispatcher
     /// <param name="rpc">The type of RPC to send.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(RpcType rpc, PacketWriter packetWriter, bool receiveLocally = false)
+    internal static void SendRpc(RpcType rpc, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         MelonLogger.Msg($"[NetworkDispatcher] Sending RPC: {rpc}");
         var packet = PacketWriter.Get();
         packet.WriteByte((byte)rpc);
-        packet.WritePacket(packetWriter);
+        if (packetWriter != null)
+        {
+            packet.WritePacket(packetWriter);
+        }
 
         Send(packet, receiveLocally, PacketTag.Rpc);
 
-        packetWriter.Recycle();
+        packetWriter?.Recycle();
         packet.Recycle();
     }
 
@@ -114,16 +125,19 @@ internal class NetworkDispatcher
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(NetworkClass networkClass, byte rpcId, PacketWriter packetWriter, bool receiveLocally = false)
+    internal static void SendRpc(this INetworkClass networkClass, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
         packet.WriteByte(rpcId);
         packet.WriteUInt(networkClass.NetworkId);
-        packet.WritePacket(packetWriter);
+        if (packetWriter != null)
+        {
+            packet.WritePacket(packetWriter);
+        }
 
         Send(packet, receiveLocally, PacketTag.NetworkClassRpc);
 
-        packetWriter.Recycle();
+        packetWriter?.Recycle();
         packet.Recycle();
 
         MelonLogger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkClass.NetworkId}");
@@ -260,11 +274,12 @@ internal class NetworkDispatcher
         var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
         if (spawnPacket.PrefabId == NetworkClass.NO_PREFAB_ID)
         {
-            var networkClass = new GameObject($"NetworkClass({spawnPacket.NetworkId})").AddComponent<NetworkClass>();
+            var networkClass = new GameObject("???").AddComponent<NetworkClass>();
             networkClass.OwnerId = spawnPacket.OwnerId;
             networkClass.NetworkId = spawnPacket.NetworkId;
             networkClass.Deserialize(packetReader, true);
             networkClass.HasSpawned = true;
+            networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
             NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
             MelonLogger.Msg($"[NetworkDispatcher] Spawned custom NetworkClass from {sender.Name}: {spawnPacket.NetworkId}");
         }
@@ -277,6 +292,7 @@ internal class NetworkDispatcher
                 networkClass.NetworkId = spawnPacket.NetworkId;
                 networkClass.Deserialize(packetReader, true);
                 networkClass.HasSpawned = true;
+                networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
                 NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
                 MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }

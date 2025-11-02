@@ -37,7 +37,14 @@ internal class NetworkSpawnPacket
     {
         packetWriter.WriteULong(networkClass.OwnerId);
         packetWriter.WriteUInt(networkClass.NetworkId);
-        packetWriter.WriteByte(networkClass.PrefabId);
+        if (NetworkClass.PrefabIdTypeLookup.TryGetValue(networkClass.GetType(), out var prefabId))
+        {
+            packetWriter.WriteByte(prefabId);
+        }
+        else
+        {
+            packetWriter.WriteByte(NetworkClass.NO_PREFAB_ID);
+        }
         networkClass.Serialize(packetWriter, true);
     }
 

@@ -1,18 +1,21 @@
-﻿using Il2CppSteamworks;
+﻿using Il2CppInterop.Runtime.Injection;
+using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Items.Attributes;
+using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Online;
+using UnityEngine;
 
 namespace ReplantedOnline;
 
 internal class ReplantedOnlineMod : MelonMod
 {
-    internal static readonly HarmonyLib.Harmony _Harmony = new(ModInfo.ModGUID);
-
     public override void OnInitializeMelon()
     {
-        _Harmony.PatchAll();
+        HarmonyInstance.PatchAll();
         InstanceAttribute.RegisterAll();
+        RegisterAllMonoBehavioursInAssembly();
+        NetworkClass.SetupPrefabs();
     }
 
     public override void OnUpdate()
@@ -39,6 +42,30 @@ internal class ReplantedOnlineMod : MelonMod
             }
 
             NetLobby.Initialize();
+        }
+    }
+
+    /// <summary>
+    /// Registers all MonoBehaviour-derived types in the current assembly with IL2CPP for interop support.
+    /// </summary>
+    internal void RegisterAllMonoBehavioursInAssembly()
+    {
+        var assembly = MelonAssembly.Assembly;
+
+        var monoBehaviourTypes = assembly.GetTypes()
+            .Where(type => type.IsSubclassOf(typeof(MonoBehaviour)) && !type.IsAbstract)
+            .OrderBy(type => type.Name);
+
+        foreach (var type in monoBehaviourTypes)
+        {
+            try
+            {
+                ClassInjector.RegisterTypeInIl2Cpp(type);
+            }
+            catch (Exception ex)
+            {
+                MelonLogger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+            }
         }
     }
 }
