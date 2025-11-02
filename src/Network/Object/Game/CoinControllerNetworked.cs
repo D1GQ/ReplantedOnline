@@ -1,8 +1,10 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
+using MelonLoader;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Versus;
+using System.Collections;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Object.Game;
@@ -16,11 +18,32 @@ internal class CoinControllerNetworked : NetworkClass
     // Local coin instance this controller manages
     internal Coin coin;
     // Original spawn position of the coin on the board
-    internal Vector2 boardPos;
+    internal Vector2 boardGridPos;
     // Type of coin (e.g., silver, gold, etc.)
     internal CoinType theCoinType;
     // Motion behavior of the coin (e.g., falling, bouncing, etc.)
     internal CoinMotion theCoinMotion;
+
+    public void Update()
+    {
+        if (AmOwner && !Despawning)
+        {
+            if ((HasSpawned && coin == null) || (coin.mDead || coin.WasCollected))
+            {
+                Despawning = true;
+                MelonCoroutines.Start(CoDespawn());
+            }
+        }
+    }
+
+    private bool Despawning;
+    private IEnumerator CoDespawn()
+    {
+        // wait for desync
+        yield return new WaitForSeconds(3f);
+        Despawn();
+        Destroy(gameObject);
+    }
 
     public void OnDestroy()
     {
@@ -49,7 +72,8 @@ internal class CoinControllerNetworked : NetworkClass
         if (init)
         {
             // Only send full state during initial spawn
-            packetWriter.WriteVector2(boardPos);
+            packetWriter.WriteInt((int)boardGridPos.x);
+            packetWriter.WriteInt((int)boardGridPos.y);
             packetWriter.WriteByte((byte)theCoinType);
             packetWriter.WriteByte((byte)theCoinMotion);
         }
@@ -61,12 +85,14 @@ internal class CoinControllerNetworked : NetworkClass
         if (init)
         {
             // Only process full state during initial spawn
-            boardPos = packetReader.ReadVector2();
+            var posX = packetReader.ReadInt();
+            var posY = packetReader.ReadInt();
+            boardGridPos = new(posX, posY);
             theCoinType = (CoinType)packetReader.ReadByte();
             theCoinMotion = (CoinMotion)packetReader.ReadByte();
 
             // Recreate the actual coin object in the game world using the original method
-            coin = Instances.GameplayActivity.Board.AddCoinOriginal(boardPos.x, boardPos.y, theCoinType, theCoinMotion);
+            coin = Instances.GameplayActivity.Board.AddCoinOriginal(boardGridPos.x, boardGridPos.y, theCoinType, theCoinMotion);
 
             // Register this network controller with the newly created coin
             NetworkedCoinControllers[coin] = this;

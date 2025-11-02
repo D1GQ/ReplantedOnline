@@ -275,6 +275,7 @@ internal static class NetworkDispatcher
         if (spawnPacket.PrefabId == NetworkClass.NO_PREFAB_ID)
         {
             var networkClass = new GameObject("???").AddComponent<NetworkClass>();
+            networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
             networkClass.OwnerId = spawnPacket.OwnerId;
             networkClass.NetworkId = spawnPacket.NetworkId;
             networkClass.Deserialize(packetReader, true);
@@ -288,9 +289,11 @@ internal static class NetworkDispatcher
             if (NetworkClass.NetworkPrefabs.TryGetValue(spawnPacket.PrefabId, out var prefab))
             {
                 var networkClass = UnityEngine.Object.Instantiate(prefab);
+                networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
                 networkClass.OwnerId = spawnPacket.OwnerId;
                 networkClass.NetworkId = spawnPacket.NetworkId;
                 networkClass.Deserialize(packetReader, true);
+                networkClass.gameObject.SetActive(true);
                 networkClass.HasSpawned = true;
                 networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
                 NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;

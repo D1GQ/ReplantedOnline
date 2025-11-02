@@ -16,12 +16,40 @@ namespace ReplantedOnline.Network.Object;
 internal class NetworkClass : MonoBehaviour, INetworkClass
 {
     /// <summary>
+    /// Container GameObject for all network prefabs.
+    /// </summary>
+    private static GameObject NetworkPrefabsObj;
+
+    /// <summary>
+    /// Container GameObject for all network classes
+    /// </summary>
+    internal static GameObject NetworkClassesObj
+    {
+        get
+        {
+            if (_networkClassesObj == null)
+            {
+                _networkClassesObj = new GameObject("NetworkClasses");
+            }
+
+            return _networkClassesObj;
+        }
+    }
+
+    /// <summary>
+    /// Base container GameObject for all network classes
+    /// </summary>
+    private static GameObject _networkClassesObj;
+
+    /// <summary>
     /// Initializes and registers network prefabs used for object spawning across the network.
     /// This method sets up predefined prefab templates that can be instantiated and synchronized
     /// between clients during multiplayer sessions.
     /// </summary>
     internal static void SetupPrefabs()
     {
+        NetworkPrefabsObj = new GameObject($"NetworkPrefabs");
+        DontDestroyOnLoad(NetworkPrefabsObj);
         CreatePrefabs<CoinControllerNetworked>(1);
     }
 
@@ -201,11 +229,30 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// <returns>The newly spawned NetworkClass instance.</returns>
     public static T SpawnNew<T>(Action<T> callback = default) where T : NetworkClass
     {
-        T networkClass = new GameObject($"{typeof(T)}(???)").AddComponent<T>();
-        callback?.Invoke(networkClass);
-        NetworkDispatcher.Spawn(networkClass, SteamNetClient.LocalClient.SteamId);
-        networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
-        return networkClass;
+        if (PrefabIdTypeLookup.TryGetValue(typeof(T), out var prefabId))
+        {
+            if (NetworkPrefabs.TryGetValue(prefabId, out var netClass))
+            {
+                T networkClass = (T)Instantiate(netClass);
+                networkClass.gameObject.SetActive(true);
+                networkClass.transform.SetParent(NetworkClassesObj.transform);
+                callback?.Invoke(networkClass);
+                NetworkDispatcher.Spawn(networkClass, SteamNetClient.LocalClient.SteamId);
+                networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
+                return networkClass;
+            }
+
+            return null;
+        }
+        else
+        {
+            T networkClass = new GameObject($"{typeof(T)}(???)").AddComponent<T>();
+            networkClass.transform.SetParent(NetworkClassesObj.transform);
+            callback?.Invoke(networkClass);
+            NetworkDispatcher.Spawn(networkClass, SteamNetClient.LocalClient.SteamId);
+            networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
+            return networkClass;
+        }
     }
 
     /// <summary>
@@ -214,11 +261,9 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// </summary>
     private static void CreatePrefabs<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
     {
-        var go = new GameObject($"{typeof(T).Name}_Prefab")
-        {
-            hideFlags = HideFlags.HideAndDontSave
-        };
-        DontDestroyOnLoad(go);
+        var go = new GameObject($"{typeof(T).Name}_Prefab");
+        go.transform.SetParent(NetworkPrefabsObj.transform);
+        go.SetActive(false);
         var networkClass = go.AddComponent<T>();
         callback?.Invoke(networkClass);
         NetworkPrefabs[prefabId] = networkClass;
