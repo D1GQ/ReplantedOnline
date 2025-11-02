@@ -4,6 +4,7 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
 using Il2CppTekly.Extensions.DataProviders;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Online;
 
 namespace ReplantedOnline.Patches;
 
@@ -21,6 +22,11 @@ internal static class InstanceWrapperPatch
             GameplayDataProvider dataProvider = __instance.m_providers.First().Cast<GameplayDataProvider>();
             if (dataProvider != null)
             {
+                if (NetLobby.AmInLobby())
+                {
+                    dataProvider.m_gameplayDataModel.m_player2DataModel.m_isEnabled.m_value = true;
+                }
+
                 InstanceWrapper<GameplayDataProvider>.Instance = dataProvider;
                 InstanceWrapper<VersusDataModel>.Instance = dataProvider.m_gameplayDataModel.m_versusDataModel;
             }

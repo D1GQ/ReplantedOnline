@@ -1,9 +1,7 @@
-﻿using Il2CppReloaded.Gameplay;
-using MelonLoader;
+﻿using MelonLoader;
 using ReplantedOnline.Items.Attributes;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 
@@ -48,33 +46,16 @@ internal sealed class UpdateGameStateHandler : RPCHandler
             switch (gameState)
             {
                 case GameState.Lobby:
-                    if (!NetLobby.AmLobbyHost())
-                    {
-                        Instances.GameplayActivity.VersusMode.PlantPlayerIndex = -1;
-                        Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = -1;
-                    }
+                    VersusManager.ResetPlayerInputs();
                     VersusManager.UpdateSideVisuals();
                     break;
                 case GameState.HostChoosePlants:
-                    if (!NetLobby.AmLobbyHost())
-                    {
-                        Instances.GameplayActivity.VersusMode.PlantPlayerIndex = 1;
-                        Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = 0;
-                    }
+                    VersusManager.UpdatePlayerInputs(!NetLobby.AmLobbyHost());
                     VersusManager.UpdateSideVisuals();
                     break;
                 case GameState.HostChooseZombie:
-                    if (!NetLobby.AmLobbyHost())
-                    {
-                        Instances.GameplayActivity.VersusMode.PlantPlayerIndex = 0;
-                        Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = 1;
-                    }
+                    VersusManager.UpdatePlayerInputs(NetLobby.AmLobbyHost());
                     VersusManager.UpdateSideVisuals();
-                    break;
-                case GameState.Gameplay:
-                    // Transition to active gameplay phase
-                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.Gameplay;
-                    Transitions.ToGameplay();
                     break;
                 default:
                     MelonLogger.Warning($"[RPCHandler] Unknown game state: {gameState}");

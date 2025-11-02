@@ -1,6 +1,7 @@
 ﻿using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Items.Enums;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.UI;
 
@@ -124,5 +125,46 @@ internal static class VersusManager
         zombiePlayer2.SetText(string.Empty);
         plantPlayer1.SetText(string.Empty);
         plantPlayer2.SetText(string.Empty);
+    }
+
+    /// <summary>
+    /// Update player input mappings based on their assigned side (zombie or plant).
+    /// </summary>
+    /// <param name="amZombieSide">If to update to zombie side</param>
+    internal static void UpdatePlayerInputs(bool amZombieSide)
+    {
+        ResetPlayerInputs();
+
+        var versusData = Instances.VersusDataModel;
+        if (versusData != null)
+        {
+            if (amZombieSide)
+            {
+                Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = 0;
+                Instances.GameplayActivity.VersusMode.PlantPlayerIndex = 1;
+                versusData.UpdateZombiesPlayer("input1", "input1", 0);
+            }
+            else
+            {
+                Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = 1;
+                Instances.GameplayActivity.VersusMode.PlantPlayerIndex = 0;
+                versusData.UpdatePlantsPlayer("input1", "input1", 0);
+            }
+        }
+    }
+
+    /// <summary>
+    /// reset player input mappings to default values.
+    /// </summary>
+    internal static void ResetPlayerInputs()
+    {
+        var versusData = Instances.VersusDataModel;
+        if (versusData != null)
+        {
+            Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = -1;
+            Instances.GameplayActivity.VersusMode.PlantPlayerIndex = -1;
+            versusData.UpdateZombiesPlayer("default", "input1", -1);
+            versusData.UpdatePlantsPlayer("default", "input1", -1);
+        }
     }
 }

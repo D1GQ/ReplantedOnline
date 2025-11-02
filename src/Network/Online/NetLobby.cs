@@ -1,4 +1,5 @@
 ﻿using Il2CppSteamworks;
+using Il2CppSteamworks.Data;
 using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Items.Enums;
@@ -26,22 +27,27 @@ internal static class NetLobby
     /// </summary>
     internal static void Initialize()
     {
-        SteamMatchmaking.OnLobbyCreated += (Action<Result, Il2CppSteamworks.Data.Lobby>)((result, data) =>
+        SteamMatchmaking.OnLobbyCreated += (Action<Result, Lobby>)((result, data) =>
         {
             OnLobbyCreatedCompleted(result, data);
         });
 
-        SteamMatchmaking.OnLobbyEntered += (Action<Il2CppSteamworks.Data.Lobby>)(data =>
+        SteamMatchmaking.OnLobbyEntered += (Action<Lobby>)(data =>
         {
             OnLobbyEnteredCompleted(data);
         });
 
-        SteamMatchmaking.OnLobbyMemberJoined += (Action<Il2CppSteamworks.Data.Lobby, Friend>)((lobby, friend) =>
+        SteamMatchmaking.OnLobbyDataChanged += (Action<Lobby>)((lobby) =>
+        {
+            OnLobbyDataChanged(lobby);
+        });
+
+        SteamMatchmaking.OnLobbyMemberJoined += (Action<Lobby, Friend>)((lobby, friend) =>
         {
             OnLobbyMemberJoined(lobby, friend);
         });
 
-        SteamMatchmaking.OnLobbyMemberLeave += (Action<Il2CppSteamworks.Data.Lobby, Friend>)((data, user) =>
+        SteamMatchmaking.OnLobbyMemberLeave += (Action<Lobby, Friend>)((data, user) =>
         {
             OnLobbyMemberLeave(data, user);
         });
@@ -56,7 +62,17 @@ internal static class NetLobby
             OnP2PSessionConnectFail(steamId, error);
         });
 
+
         MelonLogger.Msg("[NetLobby] Steamworks callbacks initialized");
+    }
+
+    /// <summary>
+    /// Resets the lobby state and transitions back to the Versus menu.
+    /// </summary>
+    internal static void ResetLobby()
+    {
+        LobbyData.LastGameState = GameState.Lobby;
+        Transitions.ToVersus();
     }
 
     /// <summary>
@@ -141,7 +157,7 @@ internal static class NetLobby
     {
         if (result == Result.OK)
         {
-            LobbyData = new(data.Id);
+            LobbyData = new(data.Id, data.Owner.Id);
             MelonLogger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
 
             SteamMatchmaking.Internal.SetLobbyData(LobbyData.LobbyId, "mod_version", ModInfo.ModVersion);
@@ -157,11 +173,11 @@ internal static class NetLobby
     /// Callback handler for when a player successfully enters a lobby.
     /// </summary>
     /// <param name="data">The lobby data that was entered.</param>
-    private static void OnLobbyEnteredCompleted(Il2CppSteamworks.Data.Lobby data)
+    private static void OnLobbyEnteredCompleted(Lobby data)
     {
         if (LobbyData == default)
         {
-            LobbyData = new(data.Id);
+            LobbyData = new(data.Id, data.Owner.Id);
         }
 
         TryProcessMembers();
@@ -181,11 +197,24 @@ internal static class NetLobby
     }
 
     /// <summary>
+    /// Callback handler for when a lobby's data changes.
+    /// </summary>
+    /// <param name="lobby">The lobby dara.</param>
+    private static void OnLobbyDataChanged(Lobby lobby)
+    {
+        if (lobby.Owner.Id != LobbyData?.HostId)
+        {
+            LeaveLobby();
+            MelonLogger.Warning("[NetLobby] Lobby host left the game");
+        }
+    }
+
+    /// <summary>
     /// Callback handler for when a new member joins the lobby.
     /// </summary>
     /// <param name="lobby">The lobby that was joined.</param>
     /// <param name="user">The friend who joined the lobby.</param>
-    private static void OnLobbyMemberJoined(Il2CppSteamworks.Data.Lobby lobby, Friend user)
+    private static void OnLobbyMemberJoined(Lobby lobby, Friend user)
     {
         if (lobby.Id != LobbyData.LobbyId)
         {
@@ -209,8 +238,13 @@ internal static class NetLobby
     /// </summary>
     /// <param name="lobby">The lobby that was left.</param>
     /// <param name="user">The friend who left the lobby.</param>
-    private static void OnLobbyMemberLeave(Il2CppSteamworks.Data.Lobby lobby, Friend user)
+    private static void OnLobbyMemberLeave(Lobby lobby, Friend user)
     {
+        if (LobbyData.LastGameState == GameState.Gameplay)
+        {
+            ResetLobby();
+        }
+
         TryProcessMembers();
     }
 

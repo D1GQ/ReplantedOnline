@@ -54,6 +54,8 @@ internal sealed class StartGameHandler : RPCHandler
                     Instances.GameplayActivity.StartPlaying();
                     break;
             }
+
+            NetLobby.LobbyData.LastGameState = GameState.Gameplay;
         }
         else
         {

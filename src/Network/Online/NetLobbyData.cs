@@ -16,15 +16,22 @@ internal class NetLobbyData
     /// Initializes a new instance of the NetLobbyData class with the specified Steam ID.
     /// </summary>
     /// <param name="steamId">The Steam ID of the lobby.</param>
-    internal NetLobbyData(SteamId steamId)
+    /// <param name="hostId">The Steam ID of the lobby host.</param>
+    internal NetLobbyData(SteamId steamId, SteamId hostId)
     {
         LobbyId = steamId;
+        HostId = hostId;
     }
 
     /// <summary>
     /// Gets the Steam ID of this lobby.
     /// </summary>
     internal readonly SteamId LobbyId;
+
+    /// <summary>
+    /// Gets or Sets the Steam ID of the host.
+    /// </summary>
+    internal readonly SteamId HostId;
 
     /// <summary>
     /// Gets or sets the dictionary of all connected clients in the lobby, keyed by their Steam ID.
