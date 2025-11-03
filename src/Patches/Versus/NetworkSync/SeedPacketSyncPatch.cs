@@ -122,6 +122,7 @@ internal static class SeedPacketSyncPatch
             var netClass = NetworkClass.SpawnNew<PlantNetworked>(net =>
             {
                 net._Plant = plant;
+                net.PlantID = plant.DataID;
                 net.SeedType = seedType;
                 net.ImitaterType = imitaterType;
                 net.GridX = gridX;

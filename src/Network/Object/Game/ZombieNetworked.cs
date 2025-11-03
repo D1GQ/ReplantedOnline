@@ -9,17 +9,45 @@ using UnityEngine;
 
 namespace ReplantedOnline.Network.Object.Game;
 
+/// <summary>
+/// Represents a networked zombie entity in the game world, handling synchronization of zombie state
+/// across connected clients including health, position, and follower relationships.
+/// </summary>
 internal class ZombieNetworked : NetworkClass
 {
+    /// <summary>
+    /// Dictionary mapping zombie instances to their networked counterparts for easy lookup.
+    /// </summary>
     internal static Dictionary<Zombie, ZombieNetworked> NetworkedZombies = [];
 
+    /// <summary>
+    /// The underlying zombie instance that this networked object represents.
+    /// </summary>
     internal Zombie _Zombie;
+
+    /// <summary>
+    /// The type of zombie this networked object represents when spawning.
+    /// </summary>
     internal ZombieType ZombieType;
+
+    /// <summary>
+    /// The unique identifier for this zombie instance when spawning.
+    /// </summary>
     internal ZombieID ZombieID;
-    internal ZombieID RefZombieID;
+
+    /// <summary>
+    /// The grid X coordinate where this zombie is located when spawning.
+    /// </summary>
     internal int GridX;
+
+    /// <summary>
+    /// The grid Y coordinate where this zombie is located when spawning.
+    /// </summary>
     internal int GridY;
 
+    /// <summary>
+    /// Called when the zombie is destroyed, cleans up the zombie from the networked zombies dictionary.
+    /// </summary>
     public void OnDestroy()
     {
         if (_Zombie != null)
@@ -28,7 +56,14 @@ internal class ZombieNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Cooldown timer for synchronization to prevent excessive network traffic.
+    /// </summary>
     private static float syncCooldown;
+
+    /// <summary>
+    /// Updates the zombie state and handles periodic synchronization.
+    /// </summary>
     public void Update()
     {
         if (Time.time - syncCooldown >= 2f)
@@ -49,6 +84,11 @@ internal class ZombieNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Sends an RPC to set a follower zombie ID for this zombie.
+    /// </summary>
+    /// <param name="index">The index in the follower array to set</param>
+    /// <param name="zombieID">The zombie ID to set as follower</param>
     internal void SendSetFollowerZombieIdRpc(int index, ZombieID zombieID)
     {
         var writer = PacketWriter.Get();
@@ -57,6 +97,10 @@ internal class ZombieNetworked : NetworkClass
         this.SendRpc(0, writer, false);
     }
 
+    /// <summary>
+    /// Handles the RPC for setting a follower zombie ID.
+    /// </summary>
+    /// <param name="packetReader">The packet reader containing the follower data</param>
     [HideFromIl2Cpp]
     private void HandleSetFollowerZombieIdRpc(PacketReader packetReader)
     {
@@ -70,6 +114,7 @@ internal class ZombieNetworked : NetworkClass
     {
         if (init)
         {
+            // Set spawn info
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteInt((int)ZombieID);
@@ -91,10 +136,12 @@ internal class ZombieNetworked : NetworkClass
     {
         if (init)
         {
+            // Read spawn info
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             ZombieID = (ZombieID)packetReader.ReadInt();
             ZombieType = (ZombieType)packetReader.ReadByte();
+
             _Zombie = SeedPacketSyncPatch.SpawnZombie(ZombieType, GridX, GridY, false);
             _Zombie.DataID = ZombieID;
 
@@ -112,14 +159,22 @@ internal class ZombieNetworked : NetworkClass
         ClearDirtyBits();
     }
 
+    /// <summary>
+    /// Token used to track and manage position interpolation coroutines.
+    /// </summary>
     private object larpToken;
+
+    /// <summary>
+    /// Smoothly interpolates the zombie's position to the target position when distance threshold is exceeded.
+    /// </summary>
+    /// <param name="posX">The target X position to interpolate to</param>
     private void LarpPos(float posX)
     {
         if (_Zombie == null) return;
 
         var dis = _Zombie.mPosX - posX;
 
-        if (Mathf.Abs(dis) > 100)
+        if (Mathf.Abs(dis) > 35)
         {
             if (larpToken != null)
             {
@@ -130,6 +185,11 @@ internal class ZombieNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Coroutine that smoothly interpolates the zombie's position over time.
+    /// </summary>
+    /// <param name="posX">The target X position to reach</param>
+    /// <returns>IEnumerator for coroutine execution</returns>
     [HideFromIl2Cpp]
     private IEnumerator CoLarpPos(float posX)
     {

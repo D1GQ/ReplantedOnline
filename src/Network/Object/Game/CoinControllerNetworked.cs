@@ -10,21 +10,41 @@ using UnityEngine;
 
 namespace ReplantedOnline.Network.Object.Game;
 
+/// <summary>
+/// Represents a networked coin controller that manages synchronization of coin entities
+/// across connected clients, including coin collection, despawning, and state management.
+/// </summary>
 internal class CoinControllerNetworked : NetworkClass
 {
+    /// <summary>
     /// Global dictionary tracking all active coins and their associated network controllers.
     /// Used to find network controllers when coins need to send RPCs or be synchronized.
+    /// </summary>
     internal static Dictionary<Coin, CoinControllerNetworked> NetworkedCoinControllers = [];
 
-    // Local coin instance this controller manages
+    /// <summary>
+    /// The underlying coin instance that this networked controller manages.
+    /// </summary>
     internal Coin _Coin;
-    // Original spawn position of the coin on the board
+
+    /// <summary>
+    /// Original spawn position of the coin on the board grid when spawning.
+    /// </summary>
     internal Vector2 BoardGridPos;
-    // Type of coin (e.g., silver, gold, etc.)
+
+    /// <summary>
+    /// Type of coin when spawning.
+    /// </summary>
     internal CoinType TheCoinType;
-    // Motion behavior of the coin (e.g., falling, bouncing, etc.)
+
+    /// <summary>
+    /// Motion behavior of the coin when spawning.
+    /// </summary>
     internal CoinMotion TheCoinMotion;
 
+    /// <summary>
+    /// Updates the coin state each frame, handling automatic despawning of collected or dead coins.
+    /// </summary>
     public void Update()
     {
         if (AmOwner && !Despawning)
@@ -37,7 +57,15 @@ internal class CoinControllerNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Flag indicating whether this coin is currently in the process of despawning.
+    /// </summary>
     private bool Despawning;
+
+    /// <summary>
+    /// Coroutine that handles the delayed despawning of coins to account for network synchronization.
+    /// </summary>
+    /// <returns>IEnumerator for coroutine execution</returns>
     [HideFromIl2Cpp]
     private IEnumerator CoDespawn()
     {
@@ -50,6 +78,9 @@ internal class CoinControllerNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Called when the coin controller is destroyed, cleans up the coin from the networked controllers dictionary.
+    /// </summary>
     public void OnDestroy()
     {
         if (_Coin != null)
@@ -79,6 +110,11 @@ internal class CoinControllerNetworked : NetworkClass
         _Coin.CollectOriginal(1, false);
     }
 
+    /// <summary>
+    /// Serializes the coin state for network transmission.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer to write data to</param>
+    /// <param name="init">Whether this is initial synchronization data</param>
     [HideFromIl2Cpp]
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
@@ -91,6 +127,11 @@ internal class CoinControllerNetworked : NetworkClass
         }
     }
 
+    /// <summary>
+    /// Deserializes the coin state from network data and recreates the coin in the game world.
+    /// </summary>
+    /// <param name="packetReader">The packet reader to read data from</param>
+    /// <param name="init">Whether this is initial synchronization data</param>
     [HideFromIl2Cpp]
     public override void Deserialize(PacketReader packetReader, bool init)
     {
