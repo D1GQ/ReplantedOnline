@@ -1,9 +1,12 @@
-﻿using Il2CppTekly.PanelViews;
+﻿using Il2CppReloaded.Gameplay;
+using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.UI;
+using ReplantedOnline.Patches.Versus.NetworkSync;
 
 namespace ReplantedOnline.Managers;
 
@@ -12,6 +15,19 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal static class VersusManager
 {
+    internal static void OnStart()
+    {
+        Instances.GameplayActivity.VersusMode.ClearBoard();
+        if (SteamNetClient.LocalClient?.AmZombieSide() == true)
+        {
+            SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 0, true);
+            SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 1, true);
+            SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 2, true);
+            SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 3, true);
+            SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 4, true);
+        }
+    }
+
     // UI text components for displaying player names on each team
     private static TextMeshProUGUI zombiePlayer1;
     private static TextMeshProUGUI zombiePlayer2;

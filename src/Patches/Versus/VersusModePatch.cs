@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.DataModels;
 using ReplantedOnline.Items.Enums;
+using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 
@@ -19,6 +20,13 @@ internal static class VersusModePatch
     // Board : Widget
     // GameplayActivity : InjectableActivity
     // SeedChooserScreen : Widget
+
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeGameplay))]
+    [HarmonyPostfix]
+    internal static void InitializeGameplay_Postfix()
+    {
+        VersusManager.OnStart();
+    }
 
     // Stop game from placing initial sunflower in vs
     [HarmonyPatch(typeof(Board), nameof(Board.AddPlant))]
@@ -38,9 +46,6 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     internal static bool IZombiePlaceZombie_Prefix(ZombieType theZombieType)
     {
-        // allow game to initially place down the target zombies
-        if (theZombieType == ZombieType.Target) return true;
-
         if (NetLobby.AmInLobby() && Instances.GameplayActivity.VersusMode.m_versusTime < 1f)
         {
             return false;

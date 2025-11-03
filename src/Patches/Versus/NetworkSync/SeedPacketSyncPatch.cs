@@ -145,7 +145,7 @@ internal static class SeedPacketSyncPatch
     {
         // Determine if this zombie type rises from the ground (like grave zombies)
         // Bungee zombies are excluded from rising behavior even if they normally would
-        var rise = VersusMode.ZombieRisesFromGround(zombieType) && zombieType != ZombieType.Bungee;
+        var rise = VersusMode.ZombieRisesFromGround(zombieType) && zombieType != ZombieType.Bungee && zombieType != ZombieType.Target;
 
         // Some zombies have forced spawn positions on the right side
         var forceXPos = !VersusMode.ZombieRisesFromGround(zombieType);
