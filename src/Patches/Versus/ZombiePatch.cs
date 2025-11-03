@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
-using ReplantedOnline.Network;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.Versus.NetworkSync;
 
@@ -29,7 +29,7 @@ internal class ZombiePatch
     {
         if (NetLobby.AmInLobby())
         {
-            if (!SteamNetClient.LocalClient.AmZombieSide())
+            if (VersusState.PlantSide)
             {
                 __result = false;
             }
@@ -45,7 +45,7 @@ internal class ZombiePatch
     {
         if (NetLobby.AmInLobby())
         {
-            if (!SteamNetClient.LocalClient.AmZombieSide()) return false;
+            if (VersusState.PlantSide) return false;
 
             // Find first available slot
             int nextIndex = 0;

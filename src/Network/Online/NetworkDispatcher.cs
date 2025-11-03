@@ -170,7 +170,7 @@ internal static class NetworkDispatcher
 
         foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
         {
-            if (!networkClass.AmOwner || !networkClass.IsDirty) continue;
+            if (!networkClass.AmOwner || !networkClass.IsDirty || !networkClass.HasSpawned) continue;
             var packet = PacketWriter.Get();
             packet.WriteUInt(networkClass.NetworkId);
             packet.WriteUInt(networkClass.DirtyBits);

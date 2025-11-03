@@ -3,7 +3,6 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.UI;
 using ReplantedOnline.Patches.Versus.NetworkSync;
@@ -18,7 +17,7 @@ internal static class VersusManager
     internal static void OnStart()
     {
         Instances.GameplayActivity.VersusMode.ClearBoard();
-        if (SteamNetClient.LocalClient?.AmZombieSide() == true)
+        if (VersusState.ZombieSide)
         {
             SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 0, true);
             SeedPacketSyncPatch.SpawnZombie(ZombieType.Target, 8, 1, true);

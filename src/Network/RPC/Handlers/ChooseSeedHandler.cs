@@ -31,7 +31,7 @@ internal class ChooseSeedHandler : RPCHandler
         var theChosenSeed = SeedChooserScreen.GetChosenSeedFromType(seedType);
 
         // Use player index 1 (opposite player) when choosing seed for remote player
-        if (!sender.AmZombieSide())
+        if (VersusState.PlantSide)
         {
             if (Instances.GameplayActivity.VersusMode.Phase is VersusPhase.ChoosePlantPacket)
             {
