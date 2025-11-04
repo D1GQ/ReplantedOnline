@@ -4,4 +4,4 @@
 /src/obj
 /src/.editorconfig
 /src/.vscode
-/src/References/**
+/src/References/**.dll

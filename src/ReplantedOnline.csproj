@@ -16,13 +16,8 @@
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
-	
-  <ItemGroup>
-    <!-- Embed all files in the Resources folder -->
-    <EmbeddedResource Include="Resources\**\*" />
-  </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Patches\Activity\" />
+    <Folder Include="Assemblies\" />
   </ItemGroup>
 </Project>
