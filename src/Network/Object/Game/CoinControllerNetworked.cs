@@ -40,6 +40,15 @@ internal class CoinControllerNetworked : NetworkClass
     /// </summary>
     internal CoinMotion TheCoinMotion;
 
+    public void Start()
+    {
+        // End game
+        if (_Coin?.mType is CoinType.VersusTrophyPlant or CoinType.VersusTrophyZombie)
+        {
+            NetLobby.ResetLobby();
+        }
+    }
+
     /// <summary>
     /// Updates the coin state each frame, handling automatic despawning of collected or dead coins.
     /// </summary>

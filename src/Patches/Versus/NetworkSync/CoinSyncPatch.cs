@@ -15,13 +15,6 @@ internal static class CoinSyncPatch
     [HarmonyPrefix]
     internal static bool BoardAddCoin_Prefix(Board __instance, float theX, float theY, CoinType theCoinType, CoinMotion theCoinMotion, ref Coin __result)
     {
-        // Reset lobby on game end
-        if (theCoinType is CoinType.VersusTrophyPlant or CoinType.VersusTrophyZombie)
-        {
-            NetLobby.ResetLobby();
-            return false;
-        }
-
         // Skip if this is an internal recursive call to avoid infinite loops
         if (InternalCallContext.IsInternalCall_AddCoin) return true;
 
