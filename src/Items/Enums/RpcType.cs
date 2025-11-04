@@ -34,5 +34,10 @@ internal enum RpcType
     /// <summary>
     /// Sync starting a mower
     /// </summary>
-    MowZombie
+    MowZombie,
+
+    /// <summary>
+    /// Add or remove an amount of money from the opposite player
+    /// </summary>
+    SyncOpponentMoney
 }
