@@ -59,18 +59,19 @@ internal class ZombieNetworked : NetworkClass
     /// <summary>
     /// Cooldown timer for synchronization to prevent excessive network traffic.
     /// </summary>
-    private static float syncCooldown;
+    private static float syncCooldown = 2f;
 
     /// <summary>
     /// Updates the zombie state and handles periodic synchronization.
     /// </summary>
     public void Update()
     {
-        if (Time.time - syncCooldown >= 2f)
+        if (syncCooldown <= 0f)
         {
             MarkDirty();
-            syncCooldown = Time.time;
+            syncCooldown = 2f;
         }
+        syncCooldown -= Time.deltaTime;
     }
 
     [HideFromIl2Cpp]
@@ -126,6 +127,7 @@ internal class ZombieNetworked : NetworkClass
         packetWriter.WriteInt(_Zombie.mFlyingHealth);
         packetWriter.WriteInt(_Zombie.mHelmHealth);
         packetWriter.WriteInt(_Zombie.mShieldHealth);
+        packetWriter.WriteBool(_Zombie.IsMovingAtChilledSpeed());
         packetWriter.WriteFloat(_Zombie.mPosX);
 
         ClearDirtyBits();
@@ -153,8 +155,9 @@ internal class ZombieNetworked : NetworkClass
         _Zombie?.mFlyingHealth = packetReader.ReadInt();
         _Zombie?.mHelmHealth = packetReader.ReadInt();
         _Zombie?.mShieldHealth = packetReader.ReadInt();
-        var PosX = packetReader.ReadFloat();
-        LarpPos(PosX);
+        var isMovingAtChilledSpeed = packetReader.ReadBool();
+        var posX = packetReader.ReadFloat();
+        LarpPos(posX, isMovingAtChilledSpeed);
 
         ClearDirtyBits();
     }
@@ -168,58 +171,75 @@ internal class ZombieNetworked : NetworkClass
     /// Smoothly interpolates the zombie's position to the target position when distance threshold is exceeded.
     /// </summary>
     /// <param name="posX">The target X position to interpolate to</param>
-    private void LarpPos(float posX)
+    /// <param name="isMovingAtChilledSpeed">If the zombie is slow</param>
+    private void LarpPos(float posX, bool isMovingAtChilledSpeed)
     {
         if (_Zombie == null) return;
 
-        var dis = _Zombie.mPosX - posX;
+        float currentX = _Zombie.mPosX;
+        float distance = Mathf.Abs(currentX - posX);
 
-        if (Mathf.Abs(dis) > 35)
+        float threshold = !isMovingAtChilledSpeed ? 35f : 15f;
+
+        if (distance > threshold)
         {
+            // Stop existing interpolation
             if (larpToken != null)
             {
                 MelonCoroutines.Stop(larpToken);
             }
 
-            larpToken = MelonCoroutines.Start(CoLarpPos(posX));
+            if (distance < 100f)
+            {
+                larpToken = MelonCoroutines.Start(CoLarpPos(posX, isMovingAtChilledSpeed));
+            }
+            else
+            {
+                _Zombie.mPosX = posX;
+            }
         }
     }
 
     /// <summary>
     /// Coroutine that smoothly interpolates the zombie's position over time.
     /// </summary>
-    /// <param name="posX">The target X position to reach</param>
-    /// <returns>IEnumerator for coroutine execution</returns>
+    /// <param name="targetX">The target X position to reach</param>
+    /// <param name="isMovingAtChilledSpeed">If the zombie is slow</param>
     [HideFromIl2Cpp]
-    private IEnumerator CoLarpPos(float posX)
+    private IEnumerator CoLarpPos(float targetX, bool isMovingAtChilledSpeed)
     {
-        if (this == null || _Zombie == null)
-        {
-            yield break;
-        }
+        if (this == null || _Zombie == null) yield break;
 
         float startX = _Zombie.mPosX;
-        float targetX = posX;
-        float duration = 1f;
+        float distance = Mathf.Abs(targetX - startX);
+
+        float speed = !isMovingAtChilledSpeed ? 25f : 15f;
+        float duration = Mathf.Clamp(distance / speed, 0.1f, 2f);
+
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
-            if (this == null || _Zombie == null)
-            {
-                yield break;
-            }
+            if (this == null || _Zombie == null) yield break;
 
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
-            _Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
+            t = SmoothStep(t);
 
+            _Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
             yield return null;
         }
 
+        // Ensure final position is exact
         _Zombie?.mPosX = targetX;
 
         larpToken = null;
+    }
+
+    // Smoother interpolation curves
+    private static float SmoothStep(float t)
+    {
+        return t * t * (3f - 2f * t);
     }
 }
