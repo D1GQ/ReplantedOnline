@@ -30,11 +30,11 @@ internal static class VersusManager
 
         if (VersusState.ZombieSide)
         {
-            Utils.SpawnZombie(ZombieType.Target, 8, 0, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 1, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 2, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 3, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 4, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 1, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 3, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 4, false, true);
         }
     }
 

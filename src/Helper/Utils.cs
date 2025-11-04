@@ -40,9 +40,10 @@ internal class Utils
     /// <param name="gridX">X grid coordinate (0-8)</param>
     /// <param name="gridY">Y grid coordinate (0-4)</param>
     /// <param name="spawnOnNetwork">Whether to create a network controller for multiplayer sync</param>
+    /// <param name="shakeBush">If the bush on the row the zombie spawns in shakes</param>
     /// <returns>The spawned Zombie object</returns>
-    internal static Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool shakeBush, bool spawnOnNetwork)
     {
-        return SeedPacketSyncPatch.SpawnZombie(zombieType, gridX, gridY, spawnOnNetwork);
+        return SeedPacketSyncPatch.SpawnZombie(zombieType, gridX, gridY, shakeBush, spawnOnNetwork);
     }
 }

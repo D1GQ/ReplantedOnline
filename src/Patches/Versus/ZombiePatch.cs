@@ -43,11 +43,11 @@ internal class ZombiePatch
     [HarmonyPrefix]
     internal static bool AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, ref Zombie __result)
     {
-        if (NetLobby.AmInLobby() && VersusState.VersusPhase == VersusPhase.Gameplay)
+        if (NetLobby.AmInLobby() && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath)
         {
             if (theZombieType == ZombieType.Target) return true;
 
-            __result = SeedPacketSyncPatch.SpawnZombie(theZombieType, 9, theRow, true);
+            __result = Utils.SpawnZombie(theZombieType, 9, theRow, true, true);
 
             return false;
         }
@@ -77,7 +77,7 @@ internal class ZombiePatch
                 }
             }
 
-            var zombie = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, true);
+            var zombie = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
 
             // Set the follower ID
             __result = zombie.DataID;

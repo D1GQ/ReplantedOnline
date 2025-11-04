@@ -95,7 +95,7 @@ internal static class SeedPacketSyncPatch
             var type = Challenge.IZombieSeedTypeToZombieType(seedType);
 
             // Delegate to zombie spawning logic
-            return SpawnZombie(type, gridX, gridY, spawnOnNetwork);
+            return SpawnZombie(type, gridX, gridY, false, spawnOnNetwork);
         }
         else
         {
@@ -149,7 +149,7 @@ internal static class SeedPacketSyncPatch
     /// <param name="gridY">Y grid coordinate (0-4)</param>
     /// <param name="spawnOnNetwork">Whether to create a network controller for multiplayer sync</param>
     /// <returns>The spawned Zombie object</returns>
-    internal static Il2CppReloaded.Gameplay.Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static Il2CppReloaded.Gameplay.Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool shakeBush, bool spawnOnNetwork)
     {
         // Determine if this zombie type rises from the ground (like grave zombies)
         // Bungee zombies are excluded from rising behavior even if they normally would
@@ -166,9 +166,14 @@ internal static class SeedPacketSyncPatch
 
         // If this zombie rises from ground, trigger the rising animation
         // This makes the zombie emerge from the ground rather than just appearing
-        if (rise)
+        if (rise && !shakeBush)
         {
             zombie.RiseFromGrave(gridX, gridY);
+        }
+
+        if (shakeBush)
+        {
+            Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
         }
 
         // Special handling for Backup Dancer zombies to set their exact X position

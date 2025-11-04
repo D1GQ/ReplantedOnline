@@ -42,6 +42,11 @@ internal class ZombieNetworked : NetworkClass
     internal float ZombieSpeed;
 
     /// <summary>
+    /// If the bush on the row the zombie spawns in shakes
+    /// </summary>
+    internal bool ShakeBush;
+
+    /// <summary>
     /// The grid X coordinate where this zombie is located when spawning.
     /// </summary>
     internal int GridX;
@@ -144,6 +149,7 @@ internal class ZombieNetworked : NetworkClass
             // Set spawn info
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
+            packetWriter.WriteBool(ShakeBush);
             packetWriter.WriteFloat(ZombieSpeed);
             packetWriter.WriteInt((int)ZombieID);
             packetWriter.WriteByte((byte)ZombieType);
@@ -167,11 +173,12 @@ internal class ZombieNetworked : NetworkClass
             // Read spawn info
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
+            ShakeBush = packetReader.ReadBool();
             ZombieSpeed = packetReader.ReadFloat();
             ZombieID = (ZombieID)packetReader.ReadInt();
             ZombieType = (ZombieType)packetReader.ReadByte();
 
-            _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, false);
+            _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
             _Zombie.DataID = ZombieID;
             _Zombie.mVelX = ZombieSpeed;
             _Zombie.UpdateAnimSpeed();
