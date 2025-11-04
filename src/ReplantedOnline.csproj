@@ -16,4 +16,8 @@
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  	<Exec Command="copy &quot;$(TargetDir)ReplantedOnline.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\PVZ Replanted\Modded\Mods&quot;" />
+  </Target>
 </Project>
