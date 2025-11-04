@@ -17,7 +17,7 @@ internal class SetSeedPacketsHandler : RPCHandler
         packetWriter.WriteInt(seedPackets.Length);
         foreach (var seedPacket in seedPackets)
         {
-            packetWriter.WriteByte((byte)seedPacket.mPacketType);
+            packetWriter.WriteInt((int)seedPacket.mPacketType);
         }
         NetworkDispatcher.SendRpc(RpcType.SetSeedPackets, packetWriter);
     }
@@ -29,7 +29,7 @@ internal class SetSeedPacketsHandler : RPCHandler
         List<SeedType> seedTypes = [];
         for (int i = 0; i < length; i++)
         {
-            var seedType = (SeedType)packetReader.ReadByte();
+            var seedType = (SeedType)packetReader.ReadInt();
             seedTypes.Add(seedType);
         }
 

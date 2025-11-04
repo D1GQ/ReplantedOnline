@@ -14,14 +14,14 @@ internal class SetSeedPacketCooldownHandler : RPCHandler
     internal static void Send(SeedType seedType)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteByte((byte)seedType);
+        packetWriter.WriteInt((int)seedType);
         NetworkDispatcher.SendRpc(RpcType.SetSeedPacketCooldown, packetWriter);
     }
 
     /// <inheritdoc/>
     internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
-        var seedType = (SeedType)packetReader.ReadByte();
+        var seedType = (SeedType)packetReader.ReadInt();
         Utils.SetSeedPacketCooldown(ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX, seedType);
     }
 }

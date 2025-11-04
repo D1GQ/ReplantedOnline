@@ -116,8 +116,8 @@ internal class PlantNetworked : NetworkClass
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteInt(PlantID);
-            packetWriter.WriteByte((byte)SeedType);
-            packetWriter.WriteByte((byte)ImitaterType);
+            packetWriter.WriteInt((int)SeedType);
+            packetWriter.WriteInt((int)ImitaterType);
         }
     }
 
@@ -135,8 +135,8 @@ internal class PlantNetworked : NetworkClass
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             PlantID = packetReader.ReadInt();
-            SeedType = (SeedType)packetReader.ReadByte();
-            ImitaterType = (SeedType)packetReader.ReadByte();
+            SeedType = (SeedType)packetReader.ReadInt();
+            ImitaterType = (SeedType)packetReader.ReadInt();
 
             _Plant = Utils.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
             _Plant.DataID = PlantID;

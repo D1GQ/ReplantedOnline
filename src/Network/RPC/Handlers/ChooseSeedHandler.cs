@@ -15,7 +15,7 @@ internal class ChooseSeedHandler : RPCHandler
     internal static void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteByte((byte)theChosenSeed.mSeedType);
+        packetWriter.WriteInt((int)theChosenSeed.mSeedType);
         NetworkDispatcher.SendRpc(RpcType.ChooseSeed, packetWriter);
     }
 
@@ -23,7 +23,7 @@ internal class ChooseSeedHandler : RPCHandler
     internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         // Read the chosen seed type from the packet
-        var seedType = (SeedType)packetReader.ReadByte();
+        var seedType = (SeedType)packetReader.ReadInt();
         var SeedChooserScreen = Instances.GameplayDataProvider.m_gameplayDataModel.m_seedChooserDataModel.m_seedChooserScreen;
         var theChosenSeed = SeedChooserScreen.GetChosenSeedFromType(seedType);
 

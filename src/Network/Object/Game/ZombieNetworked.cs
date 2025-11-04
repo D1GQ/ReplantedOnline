@@ -183,7 +183,7 @@ internal class ZombieNetworked : NetworkClass
             packetWriter.WriteBool(ShakeBush);
             packetWriter.WriteFloat(ZombieSpeed);
             packetWriter.WriteInt((int)ZombieID);
-            packetWriter.WriteByte((byte)ZombieType);
+            packetWriter.WriteInt((int)ZombieType);
             return;
         }
 
@@ -207,7 +207,7 @@ internal class ZombieNetworked : NetworkClass
             ShakeBush = packetReader.ReadBool();
             ZombieSpeed = packetReader.ReadFloat();
             ZombieID = (ZombieID)packetReader.ReadInt();
-            ZombieType = (ZombieType)packetReader.ReadByte();
+            ZombieType = (ZombieType)packetReader.ReadInt();
 
             _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
             _Zombie.DataID = ZombieID;
