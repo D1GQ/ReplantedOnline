@@ -68,6 +68,11 @@ internal class ZombieNetworked : NetworkClass
     }
 
     /// <summary>
+    /// If the zombie should be entering the house on the plant side
+    /// </summary>
+    private bool EnteringHouse;
+
+    /// <summary>
     /// Cooldown timer for synchronization to prevent excessive network traffic.
     /// </summary>
     private static float syncCooldown = 2f;
@@ -93,6 +98,16 @@ internal class ZombieNetworked : NetworkClass
                 DespawnAndDestroyWithDelay(5f);
             }
         }
+        else
+        {
+            if (!EnteringHouse)
+            {
+                if (_Zombie?.mPosX <= -30f)
+                {
+                    _Zombie?.mPosX = -30f;
+                }
+            }
+        }
     }
 
     [HideFromIl2Cpp]
@@ -107,6 +122,9 @@ internal class ZombieNetworked : NetworkClass
                 break;
             case 1:
                 HandleDeathRpc(packetReader);
+                break;
+            case 2:
+                HandleEnteringHouseRpc();
                 break;
         }
     }
@@ -139,6 +157,19 @@ internal class ZombieNetworked : NetworkClass
     {
         var damageFlags = (DamageFlags)packetReader.ReadByte();
         _Zombie.PlayDeathAnimOriginal(damageFlags);
+    }
+
+    internal void SendEnteringHouseRpc()
+    {
+        this.SendRpc(2, null, false);
+    }
+
+    [HideFromIl2Cpp]
+    private void HandleEnteringHouseRpc()
+    {
+        EnteringHouse = true;
+        StopLarpPos();
+        _Zombie?.mPosX = -30f;
     }
 
     [HideFromIl2Cpp]
@@ -208,7 +239,7 @@ internal class ZombieNetworked : NetworkClass
     /// <param name="posX">The target X position to interpolate to</param>
     private void LarpPos(float posX)
     {
-        if (_Zombie == null) return;
+        if (_Zombie == null || EnteringHouse) return;
 
         float currentX = _Zombie.mPosX;
         float distance = Mathf.Abs(currentX - posX);
@@ -220,10 +251,7 @@ internal class ZombieNetworked : NetworkClass
         if (distance > threshold)
         {
             // Stop existing interpolation
-            if (larpToken != null)
-            {
-                MelonCoroutines.Stop(larpToken);
-            }
+            StopLarpPos();
 
             if (distance < 100f)
             {
@@ -233,6 +261,17 @@ internal class ZombieNetworked : NetworkClass
             {
                 _Zombie.mPosX = posX;
             }
+        }
+    }
+
+    /// <summary>
+    /// Stop larping to network pos
+    /// </summary>
+    private void StopLarpPos()
+    {
+        if (larpToken != null)
+        {
+            MelonCoroutines.Stop(larpToken);
         }
     }
 

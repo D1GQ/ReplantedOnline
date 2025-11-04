@@ -89,4 +89,14 @@ internal class ZombiePatch
 
         return true;
     }
+
+    /// <summary>
+    /// Tell client to let the zombie walk into the house
+    /// </summary>
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.WalkIntoHouse))]
+    [HarmonyPostfix]
+    internal static void WalkIntoHouse_Postfix(Zombie __instance)
+    {
+        __instance.GetNetworkedZombie()?.SendEnteringHouseRpc();
+    }
 }
