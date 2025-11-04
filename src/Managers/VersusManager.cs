@@ -16,6 +16,18 @@ internal static class VersusManager
 {
     internal static void OnStart()
     {
+        foreach (var kvp in Instances.GameplayActivity.Board.m_zombies.m_itemLookup)
+        {
+            var zombie = kvp.Key;
+            if (zombie.mZombieType == ZombieType.Target)
+            {
+                if (zombie.GetNetworkedZombie() == null)
+                {
+                    zombie.DieDeserialize();
+                }
+            }
+        }
+
         if (VersusState.ZombieSide)
         {
             Utils.SpawnZombie(ZombieType.Target, 8, 0, true);

@@ -117,6 +117,8 @@ internal static class CoinSyncPatch
 
         if (NetLobby.AmInLobby())
         {
+            if (!NetLobby.AmLobbyHost()) return false;
+
             __instance.GetNetworkedCoinController()?.SendDieRpc();
             __instance.DieOriginal();
 
