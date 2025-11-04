@@ -14,19 +14,32 @@ internal static class LawnMowerSyncPatch
     [HarmonyPrefix]
     internal static bool StartMower_Prefix(LawnMower __instance, Zombie theZombie)
     {
+        // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_StartMower) return true;
 
+        // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
+            // If we're on the plant side in versus mode, don't process lawn mowers
+            // (Zombie side has priority over lawn mowers)
             if (VersusState.PlantSide) return false;
 
-            __instance.MowZombieOriginal(theZombie);
+            // Send network message to sync this action with other players
             MowZombieHandler.Send(__instance.Row, theZombie.GetNetworkedZombie());
+
+            // Execute the original method logic locally
+            __instance.MowZombieOriginal(theZombie);
+
+            return false;
         }
 
         return true;
     }
 
+    /// <summary>
+    /// Extension method that safely calls the original MowZombie method
+    /// while preventing our patch from intercepting the call (avoiding recursion)
+    /// </summary>
     internal static void MowZombieOriginal(this LawnMower __instance, Zombie theZombie)
     {
         InternalCallContext.IsInternalCall_StartMower = true;

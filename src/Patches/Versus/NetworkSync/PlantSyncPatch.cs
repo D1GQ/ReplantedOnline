@@ -9,17 +9,28 @@ namespace ReplantedOnline.Patches.Versus.NetworkSync;
 [HarmonyPatch]
 internal static class PlantSyncPatch
 {
+    /// <summary>
+    /// Prefix patch that intercepts the Plant.Die method call
+    /// Runs before the original method and can prevent it from executing
+    /// </summary>
     [HarmonyPatch(typeof(Plant), nameof(Plant.Die))]
     [HarmonyPrefix]
     internal static bool Die_Prefix(Plant __instance)
     {
+        // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_Die) return true;
 
+        // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
+            // If we're on the zombie side in versus mode, don't process plant deaths
+            // (Plant side has priority over plant death events)
             if (VersusState.ZombieSide) return false;
 
+            // Get the networked plant representation and send death RPC to other players
             __instance.GetNetworkedPlant()?.SendDieRpc();
+
+            // Execute the original die method logic locally
             __instance.DieOriginal();
 
             return false;
@@ -28,11 +39,17 @@ internal static class PlantSyncPatch
         return true;
     }
 
+    /// <summary>
+    /// Extension method that safely calls the original Die method
+    /// while preventing our patch from intercepting the call (avoiding recursion)
+    /// </summary>
     internal static void DieOriginal(this Plant __instance)
     {
+        // Set flag to indicate this is an internal call
         InternalCallContext.IsInternalCall_Die = true;
         try
         {
+            // Call the original method - this won't trigger our patch due to the flag
             __instance.Die();
         }
         finally
