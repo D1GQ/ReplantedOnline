@@ -44,8 +44,7 @@ internal static class JoinLobbyCodePanelPatch
     internal static void ShowLobbyCodePanel()
     {
         _lobbyCodePanel?.gameObject.SetActive(true);
-        _reloadedInputField?.m_Text = string.Empty;
-        _reloadedInputField?.ForceLabelUpdate();
+        _reloadedInputField?.SetText(string.Empty, false);
     }
 
     // Configure the lobby code panel with custom text and behavior
@@ -74,8 +73,11 @@ internal static class JoinLobbyCodePanelPatch
         // Set up OK button to search for lobby with entered code
         SetButton("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK", () =>
         {
-            lobbyCodePanel.gameObject.SetActive(false);
-            NetLobby.SearchLobbyByGameCode(_reloadedInputField.m_Text);
+            if (_reloadedInputField.m_Text.Length == 6)
+            {
+                lobbyCodePanel.gameObject.SetActive(false);
+                NetLobby.SearchLobbyByGameCode(_reloadedInputField.m_Text);
+            }
         });
 
         // Set up Cancel button to simply close the panel
