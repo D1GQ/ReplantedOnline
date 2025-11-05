@@ -91,4 +91,36 @@ internal class SteamNetClient
     {
         return Instances.GameplayActivity.VersusMode.ZombiePlayerIndex == PlayerIndex;
     }
+
+    /// <summary>
+    /// Gets the plants SteamNetClient
+    /// </summary>
+    internal static SteamNetClient GetPlantClient()
+    {
+        foreach (var client in NetLobby.LobbyData.AllClients.Values)
+        {
+            if (!client.AmZombieSide())
+            {
+                return client;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the zombies SteamNetClient
+    /// </summary>
+    internal static SteamNetClient GetZombieClient()
+    {
+        foreach (var client in NetLobby.LobbyData.AllClients.Values)
+        {
+            if (client.AmZombieSide())
+            {
+                return client;
+            }
+        }
+
+        return null;
+    }
 }

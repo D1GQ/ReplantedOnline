@@ -13,6 +13,6 @@ internal static class VersusState
     internal static SelectionSet SelectionSet => Instances.GameplayActivity?.VersusMode?.SelectionSet ?? SelectionSet.QuickPlay;
     internal static bool ZombieSide => SteamNetClient.LocalClient?.AmZombieSide() == true;
     internal static bool PlantSide => SteamNetClient.LocalClient?.AmZombieSide() == false;
-    internal static SteamId PlantSideId => PlantSide ? SteamNetClient.LocalClient?.SteamId ?? 0 : SteamNetClient.OpponentClient?.SteamId ?? 0;
-    internal static SteamId ZombieSideId => ZombieSide ? SteamNetClient.LocalClient?.SteamId ?? 0 : SteamNetClient.OpponentClient?.SteamId ?? 0;
+    internal static SteamId PlantSideId => SteamNetClient.GetPlantClient()?.SteamId ?? 0;
+    internal static SteamId ZombieSideId => SteamNetClient.GetZombieClient()?.SteamId ?? 0;
 }
