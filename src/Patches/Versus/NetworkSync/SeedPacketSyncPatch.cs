@@ -165,7 +165,7 @@ internal static class SeedPacketSyncPatch
                 net.ImitaterType = imitaterType;
                 net.GridX = gridX;
                 net.GridY = gridY;
-            }, VersusState.PlantSideId);
+            }, VersusState.PlantSteamId);
             PlantNetworked.NetworkedPlants[plant] = netClass;
         }
 
@@ -232,7 +232,7 @@ internal static class SeedPacketSyncPatch
                 net.ShakeBush = shakeBush;
                 net.GridX = gridX;
                 net.GridY = gridY;
-            }, VersusState.PlantSideId);
+            }, VersusState.PlantSteamId);
 
             ZombieNetworked.NetworkedZombies[zombie] = netClass;
         }
