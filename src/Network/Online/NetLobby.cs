@@ -100,9 +100,11 @@ internal static class NetLobby
             var lobbyQuery = SteamMatchmaking.LobbyList;
 
             lobbyQuery.maxResults = new Il2CppSystem.Nullable<int>(100);
-            // lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
-            // lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-            // lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.ModVersion);
+            lobbyQuery.FilterDistanceWorldwide();
+            lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.ModVersion);
+            lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
             {
@@ -242,7 +244,7 @@ internal static class NetLobby
 
             SteamMatchmaking.Internal.SetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.ModVersion);
             CreateGameCode(data.Id);
-            SteamMatchmaking.Internal.SetLobbyType(LobbyData.LobbyId, LobbyType.FriendsOnly);
+            SteamMatchmaking.Internal.SetLobbyType(LobbyData.LobbyId, LobbyType.Public);
         }
         else
         {
