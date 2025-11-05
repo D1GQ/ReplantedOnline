@@ -22,7 +22,7 @@ internal static class LawnMowerSyncPatch
         {
             // If we're on the plant side in versus mode, don't process lawn mowers
             // (Zombie side has priority over lawn mowers)
-            if (VersusState.PlantSide) return false;
+            if (VersusState.ZombieSide) return false;
 
             // Send network message to sync this action with other players
             var netZombie = theZombie.GetNetworkedZombie();

@@ -103,9 +103,9 @@ internal sealed class ZombieNetworked : NetworkClass
 
             if (!EnteringHouse)
             {
-                if (_Zombie?.mPosX <= -30f)
+                if (_Zombie?.mPosX <= 0f)
                 {
-                    _Zombie?.mPosX = -30f;
+                    _Zombie?.mPosX = 0f;
                 }
             }
         }
@@ -241,7 +241,7 @@ internal sealed class ZombieNetworked : NetworkClass
     /// <param name="posX">The target X position to interpolate to</param>
     private void LarpPos(float posX)
     {
-        if (_Zombie == null || EnteringHouse || posX < 0f) return;
+        if (_Zombie == null || EnteringHouse || posX < 15f) return;
 
         float currentX = _Zombie.mPosX;
         float distance = Mathf.Abs(currentX - posX);

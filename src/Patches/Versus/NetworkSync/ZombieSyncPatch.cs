@@ -23,9 +23,7 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            // If we're on the plant side in versus mode, don't process zombie death animations
-            // (Zombie side has priority over zombie death events)
-            if (VersusState.PlantSide) return false;
+            if (VersusState.ZombieSide) return false;
 
             // Get the networked zombie representation and send death RPC to other players
             // Includes damage flags to communicate how the zombie died

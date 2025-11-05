@@ -3,7 +3,6 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
@@ -166,7 +165,7 @@ internal static class SeedPacketSyncPatch
                 net.ImitaterType = imitaterType;
                 net.GridX = gridX;
                 net.GridY = gridY;
-            }, SteamNetClient.OpponentClient.SteamId); // Zombie side has priority over everything
+            }, VersusState.PlantSideId);
             PlantNetworked.NetworkedPlants[plant] = netClass;
         }
 
@@ -233,7 +232,7 @@ internal static class SeedPacketSyncPatch
                 net.ShakeBush = shakeBush;
                 net.GridX = gridX;
                 net.GridY = gridY;
-            });
+            }, VersusState.PlantSideId);
 
             ZombieNetworked.NetworkedZombies[zombie] = netClass;
         }
