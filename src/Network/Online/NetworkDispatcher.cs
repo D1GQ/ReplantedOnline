@@ -3,6 +3,7 @@ using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Items.Interfaces;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.RPC;
@@ -248,6 +249,7 @@ internal static class NetworkDispatcher
                 {
                     BanReasons reason = (BanReasons)packetReader.ReadByte();
                     NetLobby.LeaveLobby();
+                    ReplantedOnlinePopup.ShowOnTransition("Disconnected", "You have been disconnected by the Host!");
                     MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
                 }
                 break;

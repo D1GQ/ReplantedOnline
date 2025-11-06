@@ -1,6 +1,10 @@
-﻿using Il2CppTekly.PanelViews;
+﻿using Il2CppSource.Utils;
+using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
+using MelonLoader;
 using ReplantedOnline.Helper;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Modules;
@@ -64,9 +68,37 @@ internal static class ReplantedOnlinePopup
     {
         if (Label?.text == string.Empty)
         {
-            Label.SetText("Ok");
+            Label?.SetText("Ok");
         }
-        Panel?.gameObject.SetActive(true);
+        Panel?.gameObject?.SetActive(true);
+        Header?.SetText(header);
+        SubText?.SetText(text);
+    }
+
+    /// <summary>
+    /// Displays the popup with the specified header and text content after a transition is activated.
+    /// </summary>
+    /// <param name="header">The main header/title text for the popup.</param>
+    /// <param name="text">The body/subtext content of the popup message.</param>
+    internal static void ShowOnTransition(string header, string text)
+    {
+        MelonCoroutines.Start(CoShow(header, text));
+    }
+
+    private static IEnumerator CoShow(string header, string text)
+    {
+        while (StateTransitionUtils.s_treeStateManager.CurrentTransitionDuration > 2f)
+        {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        if (Label?.text == string.Empty)
+        {
+            Label?.SetText("Ok");
+        }
+        Panel?.gameObject?.SetActive(true);
         Header?.SetText(header);
         SubText?.SetText(text);
     }

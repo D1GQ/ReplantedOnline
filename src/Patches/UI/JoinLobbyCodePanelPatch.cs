@@ -6,6 +6,7 @@ using Il2CppTMPro;
 using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,6 +79,10 @@ internal static class JoinLobbyCodePanelPatch
             {
                 lobbyCodePanel.gameObject.SetActive(false);
                 MatchmakingManager.SearchLobbyByGameCode(_reloadedInputField.m_Text.ToUpper());
+            }
+            else
+            {
+                ReplantedOnlinePopup.Show("Error", $"Lobby code must contain {MatchmakingManager.CODE_LENGTH} characters!");
             }
         });
 

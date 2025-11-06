@@ -174,6 +174,7 @@ internal static class NetLobby
         }
         else
         {
+            Transitions.ToMainMenu();
             MelonLogger.Error($"[NetLobby] Lobby creation failed with result: {result}");
         }
     }
@@ -212,6 +213,7 @@ internal static class NetLobby
         if (lobby.Owner.Id != LobbyData?.HostId)
         {
             LeaveLobby();
+            ReplantedOnlinePopup.ShowOnTransition("Disconnected", "Host has left the game!");
             MelonLogger.Warning("[NetLobby] Lobby host left the game");
         }
     }
