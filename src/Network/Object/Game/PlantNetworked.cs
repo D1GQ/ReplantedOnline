@@ -90,6 +90,9 @@ internal sealed class PlantNetworked : NetworkClass
             case 0:
                 HandleDieRpc();
                 break;
+            case 1:
+            HandleTargetZombie(packetReader);
+                break;
         }
     }
 
@@ -100,11 +103,25 @@ internal sealed class PlantNetworked : NetworkClass
 
 
     private bool dead;
-    [HideFromIl2Cpp]
     private void HandleDieRpc()
     {
         dead = true;
         _Plant.DieOriginal();
+    }
+
+    [HideFromIl2Cpp]
+    internal void SendTargetZombie(ZombieNetworked zombie)
+    {
+        var packet = PacketWriter.Get();
+        packet.WriteNetworkClass(zombie);
+        this.SendRpc(1, packet, false);
+    }
+
+    [HideFromIl2Cpp]
+    private void HandleTargetZombie(PacketReader packetReader)
+    {
+        var zombieNet = (ZombieNetworked)packetReader.ReadNetworkClass();
+        _Plant?.mTargetZombieID = zombieNet._Zombie.DataID;
     }
 
     /// <summary>

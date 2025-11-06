@@ -9,10 +9,6 @@ namespace ReplantedOnline.Patches.Versus.NetworkSync;
 [HarmonyPatch]
 internal static class ZombieSyncPatch
 {
-    /// <summary>
-    /// Prefix patch that intercepts the Zombie.PlayDeathAnim method call
-    /// Runs before the original method and can prevent it from executing
-    /// </summary>
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.PlayDeathAnim))]
     [HarmonyPrefix]
     internal static bool PlayDeathAnim_Prefix(Zombie __instance, DamageFlags theDamageFlags)
@@ -58,12 +54,56 @@ internal static class ZombieSyncPatch
         }
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.TakeDamage))]
+    [HarmonyPrefix]
+    internal static bool TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
+    {
+        // Skip network logic if this is an internal call (prevents infinite recursion)
+        if (InternalCallContext.IsInternalCall_TakeDamage) return true;
+
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (VersusState.ZombieSide) return false;
+
+            __instance.TakeDamageOriginal(theDamage, theDamageFlags);
+            __instance.GetNetworkedZombie()?.SendTakeDamageRpc(theDamage, theDamageFlags);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Extension method that safely calls the original PlayDeathAnim method
+    /// while preventing our patch from intercepting the call (avoiding recursion)
+    /// </summary>
+    internal static void TakeDamageOriginal(this Zombie __instance, int theDamage, DamageFlags theDamageFlags)
+    {
+        // Set flag to indicate this is an internal call
+        InternalCallContext.IsInternalCall_TakeDamage = true;
+        try
+        {
+            // Call the original method - this won't trigger our patch due to the flag
+            __instance.TakeDamage(theDamage, theDamageFlags);
+        }
+        finally
+        {
+            // Always reset the flag, even if an exception occurs
+            InternalCallContext.IsInternalCall_TakeDamage = false;
+        }
+    }
+
     /// <summary>
     /// Thread-safe context flags to prevent infinite recursion when calling patched methods from within patches.
     /// [ThreadStatic] ensures each thread has its own copy of these flags.
     /// </summary>
     private static class InternalCallContext
     {
+        [ThreadStatic]
+        public static bool IsInternalCall_TakeDamage;
+
         [ThreadStatic]
         public static bool IsInternalCall_PlayDeathAnim;
     }

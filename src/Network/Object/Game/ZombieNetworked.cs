@@ -63,15 +63,10 @@ internal sealed class ZombieNetworked : NetworkClass
         }
     }
 
-    /// <summary>
-    /// If the zombie should be entering the house on the plant side
-    /// </summary>
-    private bool EnteringHouse;
 
-    /// <summary>
-    /// Cooldown timer for synchronization to prevent excessive network traffic.
-    /// </summary>
-    private static float syncCooldown = 2f;
+    private bool EnteringHouse;
+    private float syncCooldown = 2f;
+    private float lastPos;
 
     /// <summary>
     /// Updates the zombie state and handles periodic synchronization.
@@ -82,10 +77,11 @@ internal sealed class ZombieNetworked : NetworkClass
         {
             if (_Zombie?.mDead != true)
             {
-                if (syncCooldown <= 0f)
+                if (syncCooldown <= 0f && lastPos != _Zombie.mPosX)
                 {
                     MarkDirty();
                     syncCooldown = 2f;
+                    lastPos = _Zombie.mPosX;
                 }
                 syncCooldown -= Time.deltaTime;
             }
@@ -96,11 +92,6 @@ internal sealed class ZombieNetworked : NetworkClass
         }
         else
         {
-            if (!dead)
-            {
-                _Zombie?.mDead = false;
-            }
-
             if (!EnteringHouse)
             {
                 if (_Zombie?.mPosX <= 0f)
@@ -119,7 +110,7 @@ internal sealed class ZombieNetworked : NetworkClass
         switch (rpcId)
         {
             case 0:
-                HandleSetFollowerZombieIdRpc(packetReader);
+                HandleTakeDamageRpc(packetReader);
                 break;
             case 1:
                 HandleDeathRpc(packetReader);
@@ -130,22 +121,20 @@ internal sealed class ZombieNetworked : NetworkClass
         }
     }
 
-
-    [HideFromIl2Cpp]
-    internal void SendSetFollowerZombieIdRpc(int index, ZombieNetworked zombie)
+    internal void SendTakeDamageRpc(int theDamage, DamageFlags theDamageFlags)
     {
         var writer = PacketWriter.Get();
-        writer.WriteInt(index);
-        writer.WriteNetworkClass(zombie);
+        writer.WriteInt(theDamage);
+        writer.WriteByte((byte)theDamageFlags);
         this.SendRpc(0, writer, false);
     }
 
     [HideFromIl2Cpp]
-    private void HandleSetFollowerZombieIdRpc(PacketReader packetReader)
+    private void HandleTakeDamageRpc(PacketReader packetReader)
     {
-        var index = packetReader.ReadInt();
-        var zombie = (ZombieNetworked)packetReader.ReadNetworkClass();
-        _Zombie?.mFollowerZombieID[index] = zombie._Zombie.DataID;
+        var theDamage = packetReader.ReadInt();
+        var damageFlags = (DamageFlags)packetReader.ReadByte();
+        _Zombie.TakeDamageOriginal(theDamage, damageFlags);
     }
 
     internal void SendDeathRpc(DamageFlags damageFlags)
@@ -155,11 +144,9 @@ internal sealed class ZombieNetworked : NetworkClass
         this.SendRpc(1, writer, false);
     }
 
-    private bool dead;
     [HideFromIl2Cpp]
     private void HandleDeathRpc(PacketReader packetReader)
     {
-        dead = true;
         var damageFlags = (DamageFlags)packetReader.ReadByte();
         _Zombie.PlayDeathAnimOriginal(damageFlags);
     }
@@ -191,10 +178,6 @@ internal sealed class ZombieNetworked : NetworkClass
             return;
         }
 
-        packetWriter.WriteInt(_Zombie.mBodyHealth);
-        packetWriter.WriteInt(_Zombie.mFlyingHealth);
-        packetWriter.WriteInt(_Zombie.mHelmHealth);
-        packetWriter.WriteInt(_Zombie.mShieldHealth);
         packetWriter.WriteFloat(_Zombie.mPosX);
 
         ClearDirtyBits();
@@ -220,12 +203,11 @@ internal sealed class ZombieNetworked : NetworkClass
             return;
         }
 
-        _Zombie?.mBodyHealth = packetReader.ReadInt();
-        _Zombie?.mFlyingHealth = packetReader.ReadInt();
-        _Zombie?.mHelmHealth = packetReader.ReadInt();
-        _Zombie?.mShieldHealth = packetReader.ReadInt();
-        var posX = packetReader.ReadFloat();
-        LarpPos(posX);
+        if (!AmOwner)
+        {
+            var posX = packetReader.ReadFloat();
+            LarpPos(posX);
+        }
 
         ClearDirtyBits();
     }
