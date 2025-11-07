@@ -115,8 +115,14 @@ internal static class NetworkDispatcher
     /// <param name="steamId">The Steam ID of the target client to receive the packet.</param>
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
+    /// <param name="sendType">The send type of the packet.</param>
     internal static void SendPacketTo(SteamId steamId, PacketWriter packetWriter, PacketTag tag, P2PSend sendType)
     {
+        if (sendType is P2PSend.Unreliable or P2PSend.UnreliableNoDelay)
+        {
+            throw new NotImplementedException($"{Enum.GetName(sendType)} Send Type is not supported");
+        }
+
         if (steamId.GetNetClient().AmLocal) return;
 
         var packet = PacketWriter.Get();
@@ -125,7 +131,7 @@ internal static class NetworkDispatcher
 
         if (NetLobby.IsPlayerInOurLobby(steamId))
         {
-            SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.SEND_CHANNEL, sendType);
+            SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.P2PSendChannel[sendType], sendType);
         }
 
         MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {steamId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -138,8 +144,14 @@ internal static class NetworkDispatcher
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
+    /// <param name="sendType">The send type of the packet.</param>
     internal static void SendPacket(PacketWriter packetWriter, bool receiveLocally, PacketTag tag, P2PSend sendType)
     {
+        if (sendType is P2PSend.Unreliable or P2PSend.UnreliableNoDelay)
+        {
+            throw new NotImplementedException($"{Enum.GetName(sendType)} Send Type is not supported");
+        }
+
         var packet = PacketWriter.Get();
         packet.AddTag(tag);
         packet.WritePacket(packetWriter);
@@ -151,7 +163,7 @@ internal static class NetworkDispatcher
 
             if (NetLobby.IsPlayerInOurLobby(client.SteamId))
             {
-                bool sent = SteamNetworking.SendP2PPacket(client.SteamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.SEND_CHANNEL, sendType);
+                bool sent = SteamNetworking.SendP2PPacket(client.SteamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.P2PSendChannel[sendType], sendType);
                 if (sent) sentCount++;
             }
         }
@@ -177,7 +189,7 @@ internal static class NetworkDispatcher
 
         foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
         {
-            if (!networkClass.AmOwner || !networkClass.IsDirty || !networkClass.HasSpawned) continue;
+            if (!networkClass.AmOwner || !networkClass.HasSpawned || !networkClass.IsDirty) continue;
             var packet = PacketWriter.Get();
             packet.WriteUInt(networkClass.NetworkId);
             packet.WriteUInt(networkClass.DirtyBits);
@@ -185,44 +197,59 @@ internal static class NetworkDispatcher
             SendPacket(packet, false, PacketTag.NetworkClassSync, P2PSend.ReliableWithBuffering);
         }
 
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, ReplantedOnlineMod.Constants.SEND_CHANNEL))
+        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.Reliable]))
         {
-            var buffer = P2PPacketBuffer.Get();
+            ReadPacket(messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.Reliable]);
+        }
 
-            buffer.EnsureCapacity(messageSize);
-            buffer.Size = messageSize;
-            buffer.Steamid = 0;
+        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.ReliableWithBuffering]))
+        {
+            ReadPacket(messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.ReliableWithBuffering]);
+        }
+    }
 
-            if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid))
+    /// <summary>
+    /// Reads and processes a single P2P packet from the specified network channel.
+    /// Handles packet reception, buffer management, and routing to the appropriate packet handler.
+    /// Validates packet integrity and sender authentication before processing.
+    /// </summary>
+    private static void ReadPacket(uint messageSize, int channel)
+    {
+        var buffer = P2PPacketBuffer.Get();
+
+        buffer.EnsureCapacity(messageSize);
+        buffer.Size = messageSize;
+        buffer.Steamid = 0;
+
+        if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid, channel))
+        {
+            if (buffer.Steamid.Banned())
             {
-                if (buffer.Steamid.Banned())
-                {
-                    MelonLogger.Msg($"[NetworkDispatcher] Discarded packet from banned player: {buffer.Steamid}");
-                    buffer.Recycle();
-                    continue;
-                }
+                MelonLogger.Msg($"[NetworkDispatcher] Discarded packet from banned player: {buffer.Steamid}");
+                buffer.Recycle();
+                return;
+            }
 
-                var sender = buffer.Steamid.GetNetClient();
-                MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
+            var sender = buffer.Steamid.GetNetClient();
+            MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
 
-                if (buffer.Size > 0)
-                {
-                    var receivedData = buffer.ToByteArray();
-                    var packetReader = PacketReader.Get(receivedData);
-                    Streamline(sender, packetReader);
-                }
-                else
-                {
-                    MelonLogger.Error("[NetworkDispatcher] Received packet with zero size");
-                }
+            if (buffer.Size > 0)
+            {
+                var receivedData = buffer.ToByteArray();
+                var packetReader = PacketReader.Get(receivedData);
+                Streamline(sender, packetReader);
             }
             else
             {
-                MelonLogger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
+                MelonLogger.Error("[NetworkDispatcher] Received packet with zero size");
             }
-
-            buffer.Recycle();
         }
+        else
+        {
+            MelonLogger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
+        }
+
+        buffer.Recycle();
     }
 
     /// <summary>
