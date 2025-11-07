@@ -28,9 +28,9 @@ internal static class PlantPatch
                     {
                         __result = Instances.GameplayActivity.Board.ZombieGet(__instance.mTargetZombieID);
                     }
-                }
 
-                return false;
+                    return false;
+                }
             }
         }
 

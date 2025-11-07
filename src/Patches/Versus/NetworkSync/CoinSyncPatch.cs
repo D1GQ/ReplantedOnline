@@ -22,16 +22,12 @@ internal static class CoinSyncPatch
         // Only handle network synchronization when in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            // Only the host should create coins - clients wait for network spawn
-            if (!NetLobby.AmLobbyHost()) return false;
-
             var doSpawn = theCoinType != CoinType.Sun && theCoinType != CoinType.Brain;
-
-            // Call the original method to create the actual coin
-
 
             if (doSpawn)
             {
+                if (!NetLobby.AmLobbyHost()) return false;
+
                 var coin = __instance.AddCoinOriginal(theX, theY, theCoinType, theCoinMotion);
                 __result = coin;
 
