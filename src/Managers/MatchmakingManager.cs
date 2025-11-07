@@ -19,7 +19,7 @@ internal class MatchmakingManager
     /// <param name="gameCode"></param>
     internal static void SearchLobbyByGameCode(string gameCode)
     {
-        Transitions.ToLoading();
+        Transitions.SetLoading();
         MelonLogger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
 
         try

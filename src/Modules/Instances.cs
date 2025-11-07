@@ -13,6 +13,5 @@ internal static class Instances
     internal static GameplayDataProvider GameplayDataProvider => InstanceWrapper<GameplayDataProvider>.Instance ?? default;
     internal static GameplayActivity GameplayActivity => InstanceWrapper<GameplayActivity>.Instance ?? default;
     internal static VersusDataModel VersusDataModel => InstanceWrapper<VersusDataModel>.Instance ?? default;
-
     internal static PanelViewContainer GlobalPanels { get; set; }
 }

@@ -85,7 +85,7 @@ internal static class NetLobby
     internal static void CreateLobby()
     {
         SteamMatchmaking.CreateLobbyAsync(MAX_LOBBY_SIZE);
-        Transitions.ToLoading();
+        Transitions.SetLoading();
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ internal static class NetLobby
     internal static void JoinLobby(SteamId lobbyId)
     {
         SteamMatchmaking.JoinLobbyAsync(lobbyId);
-        Transitions.ToLoading();
+        Transitions.SetLoading();
         MelonLogger.Msg($"[NetLobby] Joining lobby: {lobbyId}");
     }
 

@@ -43,7 +43,15 @@ internal class Transitions
     /// <summary>
     /// Transitions to an loading state
     /// </summary>
-    internal static void ToLoading()
+    internal static void ToGameEnd()
+    {
+        StateTransitionUtils.Transition("Win");
+    }
+
+    /// <summary>
+    /// Transitions to an loading state
+    /// </summary>
+    internal static void SetLoading()
     {
         Instances.GlobalPanels.GetPanel("loadingScrim")?.gameObject?.SetActive(true);
     }
