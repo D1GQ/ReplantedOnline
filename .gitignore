@@ -5,3 +5,4 @@
 /src/.editorconfig
 /src/.vscode
 /src/References/**.dll
+/src/Network/Object/Game/CoinNetworked.cs

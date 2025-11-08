@@ -89,8 +89,11 @@ internal static class ZombiePatch
     [HarmonyPrefix]
     private static bool WalkIntoHouse_Prefix(Zombie __instance)
     {
-        __instance.GetNetworked<ZombieNetworked>()?.SendEnteringHouseRpc();
-        __instance.GetNetworked<ZombieNetworked>()?.HandleEnteringHouseRpc();
+        if (VersusState.PlantSide)
+        {
+            __instance.GetNetworked<ZombieNetworked>()?.SendEnteringHouseRpc();
+            __instance.GetNetworked<ZombieNetworked>()?.HandleEnteringHouseRpc();
+        }
 
         return false;
     }

@@ -27,10 +27,7 @@ internal static class PlantSyncPatch
             if (VersusState.ZombieSide) return false;
 
             // Get the networked plant representation and send death RPC to other players
-            if (__instance.mSeedType is not (SeedType.Potatomine or SeedType.Squash))
-            {
-                __instance.GetNetworked<PlantNetworked>()?.SendDieRpc();
-            }
+            __instance.GetNetworked<PlantNetworked>()?.SendDieRpc();
 
             // Execute the original die method logic locally
             __instance.DieOriginal();
