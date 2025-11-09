@@ -79,14 +79,5 @@ internal class ReplantedOnlineMod : MelonMod
         internal const int OPPONENT_PLAYER_INDEX = 1;
         internal const string MOD_VERSION_KEY = "mod_version";
         internal const string GAME_CODE_KEY = "game_code";
-
-        internal const int SEND_CHANNEL = 0;
-        internal const int SEND_BUFFERD_CHANNEL = 1;
-
-        internal static readonly Dictionary<P2PSend, int> P2PSendChannel = new()
-        {
-            { P2PSend.Reliable, SEND_CHANNEL },
-            { P2PSend.ReliableWithBuffering, SEND_BUFFERD_CHANNEL },
-        };
     }
 }

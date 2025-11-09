@@ -32,7 +32,7 @@ internal static class NetworkDispatcher
                 {
                     var packet = PacketWriter.Get();
                     NetworkSpawnPacket.SerializePacket(networkClass, packet);
-                    SendPacketTo(steamId, packet, PacketTag.NetworkClassSpawn, P2PSend.ReliableWithBuffering);
+                    SendPacketTo(steamId, packet, PacketTag.NetworkClassSpawn, PacketChannel.Buffered);
                 }
             }
         }
@@ -51,7 +51,7 @@ internal static class NetworkDispatcher
         NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
         var packet = PacketWriter.Get();
         NetworkSpawnPacket.SerializePacket(networkClass, packet);
-        SendPacket(packet, false, PacketTag.NetworkClassSpawn, P2PSend.Reliable);
+        SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
         networkClass.HasSpawned = true;
 
         packet.Recycle();
@@ -74,7 +74,7 @@ internal static class NetworkDispatcher
             packet.WritePacket(packetWriter);
         }
 
-        SendPacket(packet, receiveLocally, PacketTag.Rpc, P2PSend.Reliable);
+        SendPacket(packet, receiveLocally, PacketTag.Rpc, PacketChannel.Rpc);
 
         packetWriter?.Recycle();
         packet.Recycle();
@@ -101,7 +101,7 @@ internal static class NetworkDispatcher
             packet.WritePacket(packetWriter);
         }
 
-        SendPacket(packet, receiveLocally, PacketTag.NetworkClassRpc, P2PSend.Reliable);
+        SendPacket(packet, receiveLocally, PacketTag.NetworkClassRpc, PacketChannel.Rpc);
 
         packetWriter?.Recycle();
         packet.Recycle();
@@ -116,14 +116,9 @@ internal static class NetworkDispatcher
     /// <param name="steamId">The Steam ID of the target client to receive the packet.</param>
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
-    /// <param name="sendType">The send type of the packet.</param>
-    internal static void SendPacketTo(SteamId steamId, PacketWriter packetWriter, PacketTag tag, P2PSend sendType)
+    /// <param name="packetChannel">The channel to send the packet on.</param>
+    internal static void SendPacketTo(SteamId steamId, PacketWriter packetWriter, PacketTag tag, PacketChannel packetChannel)
     {
-        if (sendType is (P2PSend.Unreliable or P2PSend.UnreliableNoDelay))
-        {
-            throw new NotImplementedException($"{Enum.GetName(sendType)} Send Type is not supported");
-        }
-
         if (steamId.GetNetClient().AmLocal) return;
 
         var packet = PacketWriter.Get();
@@ -132,7 +127,8 @@ internal static class NetworkDispatcher
 
         if (NetLobby.IsPlayerInOurLobby(steamId))
         {
-            SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.P2PSendChannel[sendType], sendType);
+            var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
+            SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
         }
 
         MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {steamId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -145,14 +141,9 @@ internal static class NetworkDispatcher
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
-    /// <param name="sendType">The send type of the packet.</param>
-    internal static void SendPacket(PacketWriter packetWriter, bool receiveLocally, PacketTag tag, P2PSend sendType)
+    /// <param name="packetChannel">The channel to send the packet on.</param>
+    internal static void SendPacket(PacketWriter packetWriter, bool receiveLocally, PacketTag tag, PacketChannel packetChannel)
     {
-        if (sendType is (P2PSend.Unreliable or P2PSend.UnreliableNoDelay))
-        {
-            throw new NotImplementedException($"{Enum.GetName(sendType)} Send Type is not supported");
-        }
-
         var packet = PacketWriter.Get();
         packet.AddTag(tag);
         packet.WritePacket(packetWriter);
@@ -164,7 +155,8 @@ internal static class NetworkDispatcher
 
             if (NetLobby.IsPlayerInOurLobby(client.SteamId))
             {
-                bool sent = SteamNetworking.SendP2PPacket(client.SteamId, packet.GetBytes(), packet.Length, ReplantedOnlineMod.Constants.P2PSendChannel[sendType], sendType);
+                var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
+                bool sent = SteamNetworking.SendP2PPacket(client.SteamId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
                 if (sent) sentCount++;
             }
         }
@@ -195,17 +187,22 @@ internal static class NetworkDispatcher
             packet.WriteUInt(networkClass.NetworkId);
             packet.WriteUInt(networkClass.DirtyBits);
             networkClass.Serialize(packet, false);
-            SendPacket(packet, false, PacketTag.NetworkClassSync, P2PSend.ReliableWithBuffering);
+            SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
         }
 
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.Reliable]))
+        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
         {
-            ReadPacket(messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.Reliable]);
+            ReadPacket(messageSize, (int)PacketChannel.Main);
         }
 
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.ReliableWithBuffering]))
+        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
         {
-            ReadPacket(messageSize, ReplantedOnlineMod.Constants.P2PSendChannel[P2PSend.ReliableWithBuffering]);
+            ReadPacket(messageSize, (int)PacketChannel.Buffered);
+        }
+
+        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
+        {
+            ReadPacket(messageSize, (int)PacketChannel.Rpc);
         }
     }
 
@@ -439,17 +436,27 @@ internal static class NetworkDispatcher
         packetReader = PacketReader.Get(packetReader);
         byte rpcId = packetReader.ReadByte();
         uint networkId = packetReader.ReadUInt();
+        float timeOut = 0f;
 
-        while (NetLobby.LobbyData != null)
+        try
         {
-            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+            while (NetLobby.LobbyData != null && timeOut < 10f)
             {
-                MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                networkClass.HandleRpc(sender, rpcId, packetReader);
-                yield break;
-            }
+                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+                {
+                    MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
+                    networkClass.HandleRpc(sender, rpcId, packetReader);
+                    yield break;
+                }
 
-            yield return null;
+                timeOut += Time.deltaTime;
+
+                yield return null;
+            }
+        }
+        finally
+        {
+            packetReader.Recycle();
         }
     }
 }
