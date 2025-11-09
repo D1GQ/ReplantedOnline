@@ -30,7 +30,7 @@ internal sealed class MowZombieHandler : RPCHandler
     /// <inheritdoc/>
     internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
-        if (!sender.AmZombieSide())
+        if (sender.AmPlantSide())
         {
             var row = packetReader.ReadInt();
             var netZombie = (ZombieNetworked)packetReader.ReadNetworkClass();

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object.Game;
@@ -18,19 +19,17 @@ internal static class LawnMowerSyncPatch
         // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_StartMower) return true;
 
+        MelonLogger.Error("TEST");
+
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            // If we're on the plant side in versus mode, don't process lawn mowers
-            // (Zombie side has priority over lawn mowers)
             if (VersusState.ZombieSide) return false;
 
             // Send network message to sync this action with other players
             var netZombie = theZombie.GetNetworked<ZombieNetworked>();
-            MowZombieHandler.Send(__instance.Row, netZombie);
-            netZombie.SendDeathRpc(DamageFlags.HitsShieldAndBody);
 
-            // Execute the original method logic locally
+            MowZombieHandler.Send(__instance.Row, netZombie);
             __instance.MowZombieOriginal(theZombie);
 
             return false;

@@ -93,13 +93,21 @@ internal class SteamNetClient
     }
 
     /// <summary>
+    /// Gets if the player is on the plants side
+    /// </summary>
+    internal bool AmPlantSide()
+    {
+        return Instances.GameplayActivity.VersusMode.PlantPlayerIndex == PlayerIndex;
+    }
+
+    /// <summary>
     /// Gets the plants SteamNetClient
     /// </summary>
     internal static SteamNetClient GetPlantClient()
     {
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {
-            if (!client.AmZombieSide())
+            if (client.AmPlantSide())
             {
                 return client;
             }
