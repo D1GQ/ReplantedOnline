@@ -52,6 +52,7 @@ internal sealed class ZombieNetworked : NetworkClass
     /// <summary>
     /// Called when the zombie is destroyed, cleans up the zombie from the networked zombies dictionary.
     /// </summary>
+
     public void OnDestroy()
     {
         _Zombie?.RemoveNetworkedLookup();
@@ -217,10 +218,13 @@ internal sealed class ZombieNetworked : NetworkClass
             ZombieType = (ZombieType)packetReader.ReadInt();
 
             _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
+            _Zombie.AddNetworkedLookup(this);
+
+            gameObject.name = $"{Enum.GetName(_Zombie.mZombieType)}_Zombie ({NetworkId})";
+
             _Zombie.mVelX = ZombieSpeed;
             _Zombie.UpdateAnimSpeed();
 
-            _Zombie.AddNetworkedLookup(this);
             return;
         }
 

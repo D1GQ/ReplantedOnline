@@ -178,6 +178,7 @@ internal static class SeedPacketSyncPatch
                 net.GridY = gridY;
             }, VersusState.PlantSteamId);
             plant.AddNetworkedLookup(netClass);
+            netClass.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({netClass.NetworkId})";
         }
 
         return plant;
@@ -244,8 +245,8 @@ internal static class SeedPacketSyncPatch
                 net.GridX = gridX;
                 net.GridY = gridY;
             }, VersusState.PlantSteamId);
-
             zombie.AddNetworkedLookup(netClass);
+            netClass.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({netClass.NetworkId})";
         }
 
         // Fix rendering issues

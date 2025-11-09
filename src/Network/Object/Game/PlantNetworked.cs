@@ -136,6 +136,8 @@ internal sealed class PlantNetworked : NetworkClass
 
             _Plant = Utils.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
             _Plant.AddNetworkedLookup(this);
+
+            gameObject.name = $"{Enum.GetName(_Plant.mSeedType)}_Plant ({NetworkId})";
         }
     }
 }
