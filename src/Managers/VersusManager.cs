@@ -81,6 +81,7 @@ internal static class VersusManager
     private static TextMeshProUGUI zombiePlayer2;
     private static TextMeshProUGUI plantPlayer1;
     private static TextMeshProUGUI plantPlayer2;
+    private static TextMeshProUGUI playerList;
     private static TextMeshProUGUI pickSides;
 
     /// <summary>
@@ -106,6 +107,10 @@ internal static class VersusManager
         plantPlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
         plantPlayer2.enableAutoSizing = false;
         plantPlayer2.fontSize = 100f;
+
+        playerList = UnityEngine.Object.Instantiate(plantPlayer1, vsPanelView.transform.Find($"Canvas/Layout/Center/Panel"));
+        playerList.transform.localPosition = new Vector3(-15f, -100f, 0f);
+        playerList.gameObject.name = "PlayerList";
 
         pickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
     }
@@ -139,6 +144,8 @@ internal static class VersusManager
                     plantPlayer2.SetText(client.Name);
                 }
             }
+
+            playerList?.SetText(string.Empty);
         }
         else if (NetLobby.LobbyData.LastGameState == GameState.HostChoosePlants)
         {
@@ -156,6 +163,20 @@ internal static class VersusManager
                     zombiePlayer2.SetText(client.Name);
                 }
             }
+
+            playerList?.SetText(string.Empty);
+        }
+        else
+        {
+            string list = "-----------\n";
+            foreach (var player in NetLobby.LobbyData.AllClients.Values)
+            {
+                string displayName = player.Name.Length > 10
+                    ? string.Concat(player.Name.AsSpan(0, 10), "...")
+                    : player.Name;
+                list += $"{displayName}\n";
+            }
+            playerList?.SetText(list);
         }
 
         // Handle button interactability for the host player
