@@ -17,7 +17,7 @@ namespace ReplantedOnline.Network.Online;
 internal static class NetLobby
 {
     /// <summary>
-    /// The LobbyData of the current lobby the player is in, or default if not in a lobby.
+    /// The LobbyData of the current lobby the player is in, or null if not in a lobby.
     /// </summary>
     internal static NetLobbyData LobbyData;
 

@@ -5,6 +5,7 @@ using ReplantedOnline.Items.Attributes;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Online;
+using ReplantedOnline.Patches.UI;
 using UnityEngine;
 
 namespace ReplantedOnline;
@@ -26,6 +27,7 @@ internal class ReplantedOnlineMod : MelonMod
         if (!loaded) return;
 
         NetworkDispatcher.Update();
+        JoinLobbyCodePanelPatch.ValidateText();
     }
 
     // Delayed initialized for BootStrap sequence...

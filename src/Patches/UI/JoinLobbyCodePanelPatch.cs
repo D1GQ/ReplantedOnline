@@ -3,11 +3,10 @@ using Il2CppReloaded.Input;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
-using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using System.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,14 +57,6 @@ internal static class JoinLobbyCodePanelPatch
         // Get reference to the input field and set up validation
         _reloadedInputField = GetComp<ReloadedInputField>("Canvas/Layout/Center/Rename/NameInputField");
         _reloadedInputField.characterLimit = MatchmakingManager.CODE_LENGTH;
-        _reloadedInputField.onValueChanged.AddListener((Action<string>)((newValue) =>
-        {
-            // Filter input to only allow valid lobby code characters
-            string cleanValue = new([.. newValue.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
-            _reloadedInputField.m_Text = string.Empty;
-            // Use coroutine to update text after current frame
-            MelonCoroutines.Start(CoSetTextDelay(newValue, cleanValue));
-        }));
 
         // Update all text elements in the panel
         SetText("Canvas/Layout/Center/Rename/HeaderText", "Join Lobby");
@@ -93,17 +84,19 @@ internal static class JoinLobbyCodePanelPatch
         });
     }
 
-    // Coroutine to delay text setting until after input field updates
-    private static IEnumerator CoSetTextDelay(string newValue, string cleanValue)
+    private static string lastText = string.Empty;
+    internal static void ValidateText()
     {
-        // Wait until the input field text matches what we're trying to set
-        while (_reloadedInputField.m_Text != newValue)
+        if (_reloadedInputField != null)
         {
-            yield return null;
+            if (_reloadedInputField.text != lastText)
+            {
+                string cleanValue = new([.. _reloadedInputField.text.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
+                _reloadedInputField?.SetText(cleanValue, false);
+                _reloadedInputField?.ForceLabelUpdate();
+                lastText = _reloadedInputField.text;
+            }
         }
-        // Apply the filtered text
-        _reloadedInputField?.SetText(cleanValue, false);
-        _reloadedInputField?.ForceLabelUpdate();
     }
 
     // Helper method to set text on TextMeshPro components

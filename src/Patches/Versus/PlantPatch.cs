@@ -11,7 +11,7 @@ internal static class PlantPatch
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindSquashTarget))]
     [HarmonyPrefix]
-    private static bool Update_Prefix(Plant __instance, ref Zombie __result)
+    private static bool Find_Prefix(Plant __instance, ref Zombie __result)
     {
         if (NetLobby.AmInLobby())
         {
