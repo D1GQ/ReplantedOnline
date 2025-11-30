@@ -92,7 +92,7 @@ internal static class ZombiePatch
     {
         if (VersusState.PlantSide)
         {
-            __instance.GetNetworked<ZombieNetworked>()?.SendEnteringHouseRpc();
+            __instance.GetNetworked<ZombieNetworked>()?.SendEnteringHouseRpc(__instance.mPosX);
             VersusManager.EndGame(__instance.mController?.gameObject, false);
         }
 

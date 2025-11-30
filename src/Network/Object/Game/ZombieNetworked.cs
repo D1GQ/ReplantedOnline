@@ -119,7 +119,8 @@ internal sealed class ZombieNetworked : NetworkClass
                 break;
             case 2:
                 {
-                    HandleEnteringHouseRpc();
+                    var xPos = packetReader.ReadFloat();
+                    HandleEnteringHouseRpc(xPos);
                 }
                 break;
         }
@@ -168,17 +169,19 @@ internal sealed class ZombieNetworked : NetworkClass
         }
     }
 
-    internal void SendEnteringHouseRpc()
+    internal void SendEnteringHouseRpc(float xPos)
     {
-        this.SendRpc(2, null);
+        var writer = PacketWriter.Get();
+        writer.WriteFloat(xPos);
+        this.SendRpc(2, writer);
     }
 
     [HideFromIl2Cpp]
-    internal void HandleEnteringHouseRpc()
+    internal void HandleEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
         StopLarpPos();
-        _Zombie?.mPosX = -30f;
+        _Zombie?.mPosX = xPos;
         VersusManager.EndGame(_Zombie?.mController?.gameObject, false);
     }
 
