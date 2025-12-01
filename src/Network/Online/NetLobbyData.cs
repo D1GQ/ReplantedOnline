@@ -125,6 +125,9 @@ internal class NetLobbyData
 
     internal NetworkedData Networked = new();
 
+    /// <summary>
+    /// Handles networked lobby data synchronization between clients.
+    /// </summary>
     [RegisterRPCHandler]
     internal class NetworkedData : RPCHandler
     {
@@ -133,6 +136,10 @@ internal class NetLobbyData
         private bool _pickingSides = true;
         private bool _hostIsOnPlantSide;
 
+        /// <summary>
+        /// Gets or sets whether the versus match has started.
+        /// Setting this property automatically synchronizes the value across all clients.
+        /// </summary>
         internal bool HasStarted
         {
             get
@@ -141,12 +148,18 @@ internal class NetLobbyData
             }
             set
             {
+                // When set by the host, broadcast the new value to all clients
                 SendData(1, packetWriter =>
                 {
                     packetWriter.WriteBool(value);
                 });
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether host is currently picking teams.
+        /// Setting to true resets all players to the team selection phase.
+        /// </summary>
         internal bool PickingSides
         {
             get
@@ -155,6 +168,7 @@ internal class NetLobbyData
             }
             set
             {
+                // Only need to send when entering picking sides mode
                 if (value is true)
                 {
                     SendData(2);
@@ -162,6 +176,10 @@ internal class NetLobbyData
             }
         }
 
+        /// <summary>
+        /// Gets or sets which team the host is on.
+        /// Setting this property automatically synchronizes the team assignment across all clients.
+        /// </summary>
         internal bool HostIsOnPlantSide
         {
             get
@@ -180,7 +198,11 @@ internal class NetLobbyData
         /// <inheritdoc/>
         internal sealed override RpcType Rpc => RpcType.LobbyData;
 
-        internal void ResetLobby()
+        /// <summary>
+        /// Initiates a lobby reset sequence.
+        /// Only the host can trigger a lobby reset.
+        /// </summary>
+        internal static void ResetLobby()
         {
             if (NetLobby.AmLobbyHost())
             {
@@ -188,43 +210,65 @@ internal class NetLobbyData
             }
         }
 
+        /// <summary>
+        /// Synchronizes all networked lobby data to newly connected clients.
+        /// This ensures late-joining clients receive the current game state.
+        /// </summary>
         internal static void SendAllData()
         {
+            // Send match start status (dataId = 1)
             SendData(1, packetWriter =>
             {
                 packetWriter.WriteBool(NetLobby.LobbyData.Networked._hasStarted);
             });
+
+            // Send team selection phase status (dataId = 2)
             SendData(2, packetWriter =>
             {
                 packetWriter.WriteBool(NetLobby.LobbyData.Networked._pickingSides);
             });
+
+            // Send host team assignment (dataId = 3)
             SendData(3, packetWriter =>
             {
                 packetWriter.WriteBool(NetLobby.LobbyData.Networked._hostIsOnPlantSide);
             });
         }
 
+        /// <summary>
+        /// Helper method to send RPC data with optional payload.
+        /// </summary>
+        /// <param name="dataId">The type of data being sent (0-3).</param>
+        /// <param name="callback">Optional callback to write additional data to the packet.</param>
         private static void SendData(byte dataId, Action<PacketWriter> callback = null)
         {
             var packetWriter = PacketWriter.Get();
-            packetWriter.WriteByte(dataId);
-            callback?.Invoke(packetWriter);
-            NetworkDispatcher.SendRpc(RpcType.LobbyData, packetWriter, true);
+            packetWriter.WriteByte(dataId); // Write data type identifier
+            callback?.Invoke(packetWriter); // Write additional data if provided
+            NetworkDispatcher.SendRpc(RpcType.LobbyData, packetWriter, true); // Send to all clients
         }
 
         /// <inheritdoc/>
         internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
         {
-            if (!sender.AmHost) return;
+            if (!sender.AmHost) return; // Only accept data from the host
 
             var packet = PacketReader.Get(packetReader);
-            MelonCoroutines.Start(CoWaitHandle(sender, packet));
+            // Start coroutine to handle the packet, waiting for game systems to be ready
+            MelonCoroutines.Start(CoWaitHandle(packet));
         }
 
-        private static IEnumerator CoWaitHandle(SteamNetClient sender, PacketReader packetReader)
+        /// <summary>
+        /// Coroutine that waits for required game systems to be ready before processing RPC data.
+        /// </summary>
+        /// <param name="packetReader">The packet to process.</param>
+        /// <returns>IEnumerator for coroutine execution.</returns>
+        private static IEnumerator CoWaitHandle(PacketReader packetReader)
         {
+            // Wait for the gameplay activity and versus mode to be initialized
             while (Instances.GameplayActivity?.VersusMode == null)
             {
+                // If we leave the lobby while waiting, clean up and exit
                 if (!NetLobby.AmInLobby())
                 {
                     packetReader.Recycle();
@@ -239,40 +283,48 @@ internal class NetLobbyData
 
             switch (dataId)
             {
-                case 0:
+                case 0: // Lobby Reset
                     {
                         if (!data._restartingLobby)
                         {
-                            data._restartingLobby = true;
-                            NetLobby.ResetLobby();
+                            data._restartingLobby = true; // Set flag to prevent duplicate resets
+                            NetLobby.ResetLobby(); // Execute lobby reset
                         }
                     }
                     break;
-                case 1:
+
+                case 1: // Match Start Status
                     {
-                        data._hasStarted = packetReader.ReadBool();
+                        data._hasStarted = packetReader.ReadBool(); // Update local match start state
                     }
                     break;
-                case 2:
+
+                case 2: // Enter Team Selection Phase
                     {
-                        data._pickingSides = true;
-                        VersusManager.ResetPlayerInputs();
-                        VersusManager.UpdateSideVisuals();
+                        data._pickingSides = true; // Enable team picking
+                        VersusManager.ResetPlayerInputs(); // Clear previous team assignments
+                        VersusManager.UpdateSideVisuals(); // Update UI to show team selection
                     }
                     break;
-                case 3:
+
+                case 3: // Lock Teams
                     {
-                        data._pickingSides = false;
-                        data._hostIsOnPlantSide = packetReader.ReadBool();
+                        data._pickingSides = false; // Disable team picking
+                        data._hostIsOnPlantSide = packetReader.ReadBool(); // Get host's team
+
+                        // Assign player inputs based on host's team
                         if (NetLobby.AmLobbyHost())
                         {
+                            // If we're the host, assign opposite team to clients
                             VersusManager.UpdatePlayerInputs(!data._hostIsOnPlantSide);
                         }
                         else
                         {
+                            // If we're a client, assign same team as host
                             VersusManager.UpdatePlayerInputs(data._hostIsOnPlantSide);
                         }
-                        VersusManager.UpdateSideVisuals();
+
+                        VersusManager.UpdateSideVisuals(); // Update UI with final team assignments
                     }
                     break;
             }
