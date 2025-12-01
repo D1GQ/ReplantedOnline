@@ -1,10 +1,13 @@
 ﻿using Il2CppSteamworks;
+using MelonLoader;
 using ReplantedOnline.Items.Attributes;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.RPC;
+using System.Collections;
 
 namespace ReplantedOnline.Network.Online;
 
@@ -214,6 +217,23 @@ internal class NetLobbyData
         {
             if (!sender.AmHost) return;
 
+            var packet = PacketReader.Get(packetReader);
+            MelonCoroutines.Start(CoWaitHandle(sender, packet));
+        }
+
+        private static IEnumerator CoWaitHandle(SteamNetClient sender, PacketReader packetReader)
+        {
+            while (Instances.GameplayActivity?.VersusMode == null)
+            {
+                if (!NetLobby.AmInLobby())
+                {
+                    packetReader.Recycle();
+                    yield break;
+                }
+
+                yield return null;
+            }
+
             var dataId = packetReader.ReadByte();
             var data = NetLobby.LobbyData.Networked;
 
@@ -256,6 +276,8 @@ internal class NetLobbyData
                     }
                     break;
             }
+
+            packetReader.Recycle();
         }
     }
 }
