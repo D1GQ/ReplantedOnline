@@ -113,13 +113,17 @@ internal class NetLobbyData
     {
         foreach (var kvp in NetworkClassSpawned.ToDictionary(k => k.Key, v => v.Value))
         {
-            if (kvp.Value?.gameObject != null)
+            var child = kvp.Value?.AmChild ?? false;
+            if (!child && kvp.Value.gameObject != null)
             {
                 UnityEngine.Object.Destroy(kvp.Value.gameObject);
             }
             NetworkClassSpawned.Remove(kvp.Key);
-            NetworkIdPoolHost.ReleaseId(kvp.Key);
-            NetworkIdPoolNonHost.ReleaseId(kvp.Key);
+            if (!child)
+            {
+                NetworkIdPoolHost.ReleaseId(kvp.Key);
+                NetworkIdPoolNonHost.ReleaseId(kvp.Key);
+            }
         }
     }
 
