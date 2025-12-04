@@ -81,5 +81,6 @@ internal class ReplantedOnlineMod : MelonMod
         internal const int OPPONENT_PLAYER_INDEX = 1;
         internal const string MOD_VERSION_KEY = "mod_version";
         internal const string GAME_CODE_KEY = "game_code";
+        internal const int MAX_NETWORK_CHILDREN = 25;
     }
 }

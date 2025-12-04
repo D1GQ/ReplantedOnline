@@ -186,6 +186,7 @@ internal sealed class ZombieNetworked : NetworkClass
     }
 
     // Target zombie death logic
+    [HideFromIl2Cpp]
     internal void CheckTargetDeath(Action callback, bool isRpc = false)
     {
         if (_Zombie.mZombieType is ZombieType.Target)

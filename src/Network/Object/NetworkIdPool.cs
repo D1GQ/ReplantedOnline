@@ -7,13 +7,11 @@
 internal class NetworkIdPool
 {
     private readonly Queue<uint> _availableIds = [];
+    private readonly HashSet<uint> _allocatedIds = [];
 
     internal NetworkIdPool(uint start, uint end)
     {
-        _start = start;
-        _end = end;
-
-        for (uint i = start; i <= end; i++)
+        for (uint i = start; i <= end; i += ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN)
         {
             _availableIds.Enqueue(i);
         }
@@ -33,7 +31,9 @@ internal class NetworkIdPool
         if (AvailableCount == 0)
             throw new InvalidOperationException("No available IDs in the pool");
 
-        return _availableIds.Dequeue();
+        uint id = _availableIds.Dequeue();
+        _allocatedIds.Add(id);
+        return id;
     }
 
     /// <summary>
@@ -42,9 +42,12 @@ internal class NetworkIdPool
     /// <param name="id">The ID to release back to the pool.</param>
     internal void ReleaseId(uint id)
     {
-        if (!_availableIds.Contains(id) && (id >= _start && id <= _end))
+        if (_allocatedIds.Remove(id))
         {
-            _availableIds.Enqueue(id);
+            if ((id - _start) % ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN == 0)
+            {
+                _availableIds.Enqueue(id);
+            }
         }
     }
 

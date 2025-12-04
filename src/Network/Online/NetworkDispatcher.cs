@@ -184,9 +184,7 @@ internal static class NetworkDispatcher
         {
             if (!networkClass.AmOwner || !networkClass.HasSpawned || !networkClass.IsDirty) continue;
             var packet = PacketWriter.Get();
-            packet.WriteUInt(networkClass.NetworkId);
-            packet.WriteUInt(networkClass.DirtyBits);
-            networkClass.Serialize(packet, false);
+            NetworkSyncPacket.SerializePacket(networkClass, false, packet);
             SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
         }
 
@@ -332,6 +330,7 @@ internal static class NetworkDispatcher
             networkClass.OwnerId = spawnPacket.OwnerId;
             networkClass.Deserialize(packetReader, true);
             networkClass.HasSpawned = true;
+            networkClass.SpawnChildren();
             networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
             MelonLogger.Msg($"[NetworkDispatcher] Spawned custom NetworkClass from {sender.Name}: {spawnPacket.NetworkId}");
         }
@@ -347,6 +346,7 @@ internal static class NetworkDispatcher
                 networkClass.Deserialize(packetReader, true);
                 networkClass.gameObject.SetActive(true);
                 networkClass.HasSpawned = true;
+                networkClass.SpawnChildren();
                 networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
                 MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }
@@ -371,8 +371,16 @@ internal static class NetworkDispatcher
             if (networkClass.OwnerId == sender.SteamId)
             {
                 NetLobby.LobbyData.NetworkClassSpawned.Remove(networkId);
-                NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(networkId);
-                NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(networkId);
+                if (!networkClass.AmChild)
+                {
+                    foreach (var netChild in networkClass.ChildNetworkClasses)
+                    {
+                        netChild.Despawn();
+                    }
+
+                    NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(networkId);
+                    NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(networkId);
+                }
                 UnityEngine.Object.Destroy(networkClass.gameObject);
                 MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkId}");
             }
@@ -397,22 +405,21 @@ internal static class NetworkDispatcher
     private static IEnumerator CoWaitForNetworkClassSync(SteamNetClient sender, PacketReader packetReader)
     {
         packetReader = PacketReader.Get(packetReader);
-        uint networkId = packetReader.ReadUInt();
-        uint syncedBits = packetReader.ReadUInt();
+        var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packetReader);
 
         while (NetLobby.LobbyData != null)
         {
-            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkClass))
             {
                 if (networkClass.OwnerId != sender.SteamId)
                 {
-                    MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkId}");
+                    MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
                     yield break;
                 }
 
-                networkClass.SyncedBits.SyncedDirtyBits = syncedBits;
-                networkClass.Deserialize(packetReader, false);
-                MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkId}");
+                networkClass.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
+                networkClass.Deserialize(packetReader, networkSyncPacket.Init);
+                MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
                 yield break;
             }
 

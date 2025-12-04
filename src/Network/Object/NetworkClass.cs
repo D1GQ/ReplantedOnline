@@ -18,6 +18,23 @@ namespace ReplantedOnline.Network.Object;
 internal class NetworkClass : MonoBehaviour, INetworkClass
 {
     /// <summary>
+    /// Gets the parent network class associated with this instance.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal NetworkClass ParentNetworkClass { get; private set; }
+
+    /// <summary>
+    /// if this NetworkClass is a child of another NetworkClass
+    /// </summary>
+    internal bool AmChild { get; private set; }
+
+    /// <summary>
+    /// Contains the collection of child network classes associated with this instance.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal List<NetworkClass> ChildNetworkClasses { get; } = [];
+
+    /// <summary>
     /// Container GameObject for all network prefabs.
     /// </summary>
     private static GameObject NetworkPrefabsObj;
@@ -229,6 +246,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
                 networkClass.transform.SetParent(NetworkClassesObj.transform);
                 callback?.Invoke(networkClass);
                 NetworkDispatcher.Spawn(networkClass, owner);
+                networkClass.SpawnChildren();
                 networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
                 return networkClass;
             }
@@ -241,9 +259,110 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
             networkClass.transform.SetParent(NetworkClassesObj.transform);
             callback?.Invoke(networkClass);
             NetworkDispatcher.Spawn(networkClass, owner);
+            networkClass.SpawnChildren();
             networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
             return networkClass;
         }
+    }
+
+    /// <summary>
+    /// Initializes and assigns network ownership and identifiers to child components of type NetworkClass
+    /// within the current object hierarchy.
+    /// </summary>
+    public void SpawnChildren()
+    {
+        // Get all NetworkClass components in children
+        var allNetworkClasses = GetComponentsInChildren<NetworkClass>(true);
+        var childNetworkClasses = new List<NetworkClass>();
+
+        // Filter out self (manual Where clause for Il2Cpp compatibility)
+        for (int i = 0; i < allNetworkClasses.Length; i++)
+        {
+            var nc = allNetworkClasses[i];
+            if (nc != this)
+            {
+                childNetworkClasses.Add(nc);
+            }
+        }
+
+        // Manual sorting by hierarchy (replaces Sort with lambda)
+        for (int i = 0; i < childNetworkClasses.Count - 1; i++)
+        {
+            for (int j = i + 1; j < childNetworkClasses.Count; j++)
+            {
+                var a = childNetworkClasses[i];
+                var b = childNetworkClasses[j];
+                bool shouldSwap = false;
+
+                // Get sibling indices
+                int indexA = a.transform.GetSiblingIndex();
+                int indexB = b.transform.GetSiblingIndex();
+
+                // If same parent, compare sibling indices
+                if (a.transform.parent == b.transform.parent)
+                {
+                    shouldSwap = indexA > indexB;
+                }
+                else
+                {
+                    // Different parents - compare full hierarchy paths
+                    string pathA = GetTransformPath(a.transform);
+                    string pathB = GetTransformPath(b.transform);
+                    shouldSwap = string.Compare(pathA, pathB, StringComparison.Ordinal) > 0;
+                }
+
+                // Swap if needed
+                if (shouldSwap)
+                {
+                    var temp = childNetworkClasses[i];
+                    childNetworkClasses[i] = childNetworkClasses[j];
+                    childNetworkClasses[j] = temp;
+                }
+            }
+        }
+
+        int maxChildren = ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN - 1;
+        int childCount = Mathf.Min(childNetworkClasses.Count, maxChildren);
+
+        for (int i = 0; i < childCount; i++)
+        {
+            NetworkClass netChild = childNetworkClasses[i];
+            uint childNetworkId = NetworkId + (uint)(i + 1);
+
+            netChild.AmChild = true;
+            netChild.OwnerId = OwnerId;
+            netChild.NetworkId = childNetworkId;
+            netChild.ParentNetworkClass = this;
+            ChildNetworkClasses.Add(netChild);
+            NetLobby.LobbyData.NetworkClassSpawned.Add(childNetworkId, netChild);
+            netChild.HasSpawned = true;
+
+            if (AmOwner)
+            {
+                var packet = PacketWriter.Get();
+                NetworkSyncPacket.SerializePacket(this, true, packet);
+                NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Main);
+            }
+        }
+
+        if (childNetworkClasses.Count > maxChildren)
+        {
+            MelonLogger.Warning($"NetworkClass {NetworkId} has {childNetworkClasses.Count} children, exceeding max of {maxChildren}");
+        }
+    }
+
+    private static string GetTransformPath(Transform transform)
+    {
+        string path = transform.name;
+        Transform current = transform.parent;
+
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 
     /// <summary>
@@ -252,14 +371,29 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// </summary>
     public void Despawn()
     {
+        if (AmChild) return;
+
         if (HasSpawned)
         {
             NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
-            NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(NetworkId);
-            NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(NetworkId);
-            var packet = PacketWriter.Get();
-            packet.WriteUInt(NetworkId);
-            NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+
+            if (!AmChild)
+            {
+                foreach (var netChild in ChildNetworkClasses)
+                {
+                    netChild.Despawn();
+                }
+
+                NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(NetworkId);
+                NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(NetworkId);
+                var packet = PacketWriter.Get();
+                packet.WriteUInt(NetworkId);
+                NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+            }
+            else
+            {
+                ParentNetworkClass?.ChildNetworkClasses.Remove(this);
+            }
 
             OwnerId = default;
             NetworkId = 0;
@@ -309,7 +443,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// Creates and registers a network prefab of the specified type with a unique identifier.
     /// The prefab is marked as hidden and persistent, serving as a template for network instantiation.
     /// </summary>
-    private static void CreatePrefabs<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
+    private static T CreatePrefabs<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
     {
         var go = new GameObject($"{typeof(T).Name}_Prefab");
         go.transform.SetParent(NetworkPrefabsObj.transform);
@@ -318,5 +452,6 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
         callback?.Invoke(networkClass);
         NetworkPrefabs[prefabId] = networkClass;
         PrefabIdTypeLookup[typeof(T)] = prefabId;
+        return networkClass;
     }
 }

@@ -56,12 +56,12 @@ internal class NetLobbyData
     /// <summary>
     /// Network class Id pool for the host client
     /// </summary>
-    internal NetworkIdPool NetworkIdPoolHost = new(0, 9999);
+    internal NetworkIdPool NetworkIdPoolHost = new(0, 100000);
 
     /// <summary>
     /// Network class Id pool for the non host client
     /// </summary>
-    internal NetworkIdPool NetworkIdPoolNonHost = new(10000, 19999);
+    internal NetworkIdPool NetworkIdPoolNonHost = new(200000, 300000);
 
     /// <summary>
     /// Gets a HashSet of all banned players.
