@@ -9,6 +9,8 @@ using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.UI;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace ReplantedOnline.Managers;
 
@@ -83,6 +85,10 @@ internal static class VersusManager
     private static TextMeshProUGUI playerList;
     private static TextMeshProUGUI pickSides;
 
+    private static EventTrigger lobbyCodeHeaderTrigger;
+    private static string defaultHeaderText => $"Lobby Code: {NetLobby.LobbyData.LobbyCode}";
+    private static bool copyingLobbyCode = false;
+
     /// <summary>
     /// Determines whether all required UI components are initialized and ready for use.
     /// </summary>
@@ -121,6 +127,9 @@ internal static class VersusManager
         playerList.color = Color.white;
 
         pickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
+
+        // Add event trigger to header for copying the lobby code to clipboard
+        lobbyCodeHeaderTrigger = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header").gameObject.AddComponent<EventTrigger>();
     }
 
     /// <summary>
@@ -129,9 +138,6 @@ internal static class VersusManager
     /// </summary>
     internal static void UpdateSideVisuals()
     {
-        // Exit if any UI components are missing to prevent null reference exceptions
-        if (zombiePlayer1 == null || zombiePlayer2 == null || plantPlayer1 == null || plantPlayer2 == null) return;
-
         // Clear all existing text before assigning new names
         ResetAllText();
 
@@ -144,12 +150,12 @@ internal static class VersusManager
                 if (client.AmHost)
                 {
                     // Host is assigned to the first zombie slot
-                    zombiePlayer1.SetText(client.Name);
+                    zombiePlayer1?.SetText(client.Name);
                 }
                 else
                 {
                     // Client is assigned to the second plant slot
-                    plantPlayer2.SetText(client.Name);
+                    plantPlayer2?.SetText(client.Name);
                 }
             }
 
@@ -163,12 +169,12 @@ internal static class VersusManager
                 if (client.AmHost)
                 {
                     // Host is assigned to the first plant slot
-                    plantPlayer1.SetText(client.Name);
+                    plantPlayer1?.SetText(client.Name);
                 }
                 else
                 {
                     // Client is assigned to the second zombie slot
-                    zombiePlayer2.SetText(client.Name);
+                    zombiePlayer2?.SetText(client.Name);
                 }
             }
 
@@ -197,15 +203,18 @@ internal static class VersusManager
 #endif
 
             // Enable buttons only when game is in progress (not in lobby) and there are at least 2 players
-            if (NetLobby.LobbyData.Networked.PickingSides && NetLobby.LobbyData.AllClients.Values.Count > 1)
+            if (NetLobby.LobbyData?.Networked != null)
             {
-                // Allow host to interact with side selection buttons when conditions are met
-                VsSideChoosererPatch.SetButtonsInteractable(true);
-            }
-            else
-            {
-                // Disable buttons when in lobby or with only one player
-                VsSideChoosererPatch.SetButtonsInteractable(false);
+                if (NetLobby.LobbyData.Networked.PickingSides && NetLobby.LobbyData.AllClients.Values.Count > 1)
+                {
+                    // Allow host to interact with side selection buttons when conditions are met
+                    VsSideChoosererPatch.SetButtonsInteractable(true);
+                }
+                else
+                {
+                    // Disable buttons when in lobby or with only one player
+                    VsSideChoosererPatch.SetButtonsInteractable(false);
+                }
             }
         }
     }
@@ -215,22 +224,69 @@ internal static class VersusManager
     /// </summary>
     private static void ResetAllText()
     {
-        // Safety check for null components
-        if (zombiePlayer1 == null || zombiePlayer2 == null || plantPlayer1 == null || plantPlayer2 == null) return;
-
-        pickSides?.SetText($"Lobby Code: {NetLobby.LobbyData.LobbyCode}");
+        // Shows the lobby code in the header and resets the header UI events
+        pickSides?.SetText(defaultHeaderText);
+        UpdateHeaderEvents();
 
         // Ensure all text elements are visible
-        zombiePlayer1.gameObject.SetActive(true);
-        zombiePlayer2.gameObject.SetActive(true);
-        plantPlayer1.gameObject.SetActive(true);
-        plantPlayer2.gameObject.SetActive(true);
+        zombiePlayer1?.gameObject.SetActive(true);
+        zombiePlayer2?.gameObject.SetActive(true);
+        plantPlayer1?.gameObject.SetActive(true);
+        plantPlayer2?.gameObject.SetActive(true);
 
         // Clear all text content
-        zombiePlayer1.SetText(string.Empty);
-        zombiePlayer2.SetText(string.Empty);
-        plantPlayer1.SetText(string.Empty);
-        plantPlayer2.SetText(string.Empty);
+        zombiePlayer1?.SetText(string.Empty);
+        zombiePlayer2?.SetText(string.Empty);
+        plantPlayer1?.SetText(string.Empty);
+        plantPlayer2?.SetText(string.Empty);
+    }
+
+    /// <summary>
+    /// Updates the header text to the current lobby code and resets the events.
+    /// </summary>
+    private static void UpdateHeaderEvents()
+    {
+        EventTrigger trigger = lobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
+        if (trigger != null)
+        {
+            trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
+    
+            // On pointer enter trigger - modify header text
+            EventTrigger.Entry pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+            pointerEnter.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
+            {
+                if (!copyingLobbyCode) pickSides?.SetText($"Click to Copy");
+            }));
+            trigger.triggers.Add(pointerEnter);
+    
+            // On pointer exit trigger - reset header text
+            EventTrigger.Entry pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+            pointerExit.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
+            {
+                if (!copyingLobbyCode) pickSides?.SetText(defaultHeaderText);
+            }));
+            trigger.triggers.Add(pointerExit);
+    
+            // On pointer click trigger - copy the lobby code to clipboard
+            EventTrigger.Entry pointerClick = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
+            pointerClick.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
+            {
+                if (!copyingLobbyCode) MelonCoroutines.Start(CoCopyLobbyCode());
+            }));
+            trigger.triggers.Add(pointerClick);
+        }
+    }
+
+    private static IEnumerator CoCopyLobbyCode()
+    {
+        copyingLobbyCode = true;
+        GUIUtility.systemCopyBuffer = NetLobby.LobbyData.LobbyCode;
+        pickSides?.SetText($"Copied to Clipboard!");
+
+        yield return new WaitForSeconds(1f);
+
+        pickSides?.SetText(defaultHeaderText);
+        copyingLobbyCode = false;
     }
 
     /// <summary>
