@@ -13,6 +13,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Managers;
 
@@ -88,7 +89,7 @@ internal static class VersusManager
     private static TextMeshProUGUI pickSides;
 
     private static EventTrigger lobbyCodeHeaderTrigger;
-    private static string defaultHeaderText => $"Lobby Code: {NetLobby.LobbyData.LobbyCode}";
+    private static string DefaultHeaderText => $"Lobby Code: {NetLobby.LobbyData.LobbyCode}";
     private static bool copyingLobbyCode = false;
 
     /// <summary>
@@ -240,7 +241,7 @@ internal static class VersusManager
     private static void ResetAllText()
     {
         // Shows the lobby code in the header and resets the header UI events
-        pickSides?.SetText(defaultHeaderText);
+        pickSides?.SetText(DefaultHeaderText);
         UpdateHeaderEvents();
 
         // Ensure all text elements are visible
@@ -275,15 +276,15 @@ internal static class VersusManager
             trigger.triggers.Add(pointerEnter);
 
             // On pointer exit trigger - reset header text
-            EventTrigger.Entry pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+            EventTrigger.Entry pointerExit = new() { eventID = EventTriggerType.PointerExit };
             pointerExit.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode) pickSides?.SetText(defaultHeaderText);
+                if (!copyingLobbyCode) pickSides?.SetText(DefaultHeaderText);
             }));
             trigger.triggers.Add(pointerExit);
 
             // On pointer click trigger - copy the lobby code to clipboard
-            EventTrigger.Entry pointerClick = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
+            EventTrigger.Entry pointerClick = new() { eventID = EventTriggerType.PointerClick };
             pointerClick.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
                 if (!copyingLobbyCode) MelonCoroutines.Start(CoCopyLobbyCode());
@@ -296,11 +297,12 @@ internal static class VersusManager
     {
         copyingLobbyCode = true;
         GUIUtility.systemCopyBuffer = NetLobby.LobbyData.LobbyCode;
+        Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
         pickSides?.SetText($"Copied to Clipboard!");
 
         yield return new WaitForSeconds(1f);
 
-        pickSides?.SetText(defaultHeaderText);
+        pickSides?.SetText(DefaultHeaderText);
         copyingLobbyCode = false;
     }
 
