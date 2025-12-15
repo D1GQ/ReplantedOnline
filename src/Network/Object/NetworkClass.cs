@@ -3,6 +3,7 @@ using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Items.Enums;
 using ReplantedOnline.Items.Interfaces;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
@@ -12,10 +13,10 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Object;
 
 /// <summary>
-/// Base class for all network-synchronized objects in ReplantedOnline.
+/// Abstract Base class for all network-synchronized objects in ReplantedOnline.
 /// Provides core functionality for ownership, synchronization, and remote procedure calls.
 /// </summary>
-internal class NetworkClass : MonoBehaviour, INetworkClass
+internal abstract class NetworkClass : RuntimePrefab, INetworkClass
 {
     /// <summary>
     /// Gets the parent network class associated with this instance.
@@ -70,8 +71,8 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
         NetworkPrefabsObj = new GameObject($"NetworkPrefabs");
         DontDestroyOnLoad(NetworkPrefabsObj);
 
-        var plantPrefab = CreatePrefabs<PlantNetworked>(1);
-        var zombiePrefab = CreatePrefabs<ZombieNetworked>(2);
+        var plantPrefab = CreateNetworkPrefab<PlantNetworked>(1);
+        var zombiePrefab = CreateNetworkPrefab<ZombieNetworked>(2);
     }
 
     /// <summary>
@@ -241,7 +242,7 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
         {
             if (NetworkPrefabs.TryGetValue(prefabId, out var netClass))
             {
-                T networkClass = (T)Instantiate(netClass);
+                T networkClass = netClass.Clone<T>();
                 networkClass.gameObject.SetActive(true);
                 networkClass.transform.SetParent(NetworkClassesObj.transform);
                 callback?.Invoke(networkClass);
@@ -442,12 +443,9 @@ internal class NetworkClass : MonoBehaviour, INetworkClass
     /// Creates and registers a network prefab of the specified type with a unique identifier.
     /// The prefab is marked as hidden and persistent, serving as a template for network instantiation.
     /// </summary>
-    private static T CreatePrefabs<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
+    private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
     {
-        var go = new GameObject($"{typeof(T).Name}_Prefab");
-        go.transform.SetParent(NetworkPrefabsObj.transform);
-        go.SetActive(false);
-        var networkClass = go.AddComponent<T>();
+        var networkClass = RuntimePrefab.CreatePrefab<T>($"{typeof(T)}:{prefabId}");
         callback?.Invoke(networkClass);
         NetworkPrefabs[prefabId] = networkClass;
         PrefabIdTypeLookup[typeof(T)] = prefabId;
