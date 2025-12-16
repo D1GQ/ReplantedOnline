@@ -1,9 +1,9 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.Packet;
 
-namespace ReplantedOnline.Network.Object;
+namespace ReplantedOnline.Network.Packet;
 
 /// <summary>
 /// Represents a network packet for spawning network objects across clients.
