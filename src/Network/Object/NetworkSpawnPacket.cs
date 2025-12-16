@@ -1,4 +1,6 @@
 ﻿using Il2CppSteamworks;
+using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 
 namespace ReplantedOnline.Network.Object;
@@ -37,15 +39,31 @@ internal class NetworkSpawnPacket
     {
         packetWriter.WriteULong(networkClass.OwnerId);
         packetWriter.WriteUInt(networkClass.NetworkId);
-        if (NetworkClass.PrefabIdTypeLookup.TryGetValue(networkClass.GetType(), out var prefabId))
+        if (RuntimePrefab.Prefabs.TryGetValue(networkClass.GUID, out var prefab) && prefab is NetworkClass netprefab)
         {
-            packetWriter.WriteByte(prefabId);
+            packetWriter.WriteByte(netprefab.PrefabId);
         }
         else
         {
-            packetWriter.WriteByte(NetworkClass.NO_PREFAB_ID);
+            throw new Exception($"[NetworkSpawnPacket] Unable to find prefab by GUID: {networkClass.GUID}");
         }
         networkClass.Serialize(packetWriter, true);
+
+        var count = Math.Min(networkClass.ChildNetworkClasses.Count, ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN - 1);
+        packetWriter.WriteInt(count);
+        if (count > 0)
+        {
+            uint nextId = 1;
+            for (int i = 0; i < count; i++)
+            {
+                var child = networkClass.ChildNetworkClasses[i];
+                child.OwnerId = networkClass.OwnerId;
+                child.NetworkId = networkClass.NetworkId + nextId;
+                NetLobby.LobbyData.OnNetworkClassSpawn(child);
+                child.Serialize(packetWriter, true);
+                nextId++;
+            }
+        }
     }
 
     /// <summary>
@@ -64,5 +82,30 @@ internal class NetworkSpawnPacket
         };
 
         return networkSpawnPacket;
+    }
+
+    /// <summary>
+    /// Deserializes a NetworkClass instance and its children from network packet data.
+    /// Reconstructs the object state and hierarchy based on serialized information.
+    /// </summary>
+    internal static void DeserializeNetworkClass(NetworkClass networkClass, PacketReader packetReader)
+    {
+        networkClass.Deserialize(packetReader, true);
+        int childCount = packetReader.ReadInt();
+        if (childCount > 0)
+        {
+            uint nextId = 1;
+            for (int i = 0; i < childCount; i++)
+            {
+                if (i >= ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN) break;
+
+                var child = networkClass.ChildNetworkClasses[i];
+                child.OwnerId = networkClass.OwnerId;
+                child.NetworkId = networkClass.NetworkId + nextId;
+                NetLobby.LobbyData.OnNetworkClassSpawn(child);
+                child.Deserialize(packetReader, true);
+                nextId++;
+            }
+        }
     }
 }

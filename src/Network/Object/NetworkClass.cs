@@ -62,20 +62,6 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     private static GameObject _networkClassesObj;
 
     /// <summary>
-    /// Initializes and registers network prefabs used for object spawning across the network.
-    /// This method sets up predefined prefab templates that can be instantiated and synchronized
-    /// between clients during multiplayer sessions.
-    /// </summary>
-    internal static void SetupPrefabs()
-    {
-        NetworkPrefabsObj = new GameObject($"NetworkPrefabs");
-        DontDestroyOnLoad(NetworkPrefabsObj);
-
-        var plantPrefab = CreateNetworkPrefab<PlantNetworked>(1);
-        var zombiePrefab = CreateNetworkPrefab<ZombieNetworked>(2);
-    }
-
-    /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
     /// Key is the prefab ID, value is the NetworkClass prefab reference.
     /// </summary>
@@ -121,7 +107,7 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     /// Gets or sets whether this network object has been successfully spawned across the network.
     /// Indicates if the object is currently active and synchronized with other clients.
     /// </summary>
-    internal bool HasSpawned { get; set; }
+    internal bool IsOnNetwork { get; set; }
 
     /// <summary>
     /// Gets or sets the unique network identifier for this object.
@@ -224,6 +210,20 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
+    /// Adds a child NetworkClass to this instance's collection of child network classes.
+    /// This operation is only permitted before the object has been spawned in the network.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal void AddChild(NetworkClass child)
+    {
+        if (IsOnNetwork) return;
+
+        child.AmChild = true;
+        child.ParentNetworkClass = this;
+        ChildNetworkClasses.Add(child);
+    }
+
+    /// <summary>
     /// Spawns a new instance of a NetworkClass-derived type across the network.
     /// Creates the object locally and broadcasts spawn notification to all clients.
     /// </summary>
@@ -247,133 +247,24 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
                 networkClass.transform.SetParent(NetworkClassesObj.transform);
                 callback?.Invoke(networkClass);
                 NetworkDispatcher.Spawn(networkClass, owner);
-                networkClass.SpawnChildren(true);
                 networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
                 return networkClass;
             }
-
-            return null;
-        }
-        else
-        {
-            T networkClass = new GameObject($"{typeof(T)}(???)").AddComponent<T>();
-            networkClass.transform.SetParent(NetworkClassesObj.transform);
-            callback?.Invoke(networkClass);
-            NetworkDispatcher.Spawn(networkClass, owner);
-            networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
-            return networkClass;
-        }
-    }
-
-    /// <summary>
-    /// Initializes and assigns network ownership and identifiers to child components of type NetworkClass
-    /// within the current object hierarchy.
-    /// </summary>
-    public void SpawnChildren(bool initOnNetwork)
-    {
-        // Get all NetworkClass components in children
-        var allNetworkClasses = GetComponentsInChildren<NetworkClass>(true);
-        var childNetworkClasses = new List<NetworkClass>();
-
-        // Filter out self (manual Where clause for Il2Cpp compatibility)
-        for (int i = 0; i < allNetworkClasses.Length; i++)
-        {
-            var nc = allNetworkClasses[i];
-            if (nc != this)
-            {
-                childNetworkClasses.Add(nc);
-            }
         }
 
-        // Manual sorting by hierarchy (replaces Sort with lambda)
-        for (int i = 0; i < childNetworkClasses.Count - 1; i++)
-        {
-            for (int j = i + 1; j < childNetworkClasses.Count; j++)
-            {
-                var a = childNetworkClasses[i];
-                var b = childNetworkClasses[j];
-                bool shouldSwap = false;
-
-                // Get sibling indices
-                int indexA = a.transform.GetSiblingIndex();
-                int indexB = b.transform.GetSiblingIndex();
-
-                // If same parent, compare sibling indices
-                if (a.transform.parent == b.transform.parent)
-                {
-                    shouldSwap = indexA > indexB;
-                }
-                else
-                {
-                    // Different parents - compare full hierarchy paths
-                    string pathA = GetTransformPath(a.transform);
-                    string pathB = GetTransformPath(b.transform);
-                    shouldSwap = string.Compare(pathA, pathB, StringComparison.Ordinal) > 0;
-                }
-
-                // Swap if needed
-                if (shouldSwap)
-                {
-                    var temp = childNetworkClasses[i];
-                    childNetworkClasses[i] = childNetworkClasses[j];
-                    childNetworkClasses[j] = temp;
-                }
-            }
-        }
-
-        int maxChildren = ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN - 1;
-        int childCount = Mathf.Min(childNetworkClasses.Count, maxChildren);
-
-        for (int i = 0; i < childCount; i++)
-        {
-            NetworkClass netChild = childNetworkClasses[i];
-            uint childNetworkId = NetworkId + (uint)(i + 1);
-
-            netChild.AmChild = true;
-            netChild.OwnerId = OwnerId;
-            netChild.NetworkId = childNetworkId;
-            netChild.ParentNetworkClass = this;
-            ChildNetworkClasses.Add(netChild);
-            NetLobby.LobbyData.NetworkClassSpawned.Add(childNetworkId, netChild);
-            netChild.HasSpawned = true;
-
-            if (initOnNetwork)
-            {
-                var packet = PacketWriter.Get();
-                NetworkSyncPacket.SerializePacket(this, true, packet);
-                NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Main);
-            }
-        }
-
-        if (childNetworkClasses.Count > maxChildren)
-        {
-            MelonLogger.Warning($"NetworkClass {NetworkId} has {childNetworkClasses.Count} children, exceeding max of {maxChildren}");
-        }
-    }
-
-    private static string GetTransformPath(Transform transform)
-    {
-        string path = transform.name;
-        Transform current = transform.parent;
-
-        while (current != null)
-        {
-            path = current.name + "/" + path;
-            current = current.parent;
-        }
-
-        return path;
+        return null;
     }
 
     /// <summary>
     /// Despawns the network object and removes it from all connected clients.
     /// Cleans up network resources and sends despawn notification to other clients.
     /// </summary>
-    public void Despawn()
+    public void Despawn(bool despawnOnNetwork = true)
     {
-        if (AmChild) return;
+        if (AmChild && despawnOnNetwork) return;
+        if (!AmOwner) return;
 
-        if (HasSpawned)
+        if (IsOnNetwork)
         {
             NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
 
@@ -381,23 +272,28 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
             {
                 foreach (var netChild in ChildNetworkClasses)
                 {
-                    netChild.Despawn();
+                    netChild.Despawn(false);
                 }
 
+                NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
                 NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(NetworkId);
                 NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(NetworkId);
-                var packet = PacketWriter.Get();
-                packet.WriteUInt(NetworkId);
-                NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+
+                if (despawnOnNetwork)
+                {
+                    var packet = PacketWriter.Get();
+                    packet.WriteUInt(NetworkId);
+                    NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+                }
             }
             else
             {
-                ParentNetworkClass?.ChildNetworkClasses.Remove(this);
+                NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
             }
 
             OwnerId = default;
             NetworkId = 0;
-            HasSpawned = false;
+            IsOnNetwork = false;
         }
     }
 
@@ -437,6 +333,20 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
             Despawn();
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>
+    /// Initializes and registers network prefabs used for object spawning across the network.
+    /// This method sets up predefined prefab templates that can be instantiated and synchronized
+    /// between clients during multiplayer sessions.
+    /// </summary>
+    internal static void SetupPrefabs()
+    {
+        NetworkPrefabsObj = new GameObject($"NetworkPrefabs");
+        DontDestroyOnLoad(NetworkPrefabsObj);
+
+        CreateNetworkPrefab<PlantNetworked>(1);
+        CreateNetworkPrefab<ZombieNetworked>(2);
     }
 
     /// <summary>

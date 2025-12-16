@@ -35,9 +35,14 @@ internal abstract class RuntimePrefab : MonoBehaviour
     }
 
     /// <summary>
+    /// Indicates whether this instance is a prefab template or a live clone in the scene.
+    /// </summary>
+    internal bool IsPrefab = true;
+
+    /// <summary>
     /// The unique identifier for this prefab instance.
     /// </summary>
-    private string GUID;
+    internal string GUID { get; private set; }
 
     /// <summary>
     /// Creates a new runtime prefab of the specified type.
@@ -74,6 +79,8 @@ internal abstract class RuntimePrefab : MonoBehaviour
         if (Prefabs.TryGetValue(prefabGUID, out var prefab))
         {
             RuntimePrefab @new = Instantiate(prefab);
+            @new.IsPrefab = false;
+            @new.GUID = prefab.GUID;
             @new.OnClone(prefab);
             return @new;
         }

@@ -48,6 +48,7 @@ internal sealed class PlantNetworked : NetworkClass
     protected override void OnClone(RuntimePrefab prefab)
     {
         AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
+        AddChild(AnimationControllerNetworked);
     }
 
     public void Update()

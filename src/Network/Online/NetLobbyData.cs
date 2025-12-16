@@ -120,6 +120,12 @@ internal class NetLobbyData
     /// </returns>
     internal uint GetNextNetworkId() => NetLobby.AmLobbyHost() ? NetworkIdPoolHost.GetUnusedId() : NetworkIdPoolNonHost.GetUnusedId();
 
+    internal void OnNetworkClassSpawn(NetworkClass networkClass)
+    {
+        NetworkClassSpawned[networkClass.NetworkId] = networkClass;
+        networkClass.IsOnNetwork = true;
+    }
+
     /// <summary>
     /// Locally despawns all network objects and clears the spawned objects dictionary
     /// </summary>

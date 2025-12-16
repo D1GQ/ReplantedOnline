@@ -28,7 +28,7 @@ internal static class NetworkDispatcher
         {
             foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
             {
-                if (networkClass.HasSpawned)
+                if (networkClass.IsOnNetwork)
                 {
                     var packet = PacketWriter.Get();
                     NetworkSpawnPacket.SerializePacket(networkClass, packet);
@@ -49,11 +49,10 @@ internal static class NetworkDispatcher
     {
         networkClass.OwnerId = owner;
         networkClass.NetworkId = NetLobby.LobbyData.GetNextNetworkId();
-        NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
+        NetLobby.LobbyData.OnNetworkClassSpawn(networkClass);
         var packet = PacketWriter.Get();
         NetworkSpawnPacket.SerializePacket(networkClass, packet);
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
-        networkClass.HasSpawned = true;
 
         packet.Recycle();
         MelonLogger.Msg($"[NetworkDispatcher] Spawned NetworkClass with ID: {networkClass.NetworkId}, Owner: {owner}");
@@ -183,7 +182,7 @@ internal static class NetworkDispatcher
 
         foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
         {
-            if (!networkClass.AmOwner || !networkClass.HasSpawned || !networkClass.IsDirty) continue;
+            if (!networkClass.AmOwner || !networkClass.IsOnNetwork || !networkClass.IsDirty) continue;
             var packet = PacketWriter.Get();
             NetworkSyncPacket.SerializePacket(networkClass, false, packet);
             SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
@@ -324,15 +323,7 @@ internal static class NetworkDispatcher
 
         if (spawnPacket.PrefabId == NetworkClass.NO_PREFAB_ID)
         {
-            var networkClass = new GameObject("???").AddComponent<NetworkClass>();
-            networkClass.NetworkId = spawnPacket.NetworkId;
-            NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
-            networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
-            networkClass.OwnerId = spawnPacket.OwnerId;
-            networkClass.Deserialize(packetReader, true);
-            networkClass.HasSpawned = true;
-            networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
-            MelonLogger.Msg($"[NetworkDispatcher] Spawned custom NetworkClass from {sender.Name}: {spawnPacket.NetworkId}");
+            MelonLogger.Error("Serialized network class had a unset prefab id!");
         }
         else
         {
@@ -344,9 +335,8 @@ internal static class NetworkDispatcher
                 networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
                 networkClass.OwnerId = spawnPacket.OwnerId;
                 networkClass.gameObject.SetActive(true);
-                networkClass.Deserialize(packetReader, true);
-                networkClass.HasSpawned = true;
-                networkClass.SpawnChildren(false);
+                NetworkSpawnPacket.DeserializeNetworkClass(networkClass, packetReader);
+                networkClass.IsOnNetwork = true;
                 networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
                 MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }
@@ -370,19 +360,16 @@ internal static class NetworkDispatcher
         {
             if (networkClass.OwnerId == sender.SteamId)
             {
-                NetLobby.LobbyData.NetworkClassSpawned.Remove(networkId);
                 if (!networkClass.AmChild)
                 {
-                    foreach (var netChild in networkClass.ChildNetworkClasses)
-                    {
-                        netChild.Despawn();
-                    }
-
-                    NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(networkId);
-                    NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(networkId);
+                    networkClass.Despawn(false);
+                    UnityEngine.Object.Destroy(networkClass.gameObject);
+                    MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkId}");
                 }
-                UnityEngine.Object.Destroy(networkClass.gameObject);
-                MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkId}");
+                else
+                {
+                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network class {networkId}, only the parent can be despawned!");
+                }
             }
         }
         else

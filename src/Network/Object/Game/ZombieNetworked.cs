@@ -59,6 +59,7 @@ internal sealed class ZombieNetworked : NetworkClass
     protected override void OnClone(RuntimePrefab prefab)
     {
         AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
+        AddChild(AnimationControllerNetworked);
     }
 
     public void OnDestroy()
