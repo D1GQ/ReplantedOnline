@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Versus.NetworkSync;
@@ -17,6 +18,11 @@ internal sealed class PlantNetworked : NetworkClass
     /// The underlying plant instance that this networked object represents.
     /// </summary>
     internal Plant _Plant;
+
+    /// <summary>
+    /// Represents the networked animation controller used to synchronize animation states across multiple clients.
+    /// </summary>
+    internal AnimationControllerNetworked AnimationControllerNetworked;
 
     /// <summary>
     /// The type of seed used to plant this plant when spawning.
@@ -37,6 +43,12 @@ internal sealed class PlantNetworked : NetworkClass
     /// The grid Y coordinate where this plant is located when spawning.
     /// </summary>
     internal int GridY;
+
+    [HideFromIl2Cpp]
+    protected override void OnClone(RuntimePrefab prefab)
+    {
+        AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
+    }
 
     public void Update()
     {
@@ -133,6 +145,7 @@ internal sealed class PlantNetworked : NetworkClass
 
             _Plant = Utils.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
             _Plant.AddNetworkedLookup(this);
+            AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
 
             gameObject.name = $"{Enum.GetName(_Plant.mSeedType)}_Plant ({NetworkId})";
         }

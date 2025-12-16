@@ -4,6 +4,7 @@ using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Versus.NetworkSync;
@@ -23,6 +24,11 @@ internal sealed class ZombieNetworked : NetworkClass
     /// The underlying zombie instance that this networked object represents.
     /// </summary>
     internal Zombie _Zombie;
+
+    /// <summary>
+    /// Represents the networked animation controller used to synchronize animation states across multiple clients.
+    /// </summary>
+    internal AnimationControllerNetworked AnimationControllerNetworked;
 
     /// <summary>
     /// The type of zombie this networked object represents when spawning.
@@ -48,6 +54,12 @@ internal sealed class ZombieNetworked : NetworkClass
     /// The grid Y coordinate where this zombie is located when spawning.
     /// </summary>
     internal int GridY;
+
+    [HideFromIl2Cpp]
+    protected override void OnClone(RuntimePrefab prefab)
+    {
+        AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
+    }
 
     public void OnDestroy()
     {
@@ -237,6 +249,7 @@ internal sealed class ZombieNetworked : NetworkClass
 
             _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
             _Zombie.AddNetworkedLookup(this);
+            AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
 
             gameObject.name = $"{Enum.GetName(_Zombie.mZombieType)}_Zombie ({NetworkId})";
 
