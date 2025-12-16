@@ -4,5 +4,6 @@
 /src/obj
 /src/.editorconfig
 /src/.vscode
-/src/References/**.dll
+/src/References/Il2cppGame/**.dll
+/src/References/Unity/**.dll
 /src/Network/Object/Game/CoinNetworked.cs

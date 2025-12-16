@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-  	  <Reference Include="References\*.dll" />
+	  <Reference Include="References\*\*.dll" />
   </ItemGroup>
 	
   <ItemGroup>
