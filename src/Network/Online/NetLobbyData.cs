@@ -119,6 +119,7 @@ internal class NetLobbyData
     {
         NetworkClassSpawned[networkClass.NetworkId] = networkClass;
         networkClass.IsOnNetwork = true;
+        networkClass.OnSpawn();
     }
 
     /// <summary>

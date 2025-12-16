@@ -182,6 +182,18 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     }
 
     /// <summary>
+    /// Called when the network object is first initialized on the client side.
+    /// Override this method to implement client-side initialization logic.
+    /// </summary>
+    public virtual void OnSpawn() { }
+
+    /// <summary>
+    /// Called when the network object is being despawned/removed on the client side.
+    /// Override this method to implement client-side cleanup logic before the object is destroyed.
+    /// </summary>
+    public virtual void OnDespawn() { }
+
+    /// <summary>
     /// Handles incoming Remote Procedure Calls for this network object.
     /// Override this method to implement custom RPC handling.
     /// </summary>
@@ -268,6 +280,7 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
         {
             NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
 
+            OnDespawn();
             if (!AmChild)
             {
                 foreach (var netChild in ChildNetworkClasses)

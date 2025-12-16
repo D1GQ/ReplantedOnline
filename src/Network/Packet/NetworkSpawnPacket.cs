@@ -59,8 +59,8 @@ internal class NetworkSpawnPacket
                 var child = networkClass.ChildNetworkClasses[i];
                 child.OwnerId = networkClass.OwnerId;
                 child.NetworkId = networkClass.NetworkId + nextId;
-                NetLobby.LobbyData.OnNetworkClassSpawn(child);
                 child.Serialize(packetWriter, true);
+                NetLobby.LobbyData.OnNetworkClassSpawn(child);
                 nextId++;
             }
         }
@@ -102,8 +102,8 @@ internal class NetworkSpawnPacket
                 var child = networkClass.ChildNetworkClasses[i];
                 child.OwnerId = networkClass.OwnerId;
                 child.NetworkId = networkClass.NetworkId + nextId;
-                NetLobby.LobbyData.OnNetworkClassSpawn(child);
                 child.Deserialize(packetReader, true);
+                NetLobby.LobbyData.OnNetworkClassSpawn(child);
                 nextId++;
             }
         }
