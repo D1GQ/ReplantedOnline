@@ -324,11 +324,11 @@ internal static class NetworkDispatcher
         {
             if (NetworkClass.NetworkPrefabs.TryGetValue(spawnPacket.PrefabId, out var prefab))
             {
-                var networkClass = UnityEngine.Object.Instantiate(prefab);
+                var networkClass = prefab.Clone<NetworkClass>();
+                networkClass.OwnerId = spawnPacket.OwnerId;
                 networkClass.NetworkId = spawnPacket.NetworkId;
                 NetLobby.LobbyData.NetworkClassSpawned[networkClass.NetworkId] = networkClass;
                 networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
-                networkClass.OwnerId = spawnPacket.OwnerId;
                 networkClass.gameObject.SetActive(true);
                 NetworkSpawnPacket.DeserializeNetworkClass(networkClass, packetReader);
                 networkClass.IsOnNetwork = true;

@@ -253,7 +253,7 @@ internal static class NetLobby
     /// <param name="user">The friend who left the lobby.</param>
     private static void _OnLobbyMemberLeave(Lobby lobby, Friend user)
     {
-        if (!NetLobby.LobbyData.Networked.HasStarted)
+        if (!LobbyData.Networked.HasStarted)
         {
             ResetLobby();
         }

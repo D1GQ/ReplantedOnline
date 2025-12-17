@@ -131,13 +131,21 @@ internal class NetLobbyData
     /// </remarks>
     internal void LocalDespawnAll()
     {
-        foreach (var kvp in NetworkClassSpawned.ToDictionary(k => k.Key, v => v.Value))
+        foreach (var kvp in NetworkClassSpawned.ToArray())
         {
-            var child = kvp.Value?.AmChild ?? false;
-            if (!child && kvp.Value.gameObject != null)
+            var networkObject = kvp.Value;
+            if (networkObject == null)
             {
-                UnityEngine.Object.Destroy(kvp.Value.gameObject);
+                NetworkClassSpawned.Remove(kvp.Key);
+                continue;
             }
+
+            var child = networkObject?.AmChild ?? false;
+            if (!child && networkObject.gameObject != null)
+            {
+                UnityEngine.Object.Destroy(networkObject.gameObject);
+            }
+
             NetworkClassSpawned.Remove(kvp.Key);
             if (!child)
             {

@@ -45,6 +45,7 @@ internal static class EndGameManager
             yield break;
         }
 
+        Instances.GameplayActivity.VersusMode.m_focusCircleController.gameObject.SetActive(false);
         Transitions.ToGameEnd(() =>
         {
             OnWinScreen(didPlantsWon);

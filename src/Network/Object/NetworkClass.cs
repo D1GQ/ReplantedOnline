@@ -243,22 +243,19 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
     /// <returns>The newly spawned NetworkClass instance.</returns>
-    public static T SpawnNew<T>(Action<T> callback = default, SteamId owner = default) where T : NetworkClass
+    public static T SpawnNew<T>(Action<T> callback = default, SteamId? owner = null) where T : NetworkClass
     {
-        if (owner == default)
-        {
-            owner = SteamUser.Internal.GetSteamID();
-        }
+        owner ??= SteamUser.Internal.GetSteamID();
 
         if (PrefabIdTypeLookup.TryGetValue(typeof(T), out var prefabId))
         {
-            if (NetworkPrefabs.TryGetValue(prefabId, out var netClass))
+            if (NetworkPrefabs.TryGetValue(prefabId, out var prefab))
             {
-                T networkClass = netClass.Clone<T>();
+                T networkClass = prefab.Clone<T>();
                 networkClass.gameObject.SetActive(true);
                 networkClass.transform.SetParent(NetworkClassesObj.transform);
                 callback?.Invoke(networkClass);
-                NetworkDispatcher.Spawn(networkClass, owner);
+                NetworkDispatcher.Spawn(networkClass, owner.Value);
                 networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
                 return networkClass;
             }
@@ -370,6 +367,7 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     {
         var networkClass = RuntimePrefab.CreatePrefab<T>($"{typeof(T)}:{prefabId}");
         callback?.Invoke(networkClass);
+        networkClass.PrefabId = prefabId;
         NetworkPrefabs[prefabId] = networkClass;
         PrefabIdTypeLookup[typeof(T)] = prefabId;
         return networkClass;
