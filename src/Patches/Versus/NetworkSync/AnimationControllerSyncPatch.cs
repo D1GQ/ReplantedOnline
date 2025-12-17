@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Characters;
+using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
@@ -20,12 +21,18 @@ internal static class AnimationControllerSyncPatch
             var netAnimationController = __instance.GetNetworked<AnimationControllerNetworked>();
             if (netAnimationController != null)
             {
-                if (!netAnimationController.AmOwner) return false;
+                if (netAnimationController.ParentNetworkClass is PlantNetworked plantNet)
+                {
+                    if (plantNet._Plant.mSeedType is (SeedType.Squash or SeedType.Chomper or SeedType.Potatomine))
+                    {
+                        if (!netAnimationController.AmOwner) return false;
 
-                netAnimationController.SendPlayAnimationRpc(animationName, track, fps, loopType);
-                __instance.PlayAnimationOriginal(animationName, track, fps, loopType);
+                        netAnimationController.SendPlayAnimationRpc(animationName, track, fps, loopType);
+                        __instance.PlayAnimationOriginal(animationName, track, fps, loopType);
 
-                return false;
+                        return false;
+                    }
+                }
             }
         }
 

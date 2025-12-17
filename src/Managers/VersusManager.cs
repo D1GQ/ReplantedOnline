@@ -307,18 +307,19 @@ internal static class VersusManager
         ResetPlayerInputs();
 
         var versusData = Instances.VersusDataModel;
-        if (versusData != null)
+        var gameplayActivity = Instances.GameplayActivity;
+        if (versusData != null && gameplayActivity != null)
         {
             if (amZombieSide)
             {
-                Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX;
-                Instances.GameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX;
+                gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX;
+                gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX;
                 versusData.UpdateZombiesPlayer("input1", "input1", 0);
             }
             else
             {
-                Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX;
-                Instances.GameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX;
+                gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX;
+                gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX;
                 versusData.UpdatePlantsPlayer("input1", "input1", 0);
             }
         }
@@ -330,10 +331,11 @@ internal static class VersusManager
     internal static void ResetPlayerInputs()
     {
         var versusData = Instances.VersusDataModel;
-        if (versusData != null)
+        var gameplayActivity = Instances.GameplayActivity;
+        if (versusData != null && gameplayActivity != null)
         {
-            Instances.GameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX;
-            Instances.GameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX;
+            gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX;
+            gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX;
             versusData.UpdateZombiesPlayer("default", "input1", ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX);
             versusData.UpdatePlantsPlayer("default", "input1", ReplantedOnlineMod.Constants.SPECTATOR_PLAYER_INDEX);
         }
