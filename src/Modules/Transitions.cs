@@ -84,7 +84,8 @@ internal class Transitions
     private static IEnumerator CoWaitForTransition(Action callback, string TransitionName)
     {
         while (StateTransitionUtils.s_treeStateManager.Active?.Name != TransitionName ||
-            !StateTransitionUtils.s_treeStateManager.Active.IsDoneLoading())
+               (StateTransitionUtils.s_treeStateManager.Active?.Name == TransitionName &&
+                !StateTransitionUtils.s_treeStateManager.Active.IsDoneLoading()))
         {
             yield return null;
         }
