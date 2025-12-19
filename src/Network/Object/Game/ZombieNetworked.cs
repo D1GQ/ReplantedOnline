@@ -31,11 +31,6 @@ internal sealed class ZombieNetworked : NetworkClass
     internal ZombieType ZombieType;
 
     /// <summary>
-    /// The speed of the zombie
-    /// </summary>
-    internal float ZombieSpeed;
-
-    /// <summary>
     /// If the bush on the row the zombie spawns in shakes
     /// </summary>
     internal bool ShakeBush;
@@ -231,12 +226,12 @@ internal sealed class ZombieNetworked : NetworkClass
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteBool(ShakeBush);
-            packetWriter.WriteFloat(ZombieSpeed);
             packetWriter.WriteInt((int)ZombieType);
 
             return;
         }
 
+        packetWriter.WriteFloat(_Zombie.mVelX);
         packetWriter.WriteFloat(_Zombie.mPosX);
 
         ClearDirtyBits();
@@ -251,7 +246,6 @@ internal sealed class ZombieNetworked : NetworkClass
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             ShakeBush = packetReader.ReadBool();
-            ZombieSpeed = packetReader.ReadFloat();
             ZombieType = (ZombieType)packetReader.ReadInt();
 
             _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
@@ -259,14 +253,13 @@ internal sealed class ZombieNetworked : NetworkClass
 
             gameObject.name = $"{Enum.GetName(_Zombie.mZombieType)}_Zombie ({NetworkId})";
 
-            _Zombie.mVelX = ZombieSpeed;
-            _Zombie.UpdateAnimSpeed();
-
             return;
         }
 
         if (!AmOwner)
         {
+            _Zombie.mVelX = packetReader.ReadFloat();
+            _Zombie.UpdateAnimSpeed();
             var posX = packetReader.ReadFloat();
             LarpPos(posX);
         }

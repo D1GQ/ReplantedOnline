@@ -239,7 +239,6 @@ internal static class SeedPacketSyncPatch
             {
                 net._Zombie = zombie;
                 net.ZombieType = zombieType;
-                net.ZombieSpeed = zombie.mVelX;
                 net.ShakeBush = shakeBush;
                 net.GridX = gridX;
                 net.GridY = gridY;
