@@ -30,7 +30,7 @@ internal static class BloomEngineManager
         m_hasInit = true;
 
         m_configCategory = MelonPreferences.CreateCategory(
-            ModInfo.ModName.Replace(" ", ""),
+            ModInfo.MOD_NAME.Replace(" ", ""),
             "configs"
         );
 
@@ -59,7 +59,7 @@ internal static class BloomEngineManager
         BloomConfigs.Init();
 
         var mod = ModMenu.CreateEntry(replantedOnline);
-        mod.AddDisplayName(ModInfo.ModName);
+        mod.AddDisplayName(ModInfo.MOD_NAME);
         mod.AddDescription("PVZR Online is a mod that adds online support to versus!");
         mod.AddConfig(typeof(BloomConfigs));
         mod.Register();

@@ -14,7 +14,7 @@ namespace ReplantedOnline;
 
 internal class ReplantedOnlineMod : MelonMod
 {
-    internal static HarmonyLib.Harmony harmony = new(ModInfo.ModGUID);
+    internal static HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
 
     public override void OnInitializeMelon()
     {

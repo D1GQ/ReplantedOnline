@@ -6,15 +6,15 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: MelonInfo(typeof(ReplantedOnlineMod), ModInfo.ModName, ModInfo.ModVersion, ModInfo.Creator, ModInfo.Github)]
-[assembly: MelonGame("PopCap Games", "Plants vs. Zombies™: Replanted")]
-[assembly: MelonAdditionalDependencies("BloomEngine")]
+[assembly: MelonInfo(typeof(ReplantedOnlineMod), ModInfo.MOD_NAME, ModInfo.MOD_VERSION, ModInfo.CREATOR, ModInfo.GITHUB)]
+[assembly: MelonGame(ModInfo.PVZR.COMPANY_NAME, ModInfo.PVZR.GAME_NAME)]
+[assembly: MelonAdditionalDependencies(ModInfo.BloomEngine.BLOOM_ENGINE_DEPENDENCY)]
 [assembly: HarmonyDontPatchAll]
-[assembly: AssemblyTitle("ReplantedOnline")]
+[assembly: AssemblyTitle(nameof(ReplantedOnline))]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("HP")]
-[assembly: AssemblyProduct("ReplantedOnline")]
+[assembly: AssemblyProduct(nameof(ReplantedOnline))]
 [assembly: AssemblyCopyright("Copyright © HP 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -29,7 +29,7 @@ internal class MatchmakingManager
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
             lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.ModVersion);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION);
             lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
@@ -70,9 +70,9 @@ internal class MatchmakingManager
                         // Verify mod version
                         string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.MOD_VERSION_KEY);
 
-                        if (modVersion != ModInfo.ModVersion)
+                        if (modVersion != ModInfo.MOD_VERSION)
                         {
-                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: {ModInfo.ModVersion}, Found: {modVersion}");
+                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: {ModInfo.MOD_VERSION}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
                                 ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
