@@ -46,7 +46,7 @@ internal static class MatchmakingManager
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
             lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, Version_Check);
             lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
