@@ -46,7 +46,6 @@ internal abstract class RPCHandler
         foreach (var handler in RegisterRPCHandler.Instances)
         {
             if (handler.Rpc != rpc) continue;
-
             handler.Handle(sender, packetReader);
 
             break;

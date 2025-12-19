@@ -276,9 +276,7 @@ internal sealed class NetLobbyData
         {
             if (!sender.AmHost) return; // Only accept data from the host
 
-            var packet = PacketReader.Get(packetReader);
-            // Start coroutine to handle the packet, waiting for game systems to be ready
-            MelonCoroutines.Start(CoWaitHandle(packet));
+            MelonCoroutines.Start(CoWaitHandle(packetReader));
         }
 
         /// <summary>
@@ -288,75 +286,82 @@ internal sealed class NetLobbyData
         /// <returns>IEnumerator for coroutine execution.</returns>
         private static IEnumerator CoWaitHandle(PacketReader packetReader)
         {
+            var packet = PacketReader.Get(packetReader);
+
             // Wait for the gameplay activity and versus mode to be initialized
-            while (NetLobby.LobbyData?.Networked?._restartingLobby != false || !VersusManager.IsUIReady())
+            try
             {
-                // If we leave the lobby while waiting, clean up and exit
-                if (!NetLobby.AmInLobby())
+                while (NetLobby.LobbyData?.Networked?._restartingLobby != false || !VersusManager.IsUIReady())
                 {
-                    packetReader.Recycle();
-                    yield break;
+                    // If we leave the lobby while waiting, clean up and exit
+                    if (!NetLobby.AmInLobby())
+                    {
+                        packet.Recycle();
+                        yield break;
+                    }
+
+                    yield return null;
                 }
 
-                yield return null;
-            }
+                var data = NetLobby.LobbyData.Networked;
+                var dataId = packet.ReadByte();
 
-            var data = NetLobby.LobbyData.Networked;
-            var dataId = packetReader.ReadByte();
-
-            switch (dataId)
-            {
-                case 0: // Lobby Reset
-                    {
-                        if (!data._restartingLobby)
+                switch (dataId)
+                {
+                    case 0: // Lobby Reset
                         {
-                            data._restartingLobby = true; // Set flag to prevent duplicate resets
-                            NetLobby.ResetLobby(); // Execute lobby reset
-                        }
-                    }
-                    break;
-
-                case 1: // Match Start Status
-                    {
-                        data._hasStarted = packetReader.ReadBool(); // Update local match start state
-                    }
-                    break;
-
-                case 2: // Enter Team Selection Phase
-                    {
-                        data._hostTeam = (PlayerTeam)packetReader.ReadByte();
-
-                        if (data._hostTeam is PlayerTeam.None) // unset teams
-                        {
-                            VersusManager.ResetPlayerInput();
-                            NetLobby.LobbyData.UnsetAllTeams();
-                            VersusManager.UpdateSideVisuals();
-                        }
-                        else
-                        {
-                            var otherTeam = Utils.GetOppositeTeam(data._hostTeam);
-                            if (NetLobby.AmLobbyHost())
+                            if (!data._restartingLobby)
                             {
-                                SteamNetClient.LocalClient.Team = data._hostTeam;
-                                SteamNetClient.OpponentClient?.Team = otherTeam;
-                                VersusManager.SetPlayerInput(data._hostTeam);
+                                data._restartingLobby = true; // Set flag to prevent duplicate resets
+                                NetLobby.ResetLobby(); // Execute lobby reset
+                            }
+                        }
+                        break;
+
+                    case 1: // Match Start Status
+                        {
+                            data._hasStarted = packet.ReadBool(); // Update local match start state
+                        }
+                        break;
+
+                    case 2: // Enter Team Selection Phase
+                        {
+                            data._hostTeam = (PlayerTeam)packet.ReadByte();
+
+                            if (data._hostTeam is PlayerTeam.None) // unset teams
+                            {
+                                VersusManager.ResetPlayerInput();
+                                NetLobby.LobbyData.UnsetAllTeams();
+                                VersusManager.UpdateSideVisuals();
                             }
                             else
                             {
-                                SteamNetClient.LocalClient.Team = otherTeam;
-                                SteamNetClient.OpponentClient?.Team = data._hostTeam;
-                                VersusManager.SetPlayerInput(otherTeam);
+                                var otherTeam = Utils.GetOppositeTeam(data._hostTeam);
+                                if (NetLobby.AmLobbyHost())
+                                {
+                                    SteamNetClient.LocalClient.Team = data._hostTeam;
+                                    SteamNetClient.OpponentClient?.Team = otherTeam;
+                                    VersusManager.SetPlayerInput(data._hostTeam);
+                                }
+                                else
+                                {
+                                    SteamNetClient.LocalClient.Team = otherTeam;
+                                    SteamNetClient.OpponentClient?.Team = data._hostTeam;
+                                    VersusManager.SetPlayerInput(otherTeam);
+                                }
+
+                                VersusManager.UpdateSideVisuals();
                             }
 
-                            VersusManager.UpdateSideVisuals();
+                            SetReady();
                         }
-
-                        SetReady();
-                    }
-                    break;
+                        break;
+                }
             }
-
-            packetReader.Recycle();
+            finally
+            {
+                packet.Recycle();
+            }
         }
 
         private static void SetReady()

@@ -13,7 +13,19 @@ internal sealed class PacketWriter
 {
     private readonly List<byte> _data = [];
     private static readonly Queue<PacketWriter> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
+    private const int MAX_POOL_SIZE = 100;
+    internal static int AmountInUse;
+
+    /// <summary>
+    /// Gets the current packet data as a byte array.
+    /// </summary>
+    /// <returns>A byte array containing the packet data.</returns>
+    internal byte[] GetBytes() => _data.ToArray();
+
+    /// <summary>
+    /// Gets the current length of the packet data in bytes.
+    /// </summary>
+    internal int Length => _data.Count;
 
     /// <summary>
     /// Retrieves a PacketWriter instance from the pool or creates a new one if the pool is empty.
@@ -21,6 +33,7 @@ internal sealed class PacketWriter
     /// <returns>A PacketWriter instance ready for use.</returns>
     internal static PacketWriter Get()
     {
+        AmountInUse++;
         return _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
     }
 
@@ -154,22 +167,12 @@ internal sealed class PacketWriter
     }
 
     /// <summary>
-    /// Gets the current packet data as a byte array.
-    /// </summary>
-    /// <returns>A byte array containing the packet data.</returns>
-    internal byte[] GetBytes() => [.. _data];
-
-    /// <summary>
-    /// Gets the current length of the packet data in bytes.
-    /// </summary>
-    internal int Length => _data.Count;
-
-    /// <summary>
     /// Recycles this PacketWriter instance back to the pool for reuse.
     /// Clears the current data and adds the instance to the pool if under maximum size.
     /// </summary>
     internal void Recycle()
     {
+        AmountInUse--;
         _data.Clear();
 
         if (_pool.Count < MAX_POOL_SIZE)

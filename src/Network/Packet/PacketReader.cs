@@ -15,7 +15,13 @@ internal sealed class PacketReader
     private byte[] _data = [];
     private int _position = 0;
     private static readonly Queue<PacketReader> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
+    private const int MAX_POOL_SIZE = 100;
+    internal static int AmountInUse;
+
+    /// <summary>
+    /// Gets the number of bytes remaining to be read in the packet.
+    /// </summary>
+    internal int Remaining => _data.Length - _position;
 
     /// <summary>
     /// Retrieves a PacketReader instance from the pool or creates a new one, initialized with the provided data.
@@ -24,11 +30,9 @@ internal sealed class PacketReader
     /// <returns>A PacketReader instance ready for reading the provided data.</returns>
     internal static PacketReader Get(byte[] data)
     {
-        PacketReader reader;
-
-        reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
-
-        reader._data = data;
+        AmountInUse++;
+        var reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
+        reader._data = data.ToArray();
         reader._position = 0;
         return reader;
     }
@@ -40,10 +44,8 @@ internal sealed class PacketReader
     /// <returns>A PacketReader instance ready for reading the remaining data.</returns>
     internal static PacketReader Get(PacketReader packet)
     {
-        PacketReader reader;
-
-        reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
-
+        AmountInUse++;
+        var reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
         reader._data = packet._data.Skip(packet._position).ToArray();
         reader._position = 0;
         return reader;
@@ -237,16 +239,12 @@ internal sealed class PacketReader
     }
 
     /// <summary>
-    /// Gets the number of bytes remaining to be read in the packet.
-    /// </summary>
-    internal int Remaining => _data.Length - _position;
-
-    /// <summary>
     /// Recycles this PacketReader instance back to the pool for reuse.
     /// Clears the current data and resets position, then adds the instance to the pool if under maximum size.
     /// </summary>
     internal void Recycle()
     {
+        AmountInUse--;
         _data = [];
         _position = 0;
 

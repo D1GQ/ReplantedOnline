@@ -9,6 +9,11 @@ namespace ReplantedOnline.Network.Packet;
 /// </summary>
 internal sealed class P2PPacketBuffer
 {
+    private static readonly Queue<P2PPacketBuffer> _pool = [];
+    private const int MAX_POOL_SIZE = 10;
+    private const int BUFFER_SIZE = 500;
+    internal static int AmountInUse;
+
     /// <summary>
     /// The size of the packet data in bytes.
     /// </summary>
@@ -24,20 +29,14 @@ internal sealed class P2PPacketBuffer
     /// </summary>
     public Il2CppStructArray<byte> Data = new(BUFFER_SIZE);
 
-    private static readonly Queue<P2PPacketBuffer> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
-    private const int BUFFER_SIZE = 250;
-
     /// <summary>
     /// Retrieves a P2PPacketBuffer instance from the pool or creates a new one if the pool is empty.
     /// </summary>
     /// <returns>A P2PPacketBuffer instance ready for use.</returns>
     internal static P2PPacketBuffer Get()
     {
-        lock (_pool)
-        {
-            return _pool.Count > 0 ? _pool.Dequeue() : new P2PPacketBuffer();
-        }
+        AmountInUse++;
+        return _pool.Count > 0 ? _pool.Dequeue() : new P2PPacketBuffer();
     }
 
     /// <summary>
@@ -76,6 +75,7 @@ internal sealed class P2PPacketBuffer
     /// </summary>
     internal void Recycle()
     {
+        AmountInUse--;
         Size = 0;
         Steamid = 0;
 
@@ -85,7 +85,6 @@ internal sealed class P2PPacketBuffer
         }
         else
         {
-            // Clean up resources if we're not pooling this instance
             Data = null;
         }
     }

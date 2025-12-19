@@ -121,8 +121,8 @@ internal static class NetworkDispatcher
             SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
         }
 
-        packet.Recycle();
         MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {steamId.GetNetClient().Name} -> Size: {packet.Length} bytes");
+        packet.Recycle();
     }
 
     /// <summary>
@@ -155,11 +155,10 @@ internal static class NetworkDispatcher
         {
             var rePacket = PacketReader.Get(packet.GetBytes());
             Streamline(SteamNetClient.LocalClient, rePacket);
-            rePacket.Recycle();
         }
 
-        packet.Recycle();
         MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
+        packet.Recycle();
     }
 
     /// <summary>
@@ -242,47 +241,52 @@ internal static class NetworkDispatcher
         var tag = packetReader.GetTag();
         MelonLogger.Msg($"[NetworkDispatcher] Processing {tag} packet from {sender?.Name ?? "Unknown"}");
 
-        switch (tag)
+        try
         {
-            case PacketTag.None:
-                MelonLogger.Warning("[NetworkDispatcher] Received packet with no tag");
-                break;
-            case PacketTag.P2P:
-                sender.HasEstablishedP2P = true;
-                MelonLogger.Msg("[NetworkDispatcher] P2P handshake packet processed");
-                break;
-            case PacketTag.P2PClose:
-                if (sender.AmHost && !NetLobby.AmLobbyHost())
-                {
-                    BanReasons reason = (BanReasons)packetReader.ReadByte();
-                    NetLobby.LeaveLobby(() =>
+            switch (tag)
+            {
+                case PacketTag.None:
+                    MelonLogger.Warning("[NetworkDispatcher] Received packet with no tag");
+                    break;
+                case PacketTag.P2P:
+                    sender.HasEstablishedP2P = true;
+                    MelonLogger.Msg("[NetworkDispatcher] P2P handshake packet processed");
+                    break;
+                case PacketTag.P2PClose:
+                    if (sender.AmHost && !NetLobby.AmLobbyHost())
                     {
-                        ReplantedOnlinePopup.Show("Disconnected", "You have been disconnected by the Host!");
-                    });
-                    MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
-                }
-                break;
-            case PacketTag.Rpc:
-                StreamlineRpc(sender, packetReader);
-                break;
-            case PacketTag.NetworkClassSpawn:
-                StreamlineNetworkClassSpawn(sender, packetReader);
-                break;
-            case PacketTag.NetworkClassDespawn:
-                StreamlineNetworkClassDespawn(sender, packetReader);
-                break;
-            case PacketTag.NetworkClassSync:
-                StreamlineNetworkClassSync(sender, packetReader);
-                break;
-            case PacketTag.NetworkClassRpc:
-                StreamlineNetworkClassRpc(sender, packetReader);
-                break;
-            default:
-                MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
-                break;
+                        BanReasons reason = (BanReasons)packetReader.ReadByte();
+                        NetLobby.LeaveLobby(() =>
+                        {
+                            ReplantedOnlinePopup.Show("Disconnected", "You have been disconnected by the Host!");
+                        });
+                        MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
+                    }
+                    break;
+                case PacketTag.Rpc:
+                    StreamlineRpc(sender, packetReader);
+                    break;
+                case PacketTag.NetworkClassSpawn:
+                    StreamlineNetworkClassSpawn(sender, packetReader);
+                    break;
+                case PacketTag.NetworkClassDespawn:
+                    StreamlineNetworkClassDespawn(sender, packetReader);
+                    break;
+                case PacketTag.NetworkClassSync:
+                    StreamlineNetworkClassSync(sender, packetReader);
+                    break;
+                case PacketTag.NetworkClassRpc:
+                    StreamlineNetworkClassRpc(sender, packetReader);
+                    break;
+                default:
+                    MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
+                    break;
+            }
         }
-
-        packetReader.Recycle();
+        finally
+        {
+            packetReader.Recycle();
+        }
     }
 
     /// <summary>
@@ -376,29 +380,34 @@ internal static class NetworkDispatcher
 
     private static IEnumerator CoWaitForNetworkClassSync(SteamNetClient sender, PacketReader packetReader)
     {
-        packetReader = PacketReader.Get(packetReader);
-        var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packetReader);
+        var packet = PacketReader.Get(packetReader);
+        var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packet);
 
-        while (NetLobby.LobbyData != null)
+        try
         {
-            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkClass))
+            while (NetLobby.LobbyData != null)
             {
-                if (networkClass.OwnerId != sender.SteamId)
+                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkClass))
                 {
-                    MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
+                    if (networkClass.OwnerId != sender.SteamId)
+                    {
+                        MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
+                        break;
+                    }
+
+                    networkClass.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
+                    networkClass.Deserialize(packet, networkSyncPacket.Init);
+                    MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
                     break;
                 }
 
-                networkClass.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
-                networkClass.Deserialize(packetReader, networkSyncPacket.Init);
-                MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
-                break;
+                yield return null;
             }
-
-            yield return null;
         }
-
-        packetReader.Recycle();
+        finally
+        {
+            packet.Recycle();
+        }
     }
 
     /// <summary>
@@ -414,25 +423,31 @@ internal static class NetworkDispatcher
 
     private static IEnumerator CoWaitForNetworkClass(SteamNetClient sender, PacketReader packetReader)
     {
-        packetReader = PacketReader.Get(packetReader);
-        byte rpcId = packetReader.ReadByte();
-        uint networkId = packetReader.ReadUInt();
+        var packet = PacketReader.Get(packetReader);
+        byte rpcId = packet.ReadByte();
+        uint networkId = packet.ReadUInt();
         float timeOut = 0f;
 
-        while (NetLobby.LobbyData != null && timeOut < 10f)
+        try
         {
-            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+            while (NetLobby.LobbyData != null && timeOut < 10f)
             {
-                MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                networkClass.HandleRpc(sender, rpcId, packetReader);
-                break;
+                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+                {
+                    MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
+                    networkClass.HandleRpc(sender, rpcId, packet);
+                    break;
+                }
+
+                timeOut += Time.deltaTime;
+
+                yield return null;
             }
 
-            timeOut += Time.deltaTime;
-
-            yield return null;
         }
-
-        packetReader.Recycle();
+        finally
+        {
+            packet.Recycle();
+        }
     }
 }
