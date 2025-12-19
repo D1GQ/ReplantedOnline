@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Packet;
 /// Provides a pooled packet writer for efficient network packet construction.
 /// Handles writing various data types to a byte buffer with object pooling to reduce GC pressure.
 /// </summary>
-internal class PacketWriter
+internal sealed class PacketWriter
 {
     private readonly List<byte> _data = [];
     private static readonly Queue<PacketWriter> _pool = [];

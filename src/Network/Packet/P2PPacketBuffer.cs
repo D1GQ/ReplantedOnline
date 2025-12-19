@@ -7,7 +7,7 @@ namespace ReplantedOnline.Network.Packet;
 /// Provides a pooled buffer for P2P network packets in Steamworks, handling packet data storage and memory management.
 /// Uses object pooling to reduce GC pressure when processing frequent network packets.
 /// </summary>
-internal class P2PPacketBuffer
+internal sealed class P2PPacketBuffer
 {
     /// <summary>
     /// The size of the packet data in bytes.

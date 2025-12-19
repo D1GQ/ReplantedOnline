@@ -6,7 +6,7 @@ namespace ReplantedOnline.Network.Packet;
 /// Represents a packet used to synchronize the state of a networked object across clients, including its network
 /// identifier, property change flags, and initialization status.
 /// </summary>
-internal class NetworkSyncPacket
+internal sealed class NetworkSyncPacket
 {
     /// <summary>
     /// Gets a value indicating whether the initialization process.

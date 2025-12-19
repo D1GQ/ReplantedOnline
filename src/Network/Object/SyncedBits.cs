@@ -4,7 +4,7 @@
 /// Manages synchronization state for network objects using bit flags.
 /// Tracks which properties have changed and need to be synchronized across the network.
 /// </summary>
-internal class SyncedBits
+internal sealed class SyncedBits
 {
     /// <summary>
     /// Gets a value indicating whether any synchronization bits are currently dirty.

@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Object.Game;
 /// <summary>
 /// Represents a networked animation controller for synchronizing character animations across the network.
 /// </summary>
-internal class AnimationControllerNetworked : NetworkClass
+internal sealed class AnimationControllerNetworked : NetworkClass
 {
     private CharacterAnimationController _AnimationController;
 

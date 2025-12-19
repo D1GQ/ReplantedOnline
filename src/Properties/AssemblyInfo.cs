@@ -1,7 +1,6 @@
 ﻿using MelonLoader;
 using ReplantedOnline;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -11,28 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: MelonAdditionalDependencies(ModInfo.BloomEngine.BLOOM_ENGINE_DEPENDENCY)]
 [assembly: HarmonyDontPatchAll]
 [assembly: AssemblyTitle(nameof(ReplantedOnline))]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP")]
 [assembly: AssemblyProduct(nameof(ReplantedOnline))]
-[assembly: AssemblyCopyright("Copyright © HP 2025")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("43520ed4-c225-41aa-b1a1-02da8e3f0176")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion(ModInfo.MOD_VERSION)]
+[assembly: AssemblyFileVersion(ModInfo.MOD_VERSION)]

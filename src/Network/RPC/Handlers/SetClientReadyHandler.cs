@@ -7,7 +7,7 @@ using ReplantedOnline.Network.Packet;
 namespace ReplantedOnline.Network.RPC.Handlers;
 
 [RegisterRPCHandler]
-internal class SetClientReadyHandler : RPCHandler
+internal sealed class SetClientReadyHandler : RPCHandler
 {
     /// <inheritdoc/>
     internal sealed override RpcType Rpc => RpcType.SetClientReady;

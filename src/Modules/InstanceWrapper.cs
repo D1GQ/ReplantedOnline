@@ -5,7 +5,7 @@
 /// Useful for managing global mod components and ensuring single initialization.
 /// </summary>
 /// <typeparam name="T">The type of class to wrap as a singleton instance.</typeparam>
-internal class InstanceWrapper<T> where T : class
+internal sealed class InstanceWrapper<T> where T : class
 {
     /// <summary>
     /// Gets or sets the singleton instance of type T.

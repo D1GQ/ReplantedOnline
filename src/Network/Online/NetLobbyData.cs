@@ -16,7 +16,7 @@ namespace ReplantedOnline.Network.Online;
 /// Represents the network data and state for a ReplantedOnline lobby.
 /// Manages client information, lobby membership, and game state synchronization.
 /// </summary>
-internal class NetLobbyData
+internal sealed class NetLobbyData
 {
     /// <summary>
     /// Initializes a new instance of the NetLobbyData class with the specified Steam ID.

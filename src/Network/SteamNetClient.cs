@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network;
 /// Represents a networked client in ReplantedOnline, managing Steam ID, client information,
 /// and network state for players connected via Steamworks P2P.
 /// </summary>
-internal class SteamNetClient
+internal sealed class SteamNetClient
 {
     /// <summary>
     /// Initializes a new instance of the SteamNetClient class.

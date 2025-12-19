@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Packet;
 /// Represents a network packet for spawning network objects across clients.
 /// Contains essential information for instantiating and initializing network classes.
 /// </summary>
-internal class NetworkSpawnPacket
+internal sealed class NetworkSpawnPacket
 {
     /// <summary>
     /// Gets the Steam ID of the client who owns the spawned network object.

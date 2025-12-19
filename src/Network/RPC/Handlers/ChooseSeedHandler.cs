@@ -9,7 +9,7 @@ using ReplantedOnline.Patches.Versus.NetworkSync;
 namespace ReplantedOnline.Network.RPC.Handlers;
 
 [RegisterRPCHandler]
-internal class ChooseSeedHandler : RPCHandler
+internal sealed class ChooseSeedHandler : RPCHandler
 {
     /// <inheritdoc/>
     internal sealed override RpcType Rpc => RpcType.ChooseSeed;

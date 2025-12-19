@@ -4,7 +4,7 @@
 /// Provides a pool of network IDs for allocation and reuse.
 /// Manages a range of unsigned integer IDs from a specified start to end value.
 /// </summary>
-internal class NetworkIdPool
+internal sealed class NetworkIdPool
 {
     private readonly Queue<uint> _availableIds = [];
     private readonly HashSet<uint> _allocatedIds = [];

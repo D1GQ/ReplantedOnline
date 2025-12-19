@@ -8,7 +8,7 @@ namespace ReplantedOnline.Modules;
 /// <summary>
 /// Provides utility methods for scene transitions in ReplantedOnline.
 /// </summary>
-internal class Transitions
+internal static class Transitions
 {
     /// <summary>
     /// Transitions to the main menu scene.

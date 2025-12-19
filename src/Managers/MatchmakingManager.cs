@@ -8,9 +8,20 @@ using System.Text;
 
 namespace ReplantedOnline.Managers;
 
-internal class MatchmakingManager
+/// <summary>
+/// Manages Steam matchmaking functionality for finding and joining multiplayer lobbies in ReplantedOnline.
+/// Handles lobby searching by game codes and generates consistent lobby identifiers.
+/// </summary>
+internal static class MatchmakingManager
 {
+    /// <summary>
+    /// Character set used for generating game codes. Excludes confusing characters like O/0 and I/1.
+    /// </summary>
     internal static readonly char[] CODE_CHARS = "ABCDEFHIJKLMNPQRSTUVWXYZ".ToCharArray();
+
+    /// <summary>
+    /// The length of generated game codes.
+    /// </summary>
     internal static readonly int CODE_LENGTH = 6;
 
     /// <summary>

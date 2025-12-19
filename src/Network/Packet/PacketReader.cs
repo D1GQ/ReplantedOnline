@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Packet;
 /// Provides a pooled packet reader for efficient network packet parsing.
 /// Handles reading various data types from a byte buffer with object pooling to reduce GC pressure.
 /// </summary>
-internal class PacketReader
+internal sealed class PacketReader
 {
     private byte[] _data = [];
     private int _position = 0;
