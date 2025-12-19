@@ -15,7 +15,7 @@ internal sealed class SetClientReadyHandler : RPCHandler
     internal static void Send()
     {
         SteamNetClient.LocalClient.Ready = true;
-        NetworkDispatcher.SendRpc(RpcType.SetClientReady, null);
+        NetworkDispatcher.SendRpc(RpcType.SetClientReady);
     }
 
     /// <inheritdoc/>

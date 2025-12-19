@@ -53,8 +53,8 @@ internal static class NetworkDispatcher
         var packet = PacketWriter.Get();
         NetworkSpawnPacket.SerializePacket(networkClass, packet);
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
-
         packet.Recycle();
+
         MelonLogger.Msg($"[NetworkDispatcher] Spawned NetworkClass with ID: {networkClass.NetworkId}, Owner: {owner}");
     }
 
@@ -66,22 +66,16 @@ internal static class NetworkDispatcher
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
     internal static void SendRpc(RpcType rpc, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
-        MelonLogger.Msg($"[NetworkDispatcher] Sending RPC: {rpc}");
         var packet = PacketWriter.Get();
         packet.WriteByte((byte)rpc);
         if (packetWriter != null)
         {
             packet.WritePacket(packetWriter);
         }
-
         SendPacket(packet, receiveLocally, PacketTag.Rpc, PacketChannel.Rpc);
-
-        packetWriter?.Recycle();
         packet.Recycle();
+        MelonLogger.Msg($"[NetworkDispatcher] Sent RPC: {Enum.GetName(rpc)}");
     }
-
-    internal static void SendRpc(this INetworkClass networkClass, byte rpcId, bool receiveLocally = false)
-        => SendRpc(networkClass, rpcId, null, receiveLocally);
 
     /// <summary>
     /// Sends an RPC (Remote Procedure Call) to a specific network class instance across all clients.
@@ -100,12 +94,8 @@ internal static class NetworkDispatcher
         {
             packet.WritePacket(packetWriter);
         }
-
         SendPacket(packet, receiveLocally, PacketTag.NetworkClassRpc, PacketChannel.Rpc);
-
-        packetWriter?.Recycle();
         packet.Recycle();
-
         MelonLogger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkClass.NetworkId}");
     }
 
@@ -131,8 +121,8 @@ internal static class NetworkDispatcher
             SteamNetworking.SendP2PPacket(steamId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
         }
 
-        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {steamId.GetNetClient().Name} -> Size: {packet.Length} bytes");
         packet.Recycle();
+        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {steamId.GetNetClient().Name} -> Size: {packet.Length} bytes");
     }
 
     /// <summary>
@@ -168,8 +158,8 @@ internal static class NetworkDispatcher
             rePacket.Recycle();
         }
 
-        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
         packet.Recycle();
+        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
     }
 
     /// <summary>
@@ -186,6 +176,7 @@ internal static class NetworkDispatcher
             var packet = PacketWriter.Get();
             NetworkSyncPacket.SerializePacket(networkClass, false, packet);
             SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
+            packet.Recycle();
         }
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))

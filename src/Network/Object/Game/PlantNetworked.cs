@@ -98,7 +98,7 @@ internal sealed class PlantNetworked : NetworkClass
         if (!dead)
         {
             dead = true;
-            this.SendRpc(0, null);
+            this.SendRpc(0);
             Despawn();
             Destroy(gameObject);
         }

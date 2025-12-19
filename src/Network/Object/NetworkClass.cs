@@ -292,6 +292,7 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
                     var packet = PacketWriter.Get();
                     packet.WriteUInt(NetworkId);
                     NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+                    packet.Recycle();
                 }
             }
 

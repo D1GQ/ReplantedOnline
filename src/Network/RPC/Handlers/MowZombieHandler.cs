@@ -24,6 +24,7 @@ internal sealed class MowZombieHandler : RPCHandler
         packetWriter.WriteInt(row);
         packetWriter.WriteNetworkClass(netZombie);
         NetworkDispatcher.SendRpc(RpcType.MowZombie, packetWriter);
+        packetWriter.Recycle();
     }
 
     /// <inheritdoc/>

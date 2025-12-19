@@ -268,6 +268,7 @@ internal sealed class NetLobbyData
             packetWriter.WriteByte(dataId); // Write data type identifier
             callback?.Invoke(packetWriter); // Write additional data if provided
             NetworkDispatcher.SendRpc(RpcType.LobbyData, packetWriter, receiveLocally); // Send to all clients
+            packetWriter.Recycle();
         }
 
         /// <inheritdoc/>

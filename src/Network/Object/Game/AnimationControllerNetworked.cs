@@ -60,6 +60,7 @@ internal sealed class AnimationControllerNetworked : NetworkClass
         packetWriter.WriteFloat(fps);
         packetWriter.WriteByte((byte)loopType);
         this.SendRpc(0, packetWriter);
+        packetWriter.Recycle();
     }
 
     private void HandlePlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)

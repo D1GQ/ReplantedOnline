@@ -19,6 +19,7 @@ internal sealed class ChooseSeedHandler : RPCHandler
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt((int)theChosenSeed.mSeedType);
         NetworkDispatcher.SendRpc(RpcType.ChooseSeed, packetWriter);
+        packetWriter.Recycle();
     }
 
     /// <inheritdoc/>

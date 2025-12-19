@@ -128,6 +128,7 @@ internal sealed class ZombieNetworked : NetworkClass
         writer.WriteInt(theDamage);
         writer.WriteByte((byte)theDamageFlags);
         this.SendRpc(0, writer);
+        writer.Recycle();
     }
 
     [HideFromIl2Cpp]
@@ -149,6 +150,7 @@ internal sealed class ZombieNetworked : NetworkClass
             var writer = PacketWriter.Get();
             writer.WriteByte((byte)damageFlags);
             this.SendRpc(1, writer);
+            writer.Recycle();
             Despawn();
             Destroy(gameObject);
         }
@@ -173,6 +175,7 @@ internal sealed class ZombieNetworked : NetworkClass
         var writer = PacketWriter.Get();
         writer.WriteFloat(xPos);
         this.SendRpc(2, writer);
+        writer.Recycle();
     }
 
     [HideFromIl2Cpp]
