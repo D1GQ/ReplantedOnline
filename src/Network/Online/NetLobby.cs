@@ -74,9 +74,14 @@ internal static class NetLobby
         MelonLogger.Msg("[NetLobby] Restarting the lobby");
         LobbyData.UnsetAllClientsReady();
         LobbyData.LocalDespawnAll();
-        NetLobby.LobbyData.Networked = new();
+        LobbyData.Networked = new();
         Transitions.ToVersus();
         Transitions.ToGameplay();
+
+        if (AmLobbyHost())
+        {
+            MatchmakingManager.SetJoinable(true);
+        }
     }
 
     /// <summary>
@@ -166,11 +171,7 @@ internal static class NetLobby
         {
             LobbyData = new(data.Id, data.Owner.Id);
             MelonLogger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
-
-            SteamMatchmaking.Internal.SetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION);
-            var gameCode = MatchmakingManager.GenerateGameCode(data.Id);
-            SteamMatchmaking.Internal.SetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-            SteamMatchmaking.Internal.SetLobbyType(LobbyData.LobbyId, LobbyType.Public);
+            MatchmakingManager.SetLobbyData(LobbyData);
         }
         else
         {

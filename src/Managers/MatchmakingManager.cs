@@ -2,6 +2,7 @@
 using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
 using MelonLoader;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using System.Text;
@@ -14,6 +15,11 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal static class MatchmakingManager
 {
+    /// <summary>
+    /// Gets the full version string combining the release type and version number.
+    /// </summary>
+    internal static string Version_Check => $"{ModInfo.MOD_RELEASE} v{ModInfo.MOD_VERSION}";
+
     /// <summary>
     /// Character set used for generating game codes. Excludes confusing characters like O/0 and I/1.
     /// </summary>
@@ -81,12 +87,12 @@ internal static class MatchmakingManager
                         // Verify mod version
                         string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.MOD_VERSION_KEY);
 
-                        if (modVersion != ModInfo.MOD_VERSION)
+                        if (modVersion != Version_Check)
                         {
-                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: {ModInfo.MOD_VERSION}, Found: {modVersion}");
+                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: {Version_Check}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
-                                ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
+                                ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\n{modVersion}");
                             });
                             return;
                         }
@@ -113,9 +119,82 @@ internal static class MatchmakingManager
     }
 
     /// <summary>
+    /// Retrieves a list of available multiplayer lobbies based on specified criteria.
+    /// </summary>
+    /// <param name="maxResults">The maximum number of lobbies to return in the search results.</param>
+    /// <param name="callback">Callback method invoked with the array of found lobbies when the search completes successfully.</param>
+    /// <param name="errorCallback">Optional callback method invoked when an error occurs or no lobbies are found.</param>
+    internal static void GetLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError> errorCallback = null)
+    {
+        Transitions.SetLoading();
+        MelonLogger.Msg($"[NetLobby] Searching for lobbies");
+
+        try
+        {
+            var lobbyQuery = SteamMatchmaking.LobbyList;
+            lobbyQuery.maxResults = new Il2CppSystem.Nullable<int>(maxResults);
+            lobbyQuery.FilterDistanceWorldwide();
+            lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION);
+            lobbyQuery.ApplyFilters();
+
+            lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
+            {
+                if (task.IsFaulted)
+                {
+                    MelonLogger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
+                    errorCallback?.Invoke(LobbyListError.Error);
+                    return;
+                }
+
+                var lobbies = task.Result;
+
+                if (lobbies == null)
+                {
+                    MelonLogger.Msg("[NetLobby] No lobbies found");
+                    errorCallback?.Invoke(LobbyListError.NoneFound);
+                    return;
+                }
+
+                MelonLogger.Msg($"[NetLobby] Found {lobbies.Length} lobbies");
+
+                callback(lobbies);
+            }));
+        }
+        catch (Exception ex)
+        {
+            MelonLogger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
+            errorCallback?.Invoke(LobbyListError.Error);
+        }
+    }
+
+    /// <summary>
+    /// Sets the lobby data including version information and game code.
+    /// </summary>
+    /// <param name="data">The network lobby data containing the lobby ID.</param>
+    internal static void SetLobbyData(NetLobbyData data)
+    {
+        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, Version_Check);
+        var gameCode = GenerateGameCode(data.LobbyId);
+        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
+        SteamMatchmaking.Internal.SetLobbyType(data.LobbyId, LobbyType.Public);
+    }
+
+    /// <summary>
+    /// Sets whether the current lobby can be joined by other players.
+    /// </summary>
+    /// <param name="bool">True to allow players to join, false to make the lobby private/invite-only.</param>
+    internal static void SetJoinable(bool @bool)
+    {
+        if (!NetLobby.AmInLobby()) return;
+
+        SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @bool);
+    }
+
+    /// <summary>
     /// Generates a consistent game code based on the lobby Steam ID
     /// </summary>
-    internal static string GenerateGameCode(SteamId lobbyId)
+    private static string GenerateGameCode(SteamId lobbyId)
     {
         // Use the lobby ID as a seed for consistent code generation
         ulong seed = lobbyId;

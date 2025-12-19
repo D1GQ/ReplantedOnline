@@ -3,6 +3,7 @@ using Il2CppSource.Utils;
 using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
@@ -26,6 +27,7 @@ internal sealed class StartGameHandler : RPCHandler
         packetWriter.WriteByte((byte)selectionSet);
         NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
         NetLobby.LobbyData.Networked.HasStarted = true;
+        MatchmakingManager.SetJoinable(false);
     }
 
     /// <inheritdoc/>

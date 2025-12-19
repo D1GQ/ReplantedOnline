@@ -1,64 +1,76 @@
-﻿namespace ReplantedOnline;
+﻿using ReplantedOnline.Enums;
+
+namespace ReplantedOnline;
 
 /// <summary>
 /// Provides constant metadata and identification information for the Replanted Online mod.
 /// </summary>
-public static class ModInfo
+internal static class ModInfo
 {
     /// <summary>
     /// The display name of the mod as shown to users in mod managers and in-game menus.
     /// </summary>
-    public const string MOD_NAME = "Replanted Online";
+    internal const string MOD_NAME = "Replanted Online";
 
     /// <summary>
     /// The current version of the mod following semantic versioning (Major.Minor.Patch).
     /// </summary>
-    public const string MOD_VERSION = "1.0.0";
+    internal const string MOD_VERSION = "1.0.0";
+
+    /// <summary>
+    /// The release type of the current mod version.
+    /// </summary>
+    internal const string MOD_RELEASE = nameof(ReleaseType.Dev);
+
+    /// <summary>
+    /// The date when this version was released, formatted as mm.dd.yyyy.
+    /// </summary>
+    internal const string RELEASE_DATE = "01.01.2026";
 
     /// <summary>
     /// The unique identifier for the mod following reverse domain name notation.
     /// </summary>
-    public const string MOD_GUID = "com.d1gq.replantedonline";
+    internal const string MOD_GUID = "com.d1gq.replantedonline";
 
     /// <summary>
     /// The link for the github page.
     /// </summary>
-    public const string GITHUB = "https://github.com/D1GQ/ReplantedOnline";
+    internal const string GITHUB = "https://github.com/D1GQ/ReplantedOnline";
 
     /// <summary>
     /// That's ME!
     /// </summary>
-    public const string CREATOR = "D1GQ";
+    internal const string CREATOR = "D1GQ";
 
     /// <summary>
     /// List of all contributors, separate by ",".
     /// </summary>
-    public const string CONTRIBUTORS = "PalmForest";
+    internal const string CONTRIBUTORS = "PalmForest";
 
     /// <summary>
     /// Contains constants related to Plants vs. Zombies™: Replanted game information.
     /// </summary>
-    public static class PVZR
+    internal static class PVZR
     {
         /// <summary>
         /// The name of the company that developed the game.
         /// </summary>
-        public const string COMPANY = "PopCap Games";
+        internal const string COMPANY = "PopCap Games";
 
         /// <summary>
         /// The official name of the game.
         /// </summary>
-        public const string GAME = "PvZ Replanted";
+        internal const string GAME = "PvZ Replanted";
     }
 
     /// <summary>
     /// Contains constants related to the BloomEngine dependency.
     /// </summary>
-    public static class BloomEngine
+    internal static class BloomEngine
     {
         /// <summary>
         /// Dependency name for BloomEngine.
         /// </summary>
-        public const string BLOOM_ENGINE_DEPENDENCY = "BloomEngine";
+        internal const string BLOOM_ENGINE_DEPENDENCY = "BloomEngine";
     }
 }
