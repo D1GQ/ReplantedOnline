@@ -395,13 +395,13 @@ internal static class NetworkDispatcher
                 if (networkClass.OwnerId != sender.SteamId)
                 {
                     MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
-                    yield break;
+                    break;
                 }
 
                 networkClass.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
                 networkClass.Deserialize(packetReader, networkSyncPacket.Init);
                 MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
-                yield break;
+                break;
             }
 
             yield return null;
@@ -434,7 +434,7 @@ internal static class NetworkDispatcher
             {
                 MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
                 networkClass.HandleRpc(sender, rpcId, packetReader);
-                yield break;
+                break;
             }
 
             timeOut += Time.deltaTime;
