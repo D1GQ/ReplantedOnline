@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;          // Harmony library for patching game methods
 using Il2CppReloaded.Gameplay;  // Game-specific classes (Board, Plant, Zombie)
+using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;   // Custom module for VersusState
 using ReplantedOnline.Network.Online;  // Online functionality for NetLobby
-using UnityEngine;        // Unity engine for Mathf
 
 namespace ReplantedOnline.Patches.Versus;
 
@@ -23,11 +23,11 @@ internal static class VersusNerfsPatch
 
             if (theCoinType == CoinType.Sun && (VersusState.AmZombieSide || VersusState.AmSpectator))
             {
-                return false;
+                return false; // Don't allow sun to spawn 
             }
             else if (theCoinType == CoinType.Brain && (VersusState.AmPlantSide || VersusState.AmSpectator))
             {
-                return false;
+                return false; // Don't allow brain to spawn 
             }
         }
 
@@ -43,7 +43,7 @@ internal static class VersusNerfsPatch
             // If player is NOT on plant team (zombie or spectator)
             if (!VersusState.AmPlantSide)
             {
-                // If this plant produces sun (like Sunflower)
+                // If this plant produces sun
                 if (__instance.MakesSun())
                 {
                     // Set countdown to max value, effectively disabling sun production
@@ -88,7 +88,7 @@ internal static class VersusNerfsPatch
             if (__state)
             {
                 // Increase gravestone spawn timer by 35% (nerfing spawn rate)
-                __instance.mPhaseCounter = Mathf.FloorToInt(__instance.mPhaseCounter * 1.35f);
+                __instance.mPhaseCounter = VersusManager.MultiplyGraveCounter(__instance.mPhaseCounter);
             }
         }
     }
@@ -123,7 +123,7 @@ internal static class VersusNerfsPatch
             if (__state)
             {
                 // Increase sun spawn timer by 35% (nerfing natural brain production)
-                __instance.mSunCountDown = Mathf.FloorToInt(__instance.mSunCountDown * 1.35f);
+                __instance.mSunCountDown = VersusManager.MultiplyBrainSpawnCounter(__instance.mSunCountDown);
             }
         }
     }

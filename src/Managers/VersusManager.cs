@@ -22,55 +22,6 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal static class VersusManager
 {
-    internal static void OnStart()
-    {
-        VersusHudPatch.SetHuds();
-
-        // Despawn real target zombies so they can spawn on the network
-        foreach (var kvp in Instances.GameplayActivity.Board.m_zombies.m_itemLookup)
-        {
-            var zombie = kvp.Key;
-            if (zombie.mZombieType == ZombieType.Target)
-            {
-                if (zombie.GetNetworked<ZombieNetworked>() == null)
-                {
-                    zombie.DieDeserialize();
-                }
-            }
-        }
-
-        if (VersusState.AmPlantSide)
-        {
-            Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 1, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 3, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 4, false, true);
-        }
-    }
-
-    internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
-    {
-        if (focus == null)
-        {
-            MelonLogger.Error("Can not end game, Focus gameobject is null!");
-            return;
-        }
-
-        if (winningTeam is PlayerTeam.Plants)
-        {
-            Instances.GameplayActivity.VersusMode.Phase = VersusPhase.PlantsWin;
-        }
-        else
-        {
-            Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ZombiesWin;
-        }
-
-        Instances.GameplayActivity.VersusMode.SetFocus(focus, Vector3.zero);
-        Instances.GameplayActivity.Board.mCutScene.StartZombiesWon();
-        EndGameManager.EndGame(winningTeam);
-    }
-
     // UI text components for displaying player names on each team
     private static TextMeshProUGUI zombiePlayer1;
     private static TextMeshProUGUI zombiePlayer2;
@@ -333,5 +284,91 @@ internal static class VersusManager
             versusData.UpdateZombiesPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
             versusData.UpdatePlantsPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
         }
+    }
+
+    internal static void OnStart()
+    {
+        VersusHudPatch.SetHuds();
+
+        // Despawn real target zombies so they can spawn on the network
+        foreach (var kvp in Instances.GameplayActivity.Board.m_zombies.m_itemLookup)
+        {
+            var zombie = kvp.Key;
+            if (zombie.mZombieType == ZombieType.Target)
+            {
+                if (zombie.GetNetworked<ZombieNetworked>() == null)
+                {
+                    zombie.DieDeserialize();
+                }
+            }
+        }
+
+        if (NetLobby.AmLobbyHost())
+        {
+            Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 1, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 3, false, true);
+            Utils.SpawnZombie(ZombieType.Target, 8, 4, false, true);
+        }
+    }
+
+    internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
+    {
+        if (focus == null)
+        {
+            MelonLogger.Error("Can not end game, Focus gameobject is null!");
+            return;
+        }
+
+        if (winningTeam is PlayerTeam.Plants)
+        {
+            Instances.GameplayActivity.VersusMode.Phase = VersusPhase.PlantsWin;
+        }
+        else
+        {
+            Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ZombiesWin;
+        }
+
+        Instances.GameplayActivity.VersusMode.SetFocus(focus, Vector3.zero);
+        Instances.GameplayActivity.Board.mCutScene.StartZombiesWon();
+        EndGameManager.EndGame(winningTeam);
+    }
+
+    /// <summary>
+    /// Calculates the new brain spawn counter.
+    /// </summary>
+    /// <param name="currentCounter">The current brain spawn counter value.</param>
+    internal static int MultiplyBrainSpawnCounter(int currentCounter)
+    {
+        int plantMultiplier = 25 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
+        return Mathf.FloorToInt(currentCounter * 1.35f) + plantMultiplier;
+    }
+
+    /// <summary>
+    /// Calculates the new grave counter.
+    /// </summary>
+    /// <param name="currentCounter">The current grave counter value.</param>
+    internal static int MultiplyGraveCounter(int currentCounter)
+    {
+        int zombieMultiplier = 0;
+        foreach (var zombie in Instances.GameplayActivity.Board.m_zombies.m_itemLookup.Keys)
+        {
+            zombieMultiplier += zombie.mZombieType switch
+            {
+                ZombieType.Gargantuar => 500,
+                ZombieType.Target => 250,
+                ZombieType.Zamboni => 150,
+                ZombieType.Zombatar => 150,
+                ZombieType.Gravestone => 100,
+                ZombieType.Dancer => 25,
+                ZombieType.BackupDancer => 0,
+                _ => 15,
+            };
+        }
+
+        int plantMultiplier = 5 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
+
+        return Mathf.FloorToInt((currentCounter * 1.35f)) + zombieMultiplier - plantMultiplier;
     }
 }
