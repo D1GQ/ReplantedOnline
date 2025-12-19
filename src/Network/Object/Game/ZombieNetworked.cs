@@ -233,6 +233,7 @@ internal sealed class ZombieNetworked : NetworkClass
             packetWriter.WriteBool(ShakeBush);
             packetWriter.WriteFloat(ZombieSpeed);
             packetWriter.WriteInt((int)ZombieType);
+
             return;
         }
 

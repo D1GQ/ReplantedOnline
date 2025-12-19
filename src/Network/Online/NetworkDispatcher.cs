@@ -406,6 +406,8 @@ internal static class NetworkDispatcher
 
             yield return null;
         }
+
+        packetReader.Recycle();
     }
 
     /// <summary>
@@ -426,25 +428,20 @@ internal static class NetworkDispatcher
         uint networkId = packetReader.ReadUInt();
         float timeOut = 0f;
 
-        try
+        while (NetLobby.LobbyData != null && timeOut < 10f)
         {
-            while (NetLobby.LobbyData != null && timeOut < 10f)
+            if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
             {
-                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
-                {
-                    MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                    networkClass.HandleRpc(sender, rpcId, packetReader);
-                    yield break;
-                }
-
-                timeOut += Time.deltaTime;
-
-                yield return null;
+                MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
+                networkClass.HandleRpc(sender, rpcId, packetReader);
+                yield break;
             }
+
+            timeOut += Time.deltaTime;
+
+            yield return null;
         }
-        finally
-        {
-            packetReader.Recycle();
-        }
+
+        packetReader.Recycle();
     }
 }
