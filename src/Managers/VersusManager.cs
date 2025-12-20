@@ -54,26 +54,32 @@ internal static class VersusManager
         // Find and cache the zombie team player name text components
         // Using GetComponentInChildren with includeInactive = true to find components even if parent objects are disabled
         zombiePlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        zombiePlayer1.gameObject.DestroyAllTextLocalizers();
         zombiePlayer1.enableAutoSizing = false;
         zombiePlayer1.fontSize = 100f;
         zombiePlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        zombiePlayer2.gameObject.DestroyAllTextLocalizers();
         zombiePlayer2.enableAutoSizing = false;
         zombiePlayer2.fontSize = 100f;
 
         // Find and cache the plant team player name text components
         plantPlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        plantPlayer1.gameObject.DestroyAllTextLocalizers();
         plantPlayer1.enableAutoSizing = false;
         plantPlayer1.fontSize = 100f;
         plantPlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        plantPlayer2.gameObject.DestroyAllTextLocalizers();
         plantPlayer2.enableAutoSizing = false;
         plantPlayer2.fontSize = 100f;
 
         playerList = UnityEngine.Object.Instantiate(plantPlayer1, vsPanelView.transform.Find($"Canvas/Layout/Center/Panel"));
+        playerList.gameObject.DestroyAllTextLocalizers();
         playerList.transform.localPosition = new Vector3(-15f, 0f, 0f);
         playerList.gameObject.name = "PlayerList";
         playerList.color = Color.white;
 
         pickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        pickSides.gameObject.DestroyAllTextLocalizers();
 
         // Add event trigger to header for copying the lobby code to clipboard
         lobbyCodeHeaderTrigger = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header").gameObject.AddComponent<EventTrigger>();
@@ -87,9 +93,6 @@ internal static class VersusManager
     {
         // Clear all text fields before assignment
         ResetAllText();
-
-        var networked = NetLobby.LobbyData.Networked;
-
         SetNamesFromTeams();
         UpdateButtonInteractability();
     }
@@ -181,10 +184,26 @@ internal static class VersusManager
         UpdateHeaderEvents();
 
         // Clear all text content
-        zombiePlayer1?.SetText(string.Empty);
-        zombiePlayer2?.SetText(string.Empty);
-        plantPlayer1?.SetText(string.Empty);
-        plantPlayer2?.SetText(string.Empty);
+        if (zombiePlayer1 != null)
+        {
+            zombiePlayer1.SetText(string.Empty);
+            zombiePlayer1.gameObject.SetActive(true);
+        }
+        if (zombiePlayer2 != null)
+        {
+            zombiePlayer2.SetText(string.Empty);
+            zombiePlayer2.gameObject.SetActive(true);
+        }
+        if (plantPlayer1 != null)
+        {
+            plantPlayer1.SetText(string.Empty);
+            plantPlayer1.gameObject.SetActive(true);
+        }
+        if (plantPlayer2 != null)
+        {
+            plantPlayer2.SetText(string.Empty);
+            plantPlayer2.gameObject.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -334,7 +353,7 @@ internal static class VersusManager
     internal static int MultiplyBrainSpawnCounter(int currentCounter)
     {
         int plantMultiplier = 25 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
-        return Mathf.FloorToInt(currentCounter * 1.35f) + plantMultiplier;
+        return currentCounter + plantMultiplier;
     }
 
     /// <summary>
@@ -348,19 +367,21 @@ internal static class VersusManager
         {
             zombieMultiplier += zombie.mZombieType switch
             {
-                ZombieType.Gargantuar => 500,
-                ZombieType.Target => 250,
-                ZombieType.Zamboni => 150,
-                ZombieType.Zombatar => 150,
+                ZombieType.Target => 300,
+                ZombieType.Gargantuar => 250,
                 ZombieType.Gravestone => 100,
+                ZombieType.Zamboni => 50,
+                ZombieType.Zombatar => 50,
+                ZombieType.Football => 30,
                 ZombieType.Dancer => 25,
+                ZombieType.Catapult => 15,
                 ZombieType.BackupDancer => 0,
-                _ => 15,
+                _ => 10,
             };
         }
 
         int plantMultiplier = 5 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
 
-        return Mathf.FloorToInt((currentCounter * 1.35f)) + zombieMultiplier - plantMultiplier;
+        return Mathf.FloorToInt((currentCounter * 0.8f)) + zombieMultiplier - plantMultiplier;
     }
 }
