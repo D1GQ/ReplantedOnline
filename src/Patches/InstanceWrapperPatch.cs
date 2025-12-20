@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.DataModels;
+using Il2CppReloaded.Input;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
 using Il2CppTekly.Extensions.DataProviders;
@@ -31,6 +32,11 @@ internal static class InstanceWrapperPatch
 
                 InstanceWrapper<GameplayDataProvider>.Instance = dataProvider;
                 InstanceWrapper<VersusDataModel>.Instance = dataProvider.m_gameplayDataModel.m_versusDataModel;
+
+                // Prevent second local player from being detected
+                dataProvider.m_gameplayDataModel.m_versusDataModel.m_player2Model.m_player.PairingMode = PairingMode.Disabled;
+                dataProvider.m_gameplayDataModel.m_versusDataModel.m_player2Model.m_player.m_player =
+                    dataProvider.m_gameplayDataModel.m_versusDataModel.m_player1Model.m_player.m_player;
             }
         }
     }

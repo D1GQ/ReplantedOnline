@@ -74,6 +74,9 @@
 		<Reference Include="Unity.Addressables">
 			<HintPath>References\UnityEngine\Unity.Addressables.dll</HintPath>
 		</Reference>
+		<Reference Include="Unity.InputSystem">
+			<HintPath>References\UnityEngine\Unity.InputSystem.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">
