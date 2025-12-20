@@ -4,6 +4,7 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
 using Il2CppTekly.Extensions.DataProviders;
 using Il2CppTekly.PanelViews;
+using Il2CppTekly.TreeState;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 
@@ -39,6 +40,17 @@ internal static class InstanceWrapperPatch
     private static void GameplayActivity_Postfix(GameplayActivity __instance)
     {
         InstanceWrapper<GameplayActivity>.Instance = __instance;
+    }
+
+    [HarmonyPatch(typeof(TreeState), nameof(TreeState.Awake))]
+    [HarmonyPostfix]
+    private static void TreeStateActivity_Postfix(TreeState __instance)
+    {
+        if (__instance.gameObject.name == "GameBoot")
+        {
+            var dataServiceActivity = __instance.GetComponentInChildren<DataServiceActivity>(true);
+            InstanceWrapper<DataServiceActivity>.Instance = dataServiceActivity;
+        }
     }
 
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
