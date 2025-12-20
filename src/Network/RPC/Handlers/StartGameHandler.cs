@@ -52,7 +52,7 @@ internal sealed class StartGameHandler : RPCHandler
                     break;
                 case SelectionSet.Random:
                 case SelectionSet.QuickPlay:
-                    VsSideChoosererPatch.VsSideChooser?.gameObject?.SetActive(false);
+                    LobbyPatch.VsSideChooser?.gameObject?.SetActive(false);
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.Gameplay;
                     StateTransitionUtils.Transition("InGame");
                     break;

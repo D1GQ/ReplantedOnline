@@ -70,12 +70,7 @@ internal sealed class PlantNetworked : NetworkClass
 
     public void OnDestroy()
     {
-        _Plant?.RemoveNetworkedLookup();
-        if (!dead)
-        {
-            dead = true;
-            _Plant?.DieOriginal();
-        }
+        _Plant.RemoveNetworkedLookup();
     }
 
     [HideFromIl2Cpp]

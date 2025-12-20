@@ -17,7 +17,7 @@ using UnityEngine.UI;
 namespace ReplantedOnline.Patches.UI;
 
 [HarmonyPatch]
-internal static class VsSideChoosererPatch
+internal static class LobbyPatch
 {
     private static GameObject InteractableBlocker;
     private static GameObject InteractableGamePad;

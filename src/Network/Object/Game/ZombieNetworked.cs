@@ -47,11 +47,7 @@ internal sealed class ZombieNetworked : NetworkClass
 
     public void OnDestroy()
     {
-        _Zombie?.RemoveNetworkedLookup();
-        if (_Zombie?.mDead == false)
-        {
-            _Zombie?.DieDeserialize();
-        }
+        _Zombie.RemoveNetworkedLookup();
     }
 
     internal bool EnteringHouse;

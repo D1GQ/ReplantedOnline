@@ -6,6 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using System.Collections;
 using UnityEngine;
+using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Managers;
 
@@ -28,6 +29,22 @@ internal static class EndGameManager
         Instances.GameplayActivity.GameplayService.Player2VersusWinData = new();
         Instances.GameplayActivity.Player1VersusWinData = new();
         Instances.GameplayActivity.Player2VersusWinData = new();
+
+        // Play winning or losing sound 
+        foreach (var netClient in NetLobby.LobbyData.AllClients.Values)
+        {
+            if (netClient.AmLocal && netClient.Team is not PlayerTeam.Spectators)
+            {
+                if (netClient.Team == winningTeam)
+                {
+                    Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_WINMUSIC);
+                }
+                else
+                {
+                    Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_LOSEMUSIC);
+                }
+            }
+        }
 
         MelonCoroutines.Start(CoEndGame(winningTeam));
     }

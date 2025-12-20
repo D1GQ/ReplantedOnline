@@ -156,7 +156,7 @@ internal static class VersusManager
             return;
 
 #if DEBUG
-        VsSideChoosererPatch.SetButtonsInteractable(true);
+        LobbyPatch.SetButtonsInteractable(true);
         return;
 #endif
 
@@ -168,7 +168,7 @@ internal static class VersusManager
             && clients?.Count > 1
             && NetLobby.LobbyData.AllClientsReady();
 
-        VsSideChoosererPatch.SetButtonsInteractable(shouldEnableButtons);
+        LobbyPatch.SetButtonsInteractable(shouldEnableButtons);
     }
 
     /// <summary>
@@ -331,7 +331,8 @@ internal static class VersusManager
         }
 
         Instances.GameplayActivity.VersusMode.SetFocus(focus, Vector3.zero);
-        Instances.GameplayActivity.Board.mCutScene.StartZombiesWon();
+        Instances.GameplayActivity.m_audioService.StopAllMusic();
+        Instances.GameplayActivity.Board.Pause(true);
         EndGameManager.EndGame(winningTeam);
     }
 
