@@ -16,11 +16,6 @@ namespace ReplantedOnline.Managers;
 internal static class MatchmakingManager
 {
     /// <summary>
-    /// Gets the full version string combining the release type and version number.
-    /// </summary>
-    internal static string Version_Check => $"{ModInfo.MOD_RELEASE} v{ModInfo.MOD_VERSION}";
-
-    /// <summary>
     /// Character set used for generating game codes. Excludes confusing characters like O/0 and I/1.
     /// </summary>
     internal static readonly char[] CODE_CHARS = "ABCDEFHIJKLMNPQRSTUVWXYZ".ToCharArray();
@@ -46,7 +41,7 @@ internal static class MatchmakingManager
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
             lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, Version_Check);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
             lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
@@ -87,12 +82,12 @@ internal static class MatchmakingManager
                         // Verify mod version
                         string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.MOD_VERSION_KEY);
 
-                        if (modVersion != Version_Check)
+                        if (modVersion != ModInfo.MOD_VERSION_FORMATTED)
                         {
-                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: {Version_Check}, Found: {modVersion}");
+                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
-                                ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\n{modVersion}");
+                                ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
                             });
                             return;
                         }
@@ -174,7 +169,7 @@ internal static class MatchmakingManager
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(NetLobbyData data)
     {
-        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, Version_Check);
+        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
         SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
         SteamMatchmaking.Internal.SetLobbyType(data.LobbyId, LobbyType.Public);

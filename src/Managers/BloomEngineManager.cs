@@ -24,7 +24,7 @@ internal static class BloomEngineManager
     /// Initializes MelonPreferences entries and validates stored values.
     /// Safe to call multiple times.
     /// </summary>
-    internal static void InitMelon()
+    internal static void InitializeMelon()
     {
         if (m_hasInit) return;
         m_hasInit = true;
@@ -53,9 +53,9 @@ internal static class BloomEngineManager
     /// the mod's configuration UI.
     /// </summary>
     /// <param name="replantedOnline">The active MelonMod instance.</param>
-    internal static void InitBloom(MelonMod replantedOnline)
+    internal static void InitializeBloom(MelonMod replantedOnline)
     {
-        InitMelon();
+        InitializeMelon();
         BloomConfigs.Init();
 
         var mod = ModMenu.CreateEntry(replantedOnline);

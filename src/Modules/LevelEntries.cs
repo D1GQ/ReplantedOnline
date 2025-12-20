@@ -15,7 +15,7 @@ internal static class LevelEntries
     /// Initializes the level cache by finding all LevelEntryData objects in the game resources.
     /// This should be called early in the mod initialization process.
     /// </summary>
-    internal static void Init()
+    internal static void Initialize()
     {
         foreach (var level in Instances.DataServiceActivity.Service.AllLevelsData.EnumerateIl2CppReadonlyList())
         {

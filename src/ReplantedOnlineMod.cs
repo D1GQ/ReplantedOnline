@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.Client.UI;
@@ -23,7 +24,8 @@ internal class ReplantedOnlineMod : MelonMod
         InstanceAttribute.RegisterAll();
         RegisterAllMonoBehavioursInAssembly();
         NetworkClass.SetupPrefabs();
-        BloomEngineManager.InitBloom(this);
+        BloomEngineManager.InitializeBloom(this);
+        InfoDisplay.Initialize();
         Application.runInBackground = true;
     }
 
@@ -31,9 +33,9 @@ internal class ReplantedOnlineMod : MelonMod
     {
         if (!SteamClient.initialized)
             SteamClient.Init(0);
-        LevelEntries.Init();
-        PlantDefinitions.Init();
-        ContentManager.Init();
+        LevelEntries.Initialize();
+        PlantDefinitions.Initialize();
+        ContentManager.Initialize();
         NetLobby.Initialize();
     }
 

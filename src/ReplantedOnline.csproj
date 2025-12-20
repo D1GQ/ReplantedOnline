@@ -77,6 +77,9 @@
 		<Reference Include="Unity.InputSystem">
 			<HintPath>References\UnityEngine\Unity.InputSystem.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.TextRenderingModule">
+			<HintPath>References\UnityEngine\UnityEngine.TextRenderingModule.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">

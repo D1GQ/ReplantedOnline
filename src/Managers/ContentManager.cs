@@ -12,7 +12,7 @@ internal static class ContentManager
     /// <summary>
     /// Initializes the content manager and performs initial content checks.
     /// </summary>
-    internal static void Init()
+    internal static void Initialize()
     {
         CheckDecemberContent();
     }

@@ -8,7 +8,7 @@ internal static class PlantDefinitions
     /// <summary>
     /// Initializes plant definitions and applies custom modifications.
     /// </summary>
-    internal static void Init()
+    internal static void Initialize()
     {
         // Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.Sunflower).m_versusCost = 1000;
     }

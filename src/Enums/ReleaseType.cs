@@ -8,15 +8,15 @@ internal enum ReleaseType
     /// <summary>
     /// A stable, production-ready release.
     /// </summary>
-    Release,
+    release,
 
     /// <summary>
     /// A beta release for testing purposes.
     /// </summary>
-    Beta,
+    beta,
 
     /// <summary>
     /// A development build with the latest features and potential instability.
     /// </summary>
-    Dev
+    dev
 }

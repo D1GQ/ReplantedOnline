@@ -20,12 +20,23 @@ internal static class ModInfo
     /// <summary>
     /// The release type of the current mod version.
     /// </summary>
-    internal const string MOD_RELEASE = nameof(ReleaseType.Dev);
+    internal const string MOD_RELEASE = nameof(ReleaseType.dev);
+
+    /// <summary>
+    /// The number of the release.
+    /// </summary>
+    internal const string MOD_RELEASE_NUMBER = "";
+
+    /// <summary>
+    /// The formatted version string of the mod using semantic versioning.
+    /// Format: vMajor.Minor.Patch-prereleaseNumber.
+    /// </summary>
+    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_NUMBER}";
 
     /// <summary>
     /// The date when this version was released, formatted as mm.dd.yyyy.
     /// </summary>
-    internal const string RELEASE_DATE = "01.01.2026";
+    internal const string RELEASE_DATE = "12.20.2025";
 
     /// <summary>
     /// The unique identifier for the mod following reverse domain name notation.
