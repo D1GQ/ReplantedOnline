@@ -197,15 +197,10 @@ internal static class NetworkDispatcher
     /// <summary>
     /// Reads and processes a single P2P packet from the specified network channel.
     /// Handles packet reception, buffer management, and routing to the appropriate packet handler.
-    /// Validates packet integrity and sender authentication before processing.
     /// </summary>
     private static void ReadPacket(uint messageSize, int channel)
     {
-        var buffer = P2PPacketBuffer.Get();
-
-        buffer.EnsureCapacity(messageSize);
-        buffer.Size = messageSize;
-        buffer.Steamid = 0;
+        var buffer = P2PPacketBuffer.Get(messageSize);
 
         if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid, channel))
         {

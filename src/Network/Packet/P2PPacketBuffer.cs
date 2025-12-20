@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Packet;
 internal sealed class P2PPacketBuffer
 {
     private static readonly Queue<P2PPacketBuffer> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
+    private const int MAX_POOL_SIZE = 100;
     private const int BUFFER_SIZE = 500;
     internal static int AmountInUse;
 
@@ -33,10 +33,13 @@ internal sealed class P2PPacketBuffer
     /// Retrieves a P2PPacketBuffer instance from the pool or creates a new one if the pool is empty.
     /// </summary>
     /// <returns>A P2PPacketBuffer instance ready for use.</returns>
-    internal static P2PPacketBuffer Get()
+    internal static P2PPacketBuffer Get(uint messageSize)
     {
         AmountInUse++;
-        return _pool.Count > 0 ? _pool.Dequeue() : new P2PPacketBuffer();
+        var p2pPacket = _pool.Count > 0 ? _pool.Dequeue() : new P2PPacketBuffer();
+        p2pPacket.EnsureCapacity(messageSize);
+        p2pPacket.Size = messageSize;
+        return p2pPacket;
     }
 
     /// <summary>
@@ -44,7 +47,7 @@ internal sealed class P2PPacketBuffer
     /// Reallocates the buffer if the current capacity is insufficient.
     /// </summary>
     /// <param name="requiredSize">The minimum required capacity in bytes.</param>
-    internal void EnsureCapacity(uint requiredSize)
+    private void EnsureCapacity(uint requiredSize)
     {
         if (Data == null || Data.Length < requiredSize)
         {
