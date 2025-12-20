@@ -16,9 +16,11 @@ internal static class PotatominePlantPatch
     {
         if (__instance.mSeedType is not SeedType.Potatomine) return true;
 
+        // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmZombieSide)
+            // If player is NOT on the plant side
+            if (!VersusState.AmPlantSide)
             {
                 return false;
             }
@@ -33,21 +35,28 @@ internal static class PotatominePlantPatch
     {
         if (__instance.mSeedType is not SeedType.Potatomine) return;
 
+        // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
+            var netPlant = __instance.GetNetworked<PlantNetworked>();
+
+            // PLANT-SIDE PLAYER LOGIC
             if (VersusState.AmPlantSide)
             {
-                var netPlant = __instance.GetNetworked<PlantNetworked>();
+                // If the plant found a target zombie (original logic worked)
                 if (__result != null)
                 {
+                    // Send network message to tell other players about the potato mine target
                     netPlant.SendPotatomineRpc(__result);
                 }
-                else
+            }
+            else
+            {
+                // For other players, get the target from network state instead of local AI
+                if (netPlant._State is Zombie zombie)
                 {
-                    if (netPlant._State is Zombie zombie)
-                    {
-                        __result = zombie;
-                    }
+                    // Override the result with the networked zombie target
+                    __result = zombie;
                 }
             }
         }

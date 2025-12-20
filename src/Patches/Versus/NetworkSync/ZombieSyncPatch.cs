@@ -20,7 +20,7 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmZombieSide) return false;
+            if (!VersusState.AmPlantSide) return false;
 
             // Get the networked zombie representation and send death RPC to other players
             // Includes damage flags to communicate how the zombie died
@@ -68,7 +68,7 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmZombieSide) return false;
+            if (!VersusState.AmPlantSide) return false;
 
             __instance.TakeDamageOriginal(theDamage, theDamageFlags);
             __instance.GetNetworked<ZombieNetworked>().SendTakeDamageRpc(theDamage, theDamageFlags);

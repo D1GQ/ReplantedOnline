@@ -21,7 +21,7 @@ internal static class LawnMowerSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmZombieSide) return false;
+            if (!VersusState.AmPlantSide) return false;
 
             // Send network message to sync this action with other players
             var netZombie = theZombie.GetNetworked<ZombieNetworked>();

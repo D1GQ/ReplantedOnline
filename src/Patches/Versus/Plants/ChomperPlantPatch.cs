@@ -14,10 +14,13 @@ internal static class ChomperPlantPatch
     {
         if (__instance.mSeedType is not SeedType.Chomper) return true;
 
+        // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmZombieSide)
+            // If player is NOT on the plant side
+            if (!VersusState.AmPlantSide)
             {
+                // The chomper targeting/animations will be handled by network code
                 return false;
             }
         }
