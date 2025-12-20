@@ -264,6 +264,16 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
 
     /// <summary>
     /// Despawns the network object and removes it from all connected clients.
+    /// Also destroys the associated game object.
+    /// </summary>
+    public void DespawnAndDestroy(bool despawnOnNetwork = true)
+    {
+        Despawn(despawnOnNetwork);
+        Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// Despawns the network object and removes it from all connected clients.
     /// Cleans up network resources and sends despawn notification to other clients.
     /// </summary>
     public void Despawn(bool despawnOnNetwork = true)

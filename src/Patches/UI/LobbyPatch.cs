@@ -127,8 +127,10 @@ internal static class LobbyPatch
 
     internal static void SetButtonsInteractable(bool interactable)
     {
-        InteractableBlocker?.SetActive(!interactable);
-        InteractableGamePad?.SetActive(interactable);
+        if (InteractableBlocker == null || InteractableGamePad == null) return;
+
+        InteractableBlocker.SetActive(!interactable);
+        InteractableGamePad.SetActive(interactable);
     }
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Confirm))]

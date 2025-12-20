@@ -180,12 +180,6 @@ internal static class VersusManager
         pickSides?.SetText(DefaultHeaderText);
         UpdateHeaderEvents();
 
-        // Ensure all text elements are visible
-        zombiePlayer1?.gameObject.SetActive(true);
-        zombiePlayer2?.gameObject.SetActive(true);
-        plantPlayer1?.gameObject.SetActive(true);
-        plantPlayer2?.gameObject.SetActive(true);
-
         // Clear all text content
         zombiePlayer1?.SetText(string.Empty);
         zombiePlayer2?.SetText(string.Empty);
@@ -198,13 +192,15 @@ internal static class VersusManager
     /// </summary>
     private static void UpdateHeaderEvents()
     {
-        EventTrigger trigger = lobbyCodeHeaderTrigger?.GetComponent<EventTrigger>();
+        if (lobbyCodeHeaderTrigger == null) return;
+
+        EventTrigger trigger = lobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
         if (trigger != null)
         {
             trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
 
             // On pointer enter trigger - modify header text
-            EventTrigger.Entry pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+            EventTrigger.Entry pointerEnter = new() { eventID = EventTriggerType.PointerEnter };
             pointerEnter.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
                 if (!copyingLobbyCode) pickSides?.SetText($"Click to Copy");
@@ -273,17 +269,12 @@ internal static class VersusManager
     /// </summary>
     internal static void ResetPlayerInput()
     {
-        var versusData = Instances.VersusDataModel;
-        var gameplayActivity = Instances.GameplayActivity;
-        if (versusData != null && gameplayActivity != null)
-        {
-            Instances.VersusDataModel.m_player1Model.m_isZombiesModel.Value = false;
-            Instances.VersusDataModel.m_player1Model.m_isPlantsModel.Value = false;
-            gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX;
-            gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX;
-            versusData.UpdateZombiesPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
-            versusData.UpdatePlantsPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
-        }
+        Instances.VersusDataModel?.m_player1Model?.m_isZombiesModel?.Value = false;
+        Instances.VersusDataModel?.m_player1Model?.m_isPlantsModel?.Value = false;
+        Instances.GameplayActivity?.VersusMode?.ZombiePlayerIndex = ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX;
+        Instances.GameplayActivity?.VersusMode?.PlantPlayerIndex = ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX;
+        Instances.VersusDataModel?.UpdateZombiesPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
+        Instances.VersusDataModel?.UpdatePlantsPlayer("default", "input1", ReplantedOnlineMod.Constants.DEFAULT_PLAYER_INDEX);
     }
 
     internal static void OnStart()

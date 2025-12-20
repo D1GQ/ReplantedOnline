@@ -75,6 +75,13 @@ internal sealed class ZombieNetworked : NetworkClass
                         _syncCooldown -= Time.deltaTime;
                     }
                 }
+                else
+                {
+                    if (_Zombie.mZombieType is ZombieType.Bungee)
+                    {
+                        DespawnAndDestroy();
+                    }
+                }
             }
         }
         else
@@ -147,8 +154,7 @@ internal sealed class ZombieNetworked : NetworkClass
             writer.WriteByte((byte)damageFlags);
             this.SendRpc(1, writer);
             writer.Recycle();
-            Despawn();
-            Destroy(gameObject);
+            DespawnAndDestroy();
         }
     }
 
