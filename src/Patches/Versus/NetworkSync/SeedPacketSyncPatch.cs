@@ -26,10 +26,6 @@ internal static class SeedPacketSyncPatch
             // Check if the player is currently holding a plant in their cursor
             if (seedType != SeedType.None)
             {
-                // Disable Gamepad usage until the no cooldown bug can be fixed
-                Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_BUZZER);
-                return false;
-
                 // Get the cursor position and convert it to grid coordinates
                 var gridX = __instance.m_cursor.m_gridX;
                 var gridY = __instance.m_cursor.m_gridY;
@@ -46,6 +42,7 @@ internal static class SeedPacketSyncPatch
                     {
                         // Mark the packet as used and deduct the sun cost
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX); // TODO: Fix no cooldown on gamepad
+                        seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
                     }
