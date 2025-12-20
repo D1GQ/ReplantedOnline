@@ -5,6 +5,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Versus.NetworkSync;
+using UnityEngine;
 
 namespace ReplantedOnline.Network.Object.Game;
 
@@ -92,6 +93,30 @@ internal sealed class PlantNetworked : NetworkClass
         _Plant.DieOriginal();
     }
 
+    internal void SendSquashRpc(Zombie target)
+    {
+        if (_State is not PlantState.DoingSpecial)
+        {
+            _State = PlantState.DoingSpecial;
+            var writer = PacketWriter.Get();
+            writer.WriteNetworkClass(target.GetNetworked<ZombieNetworked>());
+            this.SendRpc(1, writer);
+            writer.Recycle();
+        }
+    }
+
+    private void HandleSquashRpc(Zombie target)
+    {
+        if (_State is not PlantState.DoingSpecial)
+        {
+            _State = PlantState.DoingSpecial;
+            _Plant.mTargetZombieID = target.DataID;
+            _Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
+            _Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
+            _Plant.mState = PlantState.Ready;
+        }
+    }
+
     [HideFromIl2Cpp]
     public override void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader)
     {
@@ -102,6 +127,12 @@ internal sealed class PlantNetworked : NetworkClass
             case 0:
                 {
                     HandleDieRpc();
+                }
+                break;
+            case 1:
+                {
+                    var target = (ZombieNetworked)packetReader.ReadNetworkClass();
+                    HandleSquashRpc(target._Zombie);
                 }
                 break;
         }

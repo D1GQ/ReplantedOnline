@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Characters;
+using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
@@ -31,6 +32,21 @@ internal sealed class AnimationControllerNetworked : NetworkClass
     public void OnDestroy()
     {
         _AnimationController.RemoveNetworkedLookup();
+    }
+
+    internal bool DoSendAnimate()
+    {
+        if (!AmOwner) return false;
+
+        if (ParentNetworkClass is PlantNetworked plantNet)
+        {
+            if (plantNet._Plant.mSeedType is SeedType.Chomper)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     internal void SendPlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
