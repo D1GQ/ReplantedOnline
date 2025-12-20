@@ -38,7 +38,7 @@ internal static class SeedPacketSyncPatch
 
                     // Get the cost of the seed and check if player has enough sun
                     var cost = seedPacket.GetCost();
-                    if (__instance.Board.CanTakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX))
+                    if (__instance.Board.CanTakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX) && seedPacket.mActive)
                     {
                         // Mark the packet as used and deduct the sun cost
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX); // TODO: Fix no cooldown on gamepad
