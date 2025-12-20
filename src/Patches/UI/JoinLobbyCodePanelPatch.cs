@@ -6,7 +6,6 @@ using Il2CppTMPro;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,6 +56,7 @@ internal static class JoinLobbyCodePanelPatch
         // Get reference to the input field and set up validation
         _reloadedInputField = GetComp<ReloadedInputField>("Canvas/Layout/Center/Rename/NameInputField");
         _reloadedInputField.characterLimit = MatchmakingManager.CODE_LENGTH;
+        _reloadedInputField.onValueChanged = null;
 
         // Update all text elements in the panel
         SetText("Canvas/Layout/Center/Rename/HeaderText", "Join Lobby");
