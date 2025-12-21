@@ -26,6 +26,10 @@ internal static class SeedChooserScreenSyncPatch
         return true;
     }
 
+    /// <summary>
+    /// Extension method that safely calls the original ClickedSeedInChooser method
+    /// while preventing our patch from intercepting the call (avoiding recursion)
+    /// </summary>
     internal static void ClickedSeedInChooserOriginal(this SeedChooserScreen __instance, ChosenSeed theChosenSeed, int playerIndex)
     {
         InternalCallContext.IsInternalCall_ClickedSeedInChooser = true;

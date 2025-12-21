@@ -113,13 +113,13 @@ internal sealed class PlantNetworked : NetworkClass
             _Plant.mTargetZombieID = target.DataID;
             _Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
             _Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
-            _Plant.mState = PlantState.Ready;
+            _Plant.mState = PlantState.SquashLook;
         }
     }
 
     internal void SendPotatomineRpc(Zombie target)
     {
-        if (_State is null)
+        if (_State != target)
         {
             _State = target;
             var writer = PacketWriter.Get();
@@ -131,7 +131,7 @@ internal sealed class PlantNetworked : NetworkClass
 
     private void HandlePotatomineRpc(Zombie target)
     {
-        _State ??= target;
+        _State = target;
     }
 
     [HideFromIl2Cpp]

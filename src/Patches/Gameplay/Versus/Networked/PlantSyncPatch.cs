@@ -24,6 +24,9 @@ internal static class PlantSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
+            // Potato mine dies by PotatomineRpc
+            if (__instance.mSeedType is SeedType.Potatomine) return true;
+
             if (!VersusState.AmPlantSide) return false;
 
             // Get the networked plant representation and send death RPC to other players

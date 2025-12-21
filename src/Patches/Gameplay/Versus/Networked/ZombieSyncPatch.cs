@@ -80,7 +80,7 @@ internal static class ZombieSyncPatch
     }
 
     /// <summary>
-    /// Extension method that safely calls the original PlayDeathAnim method
+    /// Extension method that safely calls the original TakeDamage method
     /// while preventing our patch from intercepting the call (avoiding recursion)
     /// </summary>
     internal static void TakeDamageOriginal(this Zombie __instance, int theDamage, DamageFlags theDamageFlags)
@@ -106,9 +106,9 @@ internal static class ZombieSyncPatch
     private static class InternalCallContext
     {
         [ThreadStatic]
-        public static bool IsInternalCall_TakeDamage;
+        public static bool IsInternalCall_PlayDeathAnim;
 
         [ThreadStatic]
-        public static bool IsInternalCall_PlayDeathAnim;
+        public static bool IsInternalCall_TakeDamage;
     }
 }

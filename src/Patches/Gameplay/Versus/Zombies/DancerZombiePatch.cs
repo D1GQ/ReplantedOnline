@@ -17,9 +17,8 @@ internal static class DancerZombiePatch
     {
         if (NetLobby.AmInLobby())
         {
-            if (VersusState.AmPlantSide)
+            if (!VersusState.AmPlantSide)
             {
-                // Force false result for plant side to prevent them from triggering dancer logic
                 __result = false;
             }
         }
@@ -33,8 +32,7 @@ internal static class DancerZombiePatch
     {
         if (NetLobby.AmInLobby())
         {
-            // Only zombie side can spawn backup dancers
-            if (VersusState.AmPlantSide) return false;
+            if (!VersusState.AmPlantSide) return false;
 
             var zombie = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
             __result = zombie.DataID;

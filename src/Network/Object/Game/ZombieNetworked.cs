@@ -176,12 +176,12 @@ internal sealed class ZombieNetworked : NetworkClass
         }
     }
 
-    private bool dead;
+    internal bool Dead;
     internal void SendDeathRpc(DamageFlags damageFlags)
     {
-        if (!dead)
+        if (!Dead)
         {
-            dead = true;
+            Dead = true;
             var writer = PacketWriter.Get();
             writer.WriteByte((byte)damageFlags);
             this.SendRpc(1, writer);
@@ -192,13 +192,32 @@ internal sealed class ZombieNetworked : NetworkClass
 
     private void HandleDeathRpc(DamageFlags damageFlags)
     {
-        if (!dead)
+        if (!Dead)
         {
-            dead = true;
+            Dead = true;
             CheckDeath(() =>
             {
                 _Zombie.PlayDeathAnimOriginal(damageFlags);
             }, true);
+        }
+    }
+
+    internal void SendDieNoLootRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            this.SendRpc(2);
+            DespawnAndDestroy();
+        }
+    }
+
+    private void HandleDieNoLootRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            _Zombie.DieNoLoot();
         }
     }
 
@@ -207,7 +226,7 @@ internal sealed class ZombieNetworked : NetworkClass
         EnteringHouse = true;
         var writer = PacketWriter.Get();
         writer.WriteFloat(xPos);
-        this.SendRpc(2, writer);
+        this.SendRpc(3, writer);
         writer.Recycle();
     }
 
@@ -222,7 +241,7 @@ internal sealed class ZombieNetworked : NetworkClass
     private void SendBungeeTakeRpc()
     {
         _State = ZombieType.Bungee;
-        this.SendRpc(3);
+        this.SendRpc(4);
     }
 
     private void HandleBungeeTakeRpc()
@@ -252,11 +271,16 @@ internal sealed class ZombieNetworked : NetworkClass
                 break;
             case 2:
                 {
+                    HandleDieNoLootRpc();
+                }
+                break;
+            case 3:
+                {
                     var xPos = packetReader.ReadFloat();
                     HandleEnteringHouseRpc(xPos);
                 }
                 break;
-            case 3:
+            case 4:
                 {
                     HandleBungeeTakeRpc();
                 }
