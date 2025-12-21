@@ -40,23 +40,26 @@ internal static class PotatominePlantPatch
         {
             var netPlant = __instance.GetNetworked<PlantNetworked>();
 
-            // PLANT-SIDE PLAYER LOGIC
-            if (VersusState.AmPlantSide)
+            if (netPlant != null)
             {
-                // If the plant found a target zombie (original logic worked)
-                if (__result != null)
+                // PLANT-SIDE PLAYER LOGIC
+                if (VersusState.AmPlantSide)
                 {
-                    // Send network message to tell other players about the potato mine target
-                    netPlant.SendPotatomineRpc(__result);
+                    // If the plant found a target zombie (original logic worked)
+                    if (__result != null)
+                    {
+                        // Send network message to tell other players about the potato mine target
+                        netPlant.SendPotatomineRpc(__result);
+                    }
                 }
-            }
-            else
-            {
-                // For other players, get the target from network state instead of local AI
-                if (netPlant._State is Zombie zombie)
+                else
                 {
-                    // Override the result with the networked zombie target
-                    __result = zombie;
+                    // For other players, get the target from network state instead of local AI
+                    if (netPlant._State is Zombie zombie)
+                    {
+                        // Override the result with the networked zombie target
+                        __result = zombie;
+                    }
                 }
             }
         }

@@ -13,7 +13,7 @@ internal static class DancerZombiePatch
     /// Only the zombie side should control dancer spawning in versus mode
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.NeedsMoreBackupDancers))]
     [HarmonyPostfix]
-    private static void NeedsMoreBackupDancers_Postfix(Zombie __instance, ref bool __result)
+    private static void NeedsMoreBackupDancers_Postfix(ref bool __result)
     {
         if (NetLobby.AmInLobby())
         {
@@ -28,7 +28,7 @@ internal static class DancerZombiePatch
     /// Handles dancers spawned by Dancing Zombies
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.SummonBackupDancer))]
     [HarmonyPrefix]
-    private static bool SummonBackupDancer_Prefix(Zombie __instance, int theRow, int thePosX, ref ZombieID __result)
+    private static bool SummonBackupDancer_Prefix(int theRow, int thePosX, ref ZombieID __result)
     {
         if (NetLobby.AmInLobby())
         {

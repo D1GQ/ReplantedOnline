@@ -315,6 +315,8 @@ internal static class VersusManager
 
         if (NetLobby.AmLobbyHost())
         {
+            Utils.SpawnZombie(ZombieType.Gargantuar, 9, 0, false, true);
+
             Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
             Utils.SpawnZombie(ZombieType.Target, 8, 1, false, true);
             Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);

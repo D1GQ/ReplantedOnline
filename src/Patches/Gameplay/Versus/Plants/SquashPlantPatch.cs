@@ -45,7 +45,7 @@ internal static class SquashPlantPatch
                 if (__result != null)
                 {
                     var netPlant = __instance.GetNetworked<PlantNetworked>();
-                    netPlant.SendSquashRpc(__result);
+                    netPlant?.SendSquashRpc(__result);
                 }
             }
         }
