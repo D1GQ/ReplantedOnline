@@ -77,14 +77,19 @@ internal sealed class ZombieNetworked : NetworkClass
             case ZombieType.Bungee:
                 BungeeUpdate();
                 break;
-            case ZombieType.JackInTheBox:
-                JackInTheBoxUpdate();
-                break;
             case ZombieType.Digger:
                 if (_Zombie.mZombiePhase is (ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe))
                 {
                     NormalUpdate();
                 }
+                break;
+            case ZombieType.JackInTheBox:
+                JackInTheBoxUpdate();
+                NormalUpdate();
+                break;
+            case ZombieType.Polevaulter:
+                PolevaulterUpdate();
+                NormalUpdate();
                 break;
             default:
                 NormalUpdate();
@@ -174,6 +179,35 @@ internal sealed class ZombieNetworked : NetworkClass
             else
             {
                 if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning)
+                {
+                    _Zombie.mPhaseCounter = 0;
+                }
+            }
+        }
+    }
+
+    private void PolevaulterUpdate()
+    {
+        if (_Zombie == null) return;
+
+        if (AmOwner)
+        {
+            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _Zombie.mPhaseCounter < 10 && _State is not SetPhaseCounterState)
+            {
+                _State = SetPhaseCounterState;
+                SendSetPhaseCounterRpc();
+                DespawnAndDestroy();
+            }
+        }
+        else
+        {
+            if (_State is not SetPhaseCounterState)
+            {
+                _Zombie.mPhaseCounter = int.MaxValue;
+            }
+            else
+            {
+                if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault)
                 {
                     _Zombie.mPhaseCounter = 0;
                 }
