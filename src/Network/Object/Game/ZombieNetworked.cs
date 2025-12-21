@@ -144,13 +144,13 @@ internal sealed class ZombieNetworked : NetworkClass
         }
         else
         {
-            if (_State is not SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing)
             {
-                _Zombie.mPhaseCounter = int.MaxValue;
-            }
-            else
-            {
-                if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing)
+                if (_State is not SetPhaseCounterState)
+                {
+                    _Zombie.mPhaseCounter = int.MaxValue;
+                }
+                else
                 {
                     _Zombie.mPhaseCounter = 0;
                 }
@@ -172,14 +172,15 @@ internal sealed class ZombieNetworked : NetworkClass
         }
         else
         {
-            if (_State is not SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning)
             {
-                _Zombie.mPhaseCounter = int.MaxValue;
-            }
-            else
-            {
-                if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning)
+                if (_State is not SetPhaseCounterState)
                 {
+                    _Zombie.mPhaseCounter = int.MaxValue;
+                }
+                else
+                {
+
                     _Zombie.mPhaseCounter = 0;
                 }
             }
@@ -201,13 +202,13 @@ internal sealed class ZombieNetworked : NetworkClass
         }
         else
         {
-            if (_State is not SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault)
             {
-                _Zombie.mPhaseCounter = int.MaxValue;
-            }
-            else
-            {
-                if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault)
+                if (_State is not SetPhaseCounterState)
+                {
+                    _Zombie.mPhaseCounter = int.MaxValue;
+                }
+                else
                 {
                     _Zombie.mPhaseCounter = 0;
                 }
