@@ -69,6 +69,24 @@ internal sealed class PlantNetworked : NetworkClass
                 }
             }
         }
+
+        switch (_Plant.mSeedType)
+        {
+            case SeedType.Magnetshroom:
+                MagnetShroomUpdate();
+                break;
+        }
+    }
+
+    private void MagnetShroomUpdate()
+    {
+        if (!AmOwner)
+        {
+            if (_State is Zombie)
+            {
+                _Plant.MagnetShroomAttactItem(null); // MagnetshroomPlantPatch will get the target
+            }
+        }
     }
 
     public void OnDestroy()

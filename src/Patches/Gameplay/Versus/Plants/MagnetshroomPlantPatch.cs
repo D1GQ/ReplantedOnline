@@ -39,6 +39,7 @@ internal static class MagnetshroomPlantPatch
                     if (netPlant._State is Zombie zombie)
                     {
                         // Override the result with the networked zombie target
+                        netPlant._State = null;
                         theZombie = zombie;
                     }
                     else
