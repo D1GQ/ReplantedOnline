@@ -117,7 +117,7 @@ internal sealed class PlantNetworked : NetworkClass
         }
     }
 
-    internal void SendPotatomineRpc(Zombie target)
+    internal void SendSetZombieTargetRpc(Zombie target)
     {
         if (_State != target)
         {
@@ -129,7 +129,7 @@ internal sealed class PlantNetworked : NetworkClass
         }
     }
 
-    private void HandlePotatomineRpc(Zombie target)
+    private void HandleSetZombieTargetRpc(Zombie target)
     {
         _State = target;
     }
@@ -155,7 +155,7 @@ internal sealed class PlantNetworked : NetworkClass
             case 2:
                 {
                     var target = (ZombieNetworked)packetReader.ReadNetworkClass();
-                    HandlePotatomineRpc(target._Zombie);
+                    HandleSetZombieTargetRpc(target._Zombie);
                 }
                 break;
         }
