@@ -130,7 +130,7 @@ internal static class VersusManager
 
         // Player list
         playerList?.SetText(string.Empty);
-        var notPlaying = NetLobby.LobbyData.AllClients.Values.Where(client => client.Team is (PlayerTeam.None or PlayerTeam.Spectators));
+        var notPlaying = NetLobby.LobbyData.AllClients.Values.Where(client => client.Team is PlayerTeam.None or PlayerTeam.Spectators);
         if (!notPlaying.Any()) return;
 
         const int MAX_NAME_LENGTH = 10;

@@ -78,7 +78,7 @@ internal sealed class ZombieNetworked : NetworkClass
                 BungeeUpdate();
                 break;
             case ZombieType.Digger:
-                if (_Zombie.mZombiePhase is (ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe))
+                if (_Zombie.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
                 {
                     NormalUpdate();
                 }

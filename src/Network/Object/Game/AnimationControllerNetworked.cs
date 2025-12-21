@@ -48,7 +48,7 @@ internal sealed class AnimationControllerNetworked : NetworkClass
 
         if (ParentNetworkClass is ZombieNetworked netZombie)
         {
-            if (netZombie.ZombieType is (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar or ZombieType.Imp))
+            if (netZombie.ZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar or ZombieType.Imp)
             {
                 return true;
             }

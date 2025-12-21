@@ -132,16 +132,6 @@ internal static class NetLobby
     }
 
     /// <summary>
-    /// Retrieves lobby data for the specified key.
-    /// </summary>
-    /// <param name="key">The key of the lobby data to retrieve.</param>
-    /// <returns>The lobby data value, or empty string if not found.</returns>
-    internal static string GetLobbyData(string key)
-    {
-        return SteamMatchmaking.Internal.GetLobbyData(LobbyData.LobbyId, key);
-    }
-
-    /// <summary>
     /// Gets the number of members currently in the lobby.
     /// </summary>
     /// <returns>The number of lobby members.</returns>
@@ -196,7 +186,7 @@ internal static class NetLobby
     private static void _OnLobbyEnteredCompleted(Lobby data)
     {
         LobbyData ??= new(data.Id, data.Owner.Id);
-        LobbyData.LobbyCode = GetLobbyData(ReplantedOnlineMod.Constants.GAME_CODE_KEY);
+        LobbyData.LobbyCode = SteamMatchmaking.Internal.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
 
         Transitions.ToVersus();
 
@@ -453,7 +443,7 @@ internal static class NetLobby
     internal static string GetCurrentLobbyGameCode()
     {
         if (!AmInLobby()) return string.Empty;
-        return GetLobbyData(ReplantedOnlineMod.Constants.GAME_CODE_KEY);
+        return SteamMatchmaking.Internal.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
     }
 
 
