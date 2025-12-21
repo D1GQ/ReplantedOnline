@@ -12,7 +12,7 @@ internal static class SquashPlantPatch
 {
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindSquashTarget))]
     [HarmonyPrefix]
-    private static bool FindSquashTarget_Prefix(Plant __instance)
+    private static bool Plant_FindSquashTarget_Prefix(Plant __instance)
     {
         if (__instance.mSeedType is not SeedType.Squash) return true;
 
@@ -31,7 +31,7 @@ internal static class SquashPlantPatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindSquashTarget))]
     [HarmonyPostfix]
-    private static void FindSquashTarget_Postfix(Plant __instance, Zombie __result)
+    private static void Plant_FindSquashTarget_Postfix(Plant __instance, Zombie __result)
     {
         if (__instance.mSeedType is not SeedType.Squash) return;
 

@@ -12,7 +12,7 @@ internal static class StartMultiplayerButtonPatch
 {
     [HarmonyPatch(typeof(StartMultiplayerButton), nameof(StartMultiplayerButton.Awake))]
     [HarmonyPrefix]
-    private static void Awake_Postfix(StartMultiplayerButton __instance)
+    private static void StartMultiplayerButton_Awake_Postfix(StartMultiplayerButton __instance)
     {
         // Remove existing text localization components
         __instance.gameObject.DestroyAllTextLocalizers();
@@ -62,7 +62,7 @@ internal static class StartMultiplayerButtonPatch
 
     [HarmonyPatch(typeof(StartMultiplayerButton), nameof(StartMultiplayerButton._onButtonClicked))]
     [HarmonyPrefix]
-    private static bool OnButtonClicked_Prefix(StartMultiplayerButton __instance)
+    private static bool StartMultiplayerButton_OnButtonClicked_Prefix(StartMultiplayerButton __instance)
     {
         // Determine if this is the Host button or Join button
         if (__instance.gameObject.name != "CoopVS_VS_Button")

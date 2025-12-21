@@ -9,7 +9,7 @@ internal class InputServicePatch
 {
     [HarmonyPatch(typeof(InputService), nameof(InputService.BeginListeningForGuestInputDevice))]
     [HarmonyPrefix]
-    private static bool BeginListeningForGuestInputDevice_Prefix()
+    private static bool InputService_BeginListeningForGuestInputDevice_Prefix()
     {
         if (NetLobby.AmInLobby())
         {

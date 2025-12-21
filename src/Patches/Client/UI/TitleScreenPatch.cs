@@ -11,7 +11,7 @@ internal static class TitleScreenPatch
 {
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
     [HarmonyPostfix]
-    private static void Awake_Postfix(PanelViewContainer __instance)
+    private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
         if (__instance.name == "SplashScreenPanel(Clone)")
         {

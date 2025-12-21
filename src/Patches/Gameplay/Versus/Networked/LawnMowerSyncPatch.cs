@@ -13,7 +13,7 @@ internal static class LawnMowerSyncPatch
 {
     [HarmonyPatch(typeof(LawnMower), nameof(LawnMower.MowZombie))]
     [HarmonyPrefix]
-    private static bool StartMower_Prefix(LawnMower __instance, Zombie theZombie)
+    private static bool LawnMower_MowZombie_Prefix(LawnMower __instance, Zombie theZombie)
     {
         // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_StartMower) return true;

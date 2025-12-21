@@ -11,14 +11,14 @@ internal static class VersusModePatch
 {
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeGameplay))]
     [HarmonyPostfix]
-    private static void InitializeGameplay_Postfix()
+    private static void VersusMode_InitializeGameplay_Postfix()
     {
         VersusManager.OnStart();
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]
     [HarmonyPrefix]
-    private static bool BoardAddCoin_Prefix(CoinType theCoinType)
+    private static bool Board_BoardAddCoin_Prefix(CoinType theCoinType)
     {
         // Only apply these changes when in an online lobby
         if (NetLobby.AmInLobby())

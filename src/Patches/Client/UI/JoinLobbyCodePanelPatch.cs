@@ -20,7 +20,7 @@ internal static class JoinLobbyCodePanelPatch
 
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
     [HarmonyPostfix]
-    private static void Awake_Postfix(PanelViewContainer __instance)
+    private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
         // Check if this is the frontend panels container
         if (__instance.name == "FrontendPanels")

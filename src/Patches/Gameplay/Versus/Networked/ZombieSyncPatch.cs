@@ -12,7 +12,7 @@ internal static class ZombieSyncPatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.PlayDeathAnim))]
     [HarmonyPrefix]
-    private static bool PlayDeathAnim_Prefix(Zombie __instance, DamageFlags theDamageFlags)
+    private static bool Zombie_PlayDeathAnim_Prefix(Zombie __instance, DamageFlags theDamageFlags)
     {
         // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_PlayDeathAnim) return true;
@@ -60,7 +60,7 @@ internal static class ZombieSyncPatch
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.TakeDamage))]
     [HarmonyPrefix]
-    private static bool TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
+    private static bool Zombie_TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
     {
         // Skip network logic if this is an internal call (prevents infinite recursion)
         if (InternalCallContext.IsInternalCall_TakeDamage) return true;

@@ -12,7 +12,7 @@ internal static class PauseMenuPatch
 {
     [HarmonyPatch(typeof(GameplayOptionsMenu), nameof(GameplayOptionsMenu.OnEnable))]
     [HarmonyPostfix]
-    private static void OnEnable_Postfix(GameplayOptionsMenu __instance)
+    private static void GameplayOptionsMenu_OnEnable_Postfix(GameplayOptionsMenu __instance)
     {
         // Only modify the menu if we're in an online lobby
         if (NetLobby.AmInLobby())

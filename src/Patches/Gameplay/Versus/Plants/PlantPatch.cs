@@ -11,7 +11,7 @@ internal static class PlantPatch
     // Stop game from placing initial sunflower in vs
     [HarmonyPatch(typeof(Board), nameof(Board.AddPlant))]
     [HarmonyPrefix]
-    private static bool AddPlant_Prefix()
+    private static bool Board_AddPlant_Prefix()
     {
         if (NetLobby.AmInLobby() && Instances.GameplayActivity.VersusMode.m_versusTime < 1f)
         {

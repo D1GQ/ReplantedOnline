@@ -11,7 +11,7 @@ internal static class BungeeZombiePatch
     /// This fixes synchronization issues with Bungee Zombie spawning positions
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.PickBungeeZombieTarget))]
     [HarmonyPrefix]
-    private static bool PickBungeeZombieTarget_Prefix()
+    private static bool Zombie_PickBungeeZombieTarget_Prefix()
     {
         // Disable random Bungee Zombie target selection in multiplayer
         // Target selection should be handled through network synchronization instead

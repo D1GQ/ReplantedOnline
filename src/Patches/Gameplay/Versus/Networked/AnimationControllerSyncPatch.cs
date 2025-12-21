@@ -11,7 +11,7 @@ internal static class AnimationControllerSyncPatch
 {
     [HarmonyPatch(typeof(CharacterAnimationController), nameof(CharacterAnimationController.PlayAnimation))]
     [HarmonyPrefix]
-    private static bool PlayAnimation_Prefix(CharacterAnimationController __instance, string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
+    private static bool CharacterAnimationController_PlayAnimation_Prefix(CharacterAnimationController __instance, string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
     {
         if (InternalCallContext.IsInternalCall_PlayAnimation) return true;
 

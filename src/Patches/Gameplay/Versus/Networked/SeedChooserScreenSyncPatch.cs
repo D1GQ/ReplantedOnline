@@ -10,7 +10,7 @@ internal static class SeedChooserScreenSyncPatch
 {
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.ClickedSeedInChooser))]
     [HarmonyPrefix]
-    private static bool AddChosenSeedToBank_Prefix(SeedChooserScreen __instance, ChosenSeed theChosenSeed, int playerIndex)
+    private static bool SeedChooserScreen_AddChosenSeedToBank_Prefix(SeedChooserScreen __instance, ChosenSeed theChosenSeed, int playerIndex)
     {
         // Skip if this is an internal recursive call to avoid infinite loops
         if (InternalCallContext.IsInternalCall_ClickedSeedInChooser) return true;

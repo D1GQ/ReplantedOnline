@@ -12,7 +12,7 @@ internal static class ChomperPlantPatch
 {
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPrefix]
-    private static bool FindTargetZombie_Prefix(Plant __instance)
+    private static bool Plant_FindTargetZombie_Prefix(Plant __instance)
     {
         if (__instance.mSeedType is not SeedType.Chomper) return true;
 
@@ -32,7 +32,7 @@ internal static class ChomperPlantPatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPostfix]
-    private static void FindTargetZombie_Postfix(Plant __instance, Zombie __result)
+    private static void Plant_FindTargetZombie_Postfix(Plant __instance, Zombie __result)
     {
         if (__instance.mSeedType is not SeedType.Chomper) return;
 

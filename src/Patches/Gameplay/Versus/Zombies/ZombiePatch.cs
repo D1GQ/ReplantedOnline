@@ -15,7 +15,7 @@ internal static class ZombiePatch
     // Stop game from placing initial gravestones in vs
     [HarmonyPatch(typeof(Challenge), nameof(Challenge.IZombiePlaceZombie))]
     [HarmonyPrefix]
-    private static bool IZombiePlaceZombie_Prefix()
+    private static bool Challenge_IZombiePlaceZombie_Prefix()
     {
         if (NetLobby.AmInLobby() && Instances.GameplayActivity.VersusMode.m_versusTime < 1f)
         {
@@ -29,7 +29,7 @@ internal static class ZombiePatch
     /// Handles zombies spawned during waves
     [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
     [HarmonyPrefix]
-    private static bool AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
+    private static bool Board_AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
     {
         // Only intercept during active gameplay in multiplayer
         if (NetLobby.AmInLobby() && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath)
@@ -51,7 +51,7 @@ internal static class ZombiePatch
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.WalkIntoHouse))]
     [HarmonyPrefix]
-    private static bool WalkIntoHouse_Prefix(Zombie __instance)
+    private static bool Zombie_WalkIntoHouse_Prefix(Zombie __instance)
     {
         if (VersusState.AmPlantSide)
         {

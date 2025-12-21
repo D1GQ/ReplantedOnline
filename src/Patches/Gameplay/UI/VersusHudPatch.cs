@@ -14,7 +14,7 @@ internal static class VersusHudPatch
 
     [HarmonyPatch(typeof(ContentSizeFitter), nameof(ContentSizeFitter.OnEnable))]
     [HarmonyPostfix]
-    private static void OnEnable_Postfix(ContentSizeFitter __instance)
+    private static void ContentSizeFitter_OnEnable_Postfix(ContentSizeFitter __instance)
     {
         if (NetLobby.AmInLobby())
         {

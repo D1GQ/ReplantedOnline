@@ -10,7 +10,7 @@ internal static class TargetZombiePatch
     // Let network zombie set the ZombieLife
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.DropHead))]
     [HarmonyPrefix]
-    private static void DropHead_Prefix(Zombie __instance, ref int __state)
+    private static void Zombie_DropHead_Prefix(Zombie __instance, ref int __state)
     {
         if (__instance.mZombieType is ZombieType.Target)
         {
@@ -21,7 +21,7 @@ internal static class TargetZombiePatch
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.DropHead))]
     [HarmonyPostfix]
-    private static void DropHead_Postfix(Zombie __instance, int __state)
+    private static void Zombie_DropHead_Postfix(Zombie __instance, int __state)
     {
         if (__instance.mZombieType is ZombieType.Target)
         {

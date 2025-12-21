@@ -12,7 +12,7 @@ internal static class FlagZombiePatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.ZombieInitialize))]
     [HarmonyPostfix]
-    private static void ZombieInitialize_Postfix(ZombieType theType)
+    private static void Zombie_ZombieInitialize_Postfix(ZombieType theType)
     {
         if (theType is not ZombieType.Flag) return;
 
