@@ -17,7 +17,7 @@ using UnityEngine.UI;
 namespace ReplantedOnline.Patches.Gameplay.UI;
 
 [HarmonyPatch]
-internal static class LobbyPatch
+internal static class VersusLobbyPatch
 {
     private static GameObject InteractableBlocker;
     private static GameObject InteractableGamePad;
@@ -54,14 +54,24 @@ internal static class LobbyPatch
                 });
                 VsSideChooser.SetVsButtonTitle("Custom", "Speed\nBattle");
 
+                // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
+#if !DEBUG
+                    ReplantedOnlinePopup.Show("Under Construction", "This game mode will be coming soon!");
+                    return;
+#endif
                     StartGameHandler.Send(SelectionSet.CustomAll);
                 });
                 VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
 
+                // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("Random", () =>
                 {
+#if !DEBUG
+                    ReplantedOnlinePopup.Show("Under Construction", "This game mode will be coming soon!");
+                    return;
+#endif
                     StartGameHandler.Send(SelectionSet.Random);
                 });
 
