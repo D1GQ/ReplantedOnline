@@ -171,7 +171,7 @@ internal static class VersusManager
             && clients?.Count > 1
             && NetLobby.LobbyData.AllClientsReady();
 
-        LobbyPatch.SetButtonsInteractable(shouldEnableButtons);
+        VersusLobbyPatch.SetButtonsInteractable(shouldEnableButtons);
     }
 
     /// <summary>
