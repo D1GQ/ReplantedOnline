@@ -2,6 +2,6 @@
 
 internal class States
 {
-    internal const string SetPhaseCounterState = "PhaseCounter";
+    internal const string UpdateState = "Update";
     internal const string MindControlledState = "MindControlled";
 }

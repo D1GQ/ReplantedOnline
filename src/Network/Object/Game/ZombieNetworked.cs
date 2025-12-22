@@ -130,10 +130,10 @@ internal sealed class ZombieNetworked : NetworkClass
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
             {
-                _State = States.SetPhaseCounterState;
-                SendSetPhaseCounterRpc();
+                _State = States.UpdateState;
+                SendSetUpdateStateRpc();
                 DespawnAndDestroy();
             }
         }
@@ -141,7 +141,7 @@ internal sealed class ZombieNetworked : NetworkClass
         {
             if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing)
             {
-                if (_State is not States.SetPhaseCounterState)
+                if (_State is not States.UpdateState)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -158,10 +158,10 @@ internal sealed class ZombieNetworked : NetworkClass
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxPopping && _State is not States.SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxPopping && _State is not States.UpdateState)
             {
-                _State = States.SetPhaseCounterState;
-                SendSetPhaseCounterRpc();
+                _State = States.UpdateState;
+                SendSetUpdateStateRpc();
                 DespawnAndDestroy();
             }
         }
@@ -169,13 +169,12 @@ internal sealed class ZombieNetworked : NetworkClass
         {
             if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning)
             {
-                if (_State is not States.SetPhaseCounterState)
+                if (_State is not States.UpdateState)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
                 else
                 {
-
                     _Zombie.mPhaseCounter = 0;
                 }
             }
@@ -188,24 +187,18 @@ internal sealed class ZombieNetworked : NetworkClass
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _Zombie.mPhaseCounter < 10 && _State is not States.SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
             {
-                _State = States.SetPhaseCounterState;
-                SendSetPhaseCounterRpc();
+                _State = States.UpdateState;
+                SendSetUpdateStateRpc();
             }
         }
         else
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault)
+            if (_State is States.UpdateState)
             {
-                if (_State is not States.SetPhaseCounterState)
-                {
-                    _Zombie.mPhaseCounter = int.MaxValue;
-                }
-                else
-                {
-                    _Zombie.mPhaseCounter = 0;
-                }
+                _State = null;
+                _Zombie.mZombiePhase = ZombiePhase.PolevaulterPreVault;
             }
         }
     }
@@ -334,14 +327,14 @@ internal sealed class ZombieNetworked : NetworkClass
         _Zombie.StartMindControlled();
     }
 
-    private void SendSetPhaseCounterRpc()
+    private void SendSetUpdateStateRpc()
     {
         this.SendRpc(5);
     }
 
-    private void HandleSetPhaseCounterRpc()
+    private void HandleSetUpdateStateRpc()
     {
-        _State = States.SetPhaseCounterState;
+        _State = States.UpdateState;
     }
 
     [HideFromIl2Cpp]
@@ -382,7 +375,7 @@ internal sealed class ZombieNetworked : NetworkClass
                 break;
             case 5:
                 {
-                    HandleSetPhaseCounterRpc();
+                    HandleSetUpdateStateRpc();
                 }
                 break;
         }
