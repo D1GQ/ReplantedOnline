@@ -19,7 +19,10 @@ internal static class PolevaulterZombiePatch
         {
             if (!VersusState.AmPlantSide)
             {
-                return false;
+                if (__instance.mZombiePhase is ZombiePhase.PolevaulterPreVault)
+                {
+                    return false;
+                }
             }
         }
 
