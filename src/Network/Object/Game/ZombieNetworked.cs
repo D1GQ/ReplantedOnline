@@ -158,7 +158,7 @@ internal sealed class ZombieNetworked : NetworkClass
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning && _Zombie.mPhaseCounter < 10 && _State is not States.SetPhaseCounterState)
+            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxPopping && _State is not States.SetPhaseCounterState)
             {
                 _State = States.SetPhaseCounterState;
                 SendSetPhaseCounterRpc();

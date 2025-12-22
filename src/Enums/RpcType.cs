@@ -34,7 +34,7 @@ internal enum RpcType
     /// <summary>
     /// Sync adding a ladder to a plant
     /// </summary>
-    AddLadder
+    AddLadder,
 
     /// <summary>
     /// Signals that the client is loaded and ready.
