@@ -12,19 +12,6 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class ZombiePatch
 {
-    // Stop game from placing initial gravestones in vs
-    [HarmonyPatch(typeof(Challenge), nameof(Challenge.IZombiePlaceZombie))]
-    [HarmonyPrefix]
-    private static bool Challenge_IZombiePlaceZombie_Prefix()
-    {
-        if (NetLobby.AmInLobby() && Instances.GameplayActivity.VersusMode.m_versusTime < 1f)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     /// Reworks wave zombie spawning to use RPCs for network synchronization
     /// Handles zombies spawned during waves
     [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]

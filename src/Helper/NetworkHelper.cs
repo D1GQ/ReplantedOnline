@@ -61,4 +61,19 @@ internal static class NetworkHelper
 
         return null;
     }
+
+    /// <summary>
+    /// Checks if the object has a network look up.
+    /// </summary>
+    /// <typeparam name="T">The type of NetworkClass to retrieve.</typeparam>
+    /// <param name="child">The object instance to look up.</param>
+    internal static bool HasNetworked(this object child)
+    {
+        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        {
+            return lookup.ContainsKey(child);
+        }
+
+        return false;
+    }
 }

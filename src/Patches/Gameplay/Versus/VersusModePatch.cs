@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
@@ -10,10 +11,32 @@ namespace ReplantedOnline.Patches.Gameplay.Versus;
 internal static class VersusModePatch
 {
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeGameplay))]
-    [HarmonyPostfix]
-    private static void VersusMode_InitializeGameplay_Postfix()
+    [HarmonyPrefix]
+    private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
+        __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
+
+        if (__instance.SelectionSet == SelectionSet.QuickPlay)
+        {
+            if (VersusState.AmPlantSide)
+            {
+                foreach (var seedType in __instance.m_quickPlayPlants)
+                {
+                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
+                }
+            }
+            else if (VersusState.AmZombieSide)
+            {
+                foreach (var seedType in __instance.m_quickPlayZombies)
+                {
+                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
+                }
+            }
+        }
+
         VersusManager.OnStart();
+
+        return false;
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]

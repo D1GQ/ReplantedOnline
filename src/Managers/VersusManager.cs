@@ -320,6 +320,12 @@ internal static class VersusManager
             Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);
             Utils.SpawnZombie(ZombieType.Target, 8, 3, false, true);
             Utils.SpawnZombie(ZombieType.Target, 8, 4, false, true);
+
+            Utils.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 1, true);
+            Utils.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 3, true);
+
+            Utils.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
+            Utils.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
         }
 
         var allSeedPackets = new List<SeedPacket>();
