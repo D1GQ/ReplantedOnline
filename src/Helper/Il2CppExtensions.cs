@@ -150,9 +150,6 @@ internal static class Il2CppExtensions
     /// <typeparam name="T">The type of elements in the enumerable.</typeparam>
     /// <param name="enumerable">The IEnumerable to convert.</param>
     /// <returns>An Il2Cpp array containing the same elements, or null if input is null.</returns>
-    /// <remarks>
-    /// Optimizes conversion for List and array types, otherwise creates a temporary list.
-    /// </remarks>
     internal static T[] ToIl2CppArray<T>(this IEnumerable<T> enumerable)
     {
         if (enumerable == null) return null;

@@ -1,10 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppTekly.PanelViews;
-using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using System.Reflection;
-using UnityEngine;
 
 namespace ReplantedOnline.Helper;
 
@@ -85,71 +82,6 @@ internal static class Utils
                 return PlayerTeam.Plants;
             default:
                 return PlayerTeam.None;
-        }
-    }
-
-    /// <summary>
-    /// Dictionary for caching loaded sprites to improve performance by avoiding duplicate loads.
-    /// </summary>
-    private static readonly Dictionary<string, Sprite> _cachedSprites = [];
-
-    /// <summary>
-    /// Loads a sprite from the specified resource path with optional pixel density settings.
-    /// </summary>
-    /// <param name="path">The path to the sprite resource within the assembly's embedded resources.</param>
-    /// <param name="pixelsPerUnit">The number of texture pixels that correspond to one unit in world space. Default is 1.</param>
-    /// <returns>The loaded Sprite object, or null if loading fails.</returns>
-    internal static Sprite LoadSprite(string path, float pixelsPerUnit = 1f)
-    {
-        try
-        {
-            var cacheKey = path + pixelsPerUnit;
-            if (_cachedSprites.TryGetValue(cacheKey, out var sprite))
-                return sprite;
-
-            var texture = LoadTextureFromResources(path);
-            if (texture == null)
-                return null;
-
-            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
-            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
-
-            return _cachedSprites[cacheKey] = sprite;
-        }
-        catch (Exception ex)
-        {
-            MelonLogger.Error(ex);
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Loads a Texture2D from embedded resources in the executing assembly.
-    /// </summary>
-    /// <param name="path">The path to the texture resource within the assembly's embedded resources.</param>
-    /// <returns>The loaded Texture2D object, or null if loading fails.</returns>
-    internal static Texture2D LoadTextureFromResources(string path)
-    {
-        try
-        {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
-            if (stream == null)
-                return null;
-
-            var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                if (!texture.LoadImage(ms.ToArray(), false))
-                    return null;
-            }
-
-            return texture;
-        }
-        catch (Exception ex)
-        {
-            MelonLogger.Error(ex);
-            return null;
         }
     }
 }

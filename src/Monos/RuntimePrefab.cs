@@ -57,9 +57,6 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// <param name="prefabGUID">The unique identifier for the prefab.</param>
     /// <param name="callback">Optional callback to configure the prefab after creation.</param>
     /// <returns>The created prefab instance.</returns>
-    /// <remarks>
-    /// The created prefab is initially inactive and stored in the Prefabs dictionary.
-    /// </remarks>
     internal static T CreatePrefab<T>(string prefabGUID, Action<T> callback = null) where T : RuntimePrefab
     {
         var go = new GameObject($"{typeof(T).Name}_Prefab");
@@ -77,9 +74,6 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// </summary>
     /// <param name="prefabGUID">The GUID of the prefab to clone.</param>
     /// <returns>A new instance of the cloned prefab, or null if the GUID is not found.</returns>
-    /// <remarks>
-    /// Calls the OnClone method on the new instance for any additional setup.
-    /// </remarks>
     internal static RuntimePrefab Clone(string prefabGUID)
     {
         if (Prefabs.TryGetValue(prefabGUID, out var prefab))

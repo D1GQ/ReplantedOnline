@@ -7,7 +7,7 @@ namespace ReplantedOnline.Helper;
 /// <summary>
 /// Provides utility methods for loading and converting WAV audio files.
 /// </summary>
-internal static class WavUtility
+internal static class WavUtils
 {
     /// <summary>
     /// Loads a WAV audio clip from an embedded resource in the specified assembly.

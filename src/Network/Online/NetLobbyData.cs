@@ -136,10 +136,6 @@ internal sealed class NetLobbyData
     /// <summary>
     /// Locally despawns all network objects and clears the spawned objects dictionary
     /// </summary>
-    /// <remarks>
-    /// This method destroys all GameObjects associated with network objects
-    /// and removes them from the NetworkClassSpawned collection
-    /// </remarks>
     internal void LocalDespawnAll()
     {
         foreach (var kvp in NetworkClassSpawned.ToArray())

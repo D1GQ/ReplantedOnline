@@ -13,10 +13,6 @@ internal abstract class InstanceAttribute : Attribute
     /// Scans the entire assembly and registers all instances of classes marked with InstanceAttribute subclasses.
     /// This method should be called during mod initialization to set up the automatic instance registration system.
     /// </summary>
-    /// <remarks>
-    /// This method uses reflection to find all sealed subclasses of InstanceAttribute, create instances of them,
-    /// and invoke their registration logic. This enables a plugin-like architecture for mod components.
-    /// </remarks>
     internal static void RegisterAll()
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -46,10 +42,6 @@ internal abstract class InstanceAttribute : Attribute
 /// Provides a type-safe way to collect and access all implementations of a particular interface or base class.
 /// </summary>
 /// <typeparam name="T">The base type or interface that attributed classes must implement.</typeparam>
-/// <remarks>
-/// This attribute enables a dependency injection-like pattern where all implementations of T
-/// are automatically discovered and made available through the Instances property.
-/// </remarks>
 [AttributeUsage(AttributeTargets.Class)]
 internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : class
 {
