@@ -18,7 +18,7 @@ internal static class FlagZombiePatch
 
         if (NetLobby.AmInLobby())
         {
-            Instances.GameplayActivity.SoundSystem.PlaySample(Sound.SOUND_HUGE_WAVE);
+            Instances.GameplayActivity.PlaySample(Sound.SOUND_HUGE_WAVE);
         }
     }
 }

@@ -2,7 +2,7 @@
 using Il2CppReloaded.Input;
 using ReplantedOnline.Network.Online;
 
-namespace ReplantedOnline.Patches.Client;
+namespace ReplantedOnline.Patches.Client.Services;
 
 [HarmonyPatch]
 internal class InputServicePatch
