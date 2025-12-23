@@ -326,13 +326,13 @@ internal static class VersusManager
         allSeedPackets.AddRange(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets);
         allSeedPackets.AddRange(Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets);
 
-        // Initial 15 second cooldown i think
+        // Initial 10 second cooldown plus base cooldown
         foreach (var seedPacket in allSeedPackets)
         {
             if (seedPacket.mPacketType is SeedType.Sunflower or SeedType.ZombieGravestone) continue;
 
             seedPacket.Deactivate();
-            seedPacket.mRefreshTime = 1800;
+            seedPacket.mRefreshTime = 1200 + Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType).m_versusBaseRefreshTime;
             seedPacket.mRefreshing = true;
         }
     }
