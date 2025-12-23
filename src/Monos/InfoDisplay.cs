@@ -1,9 +1,11 @@
 ﻿using Il2CppSteamworks;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.Client;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ReplantedOnline.Monos;
 
@@ -12,6 +14,8 @@ namespace ReplantedOnline.Monos;
 /// </summary>
 internal sealed class InfoDisplay : MonoBehaviour
 {
+    private bool _enabled = true;
+
     /// <summary>
     /// Initializes the InfoDisplay component and creates a persistent GameObject.
     /// </summary>
@@ -24,15 +28,21 @@ internal sealed class InfoDisplay : MonoBehaviour
 
     private GUIStyle _style;
 
-    /// <summary>
-    /// Called every frame for GUI rendering.
-    /// </summary>
-    /// <remarks>
-    /// Draws the mod information label in the bottom-right corner of the screen.
-    /// Adjusts transparency based on whether the player is in a lobby.
-    /// </remarks>
+    public void Update()
+    {
+        if (ModInfo.MOD_RELEASE == nameof(ReleaseType.dev))
+        {
+            if (Keyboard.current.f1Key.wasPressedThisFrame)
+            {
+                _enabled = !_enabled;
+            }
+        }
+    }
+
     public void OnGUI()
     {
+        if (!_enabled) return;
+
         if (_style == null)
         {
             _style = new GUIStyle()
@@ -111,40 +121,43 @@ internal sealed class InfoDisplay : MonoBehaviour
     /// </summary>
     private static string GetDebugInfo()
     {
-#if DEBUG
-        StringBuilder sb = new();
-
-        sb.AppendLine("Debug Info >");
-        sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
-        sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
-        sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
-
-        if (NetLobby.AmInLobby())
+        if (ModInfo.MOD_RELEASE == nameof(ReleaseType.dev))
         {
-            sb.AppendLine("Lobby Info >");
-            sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkClassSpawned.Count}");
-            if (!NetLobby.LobbyData.Networked.HasStarted)
-            {
-                sb.AppendLine(" Versus Phase: Lobby");
-            }
-            else
-            {
-                sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
-            }
-            sb.AppendLine($" Clients: {NetLobby.LobbyData.AllClients.Count}");
+            StringBuilder sb = new();
 
-            foreach (var client in NetLobby.LobbyData.AllClients.Values)
+            sb.AppendLine("Debug Info >");
+            sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
+            sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
+            sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
+
+            if (NetLobby.AmInLobby())
             {
-                sb.AppendLine($"{client.Name} Client Info >");
-                sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
-                sb.AppendLine($" AmLocal: {client.AmLocal}");
-                sb.AppendLine($" AmHost: {client.AmHost}");
+                sb.AppendLine("Lobby Info >");
+                sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkClassSpawned.Count}");
+                if (!NetLobby.LobbyData.Networked.HasStarted)
+                {
+                    sb.AppendLine(" Versus Phase: Lobby");
+                }
+                else
+                {
+                    sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
+                }
+                sb.AppendLine($" Clients: {NetLobby.LobbyData.AllClients.Count}");
+
+                foreach (var client in NetLobby.LobbyData.AllClients.Values)
+                {
+                    sb.AppendLine($"{client.Name} Client Info >");
+                    sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
+                    sb.AppendLine($" AmLocal: {client.AmLocal}");
+                    sb.AppendLine($" AmHost: {client.AmHost}");
+                }
             }
+
+            return sb.ToString();
         }
-
-        return sb.ToString();
-#else
-        return string.Empty;
-#endif
+        else
+        {
+            return string.Empty;
+        }
     }
 }
