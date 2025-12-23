@@ -80,6 +80,9 @@
 		<Reference Include="UnityEngine.TextRenderingModule">
 			<HintPath>References\UnityEngine\UnityEngine.TextRenderingModule.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.AudioModule">
+			<HintPath>References\UnityEngine\UnityEngine.AudioModule.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">

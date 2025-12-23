@@ -26,6 +26,7 @@ internal class ReplantedOnlineMod : MelonMod
         NetworkClass.SetupPrefabs();
         BloomEngineManager.InitializeBloom(this);
         InfoDisplay.Initialize();
+        AudioManager.Initialize();
         Application.runInBackground = true;
     }
 

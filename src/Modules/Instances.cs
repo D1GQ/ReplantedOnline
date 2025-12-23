@@ -1,4 +1,5 @@
-﻿using Il2CppReloaded.DataModels;
+﻿using Il2CppReloaded;
+using Il2CppReloaded.DataModels;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
 using Il2CppTekly.PanelViews;
@@ -10,6 +11,7 @@ namespace ReplantedOnline.Modules;
 /// </summary>
 internal static class Instances
 {
+    internal static AppCore AppCore => InstanceWrapper<AppCore>.Instance ?? default;
     internal static GameplayDataProvider GameplayDataProvider => InstanceWrapper<GameplayDataProvider>.Instance ?? default;
     internal static GameplayActivity GameplayActivity => InstanceWrapper<GameplayActivity>.Instance ?? default;
     internal static DataServiceActivity DataServiceActivity => InstanceWrapper<DataServiceActivity>.Instance ?? default;

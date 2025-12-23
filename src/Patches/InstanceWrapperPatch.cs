@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Il2CppReloaded;
 using Il2CppReloaded.DataModels;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
@@ -61,6 +62,16 @@ internal static class InstanceWrapperPatch
         {
             Instances.GlobalPanels = __instance;
             ReplantedOnlinePopup.Init(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeStateManager), nameof(TreeStateManager.Awake))]
+    [HarmonyPostfix]
+    private static void TreeStateManager_Awake_Postfix(TreeStateManager __instance)
+    {
+        if (__instance.name == "StateRoot")
+        {
+            InstanceWrapper<AppCore>.Instance = __instance.GetComponent<AppCore>();
         }
     }
 }
