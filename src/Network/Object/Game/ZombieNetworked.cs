@@ -61,12 +61,26 @@ internal sealed class ZombieNetworked : NetworkClass
     public void OnDestroy()
     {
         _Zombie.RemoveNetworkedLookup();
+
+        if (!Dead && _Zombie.mDead)
+        {
+            _Zombie.DieDeserialize();
+        }
     }
 
     public void Update()
     {
         if (!IsOnNetwork) return;
         if (_Zombie == null) return;
+
+        // If zombie dies immediately without animation despawn
+        if (AmOwner)
+        {
+            if (!Dead && _Zombie.mDead)
+            {
+                DespawnAndDestroy();
+            }
+        }
 
         switch (_Zombie.mZombieType)
         {
