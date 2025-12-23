@@ -77,7 +77,7 @@ internal static class VersusModePatch
                 if (__instance.MakesSun())
                 {
                     // Set countdown to max value, effectively disabling sun production
-                    __instance.mStateCountdown = int.MaxValue;
+                    __instance.mLaunchCounter = int.MaxValue;
                 }
             }
         }
