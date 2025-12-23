@@ -37,7 +37,11 @@ internal static class ZombiePatch
             // Allow Target zombies (like Target Zombie from I, Zombie) to use original logic
             if (theZombieType is ZombieType.Target) return true;
 
-            if (!VersusState.AmPlantSide) return false;
+            if (!VersusState.AmPlantSide)
+            {
+                __result = ObjectHelper.CreateReloadedObject<Zombie>();
+                return false;
+            }
 
             // Spawn zombie at column 9 (right side of board) with network synchronization
             __result = Utils.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
@@ -67,7 +71,6 @@ internal static class ZombiePatch
 
         return true;
     }
-
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.StartMindControlled))]
     [HarmonyPrefix]

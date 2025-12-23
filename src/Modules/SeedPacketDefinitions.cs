@@ -1,9 +1,9 @@
 ﻿namespace ReplantedOnline.Modules;
 
 /// <summary>
-/// Handles plant definition modifications including versus costs and other properties.
+/// Handles seed packet definition modifications including versus costs and other properties.
 /// </summary>
-internal static class PlantDefinitions
+internal static class SeedPacketDefinitions
 {
     /// <summary>
     /// Initializes plant definitions and applies custom modifications.

@@ -35,7 +35,7 @@ internal class ReplantedOnlineMod : MelonMod
         if (!SteamClient.initialized)
             SteamClient.Init(0);
         LevelEntries.Initialize();
-        PlantDefinitions.Initialize();
+        SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
         NetLobby.Initialize();
     }
