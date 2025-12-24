@@ -5,7 +5,6 @@ using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
@@ -306,19 +305,6 @@ internal static class VersusManager
     {
         VersusHudPatch.SetHuds();
 
-        // Despawn real target zombies so they can spawn on the network
-        foreach (var kvp in Instances.GameplayActivity.Board.m_zombies.m_itemLookup)
-        {
-            var zombie = kvp.Key;
-            if (zombie.mZombieType == ZombieType.Target)
-            {
-                if (zombie.GetNetworked<ZombieNetworked>() == null)
-                {
-                    zombie.DieDeserialize();
-                }
-            }
-        }
-
         if (NetLobby.AmLobbyHost())
         {
             Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
@@ -347,7 +333,7 @@ internal static class VersusManager
                 or SeedType.ZombieGravestone or SeedType.ZombieNormal) continue;
 
             seedPacket.Deactivate();
-            seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType).m_versusBaseRefreshTime;
+            seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             seedPacket.mRefreshing = true;
         }
     }
