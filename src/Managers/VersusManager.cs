@@ -224,7 +224,11 @@ internal static class VersusManager
             EventTrigger.Entry pointerEnter = new() { eventID = EventTriggerType.PointerEnter };
             pointerEnter.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode) pickSides?.SetText($"Click to Copy");
+                if (!copyingLobbyCode)
+                {
+                    pickSides?.SetText($"Click to Copy");
+                    Instances.GameplayActivity.SoundSystem.PlaySample(Sound.SOUND_BLEEP);
+                }
             }));
             trigger.triggers.Add(pointerEnter);
 

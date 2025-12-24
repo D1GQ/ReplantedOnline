@@ -96,8 +96,9 @@ internal sealed class PlantNetworked : NetworkClass
     {
         if (AmOwner)
         {
-            if (_Plant.mDoSpecialCountdown < 5 && _State is not States.UpdateState)
+            if (_Plant.mDoSpecialCountdown < 10 && _State is not States.UpdateState)
             {
+                dead = true;
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
             }
@@ -110,8 +111,8 @@ internal sealed class PlantNetworked : NetworkClass
             }
             else
             {
+                dead = true;
                 _Plant.mDoSpecialCountdown = 0;
-                _State = null;
             }
         }
     }
@@ -130,16 +131,28 @@ internal sealed class PlantNetworked : NetworkClass
     public void OnDestroy()
     {
         _Plant.RemoveNetworkedLookup();
+
+        if (!dead)
+        {
+            _Plant.DieOriginal();
+        }
     }
 
     internal void SendDieRpc()
     {
+        if (_Plant.mDoSpecialCountdown <= 0)
+        {
+            if (_Plant.mSeedType == SeedType.Doomshroom) return;
+            if (_Plant.mSeedType == SeedType.Iceshroom) return;
+            if (_Plant.mSeedType == SeedType.Cherrybomb) return;
+            if (_Plant.mSeedType == SeedType.Jalapeno) return;
+        }
+
         if (!dead)
         {
             dead = true;
             this.SendRpc(0);
-            Despawn();
-            Destroy(gameObject);
+            DespawnAndDestroy();
         }
     }
 

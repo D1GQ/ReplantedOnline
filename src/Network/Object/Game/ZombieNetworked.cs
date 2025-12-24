@@ -148,7 +148,6 @@ internal sealed class ZombieNetworked : NetworkClass
             {
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
-                DespawnAndDestroy();
             }
         }
         else
@@ -175,6 +174,7 @@ internal sealed class ZombieNetworked : NetworkClass
         {
             if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxPopping && _State is not States.UpdateState)
             {
+                Dead = true;
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
                 DespawnAndDestroy();
@@ -191,7 +191,7 @@ internal sealed class ZombieNetworked : NetworkClass
                 else
                 {
                     Dead = true;
-                    _Zombie.mPhaseCounter = 0;
+                    _Zombie.mZombiePhase = ZombiePhase.JackInTheBoxPopping;
                 }
             }
         }
@@ -220,7 +220,7 @@ internal sealed class ZombieNetworked : NetworkClass
     }
 
     [HideFromIl2Cpp]
-    internal void CheckDeath(Action callback, bool isRpc = false)
+    internal void CheckDeath(Action callback)
     {
         if (_Zombie.mZombieType is ZombieType.Gravestone)
         {
@@ -231,10 +231,7 @@ internal sealed class ZombieNetworked : NetworkClass
         }
         else if (_Zombie.mZombieType is ZombieType.Target)
         {
-            if (isRpc)
-            {
-                Instances.GameplayActivity.VersusMode.ZombieLife--;
-            }
+            Instances.GameplayActivity.VersusMode.ZombieLife--;
 
             if (Instances.GameplayActivity.VersusMode.ZombieLife > 0)
             {
@@ -292,7 +289,7 @@ internal sealed class ZombieNetworked : NetworkClass
             CheckDeath(() =>
             {
                 _Zombie.PlayDeathAnimOriginal(damageFlags);
-            }, true);
+            });
         }
     }
 
