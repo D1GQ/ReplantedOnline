@@ -166,6 +166,7 @@ internal sealed class ZombieNetworked : NetworkClass
             }
         }
     }
+
     private void JackInTheBoxUpdate()
     {
         if (_Zombie == null) return;
@@ -189,6 +190,7 @@ internal sealed class ZombieNetworked : NetworkClass
                 }
                 else
                 {
+                    Dead = true;
                     _Zombie.mPhaseCounter = 0;
                 }
             }
@@ -201,7 +203,7 @@ internal sealed class ZombieNetworked : NetworkClass
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterInVault && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _State is not States.UpdateState)
             {
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
@@ -471,7 +473,7 @@ internal sealed class ZombieNetworked : NetworkClass
             // Stop existing interpolation
             StopLarpPos();
 
-            if (distance < 100f)
+            if (distance < 100f && _Zombie.mZombieType != ZombieType.Pogo)
             {
                 larpToken = MelonCoroutines.Start(CoLarpPos(posX));
             }

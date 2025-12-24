@@ -26,7 +26,12 @@ internal static class ZombiePatch
 
             if (!VersusState.AmPlantSide)
             {
-                __result = ObjectHelper.CreateReloadedObject<Zombie>();
+                // Fix Imp spawning off network
+                if (theZombieType != ZombieType.Imp)
+                {
+                    __result = ObjectHelper.CreateReloadedObject<Zombie>();
+                }
+
                 return false;
             }
 

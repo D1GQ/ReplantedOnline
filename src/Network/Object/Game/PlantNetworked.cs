@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
@@ -58,11 +59,18 @@ internal sealed class PlantNetworked : NetworkClass
         if (!IsOnNetwork) return;
         if (_Plant == null) return;
 
-        if (!AmOwner)
+        // If zombie dies immediately without animation despawn
+        if (AmOwner)
+        {
+            if (!dead && _Plant.mDead)
+            {
+                DespawnAndDestroy();
+            }
+        }
+        else
         {
             if (!dead)
             {
-                _Plant.mDead = false;
                 if (_Plant.mPlantHealth < 25)
                 {
                     _Plant.mPlantHealth = 25;
@@ -72,9 +80,39 @@ internal sealed class PlantNetworked : NetworkClass
 
         switch (_Plant.mSeedType)
         {
+            case SeedType.Doomshroom:
+            case SeedType.Iceshroom:
+            case SeedType.Cherrybomb:
+            case SeedType.Jalapeno:
+                InstaUpdate();
+                break;
             case SeedType.Magnetshroom:
                 MagnetShroomUpdate();
                 break;
+        }
+    }
+
+    private void InstaUpdate()
+    {
+        if (AmOwner)
+        {
+            if (_Plant.mDoSpecialCountdown < 5 && _State is not States.UpdateState)
+            {
+                _State = States.UpdateState;
+                SendSetUpdateStateRpc();
+            }
+        }
+        else
+        {
+            if (_State is not States.UpdateState)
+            {
+                _Plant.mDoSpecialCountdown = int.MaxValue;
+            }
+            else
+            {
+                _Plant.mDoSpecialCountdown = 0;
+                _State = null;
+            }
         }
     }
 
@@ -152,6 +190,16 @@ internal sealed class PlantNetworked : NetworkClass
         _State = target;
     }
 
+    private void SendSetUpdateStateRpc()
+    {
+        this.SendRpc(3);
+    }
+
+    private void HandleSetUpdateStateRpc()
+    {
+        _State = States.UpdateState;
+    }
+
     [HideFromIl2Cpp]
     public override void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader)
     {
@@ -174,6 +222,11 @@ internal sealed class PlantNetworked : NetworkClass
                 {
                     var target = (ZombieNetworked)packetReader.ReadNetworkClass();
                     HandleSetZombieTargetRpc(target._Zombie);
+                }
+                break;
+            case 3:
+                {
+                    HandleSetUpdateStateRpc();
                 }
                 break;
         }

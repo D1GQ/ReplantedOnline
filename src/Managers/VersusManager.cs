@@ -51,6 +51,8 @@ internal static class VersusManager
     /// <param name="vsPanelView">The root panel view containing the versus mode UI elements</param>
     internal static void SetTextComps(PanelView vsPanelView)
     {
+        if (IsUIReady()) return;
+
         // Find and cache the zombie team player name text components
         // Using GetComponentInChildren with includeInactive = true to find components even if parent objects are disabled
         zombiePlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
