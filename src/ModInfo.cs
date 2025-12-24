@@ -7,6 +7,12 @@ namespace ReplantedOnline;
 /// </summary>
 internal static class ModInfo
 {
+#if DEBUG
+    internal const bool DEBUG = true;
+#else
+    internal const bool DEBUG = false;
+#endif
+
     /// <summary>
     /// The display name of the mod as shown to users in mod managers and in-game menus.
     /// </summary>

@@ -1,5 +1,4 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Patches.Client;
@@ -30,7 +29,7 @@ internal sealed class InfoDisplay : MonoBehaviour
 
     public void Update()
     {
-        if (ModInfo.MOD_RELEASE == nameof(ReleaseType.dev))
+        if (ModInfo.DEBUG)
         {
             if (Keyboard.current.f1Key.wasPressedThisFrame)
             {
@@ -121,7 +120,7 @@ internal sealed class InfoDisplay : MonoBehaviour
     /// </summary>
     private static string GetDebugInfo()
     {
-        if (ModInfo.MOD_RELEASE == nameof(ReleaseType.dev))
+        if (ModInfo.DEBUG)
         {
             StringBuilder sb = new();
 
