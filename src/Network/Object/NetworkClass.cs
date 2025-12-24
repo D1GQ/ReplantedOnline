@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppSteamworks;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object.Game;
@@ -279,22 +278,6 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
 
         Despawn(despawnOnNetwork);
         Destroy(gameObject);
-    }
-
-    /// <summary>
-    /// Despawns the network object and removes it from all connected clients.
-    /// Also destroys the associated game object.
-    /// </summary>
-    public void DespawnAndDestroyWhen(Func<bool> condition, bool despawnOnNetwork = true)
-    {
-        if (AmChild && despawnOnNetwork) return;
-        if (!AmOwner) return;
-
-        StartCoroutine(CoroutineUtils.WaitForCondition(condition, () =>
-        {
-            Despawn(despawnOnNetwork);
-            Destroy(gameObject);
-        }).WrapToIl2cpp());
     }
 
     /// <summary>

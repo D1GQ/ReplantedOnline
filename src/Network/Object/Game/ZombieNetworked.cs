@@ -176,7 +176,10 @@ internal sealed class ZombieNetworked : NetworkClass
                 Dead = true;
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
-                DespawnAndDestroyWhen(() => _Zombie.mDead);
+                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie.mDead, () =>
+                {
+                    DespawnAndDestroy();
+                }).WrapToIl2cpp());
             }
         }
         else

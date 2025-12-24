@@ -100,7 +100,10 @@ internal sealed class PlantNetworked : NetworkClass
             {
                 _State = States.UpdateState;
                 SendSetUpdateStateRpc();
-                DespawnAndDestroyWhen(() => _Plant.mDead);
+                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant.mDead, () =>
+                {
+                    DespawnAndDestroy();
+                }).WrapToIl2cpp());
             }
         }
         else
