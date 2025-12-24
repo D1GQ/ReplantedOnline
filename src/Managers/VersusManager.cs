@@ -328,9 +328,11 @@ internal static class VersusManager
             Utils.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
         }
 
-        var allSeedPackets = new List<SeedPacket>();
-        allSeedPackets.AddRange(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets);
-        allSeedPackets.AddRange(Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets);
+        List<SeedPacket> allSeedPackets =
+        [
+            .. Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets,
+            .. Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets,
+        ];
 
         // Initial cooldowns
         foreach (var seedPacket in allSeedPackets)

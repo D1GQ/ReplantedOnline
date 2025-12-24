@@ -86,5 +86,23 @@ internal sealed class StartGameHandler : RPCHandler
         seedChooserVSSwap.m_vsSeedChooserAnimator.Play(-160334332, 0, 1f);
         seedChooserVSSwap.playerTurn = 1;
         seedChooserVSSwap.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
+        DisableSeedPackets();
+    }
+
+    // Hide disabled seed packets 
+    private static void DisableSeedPackets()
+    {
+        List<ChosenSeed> chosenSeeds = [
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
+        ];
+
+        foreach (var seedPacket in chosenSeeds)
+        {
+            if (SeedPacketDefinitions.DisabledSeedTypes.Contains(seedPacket.mSeedType))
+            {
+                seedPacket.mIsImitater = true;
+            }
+        }
     }
 }

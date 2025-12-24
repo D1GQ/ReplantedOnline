@@ -58,12 +58,6 @@ internal static class VersusLobbyPatch
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
-                    if (!ModInfo.DEBUG)
-                    {
-                        ReplantedOnlinePopup.Show("Under Construction", "This game mode will be coming soon!");
-                        return;
-                    }
-
                     StartGameHandler.Send(SelectionSet.CustomAll);
                 });
                 VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
