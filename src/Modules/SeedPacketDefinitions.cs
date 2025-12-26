@@ -26,6 +26,7 @@ internal static class SeedPacketDefinitions
         SeedType.Flowerpot,
         SeedType.Umbrella,
         SeedType.Marigold,
+        SeedType.Kernelpult,
 
         // Zombies
         SeedType.ZombieGravestone,
