@@ -24,12 +24,9 @@ internal static class PlantSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide)
-            {
-                if (__instance.GetNetworked<PlantNetworked>().DoDieOnNonePlantSide()) return true;
+            if (PlantNetworked.DoNotSyncDeath(__instance)) return true;
 
-                return false;
-            }
+            if (!VersusState.AmPlantSide) return false;
 
             // Get the networked plant representation and send death RPC to other players
             __instance.GetNetworked<PlantNetworked>().SendDieRpc();

@@ -61,7 +61,7 @@ internal sealed class ZombieNetworked : NetworkClass
     {
         _Zombie.RemoveNetworkedLookup();
 
-        if (!Dead && !_Zombie.mDead)
+        if (!Dead)
         {
             _Zombie.DieDeserialize();
         }

@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
-using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
@@ -16,9 +15,9 @@ namespace ReplantedOnline.Network.Object.Game;
 /// </summary>
 internal sealed class PlantNetworked : NetworkClass
 {
-    internal bool DoDieOnNonePlantSide()
+    internal static bool DoNotSyncDeath(Plant plant)
     {
-        return (IsSuicide() && _State is States.Suicide) || (SeedType == SeedType.Potatomine && _Plant.mState == PlantState.PotatoArmed);
+        return plant.mSeedType == SeedType.Potatomine && plant.mState == PlantState.PotatoArmed;
     }
 
     private bool IsSuicide()
@@ -69,8 +68,14 @@ internal sealed class PlantNetworked : NetworkClass
         if (!IsOnNetwork) return;
         if (_Plant == null) return;
 
-        // If zombie dies immediately without animation despawn
-        if (!AmOwner)
+        if (AmOwner)
+        {
+            if (!dead && _Plant.mDead)
+            {
+                DespawnAndDestroy();
+            }
+        }
+        else
         {
             if (!dead)
             {
@@ -97,25 +102,9 @@ internal sealed class PlantNetworked : NetworkClass
 
     private void SuicideUpdate()
     {
-        if (AmOwner)
+        if (!AmOwner)
         {
-            if (_Plant.mDoSpecialCountdown <= 10 && _State is not States.Suicide)
-            {
-                _State = States.Suicide;
-                SendSetStateRpc(States.Suicide);
-            }
-        }
-        else
-        {
-            if (!dead && _State is not States.Suicide)
-            {
-                _Plant.mDoSpecialCountdown = int.MaxValue;
-            }
-            else
-            {
-                dead = true;
-                _Plant.mDoSpecialCountdown = 10;
-            }
+            _Plant.mDoSpecialCountdown = int.MaxValue;
         }
     }
 
@@ -134,7 +123,7 @@ internal sealed class PlantNetworked : NetworkClass
     {
         _Plant.RemoveNetworkedLookup();
 
-        if (!dead && !_Plant.mDead)
+        if (!dead)
         {
             _Plant.DieOriginal();
         }
@@ -142,15 +131,6 @@ internal sealed class PlantNetworked : NetworkClass
 
     internal void SendDieRpc()
     {
-        if (IsSuicide())
-        {
-            StartCoroutine(CoroutineUtils.WaitForCondition(() => _State is States.Suicide && _Plant.mDead, () =>
-            {
-                DespawnAndDestroy();
-            }).WrapToIl2cpp());
-            return;
-        }
-
         if (!dead)
         {
             dead = true;

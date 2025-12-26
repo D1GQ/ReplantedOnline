@@ -24,12 +24,22 @@ internal static class VersusModePatch
                 {
                     __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
                 }
+
+                foreach (var seedType in __instance.m_quickPlayZombies)
+                {
+                    __instance.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
+                }
             }
             else if (VersusState.AmZombieSide)
             {
                 foreach (var seedType in __instance.m_quickPlayZombies)
                 {
                     __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
+                }
+
+                foreach (var seedType in __instance.m_quickPlayPlants)
+                {
+                    __instance.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
                 }
             }
         }
