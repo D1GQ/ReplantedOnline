@@ -16,6 +16,16 @@ namespace ReplantedOnline.Network.Object.Game;
 /// </summary>
 internal sealed class PlantNetworked : NetworkClass
 {
+    internal bool DoDieOnNonePlantSide()
+    {
+        return (IsSuicide() && _State is States.Suicide) || (SeedType == SeedType.Potatomine && _Plant.mState == PlantState.PotatoArmed);
+    }
+
+    private bool IsSuicide()
+    {
+        return SeedType is SeedType.Doomshroom or SeedType.Iceshroom or SeedType.Cherrybomb or SeedType.Jalapeno;
+    }
+
     /// <summary>
     /// Represents the networked animation controller used to synchronize animation states across multiple clients.
     /// </summary>
@@ -71,44 +81,40 @@ internal sealed class PlantNetworked : NetworkClass
             }
         }
 
-        switch (_Plant.mSeedType)
+        if (IsSuicide())
         {
-            case SeedType.Doomshroom:
-            case SeedType.Iceshroom:
-            case SeedType.Cherrybomb:
-            case SeedType.Jalapeno:
-                InstaUpdate();
-                break;
+            SuicideUpdate();
+            return;
+        }
+
+        switch (SeedType)
+        {
             case SeedType.Magnetshroom:
                 MagnetShroomUpdate();
                 break;
         }
     }
 
-    private void InstaUpdate()
+    private void SuicideUpdate()
     {
         if (AmOwner)
         {
-            if (_Plant.mDoSpecialCountdown < 10 && _State is not States.UpdateState)
+            if (_Plant.mDoSpecialCountdown <= 10 && _State is not States.Suicide)
             {
-                _State = States.UpdateState;
-                SendSetUpdateStateRpc();
-                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant.mDead, () =>
-                {
-                    DespawnAndDestroy();
-                }).WrapToIl2cpp());
+                _State = States.Suicide;
+                SendSetStateRpc(States.Suicide);
             }
         }
         else
         {
-            if (_State is not States.UpdateState)
+            if (!dead && _State is not States.Suicide)
             {
                 _Plant.mDoSpecialCountdown = int.MaxValue;
             }
             else
             {
                 dead = true;
-                _Plant.mDoSpecialCountdown = 0;
+                _Plant.mDoSpecialCountdown = 10;
             }
         }
     }
@@ -128,7 +134,7 @@ internal sealed class PlantNetworked : NetworkClass
     {
         _Plant.RemoveNetworkedLookup();
 
-        if (!dead)
+        if (!dead && !_Plant.mDead)
         {
             _Plant.DieOriginal();
         }
@@ -136,12 +142,13 @@ internal sealed class PlantNetworked : NetworkClass
 
     internal void SendDieRpc()
     {
-        if (_Plant.mDoSpecialCountdown <= 0)
+        if (IsSuicide())
         {
-            if (_Plant.mSeedType == SeedType.Doomshroom) return;
-            if (_Plant.mSeedType == SeedType.Iceshroom) return;
-            if (_Plant.mSeedType == SeedType.Cherrybomb) return;
-            if (_Plant.mSeedType == SeedType.Jalapeno) return;
+            StartCoroutine(CoroutineUtils.WaitForCondition(() => _State is States.Suicide && _Plant.mDead, () =>
+            {
+                DespawnAndDestroy();
+            }).WrapToIl2cpp());
+            return;
         }
 
         if (!dead)
@@ -199,14 +206,17 @@ internal sealed class PlantNetworked : NetworkClass
         _State = target;
     }
 
-    private void SendSetUpdateStateRpc()
+    private void SendSetStateRpc(string state)
     {
-        this.SendRpc(3);
+        var writer = PacketWriter.Get();
+        writer.WriteString(state);
+        this.SendRpc(3, writer);
+        writer.Recycle();
     }
 
-    private void HandleSetUpdateStateRpc()
+    private void HandleSetUpdateStateRpc(string state)
     {
-        _State = States.UpdateState;
+        _State = state;
     }
 
     [HideFromIl2Cpp]
@@ -235,7 +245,8 @@ internal sealed class PlantNetworked : NetworkClass
                 break;
             case 3:
                 {
-                    HandleSetUpdateStateRpc();
+                    var state = packetReader.ReadString();
+                    HandleSetUpdateStateRpc(state);
                 }
                 break;
         }

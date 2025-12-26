@@ -61,7 +61,7 @@ internal sealed class ZombieNetworked : NetworkClass
     {
         _Zombie.RemoveNetworkedLookup();
 
-        if (!Dead)
+        if (!Dead && !_Zombie.mDead)
         {
             _Zombie.DieDeserialize();
         }
@@ -78,10 +78,11 @@ internal sealed class ZombieNetworked : NetworkClass
             if (!Dead && _Zombie.mDead)
             {
                 DespawnAndDestroy();
+                return;
             }
         }
 
-        switch (_Zombie.mZombieType)
+        switch (ZombieType)
         {
             case ZombieType.Gravestone:
                 return;
@@ -407,6 +408,11 @@ internal sealed class ZombieNetworked : NetworkClass
             packetWriter.WriteBool(ShakeBush);
             packetWriter.WriteInt((int)ZombieType);
 
+            if (ZombieType == ZombieType.Imp)
+            {
+                packetWriter.WriteFloat(_Zombie.mPosX);
+            }
+
             return;
         }
 
@@ -433,6 +439,12 @@ internal sealed class ZombieNetworked : NetworkClass
             AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
 
             gameObject.name = $"{Enum.GetName(_Zombie.mZombieType)}_Zombie ({NetworkId})";
+
+            if (ZombieType == ZombieType.Imp)
+            {
+                var posX = packetReader.ReadFloat();
+                _Zombie.mPosX = posX;
+            }
 
             return;
         }

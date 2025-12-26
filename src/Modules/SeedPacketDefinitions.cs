@@ -18,6 +18,7 @@ internal static class SeedPacketDefinitions
         SeedType.Gravebuster,
         SeedType.Lilypad,
         SeedType.Tanglekelp,
+        SeedType.Hypnoshroom,
         SeedType.Seashroom,
         SeedType.Plantern,
         SeedType.Blover,
@@ -26,6 +27,7 @@ internal static class SeedPacketDefinitions
         SeedType.Marigold,
 
         // Zombies
+        SeedType.ZombieDancer,
         SeedType.ZombiePolevaulter,
         SeedType.Zomboni,
         SeedType.ZombieJackInTheBox,
