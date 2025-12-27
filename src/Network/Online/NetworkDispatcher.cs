@@ -109,7 +109,6 @@ internal static class NetworkDispatcher
     /// <param name="packetWriter">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    /// <param name="sendCallback">Call back that is .</param>
     internal static void SendPacketTo(SteamId steamId, PacketWriter packetWriter, PacketTag tag, PacketChannel packetChannel)
     {
         if (steamId.GetNetClient().AmLocal) return;
@@ -164,6 +163,8 @@ internal static class NetworkDispatcher
         packet.Recycle();
     }
 
+    private const int MAX_PACKETS_PER_FRAME = 10;
+
     /// <summary>
     /// Processes all available incoming P2P packets.
     /// Called regularly to handle network communication.
@@ -181,19 +182,42 @@ internal static class NetworkDispatcher
             packet.Recycle();
         }
 
+        int processedCount = 0;
+
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
         {
+            if (processedCount > MAX_PACKETS_PER_FRAME)
+            {
+                processedCount = 0;
+                break;
+            }
+
             ReadPacket(messageSize, (int)PacketChannel.Rpc);
+            processedCount++;
         }
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
         {
+            if (processedCount > MAX_PACKETS_PER_FRAME)
+            {
+                processedCount = 0;
+                break;
+            }
+
             ReadPacket(messageSize, (int)PacketChannel.Main);
+            processedCount++;
         }
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
         {
+            if (processedCount > MAX_PACKETS_PER_FRAME)
+            {
+                processedCount = 0;
+                break;
+            }
+
             ReadPacket(messageSize, (int)PacketChannel.Buffered);
+            processedCount++;
         }
     }
 
