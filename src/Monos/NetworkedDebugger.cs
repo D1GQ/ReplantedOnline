@@ -27,10 +27,6 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private Vector3 _cachedControllerPosition;
     private Vector3 _cachedWPos;
     private string[] _cachedTexts;
-    private bool _hasSyncPos;
-    private Vector3 _cachedSyncPos;
-    private Vector3 _cachedSyncWorldPos;
-
     public void OnGUI()
     {
         if (!InfoDisplay.DebugEnabled) return;
@@ -39,51 +35,84 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
         if (_instance is ZombieNetworked zombieNetworked)
         {
-            try
-            {
-                var zombie = zombieNetworked._Zombie;
-                if (zombie.mDead) return;
+            DebugZombie(zombieNetworked);
+        }
+        else if (_instance is PlantNetworked plantNetworked)
+        {
+            DebugPlant(plantNetworked);
+        }
+    }
 
-                if (zombieNetworked.ZombieType is ZombieType.Target or ZombieType.Gravestone) return;
+    [HideFromIl2Cpp]
+    private void DebugZombie(ZombieNetworked zombieNetworked)
+    {
+        var zombie = zombieNetworked._Zombie;
+        if (zombie != null)
+        {
+            if (zombie.mDead) return;
 
-                _cachedControllerPosition = zombie.mController.transform.position;
-                _cachedWPos = GetWorldPos(_cachedControllerPosition) + new Vector3(85f, 175f, 0f);
+            if (zombieNetworked.ZombieType is ZombieType.Target or ZombieType.Gravestone) return;
 
-                _cachedTexts =
-                [
-                $"{Enum.GetName(zombieNetworked.ZombieType)} Zombie",
+            _cachedControllerPosition = zombie.mController.transform.position;
+            _cachedWPos = GetWorldPos(_cachedControllerPosition) + new Vector3(85f, 175f, 0f);
+
+            _cachedTexts =
+            [
+            $"{Enum.GetName(zombieNetworked.ZombieType)} Zombie",
                 $"{Enum.GetName(zombie.mZombiePhase)}: {zombie.mPhaseCounter}"
-                ];
+            ];
 
-                DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 15f, 1f, 1f, _cachedTexts, Color.white);
-                DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 75), new Vector2(100f, 150f), 1f, Color.white);
+            DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 15f, 1f, 1f, _cachedTexts, Color.white);
+            DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 75), new Vector2(100f, 150f), 1f, Color.white);
 
-                _hasSyncPos = zombieNetworked.lastSyncPosX != null;
-                if (_hasSyncPos)
-                {
-                    _cachedSyncWorldPos = new Vector3(
-                        GameExtensions.GetBoardXPosFromXPos(zombieNetworked.lastSyncPosX.Value),
-                        _cachedControllerPosition.y
-                    );
-                    _cachedSyncPos = GetWorldPos(_cachedSyncWorldPos) + new Vector3(75f, 125f, 0f);
-
-                    DebugRenderHelper.Line(_cachedWPos, _cachedSyncPos, 1, Color.magenta);
-                    DebugRenderHelper.Box(new(_cachedSyncPos.x, _cachedSyncPos.y), new Vector2(50f, 50f), 1f, Color.magenta);
-                }
-            }
-            catch (NullReferenceException)
+            if (zombieNetworked.lastSyncPosX != null)
             {
-                if (_cachedTexts != null && _cachedTexts.Length > 0)
-                {
-                    DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 15f, 1f, 1f, _cachedTexts, Color.white);
-                    DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 75), new Vector2(100f, 150f), 1f, Color.white);
+                var syncWorldPos = new Vector3(
+                    GameExtensions.GetBoardXPosFromXPos(zombieNetworked.lastSyncPosX.Value),
+                    _cachedControllerPosition.y
+                );
+                var syncPos = GetWorldPos(syncWorldPos) + new Vector3(75f, 125f, 0f);
 
-                    if (_hasSyncPos)
-                    {
-                        DebugRenderHelper.Line(_cachedWPos, _cachedSyncPos, 1, Color.magenta);
-                        DebugRenderHelper.Box(new(_cachedSyncPos.x, _cachedSyncPos.y), new Vector2(50f, 50f), 1f, Color.magenta);
-                    }
-                }
+                DebugRenderHelper.Line(_cachedWPos, syncPos, 1, Color.magenta);
+                DebugRenderHelper.Box(new(syncPos.x, syncPos.y), new Vector2(50f, 50f), 1f, Color.magenta);
+            }
+        }
+        else
+        {
+            if (_cachedTexts != null && _cachedTexts.Length > 0)
+            {
+                DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 15f, 1f, 1f, _cachedTexts, Color.red);
+                DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 75), new Vector2(100f, 150f), 1f, Color.red);
+            }
+        }
+    }
+
+    [HideFromIl2Cpp]
+    private void DebugPlant(PlantNetworked plantNetworked)
+    {
+        var plant = plantNetworked._Plant;
+        if (plant != null)
+        {
+            if (plant.mDead) return;
+
+            _cachedControllerPosition = plant.mController.transform.position;
+            _cachedWPos = GetWorldPos(_cachedControllerPosition) + new Vector3(55f, 100f, 0f);
+
+            _cachedTexts =
+            [
+            $"{Enum.GetName(plant.mSeedType)} Plant",
+                $"{Enum.GetName(plant.mState)}: {plant.mStateCountdown}"
+            ];
+
+            DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 35f, 1f, 1f, _cachedTexts, Color.white);
+            DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 25), new Vector2(100f, 100f), 1f, Color.white);
+        }
+        else
+        {
+            if (_cachedTexts != null && _cachedTexts.Length > 0)
+            {
+                DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + 35f, 1f, 1f, _cachedTexts, Color.red);
+                DebugRenderHelper.Box(new(_cachedWPos.x, _cachedWPos.y - 25), new Vector2(100f, 100f), 1f, Color.red);
             }
         }
     }
