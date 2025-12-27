@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Binders;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
 using UnityEngine;
@@ -35,6 +36,8 @@ internal static class VersusHudPatch
     // Hide opponents hud
     internal static void SetHuds()
     {
+        Instances.GameplayActivity.Board.mSunMoney.OpponentItem().Amount = 9999;
+
         if (VersusState.AmZombieSide)
         {
             if (VersusState.SelectionSet == SelectionSet.Random)
