@@ -8,14 +8,14 @@ namespace ReplantedOnline.Helper;
 /// Provides extension methods for game-specific types to simplify common operations
 /// in multiplayer scenarios.
 /// </summary>
-internal static class GameExtensions
+internal static class PvZRHelper
 {
     /// <summary>
     /// Converts a X position field to X position on board.
     /// </summary>
     /// <param name="posX">The world X coordinate to convert.</param>
     /// <returns>The corresponding board X position after applying the transformation.</returns>
-    internal static float GetBoardXPosFromXPos(float posX)
+    internal static float GetGridOffsetXPosFromBoardXPos(float posX)
     {
         return posX * 2.92f + Instances.GameplayActivity?.m_boardOffset?.localPosition.x ?? 975f;
     }

@@ -68,7 +68,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
             if (zombieNetworked.lastSyncPosX != null)
             {
                 var syncWorldPos = new Vector3(
-                    GameExtensions.GetBoardXPosFromXPos(zombieNetworked.lastSyncPosX.Value),
+                    PvZRHelper.GetGridOffsetXPosFromBoardXPos(zombieNetworked.lastSyncPosX.Value),
                     _cachedControllerPosition.y
                 );
                 var syncPos = GetWorldPos(syncWorldPos) + new Vector3(75f, 125f, 0f);
