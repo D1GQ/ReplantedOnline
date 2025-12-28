@@ -165,6 +165,8 @@ internal static class NetworkDispatcher
 
     private const int MAX_PACKETS_PER_FRAME = 10;
 
+    private static int _processedCount;
+
     /// <summary>
     /// Processes all available incoming P2P packets.
     /// Called regularly to handle network communication.
@@ -182,42 +184,42 @@ internal static class NetworkDispatcher
             packet.Recycle();
         }
 
-        int processedCount = 0;
+        _processedCount = 0;
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
         {
-            if (processedCount > MAX_PACKETS_PER_FRAME)
+            if (_processedCount > MAX_PACKETS_PER_FRAME)
             {
-                processedCount = 0;
+                _processedCount = 0;
                 break;
             }
 
             ReadPacket(messageSize, (int)PacketChannel.Rpc);
-            processedCount++;
+            _processedCount++;
         }
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
         {
-            if (processedCount > MAX_PACKETS_PER_FRAME)
+            if (_processedCount > MAX_PACKETS_PER_FRAME)
             {
-                processedCount = 0;
+                _processedCount = 0;
                 break;
             }
 
             ReadPacket(messageSize, (int)PacketChannel.Main);
-            processedCount++;
+            _processedCount++;
         }
 
         while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
         {
-            if (processedCount > MAX_PACKETS_PER_FRAME)
+            if (_processedCount > MAX_PACKETS_PER_FRAME)
             {
-                processedCount = 0;
+                _processedCount = 0;
                 break;
             }
 
             ReadPacket(messageSize, (int)PacketChannel.Buffered);
-            processedCount++;
+            _processedCount++;
         }
     }
 
