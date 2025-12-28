@@ -130,43 +130,36 @@ internal sealed class InfoDisplay : MonoBehaviour
     /// </summary>
     private static string GetDebugInfo()
     {
-        if (ModInfo.DEBUG)
+        StringBuilder sb = new();
+
+        sb.AppendLine("Debug Info >");
+        sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
+        sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
+        sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
+
+        if (NetLobby.AmInLobby())
         {
-            StringBuilder sb = new();
-
-            sb.AppendLine("Debug Info >");
-            sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
-            sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
-            sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
-
-            if (NetLobby.AmInLobby())
+            sb.AppendLine("Lobby Info >");
+            sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkClassSpawned.Count}");
+            if (!NetLobby.LobbyData.Networked.HasStarted)
             {
-                sb.AppendLine("Lobby Info >");
-                sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkClassSpawned.Count}");
-                if (!NetLobby.LobbyData.Networked.HasStarted)
-                {
-                    sb.AppendLine(" Versus Phase: Lobby");
-                }
-                else
-                {
-                    sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
-                }
-                sb.AppendLine($" Clients: {NetLobby.LobbyData.AllClients.Count}");
-
-                foreach (var client in NetLobby.LobbyData.AllClients.Values)
-                {
-                    sb.AppendLine($"{client.Name} Client Info >");
-                    sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
-                    sb.AppendLine($" AmLocal: {client.AmLocal}");
-                    sb.AppendLine($" AmHost: {client.AmHost}");
-                }
+                sb.AppendLine(" Versus Phase: Lobby");
             }
+            else
+            {
+                sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
+            }
+            sb.AppendLine($" Clients: {NetLobby.LobbyData.AllClients.Count}");
 
-            return sb.ToString();
+            foreach (var client in NetLobby.LobbyData.AllClients.Values)
+            {
+                sb.AppendLine($"{client.Name} Client Info >");
+                sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
+                sb.AppendLine($" AmLocal: {client.AmLocal}");
+                sb.AppendLine($" AmHost: {client.AmHost}");
+            }
         }
-        else
-        {
-            return string.Empty;
-        }
+
+        return sb.ToString();
     }
 }

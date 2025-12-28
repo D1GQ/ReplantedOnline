@@ -61,11 +61,8 @@ internal sealed class PlantNetworked : NetworkClass
         AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
         AddChild(AnimationControllerNetworked);
 
-        if (ModInfo.DEBUG)
-        {
-            var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
-            networkedDebugger.Initialize(this);
-        }
+        var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
+        networkedDebugger.Initialize(this);
     }
 
     private bool dead;
