@@ -163,64 +163,73 @@ internal static class NetworkDispatcher
         packet.Recycle();
     }
 
-    private const int MAX_PACKETS_PER_FRAME = 10;
-
-    private static int _processedCount;
+    private static object listeningToken;
 
     /// <summary>
-    /// Processes all available incoming P2P packets.
-    /// Called regularly to handle network communication.
+    /// Starts the network packet listening coroutine.
+    /// Stops any existing listening coroutine before starting a new one.
     /// </summary>
-    internal static void Update()
+    internal static void StartListening()
     {
-        if (!NetLobby.AmInLobby()) return;
-
-        foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
+        if (listeningToken != null)
         {
-            if (!networkClass.AmOwner || !networkClass.IsOnNetwork || !networkClass.IsDirty) continue;
-            var packet = PacketWriter.Get();
-            NetworkSyncPacket.SerializePacket(networkClass, false, packet);
-            SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
-            packet.Recycle();
+            MelonCoroutines.Stop(listeningToken);
         }
 
-        _processedCount = 0;
+        listeningToken = MelonCoroutines.Start(CoListening());
+    }
 
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
+    private static int processed;
+
+    /// <summary>
+    /// Coroutine that handles network packet processing with per-frame limits.
+    /// </summary>
+    /// <returns>Enumerator for coroutine execution</returns>
+    internal static IEnumerator CoListening()
+    {
+        MelonLogger.Msg("[NetworkDispatcher] Starting to listen for network packets and send dirty Network Classes");
+
+        while (NetLobby.AmInLobby())
         {
-            if (_processedCount > MAX_PACKETS_PER_FRAME)
+            foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
             {
-                _processedCount = 0;
-                break;
+                if (!networkClass.AmOwner || !networkClass.IsOnNetwork || !networkClass.IsDirty) continue;
+                var packet = PacketWriter.Get();
+                NetworkSyncPacket.SerializePacket(networkClass, false, packet);
+                SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
+                packet.Recycle();
             }
 
-            ReadPacket(messageSize, (int)PacketChannel.Rpc);
-            _processedCount++;
-        }
-
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
-        {
-            if (_processedCount > MAX_PACKETS_PER_FRAME)
+            processed = 30;
+            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
             {
-                _processedCount = 0;
-                break;
+                if (processed <= 0) break;
+                ReadPacket(messageSize, (int)PacketChannel.Rpc);
+                processed--;
             }
 
-            ReadPacket(messageSize, (int)PacketChannel.Main);
-            _processedCount++;
-        }
-
-        while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
-        {
-            if (_processedCount > MAX_PACKETS_PER_FRAME)
+            processed = 50;
+            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
             {
-                _processedCount = 0;
-                break;
+                if (processed <= 0) break;
+                ReadPacket(messageSize, (int)PacketChannel.Main);
+                processed--;
             }
 
-            ReadPacket(messageSize, (int)PacketChannel.Buffered);
-            _processedCount++;
+            processed = 20;
+            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
+            {
+                if (processed <= 0) break;
+                ReadPacket(messageSize, (int)PacketChannel.Buffered);
+                processed--;
+            }
+
+            yield return null;
         }
+
+        MelonLogger.Msg("[NetworkDispatcher] Stoping to listen for network packets and send dirty Network Classes");
+
+        listeningToken = null;
     }
 
     /// <summary>
@@ -231,28 +240,33 @@ internal static class NetworkDispatcher
     {
         var buffer = P2PPacketBuffer.Get(messageSize);
 
-        if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid, channel))
+        try
         {
-            var sender = buffer.Steamid.GetNetClient();
-            MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
-
-            if (buffer.Size > 0)
+            if (SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.Steamid, channel))
             {
-                var receivedData = buffer.ToByteArray();
-                var packetReader = PacketReader.Get(receivedData);
-                Streamline(sender, packetReader);
+                var sender = buffer.Steamid.GetNetClient();
+                MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.Steamid}) -> Size: {buffer.Size} bytes");
+
+                if (buffer.Size > 0)
+                {
+                    var receivedData = buffer.ToByteArray();
+                    var packetReader = PacketReader.Get(receivedData);
+                    Streamline(sender, packetReader);
+                }
+                else
+                {
+                    MelonLogger.Error("[NetworkDispatcher] Received packet with zero size");
+                }
             }
             else
             {
-                MelonLogger.Error("[NetworkDispatcher] Received packet with zero size");
+                MelonLogger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
             }
         }
-        else
+        finally
         {
-            MelonLogger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
+            buffer.Recycle();
         }
-
-        buffer.Recycle();
     }
 
     /// <summary>

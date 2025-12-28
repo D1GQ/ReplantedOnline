@@ -159,8 +159,7 @@ internal static class NetLobby
     {
         LobbyData ??= new(data.Id, data.Owner.Id);
         LobbyData.LobbyCode = SteamMatchmaking.Internal.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
-
-        Transitions.ToVersus();
+        Transitions.ToVersus(NetworkDispatcher.StartListening);
 
         ProcessMemberList();
 

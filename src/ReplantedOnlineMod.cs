@@ -45,7 +45,6 @@ internal class ReplantedOnlineMod : MelonMod
     {
         if (!loaded) return;
 
-        NetworkDispatcher.Update();
         JoinLobbyCodePanelPatch.ValidateText();
     }
 
