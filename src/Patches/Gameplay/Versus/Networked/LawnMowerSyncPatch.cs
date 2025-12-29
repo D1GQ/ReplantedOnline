@@ -30,6 +30,8 @@ internal static class LawnMowerSyncPatch
 
             __instance.MowZombieOriginal(theZombie);
 
+            netZombie.DespawnAndDestroy();
+
             return false;
         }
 
