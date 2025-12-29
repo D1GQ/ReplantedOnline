@@ -30,7 +30,10 @@ internal static class LawnMowerSyncPatch
 
             __instance.MowZombieOriginal(theZombie);
 
-            netZombie.DespawnAndDestroy();
+            if (netZombie.ZombieType is not (ZombieType.Target or ZombieType.Gravestone))
+            {
+                netZombie.DespawnAndDestroy();
+            }
 
             return false;
         }
