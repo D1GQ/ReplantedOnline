@@ -30,9 +30,7 @@ internal static class PlantSyncPatch
 
             __instance.GetNetworked<PlantNetworked>().SendDieRpc();
 
-            __instance.DieOriginal();
-
-            return false;
+            return true;
         }
 
         return true;

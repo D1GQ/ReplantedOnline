@@ -69,9 +69,7 @@ internal static class ZombieSyncPatch
 
             __instance.GetNetworked<ZombieNetworked>().SendTakeDamageRpc(theDamage, theDamageFlags);
 
-            __instance.TakeDamageOriginal(theDamage, theDamageFlags);
-
-            return false;
+            return true;
         }
 
         return true;
@@ -200,9 +198,7 @@ internal static class ZombieSyncPatch
                 __instance.GetNetworked<ZombieNetworked>().SendApplyBurnRpc();
             }
 
-            __instance.ApplyBurnOriginal();
-
-            return false;
+            return true;
         }
 
         return true;

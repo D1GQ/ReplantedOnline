@@ -23,9 +23,8 @@ internal static class BoardSyncPatch
 
             // Send network message to sync this action with other players
             AddLadderHandler.Send(theGridX, theGridY);
-            __instance.AddALadderOriginal(theGridX, theGridY);
 
-            return false;
+            return true;
         }
 
         return true;

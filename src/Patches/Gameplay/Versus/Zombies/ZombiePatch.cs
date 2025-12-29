@@ -26,7 +26,7 @@ internal static class ZombiePatch
 
             if (!VersusState.AmPlantSide)
             {
-                // Fix Imp spawning off network
+                // Fix flag zombie on other sides
                 if (theZombieType != ZombieType.Imp)
                 {
                     __result = ObjectHelper.CreateReloadedObject<Zombie>();

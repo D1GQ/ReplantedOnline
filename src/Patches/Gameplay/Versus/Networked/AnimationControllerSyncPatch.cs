@@ -21,9 +21,8 @@ internal static class AnimationControllerSyncPatch
             if (netAnimationController != null && netAnimationController.DoSendAnimate())
             {
                 netAnimationController.SendPlayAnimationRpc(animationName, track, fps, loopType);
-                __instance.PlayAnimationOriginal(animationName, track, fps, loopType);
 
-                return false;
+                return true;
             }
         }
 
