@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Network.RPC;
+﻿using ReplantedOnline.Network.ClientRPC;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes;
@@ -90,6 +90,6 @@ internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T :
 }
 
 /// <inheritdoc/>
-internal sealed class RegisterRPCHandler : StaticInstanceAttribute<RPCHandler>
+internal sealed class RegisterRPCHandler : StaticInstanceAttribute<BaseClientRPCHandler>
 {
 }

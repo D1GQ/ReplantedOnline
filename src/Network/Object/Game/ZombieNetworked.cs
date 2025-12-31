@@ -5,7 +5,6 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using System.Collections;
@@ -18,8 +17,20 @@ namespace ReplantedOnline.Network.Object.Game;
 /// Represents a networked zombie entity in the game world, handling synchronization of zombie state
 /// across connected clients including health, position, and follower relationships.
 /// </summary>
-internal sealed class ZombieNetworked : NetworkClass
+internal sealed class ZombieNetworked : NetworkObject
 {
+    internal enum ZombieRpcs
+    {
+        TakeDamage,
+        Death,
+        DieNoLoot,
+        EnteringHouse,
+        MindControlled,
+        SetFrozen,
+        ApplyBurn,
+        SetState
+    }
+
     /// <summary>
     /// Represents the networked animation controller used to synchronize animation states across multiple clients.
     /// </summary>
@@ -150,7 +161,7 @@ internal sealed class ZombieNetworked : NetworkClass
             if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
             {
                 _State = States.UpdateState;
-                SendSetUpdateStateRpc();
+                SendSetStateRpc(States.UpdateState);
             }
         }
         else
@@ -179,7 +190,7 @@ internal sealed class ZombieNetworked : NetworkClass
             {
                 Dead = true;
                 _State = States.UpdateState;
-                SendSetUpdateStateRpc();
+                SendSetStateRpc(States.UpdateState);
                 StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie.mDead, () =>
                 {
                     DespawnAndDestroy();
@@ -212,7 +223,7 @@ internal sealed class ZombieNetworked : NetworkClass
             if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _State is not States.UpdateState)
             {
                 _State = States.UpdateState;
-                SendSetUpdateStateRpc();
+                SendSetStateRpc(States.UpdateState);
             }
         }
         else
@@ -260,7 +271,7 @@ internal sealed class ZombieNetworked : NetworkClass
         var writer = PacketWriter.Get();
         writer.WriteInt(theDamage);
         writer.WriteByte((byte)theDamageFlags);
-        this.SendRpc(0, writer);
+        SendNetworkClassRpc((byte)ZombieRpcs.TakeDamage, writer);
         writer.Recycle();
     }
 
@@ -281,7 +292,7 @@ internal sealed class ZombieNetworked : NetworkClass
             Dead = true;
             var writer = PacketWriter.Get();
             writer.WriteByte((byte)damageFlags);
-            this.SendRpc(1, writer);
+            SendNetworkClassRpc((byte)ZombieRpcs.Death, writer);
             writer.Recycle();
             DespawnAndDestroy();
         }
@@ -304,7 +315,7 @@ internal sealed class ZombieNetworked : NetworkClass
         if (!Dead)
         {
             Dead = true;
-            this.SendRpc(2);
+            SendNetworkClassRpc((byte)ZombieRpcs.DieNoLoot);
             DespawnAndDestroy();
         }
     }
@@ -323,7 +334,7 @@ internal sealed class ZombieNetworked : NetworkClass
         EnteringHouse = true;
         var writer = PacketWriter.Get();
         writer.WriteFloat(xPos);
-        this.SendRpc(3, writer);
+        SendNetworkClassRpc((byte)ZombieRpcs.EnteringHouse, writer);
         writer.Recycle();
     }
 
@@ -337,7 +348,7 @@ internal sealed class ZombieNetworked : NetworkClass
 
     internal void SendMindControlledRpc()
     {
-        this.SendRpc(4);
+        SendNetworkClassRpc((byte)ZombieRpcs.MindControlled);
     }
 
     private void HandleMindControlledRpc()
@@ -360,7 +371,7 @@ internal sealed class ZombieNetworked : NetworkClass
             {
                 writer.WriteInt(_Zombie.mChilledCounter);
             }
-            this.SendRpc(5, writer);
+            SendNetworkClassRpc((byte)ZombieRpcs.SetFrozen, writer);
             writer.Recycle();
         }).WrapToIl2cpp());
     }
@@ -385,7 +396,7 @@ internal sealed class ZombieNetworked : NetworkClass
         if (!Dead)
         {
             Dead = true;
-            this.SendRpc(6);
+            SendNetworkClassRpc((byte)ZombieRpcs.ApplyBurn);
             DespawnAndDestroy();
         }
     }
@@ -399,14 +410,17 @@ internal sealed class ZombieNetworked : NetworkClass
         }
     }
 
-    private void SendSetUpdateStateRpc()
+    internal void SendSetStateRpc(string state)
     {
-        this.SendRpc(7);
+        var writer = PacketWriter.Get();
+        writer.WriteString(state);
+        SendNetworkClassRpc((byte)ZombieRpcs.SetState, writer);
+        writer.Recycle();
     }
 
-    private void HandleSetUpdateStateRpc()
+    private void HandleSetStateRpc(string state)
     {
-        _State = States.UpdateState;
+        _State = state;
     }
 
     [HideFromIl2Cpp]
@@ -414,52 +428,54 @@ internal sealed class ZombieNetworked : NetworkClass
     {
         if (sender.SteamId != OwnerId) return;
 
-        switch (rpcId)
+        var rpc = (ZombieRpcs)rpcId;
+        switch (rpc)
         {
-            case 0:
+            case ZombieRpcs.TakeDamage:
                 {
                     var theDamage = packetReader.ReadInt();
                     var damageFlags = (DamageFlags)packetReader.ReadByte();
                     HandleTakeDamageRpc(theDamage, damageFlags);
                 }
                 break;
-            case 1:
+            case ZombieRpcs.Death:
                 {
                     var damageFlags = (DamageFlags)packetReader.ReadByte();
                     HandleDeathRpc(damageFlags);
                 }
                 break;
-            case 2:
+            case ZombieRpcs.DieNoLoot:
                 {
                     HandleDieNoLootRpc();
                 }
                 break;
-            case 3:
+            case ZombieRpcs.EnteringHouse:
                 {
                     var xPos = packetReader.ReadFloat();
                     HandleEnteringHouseRpc(xPos);
                 }
                 break;
-            case 4:
+            case ZombieRpcs.MindControlled:
                 {
                     HandleMindControlledRpc();
                 }
                 break;
-            case 5:
+            case ZombieRpcs.SetFrozen:
                 {
                     var frozen = packetReader.ReadBool();
                     var counter = packetReader.ReadInt();
                     HandleSetFrozenRpc(frozen, counter);
                 }
                 break;
-            case 6:
+            case ZombieRpcs.ApplyBurn:
                 {
                     HandleApplyBurnRpc();
                 }
                 break;
-            case 7:
+            case ZombieRpcs.SetState:
                 {
-                    HandleSetUpdateStateRpc();
+                    var state = packetReader.ReadString();
+                    HandleSetStateRpc(state);
                 }
                 break;
         }

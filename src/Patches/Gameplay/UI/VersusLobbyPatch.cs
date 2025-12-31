@@ -10,10 +10,10 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.RPC.Handlers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using ReplantedOnline.Network.ClientRPC;
 
 namespace ReplantedOnline.Patches.Gameplay.UI;
 
@@ -45,7 +45,7 @@ internal static class VersusLobbyPatch
                 // Host gets all game mode options
                 VsSideChooser.SetVSButton("QuickPlay", () =>
                 {
-                    StartGameHandler.Send(SelectionSet.QuickPlay);
+                    StartGameClientRPC.Send(SelectionSet.QuickPlay);
                 });
                 VsSideChooser.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
 
@@ -58,14 +58,14 @@ internal static class VersusLobbyPatch
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
-                    StartGameHandler.Send(SelectionSet.CustomAll);
+                    StartGameClientRPC.Send(SelectionSet.CustomAll);
                 });
                 VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
 
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("Random", () =>
                 {
-                    StartGameHandler.Send(SelectionSet.Random);
+                    StartGameClientRPC.Send(SelectionSet.Random);
                 });
 
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);

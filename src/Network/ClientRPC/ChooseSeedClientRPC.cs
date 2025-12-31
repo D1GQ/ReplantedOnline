@@ -6,19 +6,19 @@ using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.RPC.Handlers;
+namespace ReplantedOnline.Network.ClientRPC;
 
 [RegisterRPCHandler]
-internal sealed class ChooseSeedHandler : RPCHandler
+internal sealed class ChooseSeedClientRPC : BaseClientRPCHandler
 {
     /// <inheritdoc/>
-    internal sealed override RpcType Rpc => RpcType.ChooseSeed;
+    internal sealed override ClientRpcType Rpc => ClientRpcType.ChooseSeed;
 
     internal static void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt((int)theChosenSeed.mSeedType);
-        NetworkDispatcher.SendRpc(RpcType.ChooseSeed, packetWriter);
+        NetworkDispatcher.SendRpc(ClientRpcType.ChooseSeed, packetWriter);
         packetWriter.Recycle();
     }
 

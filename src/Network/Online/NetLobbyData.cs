@@ -4,10 +4,9 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Network.ClientRPC;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.RPC;
-using ReplantedOnline.Network.RPC.Handlers;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Online;
@@ -50,9 +49,9 @@ internal sealed class NetLobbyData
     internal Dictionary<SteamId, SteamNetClient> AllClients = [];
 
     /// <summary>
-    /// Gets or sets the dictionary of all network classes spawned.
+    /// Gets or sets the dictionary of all network objects spawned.
     /// </summary>
-    internal Dictionary<uint, NetworkClass> NetworkClassSpawned = [];
+    internal Dictionary<uint, NetworkObject> NetworkObjectsSpawned = [];
 
     /// <summary>
     /// Network class Id pool for the host client
@@ -126,11 +125,11 @@ internal sealed class NetLobbyData
     /// </returns>
     internal uint GetNextNetworkId() => NetLobby.AmLobbyHost() ? NetworkIdPoolHost.GetUnusedId() : NetworkIdPoolNonHost.GetUnusedId();
 
-    internal void OnNetworkClassSpawn(NetworkClass networkClass)
+    internal void OnNetworkObjectSpawn(NetworkObject networkObj)
     {
-        NetworkClassSpawned[networkClass.NetworkId] = networkClass;
-        networkClass.IsOnNetwork = true;
-        networkClass.OnSpawn();
+        NetworkObjectsSpawned[networkObj.NetworkId] = networkObj;
+        networkObj.IsOnNetwork = true;
+        networkObj.OnSpawn();
     }
 
     /// <summary>
@@ -138,12 +137,12 @@ internal sealed class NetLobbyData
     /// </summary>
     internal void LocalDespawnAll()
     {
-        foreach (var kvp in NetworkClassSpawned.ToArray())
+        foreach (var kvp in NetworkObjectsSpawned.ToArray())
         {
             var networkObject = kvp.Value;
             if (networkObject == null)
             {
-                NetworkClassSpawned.Remove(kvp.Key);
+                NetworkObjectsSpawned.Remove(kvp.Key);
                 continue;
             }
 
@@ -153,7 +152,7 @@ internal sealed class NetLobbyData
                 UnityEngine.Object.Destroy(networkObject.gameObject);
             }
 
-            NetworkClassSpawned.Remove(kvp.Key);
+            NetworkObjectsSpawned.Remove(kvp.Key);
             if (!child)
             {
                 NetworkIdPoolHost.ReleaseId(kvp.Key);
@@ -168,7 +167,7 @@ internal sealed class NetLobbyData
     /// Handles networked lobby data synchronization between clients.
     /// </summary>
     [RegisterRPCHandler]
-    internal sealed class NetworkedData : RPCHandler
+    internal sealed class NetworkedData : BaseClientRPCHandler
     {
         private bool _restartingLobby;
         private bool _hasStarted;
@@ -190,7 +189,7 @@ internal sealed class NetLobbyData
         internal PlayerTeam HostTeam => _hostTeam;
 
         /// <inheritdoc/>
-        internal sealed override RpcType Rpc => RpcType.LobbyData;
+        internal sealed override ClientRpcType Rpc => ClientRpcType.LobbyData;
 
         /// <summary>
         /// Sets whether the versus match has started and synchronizes the value across all clients.
@@ -263,7 +262,7 @@ internal sealed class NetLobbyData
             var packetWriter = PacketWriter.Get();
             packetWriter.WriteByte(dataId); // Write data type identifier
             callback?.Invoke(packetWriter); // Write additional data if provided
-            NetworkDispatcher.SendRpc(RpcType.LobbyData, packetWriter, receiveLocally); // Send to all clients
+            NetworkDispatcher.SendRpc(ClientRpcType.LobbyData, packetWriter, receiveLocally); // Send to all clients
             packetWriter.Recycle();
         }
 
@@ -366,7 +365,7 @@ internal sealed class NetLobbyData
             {
                 if (!SteamNetClient.LocalClient.Ready)
                 {
-                    SetClientReadyHandler.Send(); // Ensure we are marked as ready
+                    SetClientReadyClientRPC.Send(); // Ensure we are marked as ready
                 }
             }
         }

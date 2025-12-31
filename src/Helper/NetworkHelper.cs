@@ -10,24 +10,24 @@ internal static class NetworkHelper
     /// <summary>
     /// Dictionary storing networked lookups by type and object instance.
     /// </summary>
-    internal static Dictionary<Type, Dictionary<object, NetworkClass>> NetworkedLookups = [];
+    internal static Dictionary<Type, Dictionary<object, NetworkObject>> NetworkedLookups = [];
 
     /// <summary>
-    /// Associates a network class with an object instance for later retrieval.
+    /// Associates a network object with an object instance for later retrieval.
     /// </summary>
-    /// <param name="child">The object instance to associate with the network class.</param>
-    /// <param name="networkClass">The network class to associate with the object.</param>
-    internal static void AddNetworkedLookup(this object child, NetworkClass networkClass)
+    /// <param name="child">The object instance to associate with the network object.</param>
+    /// <param name="networkObj">The network object to associate with the object.</param>
+    internal static void AddNetworkedLookup(this object child, NetworkObject networkObj)
     {
         if (!NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
         {
             lookup = NetworkedLookups[child.GetType()] = [];
         }
-        lookup[child] = networkClass;
+        lookup[child] = networkObj;
     }
 
     /// <summary>
-    /// Removes the network class association for the specified object instance.
+    /// Removes the network object association for the specified object instance.
     /// </summary>
     /// <param name="child">The object instance to remove from network lookups.</param>
     internal static void RemoveNetworkedLookup(this object child)
@@ -44,18 +44,18 @@ internal static class NetworkHelper
     }
 
     /// <summary>
-    /// Retrieves the network class associated with the specified object instance.
+    /// Retrieves the network object associated with the specified object instance.
     /// </summary>
     /// <typeparam name="T">The type of NetworkClass to retrieve.</typeparam>
     /// <param name="child">The object instance to look up.</param>
     /// <returns>The associated NetworkClass instance, or null if not found.</returns>
-    internal static T GetNetworked<T>(this object child) where T : NetworkClass
+    internal static T GetNetworked<T>(this object child) where T : NetworkObject
     {
         if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
         {
-            if (lookup.TryGetValue(child, out var networkClass))
+            if (lookup.TryGetValue(child, out var networkObj))
             {
-                return (T)networkClass;
+                return (T)networkObj;
             }
         }
 

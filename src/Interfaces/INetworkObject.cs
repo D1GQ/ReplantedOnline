@@ -8,7 +8,7 @@ namespace ReplantedOnline.Interfaces;
 /// Defines the contract for network-synchronized classes in ReplantedOnline.
 /// Provides methods and properties for serialization, deserialization, and network state management.
 /// </summary>
-internal interface INetworkClass
+internal interface INetworkObject
 {
     /// <summary>
     /// Gets the synchronized bits that track which properties have been changed and need network updates.
@@ -23,7 +23,7 @@ internal interface INetworkClass
     uint DirtyBits { get; }
 
     /// <summary>
-    /// Gets the unique network identifier for this network class instance.
+    /// Gets the unique network identifier for this network object instance.
     /// Used to reference this specific object across all connected clients.
     /// </summary>
     uint NetworkId { get; }
@@ -35,7 +35,7 @@ internal interface INetworkClass
     SteamId OwnerId { get; }
 
     /// <summary>
-    /// Serializes the network class state into a packet for network transmission.
+    /// Serializes the network object state into a packet for network transmission.
     /// Handles both initial state serialization and incremental updates.
     /// </summary>
     /// <param name="packetWriter">The packet writer to serialize data into.</param>
@@ -43,7 +43,7 @@ internal interface INetworkClass
     public void Serialize(PacketWriter packetWriter, bool init);
 
     /// <summary>
-    /// Deserializes the network class state from a packet received over the network.
+    /// Deserializes the network object state from a packet received over the network.
     /// Handles both initial state deserialization and incremental updates.
     /// </summary>
     /// <param name="packetReader">The packet reader to deserialize data from.</param>

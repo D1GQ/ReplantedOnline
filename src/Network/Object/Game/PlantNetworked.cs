@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using UnityEngine;
@@ -13,8 +12,16 @@ namespace ReplantedOnline.Network.Object.Game;
 /// Represents a networked plant entity in the game world, handling synchronization of plant state
 /// across connected clients including plant type, position, and imitater type.
 /// </summary>
-internal sealed class PlantNetworked : NetworkClass
+internal sealed class PlantNetworked : NetworkObject
 {
+    internal enum PlantRpcs
+    {
+        Die,
+        Squash,
+        SetZombieTarget,
+        SetState
+    }
+
     internal static bool DoNotSyncDeath(Plant plant)
     {
         return plant.mSeedType == SeedType.Potatomine && plant.mState == PlantState.PotatoArmed;
@@ -140,7 +147,7 @@ internal sealed class PlantNetworked : NetworkClass
         if (!dead)
         {
             dead = true;
-            this.SendRpc(0);
+            SendNetworkClassRpc((byte)PlantRpcs.Die);
             DespawnAndDestroy();
         }
     }
@@ -157,8 +164,8 @@ internal sealed class PlantNetworked : NetworkClass
         {
             _State = PlantState.DoingSpecial;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkClass(target.GetNetworked<ZombieNetworked>());
-            this.SendRpc(1, writer);
+            writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
+            SendNetworkClassRpc((byte)PlantRpcs.Squash, writer);
             writer.Recycle();
         }
     }
@@ -181,8 +188,8 @@ internal sealed class PlantNetworked : NetworkClass
         {
             _State = target;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkClass(target.GetNetworked<ZombieNetworked>());
-            this.SendRpc(2, writer);
+            writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
+            SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
             writer.Recycle();
         }
     }
@@ -192,15 +199,15 @@ internal sealed class PlantNetworked : NetworkClass
         _State = target;
     }
 
-    private void SendSetStateRpc(string state)
+    internal void SendSetStateRpc(string state)
     {
         var writer = PacketWriter.Get();
         writer.WriteString(state);
-        this.SendRpc(3, writer);
+        SendNetworkClassRpc((byte)PlantRpcs.SetState, writer);
         writer.Recycle();
     }
 
-    private void HandleSetUpdateStateRpc(string state)
+    private void HandleSetStateRpc(string state)
     {
         _State = state;
     }
@@ -210,29 +217,30 @@ internal sealed class PlantNetworked : NetworkClass
     {
         if (sender.SteamId != OwnerId) return;
 
-        switch (rpcId)
+        var rpc = (PlantRpcs)rpcId;
+        switch (rpc)
         {
-            case 0:
+            case PlantRpcs.Die:
                 {
                     HandleDieRpc();
                 }
                 break;
-            case 1:
+            case PlantRpcs.Squash:
                 {
-                    var target = (ZombieNetworked)packetReader.ReadNetworkClass();
+                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
                     HandleSquashRpc(target._Zombie);
                 }
                 break;
-            case 2:
+            case PlantRpcs.SetZombieTarget:
                 {
-                    var target = (ZombieNetworked)packetReader.ReadNetworkClass();
+                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
                     HandleSetZombieTargetRpc(target._Zombie);
                 }
                 break;
-            case 3:
+            case PlantRpcs.SetState:
                 {
                     var state = packetReader.ReadString();
-                    HandleSetUpdateStateRpc(state);
+                    HandleSetStateRpc(state);
                 }
                 break;
         }

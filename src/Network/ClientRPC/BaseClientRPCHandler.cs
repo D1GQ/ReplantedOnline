@@ -2,19 +2,19 @@
 using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Packet;
 
-namespace ReplantedOnline.Network.RPC;
+namespace ReplantedOnline.Network.ClientRPC;
 
 /// <summary>
 /// Abstract base class for handling Remote Procedure Calls (RPCs) in ReplantedOnline.
 /// Provides a structured framework for processing network commands between clients.
 /// </summary>
-internal abstract class RPCHandler
+internal abstract class BaseClientRPCHandler
 {
     /// <summary>
     /// Gets the RPC type that this handler is responsible for processing.
     /// </summary>
-    /// <value>The <see cref="RpcType"/> that this handler will respond to.</value>
-    internal abstract RpcType Rpc { get; }
+    /// <value>The <see cref="ClientRpcType"/> that this handler will respond to.</value>
+    internal abstract ClientRpcType Rpc { get; }
 
     /// <summary>
     /// Processes an incoming RPC packet from a network client.
@@ -29,7 +29,7 @@ internal abstract class RPCHandler
     /// <param name="rpc">The type of RPC to handle.</param>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data.</param>
-    internal static void HandleRpc(RpcType rpc, SteamNetClient sender, PacketReader packetReader)
+    internal static void HandleRpc(ClientRpcType rpc, SteamNetClient sender, PacketReader packetReader)
     {
         foreach (var handler in RegisterRPCHandler.Instances)
         {

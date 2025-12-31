@@ -64,12 +64,12 @@ internal sealed class PacketReader
     /// Reads a networkclass from the packet
     /// </summary>
     /// <returns>The decoded networkclass value.</returns>
-    internal NetworkClass ReadNetworkClass()
+    internal NetworkObject ReadNetworkObject()
     {
         var netId = ReadUInt();
-        if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(netId, out var netClass))
+        if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(netId, out var networkObj))
         {
-            return netClass;
+            return networkObj;
         }
         return null;
     }

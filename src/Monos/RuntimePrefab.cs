@@ -14,23 +14,23 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// </summary>
     internal static readonly Dictionary<string, RuntimePrefab> Prefabs = [];
 
-    private static GameObject _prefabsObj;
+    private static GameObject _prefabsGo;
 
     /// <summary>
     /// Gets the root GameObject that contains all runtime prefabs.
     /// Creates the object if it doesn't exist.
     /// </summary>
     /// <value>The parent GameObject for all runtime prefabs.</value>
-    internal static GameObject PrefabsObj
+    internal static GameObject PrefabsGo
     {
         get
         {
-            if (_prefabsObj == null)
+            if (_prefabsGo == null)
             {
-                _prefabsObj = new GameObject("Prefabs");
-                DontDestroyOnLoad(_prefabsObj);
+                _prefabsGo = new GameObject("Prefabs");
+                DontDestroyOnLoad(_prefabsGo);
             }
-            return _prefabsObj;
+            return _prefabsGo;
         }
     }
 
@@ -60,7 +60,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     internal static T CreatePrefab<T>(string prefabGUID, Action<T> callback = null) where T : RuntimePrefab
     {
         var go = new GameObject($"{typeof(T).Name}_Prefab");
-        go.transform.SetParent(PrefabsObj.transform);
+        go.transform.SetParent(PrefabsGo.transform);
         go.SetActive(false);
         var prefab = go.AddComponent<T>();
         prefab.GUID = prefabGUID;

@@ -12,16 +12,16 @@ namespace ReplantedOnline.Monos;
 /// </summary>
 internal sealed class NetworkedDebugger : MonoBehaviour
 {
-    private NetworkClass _instance;
+    private NetworkObject _instance;
 
     /// <summary>
     /// Initializes the debugger with a networked object instance.
     /// </summary>
-    /// <param name="networkClass">The networked object instance to debug.</param>
+    /// <param name="networkObj">The networked object instance to debug.</param>
     [HideFromIl2Cpp]
-    internal void Initialize(NetworkClass networkClass)
+    internal void Initialize(NetworkObject networkObj)
     {
-        _instance = networkClass;
+        _instance = networkObj;
     }
 
     private Vector3 _cachedControllerPosition;

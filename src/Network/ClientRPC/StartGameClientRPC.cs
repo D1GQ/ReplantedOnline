@@ -13,23 +13,19 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
 
-namespace ReplantedOnline.Network.RPC.Handlers;
+namespace ReplantedOnline.Network.ClientRPC;
 
-/// <summary>
-/// Handles the StartGame RPC for initiating online Versus matches in ReplantedOnline.
-/// Responsible for synchronizing game start and seed selection between players.
-/// </summary>
 [RegisterRPCHandler]
-internal sealed class StartGameHandler : RPCHandler
+internal sealed class StartGameClientRPC : BaseClientRPCHandler
 {
     /// <inheritdoc/>
-    internal sealed override RpcType Rpc => RpcType.StartGame;
+    internal sealed override ClientRpcType Rpc => ClientRpcType.StartGame;
 
     internal static void Send(SelectionSet selectionSet)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteByte((byte)selectionSet);
-        NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
+        NetworkDispatcher.SendRpc(ClientRpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
         NetLobby.LobbyData.Networked.SetHasStarted(true);
         MatchmakingManager.SetJoinable(false);
@@ -85,7 +81,7 @@ internal sealed class StartGameHandler : RPCHandler
 
         if (!SteamNetClient.LocalClient.Ready)
         {
-            SetClientReadyHandler.Send();
+            SetClientReadyClientRPC.Send();
         }
 
         if (ModInfo.DEBUG)

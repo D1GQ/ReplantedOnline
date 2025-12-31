@@ -4,7 +4,7 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.RPC.Handlers;
+using ReplantedOnline.Network.ClientRPC;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -26,7 +26,7 @@ internal static class LawnMowerSyncPatch
             // Send network message to sync this action with other players
             var netZombie = theZombie.GetNetworked<ZombieNetworked>();
 
-            MowZombieHandler.Send(__instance.Row, netZombie);
+            MowZombieClientRPC.Send(__instance.Row, netZombie);
 
             __instance.MowZombieOriginal(theZombie);
 

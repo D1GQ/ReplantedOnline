@@ -4,9 +4,9 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.ClientRPC;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.RPC;
 using System.Collections;
 using UnityEngine;
 
@@ -19,21 +19,21 @@ namespace ReplantedOnline.Network.Online;
 internal static class NetworkDispatcher
 {
     /// <summary>
-    /// Spawns all Active network classes to a new client
+    /// Spawns all Active network objects to a new client
     /// </summary>
     /// <param name="steamId">The Steam ID of the target client to receive the packet.</param>
     internal static void SendNetworkClasssTo(SteamId steamId)
     {
-        MelonLogger.Msg($"[NetworkDispatcher] Sending network classes to {steamId}");
+        MelonLogger.Msg($"[NetworkDispatcher] Sending network objects to {steamId}");
 
-        if (NetLobby.LobbyData.NetworkClassSpawned.Count > 0)
+        if (NetLobby.LobbyData.NetworkObjectsSpawned.Count > 0)
         {
-            foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
+            foreach (var networkObj in NetLobby.LobbyData.NetworkObjectsSpawned.Values)
             {
-                if (networkClass.IsOnNetwork)
+                if (networkObj.IsOnNetwork)
                 {
                     var packet = PacketWriter.Get();
-                    NetworkSpawnPacket.SerializePacket(networkClass, packet);
+                    NetworkSpawnPacket.SerializePacket(networkObj, packet);
                     SendPacketTo(steamId, packet, PacketTag.NetworkClassSpawn, PacketChannel.Buffered);
                     packet.Recycle();
                 }
@@ -42,22 +42,22 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Spawns a network class instance and broadcasts it to all connected clients.
+    /// Spawns a network object instance and broadcasts it to all connected clients.
     /// Initializes the network object with ownership and network ID before sending spawn packet.
     /// </summary>
-    /// <param name="networkClass">The network class instance to spawn.</param>
+    /// <param name="networkObj">The network object instance to spawn.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
-    internal static void Spawn(NetworkClass networkClass, SteamId owner)
+    internal static void Spawn(NetworkObject networkObj, SteamId owner)
     {
-        networkClass.OwnerId = owner;
-        networkClass.NetworkId = NetLobby.LobbyData.GetNextNetworkId();
-        NetLobby.LobbyData.OnNetworkClassSpawn(networkClass);
+        networkObj.OwnerId = owner;
+        networkObj.NetworkId = NetLobby.LobbyData.GetNextNetworkId();
+        NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         var packet = PacketWriter.Get();
-        NetworkSpawnPacket.SerializePacket(networkClass, packet);
+        NetworkSpawnPacket.SerializePacket(networkObj, packet);
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
         packet.Recycle();
 
-        MelonLogger.Msg($"[NetworkDispatcher] Spawned NetworkClass with ID: {networkClass.NetworkId}, Owner: {owner}");
+        MelonLogger.Msg($"[NetworkDispatcher] Spawned NetworkClass with ID: {networkObj.NetworkId}, Owner: {owner}");
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ internal static class NetworkDispatcher
     /// <param name="rpc">The type of RPC to send.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(RpcType rpc, PacketWriter packetWriter = null, bool receiveLocally = false)
+    internal static void SendRpc(ClientRpcType rpc, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
         packet.WriteByte((byte)rpc);
@@ -80,25 +80,25 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Sends an RPC (Remote Procedure Call) to a specific network class instance across all clients.
+    /// Sends an RPC (Remote Procedure Call) to a specific network object instance across all clients.
     /// Used for invoking targeted RPC methods on specific network objects.
     /// </summary>
-    /// <param name="networkClass">The target network class instance to receive the RPC.</param>
+    /// <param name="networkObj">The target network object instance to receive the RPC.</param>
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(this INetworkClass networkClass, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
+    internal static void SendRpc(this INetworkObject networkObj, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
         packet.WriteByte(rpcId);
-        packet.WriteUInt(networkClass.NetworkId);
+        packet.WriteUInt(networkObj.NetworkId);
         if (packetWriter != null)
         {
             packet.WritePacket(packetWriter);
         }
         SendPacket(packet, receiveLocally, PacketTag.NetworkClassRpc, PacketChannel.Rpc);
         packet.Recycle();
-        MelonLogger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkClass.NetworkId}");
+        MelonLogger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
     }
 
     /// <summary>
@@ -191,11 +191,11 @@ internal static class NetworkDispatcher
 
         while (NetLobby.AmInLobby())
         {
-            foreach (var networkClass in NetLobby.LobbyData.NetworkClassSpawned.Values)
+            foreach (var networkObj in NetLobby.LobbyData.NetworkObjectsSpawned.Values)
             {
-                if (!networkClass.AmOwner || !networkClass.IsOnNetwork || !networkClass.IsDirty) continue;
+                if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                 var packet = PacketWriter.Get();
-                NetworkSyncPacket.SerializePacket(networkClass, false, packet);
+                NetworkSyncPacket.SerializePacket(networkObj, false, packet);
                 SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
                 packet.Recycle();
             }
@@ -334,13 +334,13 @@ internal static class NetworkDispatcher
     /// <param name="packetReader">The packet reader containing the RPC data.</param>
     private static void StreamlineRpc(SteamNetClient sender, PacketReader packetReader)
     {
-        RpcType rpc = (RpcType)packetReader.ReadByte();
+        ClientRpcType rpc = (ClientRpcType)packetReader.ReadByte();
         MelonLogger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
-        RPCHandler.HandleRpc(rpc, sender, packetReader);
+        BaseClientRPCHandler.HandleRpc(rpc, sender, packetReader);
     }
 
     /// <summary>
-    /// Processes an incoming network class spawn packet and instantiates the appropriate object.
+    /// Processes an incoming network object spawn packet and instantiates the appropriate object.
     /// Handles both custom-created network objects and prefab-based network objects.
     /// </summary>
     /// <param name="sender">The client that sent the spawn packet.</param>
@@ -349,22 +349,22 @@ internal static class NetworkDispatcher
     {
         var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
 
-        if (spawnPacket.PrefabId == NetworkClass.NO_PREFAB_ID)
+        if (spawnPacket.PrefabId == NetworkObject.NO_PREFAB_ID)
         {
-            MelonLogger.Error("Serialized network class had a unset prefab id!");
+            MelonLogger.Error("Serialized network object had a unset prefab id!");
         }
         else
         {
-            if (NetworkClass.NetworkPrefabs.TryGetValue(spawnPacket.PrefabId, out var prefab))
+            if (NetworkObject.NetworkPrefabs.TryGetValue(spawnPacket.PrefabId, out var prefab))
             {
-                var networkClass = prefab.Clone<NetworkClass>();
-                networkClass.OwnerId = spawnPacket.OwnerId;
-                networkClass.NetworkId = spawnPacket.NetworkId;
-                networkClass.transform.SetParent(NetworkClass.NetworkClassesObj.transform);
-                NetworkSpawnPacket.DeserializeNetworkClass(networkClass, packetReader);
-                NetLobby.LobbyData.OnNetworkClassSpawn(networkClass);
-                networkClass.gameObject.SetActive(true);
-                networkClass.name = $"{networkClass.GetType().Name}({networkClass.NetworkId})";
+                var networkObj = prefab.Clone<NetworkObject>();
+                networkObj.OwnerId = spawnPacket.OwnerId;
+                networkObj.NetworkId = spawnPacket.NetworkId;
+                networkObj.transform.SetParent(NetworkObject.NetworkObjectsGo.transform);
+                NetworkSpawnPacket.DeserializeNetworkObject(networkObj, packetReader);
+                NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
+                networkObj.gameObject.SetActive(true);
+                networkObj.name = $"{networkObj.GetType().Name}({networkObj.NetworkId})";
                 MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }
             else
@@ -375,7 +375,7 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Processes an incoming network class despawn packet and destroys the corresponding object.
+    /// Processes an incoming network object despawn packet and destroys the corresponding object.
     /// Cleans up network objects that are no longer needed in the scene.
     /// </summary>
     /// <param name="sender">The client that sent the despawn packet.</param>
@@ -383,19 +383,19 @@ internal static class NetworkDispatcher
     private static void StreamlineNetworkClassDespawn(SteamNetClient sender, PacketReader packetReader)
     {
         uint networkId = packetReader.ReadUInt();
-        if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+        if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
         {
-            if (networkClass.OwnerId == sender.SteamId)
+            if (networkObj.OwnerId == sender.SteamId)
             {
-                if (!networkClass.AmChild)
+                if (!networkObj.AmChild)
                 {
-                    networkClass.Despawn(false);
-                    UnityEngine.Object.Destroy(networkClass.gameObject);
+                    networkObj.Despawn(false);
+                    UnityEngine.Object.Destroy(networkObj.gameObject);
                     MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkId}");
                 }
                 else
                 {
-                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network class {networkId}, only the parent can be despawned!");
+                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkId}, only the parent can be despawned!");
                 }
             }
         }
@@ -406,7 +406,7 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Processes an incoming network class synchronization packet and updates the corresponding object.
+    /// Processes an incoming network object synchronization packet and updates the corresponding object.
     /// Handles state synchronization for network objects from remote clients.
     /// </summary>
     /// <param name="sender">The client that sent the sync packet.</param>
@@ -425,16 +425,16 @@ internal static class NetworkDispatcher
         {
             while (NetLobby.LobbyData != null)
             {
-                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkClass))
+                if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkObj))
                 {
-                    if (networkClass.OwnerId != sender.SteamId)
+                    if (networkObj.OwnerId != sender.SteamId)
                     {
                         MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
                         break;
                     }
 
-                    networkClass.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
-                    networkClass.Deserialize(packet, networkSyncPacket.Init);
+                    networkObj.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
+                    networkObj.Deserialize(packet, networkSyncPacket.Init);
                     MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
                     break;
                 }
@@ -449,7 +449,7 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Processes an incoming network class RPC packet and routes it to the appropriate handler.
+    /// Processes an incoming network object RPC packet and routes it to the appropriate handler.
     /// Handles remote procedure calls targeted at specific network objects.
     /// </summary>
     /// <param name="sender">The client that sent the RPC.</param>
@@ -470,10 +470,10 @@ internal static class NetworkDispatcher
         {
             while (NetLobby.LobbyData != null && timeOut < 10f)
             {
-                if (NetLobby.LobbyData.NetworkClassSpawned.TryGetValue(networkId, out var networkClass))
+                if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
                 {
                     MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                    networkClass.HandleRpc(sender, rpcId, packet);
+                    networkObj.HandleRpc(sender, rpcId, packet);
                     break;
                 }
 

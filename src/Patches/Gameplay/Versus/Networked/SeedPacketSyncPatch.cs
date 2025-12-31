@@ -162,7 +162,7 @@ internal static class SeedPacketSyncPatch
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this plant across all clients
-            var netClass = NetworkClass.SpawnNew<PlantNetworked>(net =>
+            var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
             {
                 net._Plant = plant;
                 net.SeedType = seedType;
@@ -170,9 +170,9 @@ internal static class SeedPacketSyncPatch
                 net.GridX = gridX;
                 net.GridY = gridY;
             }, VersusState.PlantSteamId);
-            plant.AddNetworkedLookup(netClass);
-            netClass.AnimationControllerNetworked.Init(plant.mController.AnimationController);
-            netClass.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({netClass.NetworkId})";
+            plant.AddNetworkedLookup(networkObj);
+            networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
+            networkObj.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({networkObj.NetworkId})";
         }
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
@@ -232,7 +232,7 @@ internal static class SeedPacketSyncPatch
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this zombie across all clients
-            var netClass = NetworkClass.SpawnNew<ZombieNetworked>(net =>
+            var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
             {
                 net._Zombie = zombie;
                 net.ZombieType = zombieType;
@@ -240,9 +240,9 @@ internal static class SeedPacketSyncPatch
                 net.GridX = gridX;
                 net.GridY = gridY;
             }, VersusState.PlantSteamId);
-            zombie.AddNetworkedLookup(netClass);
-            netClass.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
-            netClass.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({netClass.NetworkId})";
+            zombie.AddNetworkedLookup(networkObj);
+            networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
+            networkObj.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({networkObj.NetworkId})";
         }
 
         // Fix rendering issues

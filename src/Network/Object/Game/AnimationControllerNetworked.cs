@@ -3,7 +3,6 @@ using Il2CppReloaded.Characters;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -12,8 +11,13 @@ namespace ReplantedOnline.Network.Object.Game;
 /// <summary>
 /// Represents a networked animation controller for synchronizing character animations across the network.
 /// </summary>
-internal sealed class AnimationControllerNetworked : NetworkClass
+internal sealed class AnimationControllerNetworked : NetworkObject
 {
+    internal enum AnimationRpcs
+    {
+        PlayAnimation
+    }
+
     internal CharacterAnimationController _AnimationController;
 
     internal void Init(CharacterAnimationController animationController)
@@ -38,7 +42,7 @@ internal sealed class AnimationControllerNetworked : NetworkClass
     {
         if (!AmOwner) return false;
 
-        if (ParentNetworkClass is PlantNetworked netPlant)
+        if (ParentNetworkObject is PlantNetworked netPlant)
         {
             if (netPlant._Plant.mSeedType is SeedType.Chomper)
             {
@@ -46,7 +50,7 @@ internal sealed class AnimationControllerNetworked : NetworkClass
             }
         }
 
-        if (ParentNetworkClass is ZombieNetworked netZombie)
+        if (ParentNetworkObject is ZombieNetworked netZombie)
         {
             if (netZombie.ZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar or ZombieType.Imp or ZombieType.Ladder)
             {
@@ -64,7 +68,7 @@ internal sealed class AnimationControllerNetworked : NetworkClass
         packetWriter.WriteInt((int)track);
         packetWriter.WriteFloat(fps);
         packetWriter.WriteByte((byte)loopType);
-        this.SendRpc(0, packetWriter);
+        SendNetworkClassRpc((byte)AnimationRpcs.PlayAnimation, packetWriter);
         packetWriter.Recycle();
     }
 
@@ -78,9 +82,10 @@ internal sealed class AnimationControllerNetworked : NetworkClass
     {
         if (sender.SteamId != OwnerId) return;
 
-        switch (rpcId)
+        var rpc = (AnimationRpcs)rpcId;
+        switch (rpc)
         {
-            case 0:
+            case AnimationRpcs.PlayAnimation:
                 {
                     var animationName = packetReader.ReadString();
                     var track = (CharacterTracks)packetReader.ReadInt();

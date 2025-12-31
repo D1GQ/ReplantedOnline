@@ -27,22 +27,22 @@ internal enum PacketTag
     Rpc,
 
     /// <summary>
-    /// Packet used for spawning a network class.
+    /// Packet used for spawning a network object.
     /// </summary>
     NetworkClassSpawn,
 
     /// <summary>
-    /// Packet used for despawning a network class.
+    /// Packet used for despawning a network object.
     /// </summary>
     NetworkClassDespawn,
 
     /// <summary>
-    /// Packet used for syncing  a network class.
+    /// Packet used for syncing a network object.
     /// </summary>
     NetworkClassSync,
 
     /// <summary>
-    /// Packet used for P2P session establishment and maintenance on a network class.
+    /// Packet used for P2P session establishment and maintenance on a network object.
     /// </summary>
     NetworkClassRpc,
 }

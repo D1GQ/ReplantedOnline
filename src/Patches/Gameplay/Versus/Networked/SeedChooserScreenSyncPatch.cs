@@ -4,7 +4,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.RPC.Handlers;
+using ReplantedOnline.Network.ClientRPC;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -22,7 +22,7 @@ internal static class SeedChooserScreenSyncPatch
         {
             if (!NetLobby.LobbyData.AllClientsReady()) return false;
 
-            ChooseSeedHandler.Send(theChosenSeed);
+            ChooseSeedClientRPC.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);
 
             if (ModInfo.DEBUG)

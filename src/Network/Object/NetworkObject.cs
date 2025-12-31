@@ -14,13 +14,13 @@ namespace ReplantedOnline.Network.Object;
 /// Abstract Base class for all network-synchronized objects in ReplantedOnline.
 /// Provides core functionality for ownership, synchronization, and remote procedure calls.
 /// </summary>
-internal abstract class NetworkClass : RuntimePrefab, INetworkClass
+internal abstract class NetworkObject : RuntimePrefab, INetworkObject
 {
     /// <summary>
-    /// Gets the parent network class associated with this instance.
+    /// Gets the parent network object associated with this instance.
     /// </summary>
     [HideFromIl2Cpp]
-    internal NetworkClass ParentNetworkClass { get; private set; }
+    internal NetworkObject ParentNetworkObject { get; private set; }
 
     /// <summary>
     /// if this NetworkClass is a child of another NetworkClass
@@ -28,10 +28,10 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     internal bool AmChild { get; private set; }
 
     /// <summary>
-    /// Contains the collection of child network classes associated with this instance.
+    /// Contains the collection of child network objects associated with this instance.
     /// </summary>
     [HideFromIl2Cpp]
-    internal List<NetworkClass> ChildNetworkClasses { get; } = [];
+    internal List<NetworkObject> ChildNetworkObjects { get; } = [];
 
     /// <summary>
     /// Container GameObject for all network prefabs.
@@ -39,31 +39,31 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     private static GameObject NetworkPrefabsObj;
 
     /// <summary>
-    /// Container GameObject for all network classes
+    /// Container GameObject for all network objects
     /// </summary>
-    internal static GameObject NetworkClassesObj
+    internal static GameObject NetworkObjectsGo
     {
         get
         {
-            if (_networkClassesObj == null)
+            if (_networkObjectsGo == null)
             {
-                _networkClassesObj = new GameObject("NetworkClasses");
+                _networkObjectsGo = new GameObject("NetworkClasses");
             }
 
-            return _networkClassesObj;
+            return _networkObjectsGo;
         }
     }
 
     /// <summary>
-    /// Base container GameObject for all network classes
+    /// Base container GameObject for all network objects
     /// </summary>
-    private static GameObject _networkClassesObj;
+    private static GameObject _networkObjectsGo;
 
     /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
     /// Key is the prefab ID, value is the NetworkClass prefab reference.
     /// </summary>
-    internal static readonly Dictionary<byte, NetworkClass> NetworkPrefabs = [];
+    internal static readonly Dictionary<byte, NetworkObject> NetworkPrefabs = [];
 
     /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
@@ -197,6 +197,14 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     public virtual void OnDespawn() { }
 
     /// <summary>
+    /// Sends an RPC (Remote Procedure Call) for this network object.
+    /// </summary>
+    public void SendNetworkClassRpc(byte rpcId, PacketWriter packetWriter = null)
+    {
+        NetworkDispatcher.SendRpc(this, rpcId, packetWriter);
+    }
+
+    /// <summary>
     /// Handles incoming Remote Procedure Calls for this network object.
     /// Override this method to implement custom RPC handling.
     /// </summary>
@@ -225,17 +233,17 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
-    /// Adds a child NetworkClass to this instance's collection of child network classes.
+    /// Adds a child NetworkClass to this instance's collection of child network objects.
     /// This operation is only permitted before the object has been spawned in the network.
     /// </summary>
     [HideFromIl2Cpp]
-    internal void AddChild(NetworkClass child)
+    internal void AddChild(NetworkObject child)
     {
         if (IsOnNetwork) return;
 
         child.AmChild = true;
-        child.ParentNetworkClass = this;
-        ChildNetworkClasses.Add(child);
+        child.ParentNetworkObject = this;
+        ChildNetworkObjects.Add(child);
     }
 
     /// <summary>
@@ -246,7 +254,7 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
     /// <returns>The newly spawned NetworkClass instance.</returns>
-    public static T SpawnNew<T>(Action<T> callback = default, SteamId? owner = null) where T : NetworkClass
+    public static T SpawnNew<T>(Action<T> callback = default, SteamId? owner = null) where T : NetworkObject
     {
         owner ??= SteamUser.Internal.GetSteamID();
 
@@ -254,13 +262,13 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
         {
             if (NetworkPrefabs.TryGetValue(prefabId, out var prefab))
             {
-                T networkClass = prefab.Clone<T>();
-                networkClass.transform.SetParent(NetworkClassesObj.transform);
-                callback?.Invoke(networkClass);
-                NetworkDispatcher.Spawn(networkClass, owner.Value);
-                networkClass.gameObject.SetActive(true);
-                networkClass.gameObject.name = $"{typeof(T).Name}({networkClass.NetworkId})";
-                return networkClass;
+                T networkObj = prefab.Clone<T>();
+                networkObj.transform.SetParent(NetworkObjectsGo.transform);
+                callback?.Invoke(networkObj);
+                NetworkDispatcher.Spawn(networkObj, owner.Value);
+                networkObj.gameObject.SetActive(true);
+                networkObj.gameObject.name = $"{typeof(T).Name}({networkObj.NetworkId})";
+                return networkObj;
             }
         }
 
@@ -291,13 +299,13 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
 
         if (IsOnNetwork)
         {
-            NetLobby.LobbyData.NetworkClassSpawned.Remove(NetworkId);
+            NetLobby.LobbyData.NetworkObjectsSpawned.Remove(NetworkId);
             IsOnNetwork = false;
             OnDespawn();
 
             if (!AmChild)
             {
-                foreach (var netChild in ChildNetworkClasses)
+                foreach (var netChild in ChildNetworkObjects)
                 {
                     netChild.Despawn(false);
                 }
@@ -337,13 +345,13 @@ internal abstract class NetworkClass : RuntimePrefab, INetworkClass
     /// Creates and registers a network prefab of the specified type with a unique identifier.
     /// The prefab is marked as hidden and persistent, serving as a template for network instantiation.
     /// </summary>
-    private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkClass
+    private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkObject
     {
-        var networkClass = RuntimePrefab.CreatePrefab<T>($"{typeof(T)}:{prefabId}");
-        callback?.Invoke(networkClass);
-        networkClass.PrefabId = prefabId;
-        NetworkPrefabs[prefabId] = networkClass;
+        var networkObject = RuntimePrefab.CreatePrefab<T>($"{typeof(T)}:{prefabId}");
+        callback?.Invoke(networkObject);
+        networkObject.PrefabId = prefabId;
+        NetworkPrefabs[prefabId] = networkObject;
         PrefabIdTypeLookup[typeof(T)] = prefabId;
-        return networkClass;
+        return networkObject;
     }
 }

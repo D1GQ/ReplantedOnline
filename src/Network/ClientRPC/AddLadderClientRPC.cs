@@ -5,24 +5,20 @@ using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.RPC.Handlers;
+namespace ReplantedOnline.Network.ClientRPC;
 
-/// <summary>
-/// Handles the StartGame RPC for initiating online Versus matches in ReplantedOnline.
-/// Responsible for synchronizing game start and seed selection between players.
-/// </summary>
 [RegisterRPCHandler]
-internal sealed class AddLadderHandler : RPCHandler
+internal sealed class AddLadderClientRPC : BaseClientRPCHandler
 {
     /// <inheritdoc/>
-    internal sealed override RpcType Rpc => RpcType.AddLadder;
+    internal sealed override ClientRpcType Rpc => ClientRpcType.AddLadder;
 
     internal static void Send(int theGridX, int theGridY)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(theGridX);
         packetWriter.WriteInt(theGridY);
-        NetworkDispatcher.SendRpc(RpcType.AddLadder, packetWriter);
+        NetworkDispatcher.SendRpc(ClientRpcType.AddLadder, packetWriter);
         packetWriter.Recycle();
     }
 

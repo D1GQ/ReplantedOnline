@@ -4,7 +4,7 @@
 /// Defines the types of Remote Procedure Calls (RPCs) available in ReplantedOnline.
 /// RPCs are used to execute specific game logic on remote clients.
 /// </summary>
-internal enum RpcType
+internal enum ClientRpcType
 {
     /// <summary>
     /// Updates the lobby base data

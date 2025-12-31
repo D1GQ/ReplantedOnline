@@ -40,9 +40,9 @@ internal sealed class PacketWriter
     /// <summary>
     /// Writes an networkclass.
     /// </summary>
-    internal void WriteNetworkClass(NetworkClass networkClass)
+    internal void WriteNetworkObject(NetworkObject networkObj)
     {
-        WriteUInt(networkClass.NetworkId);
+        WriteUInt(networkObj.NetworkId);
     }
 
     /// <summary>

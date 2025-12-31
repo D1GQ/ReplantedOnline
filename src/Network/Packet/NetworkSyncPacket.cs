@@ -28,16 +28,16 @@ internal sealed class NetworkSyncPacket
     /// Serializes the state of the specified network object into the provided packet writer, including its network
     /// identifier, dirty bits, and initialization status.
     /// </summary>
-    /// <param name="networkClass">The network object whose state is to be serialized. Cannot be null.</param>
+    /// <param name="networkObj">The network object whose state is to be serialized. Cannot be null.</param>
     /// <param name="init">A value indicating whether the packet represents an initialization state. If <see langword="true"/>, the packet
     /// will include initialization data.</param>
     /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
-    internal static void SerializePacket(NetworkClass networkClass, bool init, PacketWriter packetWriter)
+    internal static void SerializePacket(NetworkObject networkObj, bool init, PacketWriter packetWriter)
     {
-        packetWriter.WriteUInt(networkClass.NetworkId);
-        packetWriter.WriteUInt(networkClass.DirtyBits);
+        packetWriter.WriteUInt(networkObj.NetworkId);
+        packetWriter.WriteUInt(networkObj.DirtyBits);
         packetWriter.WriteBool(init);
-        networkClass.Serialize(packetWriter, init);
+        networkObj.Serialize(packetWriter, init);
     }
 
     /// <summary>

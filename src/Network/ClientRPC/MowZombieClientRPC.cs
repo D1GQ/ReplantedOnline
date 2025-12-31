@@ -6,24 +6,20 @@ using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.RPC.Handlers;
+namespace ReplantedOnline.Network.ClientRPC;
 
-/// <summary>
-/// Handles the StartGame RPC for initiating online Versus matches in ReplantedOnline.
-/// Responsible for synchronizing game start and seed selection between players.
-/// </summary>
 [RegisterRPCHandler]
-internal sealed class MowZombieHandler : RPCHandler
+internal sealed class MowZombieClientRPC : BaseClientRPCHandler
 {
     /// <inheritdoc/>
-    internal sealed override RpcType Rpc => RpcType.MowZombie;
+    internal sealed override ClientRpcType Rpc => ClientRpcType.MowZombie;
 
     internal static void Send(int row, ZombieNetworked netZombie)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(row);
-        packetWriter.WriteNetworkClass(netZombie);
-        NetworkDispatcher.SendRpc(RpcType.MowZombie, packetWriter);
+        packetWriter.WriteNetworkObject(netZombie);
+        NetworkDispatcher.SendRpc(ClientRpcType.MowZombie, packetWriter);
         packetWriter.Recycle();
     }
 
@@ -33,7 +29,7 @@ internal sealed class MowZombieHandler : RPCHandler
         if (sender.Team is PlayerTeam.Plants)
         {
             var row = packetReader.ReadInt();
-            var netZombie = (ZombieNetworked)packetReader.ReadNetworkClass();
+            var netZombie = (ZombieNetworked)packetReader.ReadNetworkObject();
             var lawnMower = Instances.GameplayActivity.Board.FindLawnMowerInRow(row);
             lawnMower.MowZombieOriginal(netZombie._Zombie);
         }
