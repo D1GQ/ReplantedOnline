@@ -31,7 +31,7 @@ internal static class ModInfo
     /// <summary>
     /// The number of the release.
     /// </summary>
-    internal const string MOD_RELEASE_INFO = "4";
+    internal const string MOD_RELEASE_INFO = "5";
 
     /// <summary>
     /// The formatted version string of the mod using semantic versioning.
@@ -42,7 +42,7 @@ internal static class ModInfo
     /// <summary>
     /// The date when this version was released, formatted as mm.dd.yyyy.
     /// </summary>
-    internal const string RELEASE_DATE = "12.27.2025";
+    internal const string RELEASE_DATE = "12.30.2025";
 
     /// <summary>
     /// The unique identifier for the mod following reverse domain name notation.
