@@ -125,11 +125,39 @@ internal sealed class NetLobbyData
     /// </returns>
     internal uint GetNextNetworkId() => NetLobby.AmLobbyHost() ? NetworkIdPoolHost.GetUnusedId() : NetworkIdPoolNonHost.GetUnusedId();
 
+    /// <summary>
+    /// Handles the spawning of a network object by adding it to the collection of spawned objects
+    /// </summary>
+    /// <param name="networkObj">The network object to spawn.</param>
     internal void OnNetworkObjectSpawn(NetworkObject networkObj)
     {
         NetworkObjectsSpawned[networkObj.NetworkId] = networkObj;
         networkObj.IsOnNetwork = true;
         networkObj.OnSpawn();
+    }
+
+    /// <summary>
+    /// Handles the despawning of a network object by removing it from the collection of spawned objects,
+    /// </summary>
+    /// <param name="networkObj">The network object to despawn.</param>
+    internal void OnNetworkObjectDespawn(NetworkObject networkObj)
+    {
+        foreach (var netChild in networkObj.ChildNetworkObjects)
+        {
+            OnNetworkObjectDespawn(netChild);
+        }
+
+        NetLobby.LobbyData.NetworkObjectsSpawned.Remove(networkObj.NetworkId);
+        networkObj.IsOnNetwork = false;
+        networkObj.OnDespawn();
+        networkObj.OwnerId = default;
+        networkObj.NetworkId = 0;
+
+        if (!networkObj.AmChild)
+        {
+            NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(networkObj.NetworkId);
+            NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(networkObj.NetworkId);
+        }
     }
 
     /// <summary>

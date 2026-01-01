@@ -22,7 +22,7 @@ internal static class NetworkDispatcher
     /// Spawns all Active network objects to a new client
     /// </summary>
     /// <param name="steamId">The Steam ID of the target client to receive the packet.</param>
-    internal static void SendNetworkClasssTo(SteamId steamId)
+    internal static void SendNetworkObjectsTo(SteamId steamId)
     {
         MelonLogger.Msg($"[NetworkDispatcher] Sending network objects to {steamId}");
 
@@ -30,7 +30,7 @@ internal static class NetworkDispatcher
         {
             foreach (var networkObj in NetLobby.LobbyData.NetworkObjectsSpawned.Values)
             {
-                if (networkObj.IsOnNetwork)
+                if (networkObj.IsOnNetwork && !networkObj.AmChild)
                 {
                     var packet = PacketWriter.Get();
                     NetworkSpawnPacket.SerializePacket(networkObj, packet);
@@ -47,7 +47,7 @@ internal static class NetworkDispatcher
     /// </summary>
     /// <param name="networkObj">The network object instance to spawn.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
-    internal static void Spawn(NetworkObject networkObj, SteamId owner)
+    internal static void SpawnNetworkObject(NetworkObject networkObj, SteamId owner)
     {
         networkObj.OwnerId = owner;
         networkObj.NetworkId = NetLobby.LobbyData.GetNextNetworkId();
@@ -57,7 +57,23 @@ internal static class NetworkDispatcher
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
         packet.Recycle();
 
-        MelonLogger.Msg($"[NetworkDispatcher] Spawned NetworkClass with ID: {networkObj.NetworkId}, Owner: {owner}");
+        MelonLogger.Msg($"[NetworkDispatcher] Spawned Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
+    }
+
+    /// <summary>
+    /// Despawns a network object instance.
+    /// </summary>
+    /// <param name="networkObj">The network object instance to despawn.</param>
+    internal static void DespawnNetworkObject(NetworkObject networkObj)
+    {
+        MelonLogger.Msg($"[NetworkDispatcher] Despawning Network Object with ID: {networkObj.NetworkId}");
+
+        var packet = PacketWriter.Get();
+        NetworkDespawnPacket.SerializePacket(networkObj, packet);
+        SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
+        packet.Recycle();
+
+        NetLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
     }
 
     /// <summary>
@@ -382,26 +398,27 @@ internal static class NetworkDispatcher
     /// <param name="packetReader">The packet reader containing despawn data.</param>
     private static void StreamlineNetworkClassDespawn(SteamNetClient sender, PacketReader packetReader)
     {
-        uint networkId = packetReader.ReadUInt();
-        if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
+        var networkDespawnPacket = NetworkDespawnPacket.DeserializePacket(packetReader);
+
+        if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkDespawnPacket.NetworkId, out var networkObj))
         {
             if (networkObj.OwnerId == sender.SteamId)
             {
                 if (!networkObj.AmChild)
                 {
-                    networkObj.Despawn(false);
+                    NetLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                     UnityEngine.Object.Destroy(networkObj.gameObject);
-                    MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkId}");
+                    MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkDespawnPacket.NetworkId}");
                 }
                 else
                 {
-                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkId}, only the parent can be despawned!");
+                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkDespawnPacket.NetworkId}, only the parent can be despawned!");
                 }
             }
         }
         else
         {
-            MelonLogger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkId} not found");
+            MelonLogger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkDespawnPacket.NetworkId} not found");
         }
     }
 

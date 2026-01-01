@@ -1,6 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppSteamworks;
-using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object.Game;
@@ -265,7 +264,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
                 T networkObj = prefab.Clone<T>();
                 networkObj.transform.SetParent(NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
-                NetworkDispatcher.Spawn(networkObj, owner.Value);
+                NetworkDispatcher.SpawnNetworkObject(networkObj, owner.Value);
                 networkObj.gameObject.SetActive(true);
                 networkObj.gameObject.name = $"{typeof(T).Name}({networkObj.NetworkId})";
                 return networkObj;
@@ -279,12 +278,11 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Despawns the network object and removes it from all connected clients.
     /// Also destroys the associated game object.
     /// </summary>
-    public void DespawnAndDestroy(bool despawnOnNetwork = true)
+    public void DespawnAndDestroy()
     {
-        if (AmChild && despawnOnNetwork) return;
-        if (!AmOwner) return;
+        if (!AmOwner || AmChild) return;
 
-        Despawn(despawnOnNetwork);
+        Despawn();
         Destroy(gameObject);
     }
 
@@ -292,38 +290,13 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Despawns the network object and removes it from all connected clients.
     /// Cleans up network resources and sends despawn notification to other clients.
     /// </summary>
-    public void Despawn(bool despawnOnNetwork = true)
+    public void Despawn()
     {
-        if (AmChild && despawnOnNetwork) return;
-        if (!AmOwner) return;
+        if (!AmOwner || AmChild) return;
 
         if (IsOnNetwork)
         {
-            NetLobby.LobbyData.NetworkObjectsSpawned.Remove(NetworkId);
-            IsOnNetwork = false;
-            OnDespawn();
-
-            if (!AmChild)
-            {
-                foreach (var netChild in ChildNetworkObjects)
-                {
-                    netChild.Despawn(false);
-                }
-
-                NetLobby.LobbyData.NetworkIdPoolHost.ReleaseId(NetworkId);
-                NetLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(NetworkId);
-
-                if (despawnOnNetwork)
-                {
-                    var packet = PacketWriter.Get();
-                    packet.WriteUInt(NetworkId);
-                    NetworkDispatcher.SendPacket(packet, false, PacketTag.NetworkClassDespawn, PacketChannel.Main);
-                    packet.Recycle();
-                }
-            }
-
-            OwnerId = default;
-            NetworkId = 0;
+            NetworkDispatcher.DespawnNetworkObject(this);
         }
     }
 
