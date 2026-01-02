@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Il2CppInterop.Runtime.Attributes;
+using UnityEngine;
 
 namespace ReplantedOnline.Monos;
 
@@ -11,6 +12,7 @@ internal sealed class ObservableGameObject : MonoBehaviour
     /// Event that is invoked when the GameObject is destroyed.
     /// The parameter is the GameObject that is being destroyed.
     /// </summary>
+    [HideFromIl2Cpp]
     internal event Action<GameObject> OnGameObjectDestroy;
 
     public void OnDestroy()

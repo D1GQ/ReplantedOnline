@@ -198,6 +198,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// <summary>
     /// Sends an RPC (Remote Procedure Call) for this network object.
     /// </summary>
+    [HideFromIl2Cpp]
     public void SendNetworkClassRpc(byte rpcId, PacketWriter packetWriter = null)
     {
         NetworkDispatcher.SendRpc(this, rpcId, packetWriter);

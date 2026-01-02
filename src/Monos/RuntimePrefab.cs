@@ -48,6 +48,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// Gets the current state of the object.
     /// This property can hold any type of object to represent various states.
     /// </summary>
+    [HideFromIl2Cpp]
     internal object _State { get; set; }
 
     /// <summary>
