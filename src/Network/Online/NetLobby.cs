@@ -2,7 +2,6 @@
 using Il2CppSteamworks.Data;
 using MelonLoader;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Packet;
@@ -214,7 +213,6 @@ internal static class NetLobby
         if (AmLobbyHost())
         {
             MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {joinedPlayerId}");
-            RequestP2PSessionWithPlayer(joinedPlayerId);
             NetworkDispatcher.SendNetworkObjectsTo(joinedPlayerId);
             LobbyData.Networked.SendAllData();
         }
@@ -247,7 +245,6 @@ internal static class NetLobby
         if (IsPlayerInOurLobby(steamId))
         {
             SteamNetworking.AcceptP2PSessionWithUser(steamId);
-            steamId.GetNetClient()?.HasEstablishedP2P = true;
             MelonLogger.Msg($"[NetLobby] Accepted P2P session with {steamId}");
         }
         else
@@ -264,12 +261,6 @@ internal static class NetLobby
     private static void _OnP2PSessionConnectFail(SteamId steamId, P2PSessionError error)
     {
         MelonLogger.Warning($"[NetLobby] P2P session connection failed with {steamId}: {error}");
-
-        if (IsPlayerInOurLobby(steamId) && AmLobbyHost())
-        {
-            MelonLogger.Msg($"[NetLobby] Retrying P2P connection with {steamId}");
-            RequestP2PSessionWithPlayer(steamId);
-        }
     }
 
     /// <summary>
@@ -286,54 +277,6 @@ internal static class NetLobby
             members.Add(member);
         }
         LobbyData.ProcessMembers(members);
-
-        if (AmLobbyHost())
-        {
-            SetupP2PWithLobbyMembers();
-        }
-    }
-
-    /// <summary>
-    /// Establishes P2P connections with all current lobby members.
-    /// </summary>
-    private static void SetupP2PWithLobbyMembers()
-    {
-        foreach (var client in LobbyData.AllClients.Values)
-        {
-            if (client.AmLocal || client.HasEstablishedP2P) continue;
-
-            MelonLogger.Msg($"[NetLobby] Requesting P2P session with {client.Name} as host");
-            RequestP2PSessionWithPlayer(client.SteamId);
-        }
-    }
-
-    /// <summary>
-    /// Requests a P2P session with a specific player by sending a dummy packet.
-    /// </summary>
-    /// <param name="steamId">The Steam ID of the player to connect with.</param>
-    private static void RequestP2PSessionWithPlayer(SteamId steamId)
-    {
-        try
-        {
-            // This will trigger the remote client's OnP2PSessionRequest
-            var packetWriter = PacketWriter.Get();
-            packetWriter.AddTag(PacketTag.P2P);
-            var sent = SteamNetworking.SendP2PPacket(steamId, packetWriter.GetBytes(), packetWriter.Length);
-            packetWriter.Recycle();
-
-            if (sent)
-            {
-                MelonLogger.Msg($"[NetLobby] Successfully requested P2P session with {steamId}");
-            }
-            else
-            {
-                MelonLogger.Warning($"[NetLobby] Failed to request P2P session with {steamId}");
-            }
-        }
-        catch (Exception ex)
-        {
-            MelonLogger.Error($"[NetLobby] Error requesting P2P session with {steamId}: {ex.Message}");
-        }
     }
 
     /// <summary>

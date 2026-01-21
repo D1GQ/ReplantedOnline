@@ -12,11 +12,6 @@ internal enum PacketTag
     None,
 
     /// <summary>
-    /// Packet used for P2P session establishment and maintenance.
-    /// </summary>
-    P2P,
-
-    /// <summary>
     /// Packet used for P2P session closing.
     /// </summary>
     P2PClose,

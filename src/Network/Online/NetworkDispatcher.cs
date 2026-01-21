@@ -302,10 +302,6 @@ internal static class NetworkDispatcher
                 case PacketTag.None:
                     MelonLogger.Warning("[NetworkDispatcher] Received packet with no tag");
                     break;
-                case PacketTag.P2P:
-                    sender.HasEstablishedP2P = true;
-                    MelonLogger.Msg("[NetworkDispatcher] P2P handshake packet processed");
-                    break;
                 case PacketTag.P2PClose:
                     if (sender.AmHost && !NetLobby.AmLobbyHost())
                     {

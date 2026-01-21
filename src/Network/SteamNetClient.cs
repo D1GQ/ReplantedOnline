@@ -29,7 +29,6 @@ internal sealed class SteamNetClient
         {
             OpponentClient = this;
         }
-        HasEstablishedP2P = AmLocal;
         MelonLogger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({SteamId})");
     }
 
@@ -78,11 +77,6 @@ internal sealed class SteamNetClient
     /// Gets whether this client is the host of the current lobby.
     /// </summary>
     internal bool AmHost => NetLobby.AmLobbyHost(SteamId);
-
-    /// <summary>
-    /// Gets whether if P2P has been established with this client
-    /// </summary>
-    internal bool HasEstablishedP2P { get; set; }
 
     /// <summary>
     /// The team that the player is on.
