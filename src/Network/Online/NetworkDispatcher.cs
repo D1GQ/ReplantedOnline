@@ -302,7 +302,7 @@ internal static class NetworkDispatcher
                 case PacketTag.None:
                     MelonLogger.Warning("[NetworkDispatcher] Received packet with no tag");
                     break;
-                case PacketTag.P2PClose:
+                case PacketTag.RemoveClient:
                     if (sender.AmHost && !NetLobby.AmLobbyHost())
                     {
                         BanReasons reason = (BanReasons)packetReader.ReadByte();

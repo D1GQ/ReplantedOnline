@@ -12,9 +12,9 @@ internal enum PacketTag
     None,
 
     /// <summary>
-    /// Packet used for P2P session closing.
+    /// Packet used removing a client from the game.
     /// </summary>
-    P2PClose,
+    RemoveClient,
 
     /// <summary>
     /// Remote Procedure Call packet for executing methods on remote clients.

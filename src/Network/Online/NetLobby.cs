@@ -312,7 +312,7 @@ internal static class NetLobby
 
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteByte((byte)reason);
-        NetworkDispatcher.SendPacketTo(steamId, packetWriter, PacketTag.P2PClose, PacketChannel.Main);
+        NetworkDispatcher.SendPacketTo(steamId, packetWriter, PacketTag.RemoveClient, PacketChannel.Main);
         packetWriter.Recycle();
 
         TerminateP2PSession(steamId);
