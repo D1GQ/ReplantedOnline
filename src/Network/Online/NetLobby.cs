@@ -69,7 +69,7 @@ internal static class NetLobby
     /// <summary>
     /// Resets the lobby state and transitions back to the Versus menu.
     /// </summary>
-    internal static void ResetLobby()
+    internal static void ResetLobby(Action callback = null)
     {
         MelonLogger.Msg("[NetLobby] Restarting the lobby");
         VersusManager.ResetPlayerInput();
@@ -85,6 +85,8 @@ internal static class NetLobby
             {
                 LobbyData.Networked.SendAllData();
             }
+
+            callback?.Invoke();
         });
 
         if (AmLobbyHost())
@@ -214,6 +216,7 @@ internal static class NetLobby
             MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {joinedPlayerId}");
             RequestP2PSessionWithPlayer(joinedPlayerId);
             NetworkDispatcher.SendNetworkObjectsTo(joinedPlayerId);
+            LobbyData.Networked.SendAllData();
         }
     }
 
@@ -224,9 +227,12 @@ internal static class NetLobby
     /// <param name="user">The friend who left the lobby.</param>
     private static void _OnLobbyMemberLeave(Lobby lobby, Friend user)
     {
-        if (!LobbyData.Networked.HasStarted)
+        if (AmLobbyHost())
         {
-            ResetLobby();
+            ResetLobby(() =>
+            {
+                ReplantedOnlinePopup.Show("Lobby Restarted", "The other player has left the game!");
+            });
         }
 
         ProcessMemberList();
@@ -314,8 +320,6 @@ internal static class NetLobby
             packetWriter.AddTag(PacketTag.P2P);
             var sent = SteamNetworking.SendP2PPacket(steamId, packetWriter.GetBytes(), packetWriter.Length);
             packetWriter.Recycle();
-
-            LobbyData.Networked.SendAllData();
 
             if (sent)
             {
