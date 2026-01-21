@@ -12,7 +12,7 @@ namespace ReplantedOnline.Managers;
 /// <summary>
 /// Manages end-game logic and win screen display for versus matches.
 /// </summary>
-internal static class EndGameManager
+internal static class VersusEndGameManager
 {
     /// <summary>
     /// Ends the current game and initiates the end-game sequence.

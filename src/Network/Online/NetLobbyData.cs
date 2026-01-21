@@ -85,7 +85,7 @@ internal sealed class NetLobbyData
             AllClients.Remove(id);
         }
 
-        VersusManager.UpdateSideVisuals();
+        VersusLobbyManager.UpdateSideVisuals();
     }
 
     /// <summary>
@@ -314,7 +314,7 @@ internal sealed class NetLobbyData
             // Wait for the gameplay activity and versus mode to be initialized
             try
             {
-                while (NetLobby.LobbyData?.Networked?._restartingLobby != false || !VersusManager.IsUIReady())
+                while (NetLobby.LobbyData?.Networked?._restartingLobby != false || !VersusLobbyManager.IsUIReady())
                 {
                     // If we leave the lobby while waiting, clean up and exit
                     if (!NetLobby.AmInLobby())
@@ -353,9 +353,9 @@ internal sealed class NetLobbyData
 
                             if (data._hostTeam is PlayerTeam.None) // unset teams
                             {
-                                VersusManager.ResetPlayerInput();
+                                VersusLobbyManager.ResetPlayerInput();
                                 NetLobby.LobbyData.UnsetAllTeams();
-                                VersusManager.UpdateSideVisuals();
+                                VersusLobbyManager.UpdateSideVisuals();
                             }
                             else
                             {
@@ -364,16 +364,16 @@ internal sealed class NetLobbyData
                                 {
                                     SteamNetClient.LocalClient.Team = data._hostTeam;
                                     SteamNetClient.OpponentClient?.Team = otherTeam;
-                                    VersusManager.SetPlayerInput(data._hostTeam);
+                                    VersusLobbyManager.SetPlayerInput(data._hostTeam);
                                 }
                                 else
                                 {
                                     SteamNetClient.LocalClient.Team = otherTeam;
                                     SteamNetClient.OpponentClient?.Team = data._hostTeam;
-                                    VersusManager.SetPlayerInput(otherTeam);
+                                    VersusLobbyManager.SetPlayerInput(otherTeam);
                                 }
 
-                                VersusManager.UpdateSideVisuals();
+                                VersusLobbyManager.UpdateSideVisuals();
                             }
 
                             SetReady();

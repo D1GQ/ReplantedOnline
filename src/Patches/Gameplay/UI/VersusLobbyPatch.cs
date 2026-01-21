@@ -81,8 +81,8 @@ internal static class VersusLobbyPatch
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
             }
 
-            VersusManager.SetTextComps(VsSideChooser);
-            VersusManager.UpdateSideVisuals();
+            VersusLobbyManager.SetTextComps(VsSideChooser);
+            VersusLobbyManager.UpdateSideVisuals();
         }
     }
 

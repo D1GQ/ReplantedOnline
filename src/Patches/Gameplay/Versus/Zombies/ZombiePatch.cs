@@ -55,7 +55,7 @@ internal static class ZombiePatch
             {
                 var netZombie = __instance.GetNetworked<ZombieNetworked>();
                 netZombie.SendEnteringHouseRpc(__instance.mPosX);
-                VersusManager.EndGame(__instance.mController?.gameObject, PlayerTeam.Zombies);
+                VersusGameplayManager.EndGame(__instance.mController?.gameObject, PlayerTeam.Zombies);
             }
 
             return false;

@@ -85,7 +85,7 @@ internal static class VersusModePatch
             }
         }
 
-        VersusManager.OnStart();
+        VersusGameplayManager.OnStart();
 
         throw new Exception("This is a intentional exception!"); // For some reason needed to prevent original method to run ???
     }
@@ -169,7 +169,7 @@ internal static class VersusModePatch
             if (__state)
             {
                 // Increase gravestone spawn timer by 35% (nerfing spawn rate)
-                __instance.mPhaseCounter = VersusManager.MultiplyGraveCounter(__instance.mPhaseCounter);
+                __instance.mPhaseCounter = VersusGameplayManager.MultiplyGraveCounter(__instance.mPhaseCounter);
             }
         }
     }
@@ -204,7 +204,7 @@ internal static class VersusModePatch
             if (__state)
             {
                 // Increase sun spawn timer by 35% (nerfing natural brain production)
-                __instance.mSunCountDown = VersusManager.MultiplyBrainSpawnCounter(__instance.mSunCountDown);
+                __instance.mSunCountDown = VersusGameplayManager.MultiplyBrainSpawnCounter(__instance.mSunCountDown);
             }
         }
     }

@@ -22,6 +22,6 @@ internal sealed class SetClientReadyClientRPC : BaseClientRPCHandler
     internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         sender.Ready = true;
-        VersusManager.UpdateSideVisuals();
+        VersusLobbyManager.UpdateSideVisuals();
     }
 }

@@ -72,7 +72,7 @@ internal static class NetLobby
     internal static void ResetLobby(Action callback = null)
     {
         MelonLogger.Msg("[NetLobby] Restarting the lobby");
-        VersusManager.ResetPlayerInput();
+        VersusLobbyManager.ResetPlayerInput();
         LobbyData.UnsetAllClientsReady();
         LobbyData.UnsetAllTeams();
         LobbyData.LocalDespawnAll();

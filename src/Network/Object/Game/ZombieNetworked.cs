@@ -256,7 +256,7 @@ internal sealed class ZombieNetworked : NetworkObject
             }
             else
             {
-                VersusManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Plants);
+                VersusGameplayManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Plants);
                 callback();
             }
         }
@@ -343,7 +343,7 @@ internal sealed class ZombieNetworked : NetworkObject
         EnteringHouse = true;
         StopLarpPos();
         _Zombie?.mPosX = xPos;
-        VersusManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Zombies);
+        VersusGameplayManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Zombies);
     }
 
     internal void SendMindControlledRpc()
