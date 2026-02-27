@@ -24,7 +24,7 @@ internal static class PauseMenuPatch
                 restartLevelButton.onClick = new();
                 restartLevelButton.onClick.AddListener(() =>
                 {
-                    NetLobby.LobbyData?.Networked?.ResetLobby();
+                    NetLobby.LobbyData?.ResetLobby();
                 });
                 restartLevelButton.gameObject.DestroyAllTextLocalizers();
                 restartLevelButton.GetComponentInChildren<TextMeshProUGUI>(true)?.SetText("Restart Lobby");

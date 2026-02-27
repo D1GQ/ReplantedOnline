@@ -141,7 +141,7 @@ internal sealed class InfoDisplay : MonoBehaviour
         {
             sb.AppendLine("Lobby Info >");
             sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkObjectsSpawned.Count}");
-            if (!NetLobby.LobbyData.Networked.HasStarted)
+            if (!NetLobby.LobbyData.HasStarted)
             {
                 sb.AppendLine(" Versus Phase: Lobby");
             }

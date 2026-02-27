@@ -1,13 +1,8 @@
 ﻿using Il2CppSteamworks;
-using MelonLoader;
-using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Online.ClientRPC;
-using ReplantedOnline.Network.Packet;
-using System.Collections;
 
 namespace ReplantedOnline.Network.Online;
 
@@ -189,213 +184,131 @@ internal sealed class NetLobbyData
         }
     }
 
-    internal NetworkedData Networked = new();
-
-    /// <summary>
-    /// Handles networked lobby data synchronization between clients.
-    /// </summary>
-    [RegisterClientRPC]
-    internal sealed class NetworkedData : BaseClientRPC
+    internal bool LobbyRestarting
     {
-        private bool _restartingLobby;
-        private bool _hasStarted;
-        private PlayerTeam _hostTeam;
-
-        /// <summary>
-        /// Gets if the host is picking sides.
-        /// </summary>
-        internal bool PickingSides => _hostTeam is PlayerTeam.None;
-
-        /// <summary>
-        /// Gets whether the versus match has started.
-        /// </summary>
-        internal bool HasStarted => _hasStarted;
-
-        /// <summary>
-        /// Gets which team the host is on.
-        /// </summary>
-        internal PlayerTeam HostTeam => _hostTeam;
-
-        /// <inheritdoc/>
-        internal sealed override ClientRpcType Rpc => ClientRpcType.LobbyData;
-
-        /// <summary>
-        /// Sets whether the versus match has started and synchronizes the value across all clients.
-        /// </summary>
-        /// <param name="value">Whether the match has started.</param>
-        internal void SetHasStarted(bool value)
+        get
         {
-            _hasStarted = value;
-            SendData(1, packetWriter =>
-            {
-                packetWriter.WriteBool(value);
-            });
+            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(LobbyRestarting)) == bool.TrueString;
         }
-
-        /// <summary>
-        /// Sets which team the host is on and synchronizes the team assignment across all clients.
-        /// </summary>
-        /// <param name="team">The team for the host.</param>
-        internal void SetHostTeam(PlayerTeam team)
-        {
-            _hostTeam = team;
-            SendData(2, packetWriter =>
-            {
-                packetWriter.WriteByte((byte)team);
-            });
-        }
-
-        /// <summary>
-        /// Initiates a lobby reset sequence.
-        /// Only the host can trigger a lobby reset.
-        /// </summary>
-        internal void ResetLobby()
+        set
         {
             if (NetLobby.AmLobbyHost())
             {
-                SendData(0);
+                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(LobbyRestarting), value.ToString());
+                UpdateLobbyStates();
             }
         }
+    }
 
-        /// <summary>
-        /// Synchronizes all networked lobby data to newly connected clients.
-        /// This ensures late-joining clients receive the current game state.
-        /// </summary>
-        internal void SendAllData()
+    internal bool PickingSides
+    {
+        get
         {
-            // Send match start status (dataId = 1)
-            SendData(1, packetWriter =>
-            {
-                packetWriter.WriteBool(_hasStarted);
-            }, false);
-
-            // Send host team assignment (dataId = 2)
-            SendData(2, packetWriter =>
-            {
-                packetWriter.WriteByte((byte)_hostTeam);
-            }, true);
+            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(PickingSides)) == bool.TrueString;
         }
-
-        /// <summary>
-        /// Sends a lobby data packet to all connected clients, optionally including additional data and controlling
-        /// local receipt.
-        /// </summary>
-        /// <param name="dataId">The identifier for the type of data to send in the packet.</param>
-        /// <param name="callback">An optional callback that writes additional data to the packet before it is sent. If null, only the data
-        /// identifier is included.</param>
-        /// <param name="receiveLocally">Indicates whether the packet should also be received by the local client. Set to <see langword="true"/> to
-        /// deliver the packet locally; otherwise, <see langword="false"/>.</param>
-        private void SendData(byte dataId, Action<PacketWriter> callback = null, bool receiveLocally = true)
+        set
         {
-            var packetWriter = PacketWriter.Get();
-            packetWriter.WriteByte(dataId); // Write data type identifier
-            callback?.Invoke(packetWriter); // Write additional data if provided
-            NetworkDispatcher.SendRpc(ClientRpcType.LobbyData, packetWriter, receiveLocally); // Send to all clients
-            packetWriter.Recycle();
-        }
-
-        /// <inheritdoc/>
-        internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
-        {
-            if (!sender.AmHost) return; // Only accept data from the host
-
-            MelonCoroutines.Start(CoWaitHandle(packetReader));
-        }
-
-        /// <summary>
-        /// Coroutine that waits for required game systems to be ready before processing RPC data.
-        /// </summary>
-        /// <param name="packetReader">The packet to process.</param>
-        /// <returns>IEnumerator for coroutine execution.</returns>
-        private static IEnumerator CoWaitHandle(PacketReader packetReader)
-        {
-            var packet = PacketReader.Get(packetReader);
-
-            // Wait for the gameplay activity and versus mode to be initialized
-            try
+            if (NetLobby.AmLobbyHost())
             {
-                while (NetLobby.LobbyData?.Networked?._restartingLobby != false || !VersusLobbyManager.IsUIReady())
-                {
-                    // If we leave the lobby while waiting, clean up and exit
-                    if (!NetLobby.AmInLobby())
-                    {
-                        packet.Recycle();
-                        yield break;
-                    }
-
-                    yield return null;
-                }
-
-                var data = NetLobby.LobbyData.Networked;
-                var dataId = packet.ReadByte();
-
-                switch (dataId)
-                {
-                    case 0: // Lobby Reset
-                        {
-                            if (!data._restartingLobby)
-                            {
-                                data._restartingLobby = true; // Set flag to prevent duplicate resets
-                                NetLobby.ResetLobby(); // Execute lobby reset
-                            }
-                        }
-                        break;
-
-                    case 1: // Match Start Status
-                        {
-                            data._hasStarted = packet.ReadBool(); // Update local match start state
-                        }
-                        break;
-
-                    case 2: // Enter Team Selection Phase
-                        {
-                            data._hostTeam = (PlayerTeam)packet.ReadByte();
-
-                            if (data._hostTeam is PlayerTeam.None) // unset teams
-                            {
-                                VersusLobbyManager.ResetPlayerInput();
-                                NetLobby.LobbyData.UnsetAllTeams();
-                                VersusLobbyManager.UpdateSideVisuals();
-                            }
-                            else
-                            {
-                                var otherTeam = Utils.GetOppositeTeam(data._hostTeam);
-                                if (NetLobby.AmLobbyHost())
-                                {
-                                    SteamNetClient.LocalClient.Team = data._hostTeam;
-                                    SteamNetClient.OpponentClient?.Team = otherTeam;
-                                    VersusLobbyManager.SetPlayerInput(data._hostTeam);
-                                }
-                                else
-                                {
-                                    SteamNetClient.LocalClient.Team = otherTeam;
-                                    SteamNetClient.OpponentClient?.Team = data._hostTeam;
-                                    VersusLobbyManager.SetPlayerInput(otherTeam);
-                                }
-
-                                VersusLobbyManager.UpdateSideVisuals();
-                            }
-
-                            SetReady();
-                        }
-                        break;
-                }
-            }
-            finally
-            {
-                packet.Recycle();
+                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(PickingSides), value.ToString());
+                UpdateLobbyStates();
             }
         }
+    }
 
-        private static void SetReady()
+    internal bool HasStarted
+    {
+        get
         {
-            if (!NetLobby.AmLobbyHost())
+            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(HasStarted)) == bool.TrueString;
+        }
+        set
+        {
+            if (NetLobby.AmLobbyHost())
             {
-                if (!SteamNetClient.LocalClient.Ready)
-                {
-                    SetClientReadyClientRPC.Send(); // Ensure we are marked as ready
-                }
+                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(HasStarted), value.ToString());
+                UpdateLobbyStates();
             }
+        }
+    }
+
+    internal PlayerTeam HostTeam
+    {
+        get
+        {
+            var data = SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(HostTeam));
+            if (int.TryParse(data, out var @int))
+            {
+                return (PlayerTeam)@int;
+            }
+
+            return PlayerTeam.None;
+        }
+        set
+        {
+            if (NetLobby.AmLobbyHost())
+            {
+                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(HostTeam), ((int)value).ToString());
+                UpdateLobbyStates();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes lobby data to default.
+    /// </summary>
+    internal void InitializeData()
+    {
+        LobbyRestarting = false;
+        PickingSides = false;
+        HasStarted = false;
+        HostTeam = PlayerTeam.None;
+    }
+
+
+    /// <summary>
+    /// Initiates a lobby reset sequence.
+    /// Only the host can trigger a lobby reset.
+    /// </summary>
+    internal void ResetLobby()
+    {
+        if (NetLobby.AmLobbyHost())
+        {
+            LobbyRestarting = true;
+            NetworkDispatcher.SendPacket(null, false, PacketTag.ResetLobby, PacketChannel.Main);
+            NetLobby.ResetLobby();
+        }
+    }
+
+    /// <summary>
+    /// Updates the lobby states base on lobby data.
+    /// </summary>
+    internal void UpdateLobbyStates()
+    {
+        var hostTeam = HostTeam;
+        if (hostTeam is PlayerTeam.None)
+        {
+            VersusLobbyManager.ResetPlayerInput();
+            NetLobby.LobbyData.UnsetAllTeams();
+            VersusLobbyManager.UpdateSideVisuals();
+        }
+        else
+        {
+            var otherTeam = Utils.GetOppositeTeam(hostTeam);
+            if (NetLobby.AmLobbyHost())
+            {
+                SteamNetClient.LocalClient.Team = hostTeam;
+                SteamNetClient.OpponentClient?.Team = otherTeam;
+                VersusLobbyManager.SetPlayerInput(hostTeam);
+            }
+            else
+            {
+                SteamNetClient.LocalClient.Team = otherTeam;
+                SteamNetClient.OpponentClient?.Team = hostTeam;
+                VersusLobbyManager.SetPlayerInput(otherTeam);
+            }
+
+            VersusLobbyManager.UpdateSideVisuals();
         }
     }
 }

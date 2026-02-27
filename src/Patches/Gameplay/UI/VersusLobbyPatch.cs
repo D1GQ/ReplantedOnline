@@ -10,10 +10,10 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Online.ClientRPC;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using ReplantedOnline.Network.Online.ClientRPC;
 
 namespace ReplantedOnline.Patches.Gameplay.UI;
 
@@ -168,11 +168,11 @@ internal static class VersusLobbyPatch
 
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == 0)
         {
-            NetLobby.LobbyData.Networked.SetHostTeam(PlayerTeam.Plants);
+            NetLobby.LobbyData.HostTeam = PlayerTeam.Plants;
         }
         else
         {
-            NetLobby.LobbyData.Networked.SetHostTeam(PlayerTeam.Zombies);
+            NetLobby.LobbyData.HostTeam = PlayerTeam.Zombies;
         }
     }
 
@@ -193,6 +193,6 @@ internal static class VersusLobbyPatch
     {
         if (!__state) return;
 
-        NetLobby.LobbyData.Networked.SetHostTeam(PlayerTeam.None);
+        NetLobby.LobbyData.HostTeam = PlayerTeam.None;
     }
 }

@@ -75,18 +75,10 @@ internal static class NetLobby
         LobbyData.UnsetAllClientsReady();
         LobbyData.UnsetAllTeams();
         LobbyData.LocalDespawnAll();
-        LobbyData.Networked = new();
+        LobbyData.InitializeData();
         Transitions.SetLoading();
         Transitions.ToVersus();
-        Transitions.ToGameplay(() =>
-        {
-            if (AmLobbyHost())
-            {
-                LobbyData.Networked.SendAllData();
-            }
-
-            callback?.Invoke();
-        });
+        Transitions.ToGameplay(callback);
 
         if (AmLobbyHost())
         {
@@ -142,6 +134,7 @@ internal static class NetLobby
         if (result == Result.OK)
         {
             LobbyData = new(data.Id, data.Owner.Id);
+            LobbyData.InitializeData();
             MelonLogger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
             MatchmakingManager.SetLobbyData(LobbyData);
         }
@@ -160,7 +153,12 @@ internal static class NetLobby
     {
         LobbyData ??= new(data.Id, data.Owner.Id);
         LobbyData.LobbyCode = SteamMatchmaking.Internal.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
-        Transitions.ToVersus(NetworkDispatcher.StartListening);
+        Transitions.ToVersus(() =>
+        {
+            NetworkDispatcher.StartListening();
+            LobbyData.UpdateLobbyStates();
+            SteamNetClient.LocalClient.SetReady();
+        });
 
         ProcessMemberList();
 
@@ -190,6 +188,10 @@ internal static class NetLobby
             });
             MelonLogger.Warning("[NetLobby] Lobby host left the game");
         }
+        else
+        {
+            LobbyData.UpdateLobbyStates();
+        }
     }
 
     /// <summary>
@@ -214,7 +216,6 @@ internal static class NetLobby
         {
             MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {joinedPlayerId}");
             NetworkDispatcher.SendNetworkObjectsTo(joinedPlayerId);
-            LobbyData.Networked.SendAllData();
         }
     }
 

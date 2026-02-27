@@ -130,7 +130,10 @@ internal static class NetworkDispatcher
 
         var packet = PacketWriter.Get();
         packet.AddTag(tag);
-        packet.WritePacket(packetWriter);
+        if (packetWriter != null)
+        {
+            packet.WritePacket(packetWriter);
+        }
 
         if (NetLobby.IsPlayerInOurLobby(steamId))
         {
@@ -153,7 +156,10 @@ internal static class NetworkDispatcher
     {
         var packet = PacketWriter.Get();
         packet.AddTag(tag);
-        packet.WritePacket(packetWriter);
+        if (packetWriter != null)
+        {
+            packet.WritePacket(packetWriter);
+        }
 
         int sentCount = 0;
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
@@ -310,6 +316,12 @@ internal static class NetworkDispatcher
                             ReplantedOnlinePopup.Show("Disconnected", "You have been disconnected by the Host!");
                         });
                         MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
+                    }
+                    break;
+                case PacketTag.ResetLobby:
+                    if (sender.AmHost)
+                    {
+                        NetLobby.ResetLobby();
                     }
                     break;
                 default:

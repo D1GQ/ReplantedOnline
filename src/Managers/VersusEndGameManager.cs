@@ -122,7 +122,7 @@ internal static class VersusEndGameManager
 
         if (NetLobby.AmLobbyHost())
         {
-            NetLobby.LobbyData.Networked.ResetLobby();
+            NetLobby.LobbyData.ResetLobby();
         }
     }
 

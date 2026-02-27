@@ -17,6 +17,11 @@ internal enum PacketTag
     RemoveClient,
 
     /// <summary>
+    /// Packet used resetting lobby
+    /// </summary>
+    ResetLobby,
+
+    /// <summary>
     /// Remote Procedure Call packet for executing methods on remote clients.
     /// </summary>
     Rpc,

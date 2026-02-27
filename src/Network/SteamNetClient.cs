@@ -2,6 +2,7 @@
 using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Online.ClientRPC;
 
 namespace ReplantedOnline.Network;
 
@@ -113,5 +114,16 @@ internal sealed class SteamNetClient
         }
 
         return null;
+    }
+
+    internal void SetReady()
+    {
+        if (!NetLobby.AmLobbyHost())
+        {
+            if (!Ready)
+            {
+                SetClientReadyClientRPC.Send();
+            }
+        }
     }
 }

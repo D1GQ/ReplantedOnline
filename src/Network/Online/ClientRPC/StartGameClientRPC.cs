@@ -26,7 +26,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
         packetWriter.WriteByte((byte)selectionSet);
         NetworkDispatcher.SendRpc(ClientRpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
-        NetLobby.LobbyData.Networked.SetHasStarted(true);
+        NetLobby.LobbyData.HasStarted = true;
         MatchmakingManager.SetJoinable(false);
     }
 
