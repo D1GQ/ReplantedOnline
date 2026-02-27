@@ -274,7 +274,7 @@ internal sealed class NetLobbyData
     /// </summary>
     internal void UpdateLobbyStates()
     {
-        if (HasStarted) return;
+        if (HasStarted || LobbyRestarting) return;
 
         var hostTeam = HostTeam;
         if (hostTeam is PlayerTeam.None)

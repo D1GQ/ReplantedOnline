@@ -165,7 +165,7 @@ internal static class VersusLobbyManager
             return;
         }
 
-        bool shouldEnableButtons = NetLobby.LobbyData.PickingSides
+        bool shouldEnableButtons = !NetLobby.LobbyData.PickingSides
             && NetLobby.GetLobbyMemberCount() > 1
             && NetLobby.LobbyData.AllClientsReady();
 
