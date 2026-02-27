@@ -12,7 +12,7 @@ internal sealed class NetworkClassDespawnPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassDespawn;
 
     /// <inheritdoc/>
-    internal sealed override void Streamline(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         var networkDespawnPacket = NetworkDespawnPacket.DeserializePacket(packetReader);
 

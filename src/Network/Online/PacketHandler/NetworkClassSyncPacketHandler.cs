@@ -13,7 +13,7 @@ internal sealed class NetworkClassSyncPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassSync;
 
     /// <inheritdoc/>
-    internal sealed override void Streamline(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         MelonCoroutines.Start(CoWaitForNetworkClassSync(sender, packetReader));
     }

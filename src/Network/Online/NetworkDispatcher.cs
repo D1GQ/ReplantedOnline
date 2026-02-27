@@ -313,7 +313,7 @@ internal static class NetworkDispatcher
                     }
                     break;
                 default:
-                    if (!BasePacketHandler.StreamlinePacket(tag, sender, packetReader))
+                    if (!BasePacketHandler.HandlePacket(tag, sender, packetReader))
                     {
                         MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
                     }

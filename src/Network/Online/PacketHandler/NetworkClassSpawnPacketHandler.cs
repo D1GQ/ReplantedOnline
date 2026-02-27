@@ -13,7 +13,7 @@ internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassSpawn;
 
     /// <inheritdoc/>
-    internal sealed override void Streamline(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
 

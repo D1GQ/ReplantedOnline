@@ -14,7 +14,7 @@ internal class NetworkClassRpcPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassRpc;
 
     /// <inheritdoc/>
-    internal sealed override void Streamline(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         MelonCoroutines.Start(CoWaitForNetworkClass(sender, packetReader));
     }

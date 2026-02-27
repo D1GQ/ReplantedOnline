@@ -13,7 +13,7 @@ internal sealed class RpcPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.Rpc;
 
     /// <inheritdoc/>
-    internal sealed override void Streamline(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
     {
         ClientRpcType rpc = (ClientRpcType)packetReader.ReadByte();
         MelonLogger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
