@@ -1,4 +1,6 @@
-﻿using Il2CppTekly.PanelViews;
+﻿#pragma warning disable CS0162
+
+using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;

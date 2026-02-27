@@ -12,3 +12,4 @@ using System.Reflection;
 [assembly: AssemblyProduct(nameof(ReplantedOnline))]
 [assembly: AssemblyVersion(ModInfo.MOD_VERSION)]
 [assembly: AssemblyFileVersion(ModInfo.MOD_VERSION)]
+[assembly: AssemblyMetadata("BuildDate", "02.27.2026")]

@@ -17,10 +17,6 @@ internal sealed class NetworkIdPool
         }
     }
 
-    private uint _start;
-
-    internal uint _end;
-
     /// <summary>
     /// Retrieves an unused ID from the pool.
     /// </summary>
@@ -44,10 +40,7 @@ internal sealed class NetworkIdPool
     {
         if (_allocatedIds.Remove(id))
         {
-            if ((id - _start) % ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN == 0)
-            {
-                _availableIds.Enqueue(id);
-            }
+            _availableIds.Enqueue(id);
         }
     }
 

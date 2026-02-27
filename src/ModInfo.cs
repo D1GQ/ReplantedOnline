@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Enums;
+using System.Reflection;
 
 namespace ReplantedOnline;
 
@@ -42,7 +43,7 @@ internal static class ModInfo
     /// <summary>
     /// The date when this version was released, formatted as mm.dd.yyyy.
     /// </summary>
-    internal const string RELEASE_DATE = "12.30.2025";
+    internal static string RELEASE_DATE = GetAssemblyMetadata("BuildDate");
 
     /// <summary>
     /// The unique identifier for the mod following reverse domain name notation.
@@ -63,6 +64,20 @@ internal static class ModInfo
     /// List of all contributors, separate by ",".
     /// </summary>
     internal const string CONTRIBUTORS = "PalmForest";
+
+    /// <summary>
+    /// Retrieves metadata from the assembly attributes.
+    /// </summary>
+    /// <param name="key">The metadata key to retrieve.</param>
+    /// <returns>The metadata value, or an empty string if not found.</returns>
+    private static string GetAssemblyMetadata(string key)
+    {
+        var attribute = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == key);
+
+        return attribute?.Value ?? string.Empty;
+    }
 
     /// <summary>
     /// Contains constants related to Plants vs. Zombies™: Replanted game information.

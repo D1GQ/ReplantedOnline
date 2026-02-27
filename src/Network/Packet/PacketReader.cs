@@ -74,6 +74,7 @@ internal sealed class PacketReader
         return null;
     }
 
+    /// <summary>
     /// Reads a Vector2 from the packet as two consecutive float values (X and Y).
     /// </summary>
     /// <returns>The Vector2 value.</returns>

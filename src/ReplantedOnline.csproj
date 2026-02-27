@@ -2,6 +2,7 @@
 	<!-- Base Info -->
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<OutputType>Library</OutputType>
@@ -9,6 +10,22 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
+
+	<!-- Build Metadata -->
+	<PropertyGroup>
+		<BuildDate>$([System.DateTime]::UtcNow.ToString("MM.dd.yyyy"))</BuildDate>
+	</PropertyGroup>
+
+	<!-- Target to add build date metadata -->
+	<Target Name="AddBuildDateMetadata" BeforeTargets="BeforeCompile">
+		<ItemGroup>
+			<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+				<_Parameter1>BuildDate</_Parameter1>
+				<_Parameter2>$(BuildDate)</_Parameter2>
+			</AssemblyAttribute>
+		</ItemGroup>
+		<Message Text="Added assembly metadata: BuildDate=$(BuildDate)" Importance="high" />
+	</Target>
 
 	<!-- Build Events -->
 	<PropertyGroup>

@@ -65,7 +65,6 @@ internal static class NetworkHelper
     /// <summary>
     /// Checks if the object has a network look up.
     /// </summary>
-    /// <typeparam name="T">The type of NetworkClass to retrieve.</typeparam>
     /// <param name="child">The object instance to look up.</param>
     internal static bool HasNetworked(this object child)
     {
