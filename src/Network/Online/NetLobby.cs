@@ -71,14 +71,20 @@ internal static class NetLobby
     internal static void ResetLobby(Action callback = null)
     {
         MelonLogger.Msg("[NetLobby] Restarting the lobby");
+        SteamNetClient.LocalClient?.Ready = false;
         VersusLobbyManager.ResetPlayerInput();
-        LobbyData.UnsetAllClientsReady();
         LobbyData.UnsetAllTeams();
         LobbyData.LocalDespawnAll();
         LobbyData.InitializeData();
         Transitions.SetLoading();
-        Transitions.ToVersus();
-        Transitions.ToGameplay(callback);
+        Transitions.ToVersus(() =>
+        {
+            Transitions.ToGameplay(() =>
+            {
+                callback?.Invoke();
+                SteamNetClient.LocalClient?.Ready = true;
+            });
+        });
 
         if (AmLobbyHost())
         {
@@ -157,7 +163,7 @@ internal static class NetLobby
         {
             NetworkDispatcher.StartListening();
             LobbyData.UpdateLobbyStates();
-            SteamNetClient.LocalClient.SetReady();
+            SteamNetClient.LocalClient?.Ready = true;
         });
 
         ProcessMemberList();

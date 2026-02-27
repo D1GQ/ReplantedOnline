@@ -90,17 +90,6 @@ internal sealed class NetLobbyData
     internal bool AllClientsReady() => AllClients.Values.All(c => c.Ready);
 
     /// <summary>
-    /// Marks all clients as not ready by setting their Ready status to false.
-    /// </summary>
-    internal void UnsetAllClientsReady()
-    {
-        foreach (var client in AllClients.Values)
-        {
-            client.Ready = false;
-        }
-    }
-
-    /// <summary>
     /// Sets all clients team to None.
     /// </summary>
     internal void UnsetAllTeams()
@@ -285,6 +274,8 @@ internal sealed class NetLobbyData
     /// </summary>
     internal void UpdateLobbyStates()
     {
+        if (HasStarted) return;
+
         var hostTeam = HostTeam;
         if (hostTeam is PlayerTeam.None)
         {

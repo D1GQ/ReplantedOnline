@@ -157,6 +157,7 @@ internal sealed class InfoDisplay : MonoBehaviour
                 sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
                 sb.AppendLine($" AmLocal: {client.AmLocal}");
                 sb.AppendLine($" AmHost: {client.AmHost}");
+                sb.AppendLine($" Ready: {client.Ready}");
             }
         }
 

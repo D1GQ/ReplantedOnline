@@ -30,9 +30,4 @@ internal enum ClientRpcType
     /// Sync adding a ladder to a plant
     /// </summary>
     AddLadder,
-
-    /// <summary>
-    /// Signals that the client is loaded and ready.
-    /// </summary>
-    SetClientReady,
 }

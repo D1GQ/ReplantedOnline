@@ -1,7 +1,9 @@
 ﻿using Il2CppSource.Utils;
+using Il2CppTekly.TreeState;
 using MelonLoader;
 using ReplantedOnline.Helper;
 using System.Collections;
+using UnityEngine;
 
 namespace ReplantedOnline.Modules;
 
@@ -81,15 +83,38 @@ internal static class Transitions
         Instances.GlobalPanels.GetPanel("loadingScrim")?.gameObject?.SetActive(true);
     }
 
-    private static IEnumerator CoWaitForTransition(Action callback, string TransitionName)
+    private static IEnumerator CoWaitForTransition(Action callback, string transitionName, float timeout = 10f)
     {
-        while (StateTransitionUtils.s_treeStateManager.Active?.Name != TransitionName ||
-               (StateTransitionUtils.s_treeStateManager.Active?.Name == TransitionName &&
-                !StateTransitionUtils.s_treeStateManager.Active.IsDoneLoading()))
+        float startTime = Time.time;
+
+        while (StateTransitionUtils.s_treeStateManager?.Active == null)
         {
+            if (Time.time - startTime > timeout)
+            {
+                MelonLogger.Error($"Timeout waiting for transition '{transitionName}' to start");
+                yield break;
+            }
             yield return null;
         }
 
-        callback();
+        while (StateTransitionUtils.s_treeStateManager.Active?.Name != transitionName ||
+               !IsStateFullyLoaded(StateTransitionUtils.s_treeStateManager.Active))
+        {
+            if (Time.time - startTime > timeout)
+            {
+                MelonLogger.Error($"Timeout waiting for transition '{transitionName}' to complete");
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        callback?.Invoke();
+    }
+
+    private static bool IsStateFullyLoaded(TreeState state)
+    {
+        if (state == null) return false;
+        return state.IsDoneLoading();
     }
 }

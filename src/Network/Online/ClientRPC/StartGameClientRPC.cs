@@ -46,7 +46,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
             switch (selectionSet)
             {
                 case SelectionSet.CustomAll:
-                    NetLobby.LobbyData.UnsetAllClientsReady();
+                    SteamNetClient.LocalClient?.Ready = false;
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChooseZombiePacket;
                     Transitions.ToChooseSeeds();
                     Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap().WrapToIl2cpp());
@@ -78,10 +78,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
             yield return null;
         }
 
-        if (!SteamNetClient.LocalClient.Ready)
-        {
-            SetClientReadyClientRPC.Send();
-        }
+        SteamNetClient.LocalClient?.Ready = true;
 
         if (ModInfo.DEBUG)
         {

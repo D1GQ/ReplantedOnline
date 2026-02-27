@@ -2,7 +2,6 @@
 using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.Online.ClientRPC;
 
 namespace ReplantedOnline.Network;
 
@@ -33,15 +32,22 @@ internal sealed class SteamNetClient
         MelonLogger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({SteamId})");
     }
 
-    private bool _ready;
-
     /// <summary>
     /// Gets or sets a value indicating whether the player is loaded and ready.
     /// </summary>
     internal bool Ready
     {
-        get { if (AmHost) return true; return _ready; }
-        set { _ready = value; }
+        get
+        {
+            return SteamMatchmaking.Internal.GetLobbyMemberData(NetLobby.LobbyData.LobbyId, SteamId, nameof(Ready)) == bool.TrueString;
+        }
+        set
+        {
+            if (AmLocal)
+            {
+                SteamMatchmaking.Internal.SetLobbyMemberData(NetLobby.LobbyData.LobbyId, nameof(Ready), value.ToString());
+            }
+        }
     }
 
     /// <summary>
@@ -114,16 +120,5 @@ internal sealed class SteamNetClient
         }
 
         return null;
-    }
-
-    internal void SetReady()
-    {
-        if (!NetLobby.AmLobbyHost())
-        {
-            if (!Ready)
-            {
-                SetClientReadyClientRPC.Send();
-            }
-        }
     }
 }
