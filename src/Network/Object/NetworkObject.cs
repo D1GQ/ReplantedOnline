@@ -56,6 +56,28 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// <summary>
     /// Base container GameObject for all network objects
     /// </summary>
+    private static GameObject _networkObjectsMoveToScene;
+
+    /// <summary>
+    /// Container GameObject for all network objects
+    /// </summary>
+    internal static GameObject NetworkObjectsMoveToScene
+    {
+        get
+        {
+            if (_networkObjectsMoveToScene == null)
+            {
+                _networkObjectsMoveToScene = new GameObject("NetworkClassesMoveToScene");
+                DontDestroyOnLoad(_networkObjectsMoveToScene);
+            }
+
+            return _networkObjectsMoveToScene;
+        }
+    }
+
+    /// <summary>
+    /// Base container GameObject for all network objects
+    /// </summary>
     private static GameObject _networkObjectsGo;
 
     /// <summary>

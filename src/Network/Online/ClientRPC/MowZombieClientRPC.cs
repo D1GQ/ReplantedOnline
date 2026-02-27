@@ -2,14 +2,13 @@
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object.Game;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.ClientRPC;
+namespace ReplantedOnline.Network.Online.ClientRPC;
 
-[RegisterRPCHandler]
-internal sealed class MowZombieClientRPC : BaseClientRPCHandler
+[RegisterClientRPC]
+internal sealed class MowZombieClientRPC : BaseClientRPC
 {
     /// <inheritdoc/>
     internal sealed override ClientRpcType Rpc => ClientRpcType.MowZombie;

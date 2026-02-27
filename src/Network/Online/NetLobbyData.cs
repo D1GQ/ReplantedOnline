@@ -4,8 +4,8 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Network.ClientRPC;
 using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Online.ClientRPC;
 using ReplantedOnline.Network.Packet;
 using System.Collections;
 
@@ -194,8 +194,8 @@ internal sealed class NetLobbyData
     /// <summary>
     /// Handles networked lobby data synchronization between clients.
     /// </summary>
-    [RegisterRPCHandler]
-    internal sealed class NetworkedData : BaseClientRPCHandler
+    [RegisterClientRPC]
+    internal sealed class NetworkedData : BaseClientRPC
     {
         private bool _restartingLobby;
         private bool _hasStarted;

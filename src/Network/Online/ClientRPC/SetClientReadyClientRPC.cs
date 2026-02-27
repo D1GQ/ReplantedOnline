@@ -1,13 +1,12 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 
-namespace ReplantedOnline.Network.ClientRPC;
+namespace ReplantedOnline.Network.Online.ClientRPC;
 
-[RegisterRPCHandler]
-internal sealed class SetClientReadyClientRPC : BaseClientRPCHandler
+[RegisterClientRPC]
+internal sealed class SetClientReadyClientRPC : BaseClientRPC
 {
     /// <inheritdoc/>
     internal sealed override ClientRpcType Rpc => ClientRpcType.SetClientReady;

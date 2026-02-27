@@ -13,7 +13,7 @@ using ReplantedOnline.Network.Online;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using ReplantedOnline.Network.ClientRPC;
+using ReplantedOnline.Network.Online.ClientRPC;
 
 namespace ReplantedOnline.Patches.Gameplay.UI;
 

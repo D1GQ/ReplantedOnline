@@ -4,11 +4,10 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.ClientRPC;
 using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Online.PacketHandler;
 using ReplantedOnline.Network.Packet;
 using System.Collections;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Online;
 
@@ -313,192 +312,17 @@ internal static class NetworkDispatcher
                         MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
                     }
                     break;
-                case PacketTag.Rpc:
-                    StreamlineRpc(sender, packetReader);
-                    break;
-                case PacketTag.NetworkClassSpawn:
-                    StreamlineNetworkClassSpawn(sender, packetReader);
-                    break;
-                case PacketTag.NetworkClassDespawn:
-                    StreamlineNetworkClassDespawn(sender, packetReader);
-                    break;
-                case PacketTag.NetworkClassSync:
-                    StreamlineNetworkClassSync(sender, packetReader);
-                    break;
-                case PacketTag.NetworkClassRpc:
-                    StreamlineNetworkClassRpc(sender, packetReader);
-                    break;
                 default:
-                    MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
+                    if (!BasePacketHandler.StreamlinePacket(tag, sender, packetReader))
+                    {
+                        MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
+                    }
                     break;
             }
         }
         finally
         {
             packetReader.Recycle();
-        }
-    }
-
-    /// <summary>
-    /// Processes an incoming RPC packet and routes it to the appropriate RPC handler.
-    /// </summary>
-    /// <param name="sender">The client that sent the RPC.</param>
-    /// <param name="packetReader">The packet reader containing the RPC data.</param>
-    private static void StreamlineRpc(SteamNetClient sender, PacketReader packetReader)
-    {
-        ClientRpcType rpc = (ClientRpcType)packetReader.ReadByte();
-        MelonLogger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
-        BaseClientRPCHandler.HandleRpc(rpc, sender, packetReader);
-    }
-
-    /// <summary>
-    /// Processes an incoming network object spawn packet and instantiates the appropriate object.
-    /// Handles both custom-created network objects and prefab-based network objects.
-    /// </summary>
-    /// <param name="sender">The client that sent the spawn packet.</param>
-    /// <param name="packetReader">The packet reader containing spawn data.</param>
-    private static void StreamlineNetworkClassSpawn(SteamNetClient sender, PacketReader packetReader)
-    {
-        var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
-
-        if (spawnPacket.PrefabId == NetworkObject.NO_PREFAB_ID)
-        {
-            MelonLogger.Error("Serialized network object had a unset prefab id!");
-        }
-        else
-        {
-            if (NetworkObject.NetworkPrefabs.TryGetValue(spawnPacket.PrefabId, out var prefab))
-            {
-                var networkObj = prefab.Clone<NetworkObject>();
-                networkObj.OwnerId = spawnPacket.OwnerId;
-                networkObj.NetworkId = spawnPacket.NetworkId;
-                networkObj.transform.SetParent(NetworkObject.NetworkObjectsGo.transform);
-                NetworkSpawnPacket.DeserializeNetworkObject(networkObj, packetReader);
-                NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
-                networkObj.gameObject.SetActive(true);
-                networkObj.name = $"{networkObj.GetType().Name}({networkObj.NetworkId})";
-                MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
-            }
-            else
-            {
-                MelonLogger.Error($"[NetworkDispatcher] Failed to spawn NetworkClass: Prefab ID {spawnPacket.PrefabId} not found");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Processes an incoming network object despawn packet and destroys the corresponding object.
-    /// Cleans up network objects that are no longer needed in the scene.
-    /// </summary>
-    /// <param name="sender">The client that sent the despawn packet.</param>
-    /// <param name="packetReader">The packet reader containing despawn data.</param>
-    private static void StreamlineNetworkClassDespawn(SteamNetClient sender, PacketReader packetReader)
-    {
-        var networkDespawnPacket = NetworkDespawnPacket.DeserializePacket(packetReader);
-
-        if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkDespawnPacket.NetworkId, out var networkObj))
-        {
-            if (networkObj.OwnerId == sender.SteamId)
-            {
-                if (!networkObj.AmChild)
-                {
-                    NetLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
-                    UnityEngine.Object.Destroy(networkObj.gameObject);
-                    MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkDespawnPacket.NetworkId}");
-                }
-                else
-                {
-                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkDespawnPacket.NetworkId}, only the parent can be despawned!");
-                }
-            }
-        }
-        else
-        {
-            MelonLogger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkDespawnPacket.NetworkId} not found");
-        }
-    }
-
-    /// <summary>
-    /// Processes an incoming network object synchronization packet and updates the corresponding object.
-    /// Handles state synchronization for network objects from remote clients.
-    /// </summary>
-    /// <param name="sender">The client that sent the sync packet.</param>
-    /// <param name="packetReader">The packet reader containing synchronization data.</param>
-    private static void StreamlineNetworkClassSync(SteamNetClient sender, PacketReader packetReader)
-    {
-        MelonCoroutines.Start(CoWaitForNetworkClassSync(sender, packetReader));
-    }
-
-    private static IEnumerator CoWaitForNetworkClassSync(SteamNetClient sender, PacketReader packetReader)
-    {
-        var packet = PacketReader.Get(packetReader);
-        var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packet);
-
-        try
-        {
-            while (NetLobby.LobbyData != null)
-            {
-                if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkObj))
-                {
-                    if (networkObj.OwnerId != sender.SteamId)
-                    {
-                        MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
-                        break;
-                    }
-
-                    networkObj.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
-                    networkObj.Deserialize(packet, networkSyncPacket.Init);
-                    MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
-                    break;
-                }
-
-                yield return null;
-            }
-        }
-        finally
-        {
-            packet.Recycle();
-        }
-    }
-
-    /// <summary>
-    /// Processes an incoming network object RPC packet and routes it to the appropriate handler.
-    /// Handles remote procedure calls targeted at specific network objects.
-    /// </summary>
-    /// <param name="sender">The client that sent the RPC.</param>
-    /// <param name="packetReader">The packet reader containing RPC data.</param>
-    private static void StreamlineNetworkClassRpc(SteamNetClient sender, PacketReader packetReader)
-    {
-        MelonCoroutines.Start(CoWaitForNetworkClass(sender, packetReader));
-    }
-
-    private static IEnumerator CoWaitForNetworkClass(SteamNetClient sender, PacketReader packetReader)
-    {
-        var packet = PacketReader.Get(packetReader);
-        byte rpcId = packet.ReadByte();
-        uint networkId = packet.ReadUInt();
-        float timeOut = 0f;
-
-        try
-        {
-            while (NetLobby.LobbyData != null && timeOut < 10f)
-            {
-                if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
-                {
-                    MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                    networkObj.HandleRpc(sender, rpcId, packet);
-                    break;
-                }
-
-                timeOut += Time.deltaTime;
-
-                yield return null;
-            }
-
-        }
-        finally
-        {
-            packet.Recycle();
         }
     }
 }

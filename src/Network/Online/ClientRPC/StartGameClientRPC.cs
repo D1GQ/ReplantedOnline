@@ -8,15 +8,14 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
 
-namespace ReplantedOnline.Network.ClientRPC;
+namespace ReplantedOnline.Network.Online.ClientRPC;
 
-[RegisterRPCHandler]
-internal sealed class StartGameClientRPC : BaseClientRPCHandler
+[RegisterClientRPC]
+internal sealed class StartGameClientRPC : BaseClientRPC
 {
     /// <inheritdoc/>
     internal sealed override ClientRpcType Rpc => ClientRpcType.StartGame;
