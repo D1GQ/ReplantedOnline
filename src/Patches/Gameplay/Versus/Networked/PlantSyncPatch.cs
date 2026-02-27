@@ -18,9 +18,6 @@ internal static class PlantSyncPatch
     [HarmonyPrefix]
     private static bool Plant_Die_Prefix(Plant __instance)
     {
-        // Skip network logic if this is an internal call (prevents infinite recursion)
-        if (InternalCallContext.IsInternalCall_Die) return true;
-
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
@@ -30,39 +27,18 @@ internal static class PlantSyncPatch
 
             __instance.GetNetworked<PlantNetworked>().SendDieRpc();
 
-            return true;
+            __instance.DieOriginal();
+
+            return false;
         }
 
         return true;
     }
 
-    /// <summary>
-    /// Extension method that safely calls the original Die method
-    /// while preventing our patch from intercepting the call (avoiding recursion)
-    /// </summary>
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Plant), nameof(Plant.Die))]
     internal static void DieOriginal(this Plant __instance)
     {
-        // Set flag to indicate this is an internal call
-        InternalCallContext.IsInternalCall_Die = true;
-        try
-        {
-            // Call the original method - this won't trigger our patch due to the flag
-            __instance.Die();
-        }
-        finally
-        {
-            // Always reset the flag, even if an exception occurs
-            InternalCallContext.IsInternalCall_Die = false;
-        }
-    }
-
-    /// <summary>
-    /// Thread-safe context flags to prevent infinite recursion when calling patched methods from within patches.
-    /// [ThreadStatic] ensures each thread has its own copy of these flags.
-    /// </summary>
-    private static class InternalCallContext
-    {
-        [ThreadStatic]
-        public static bool IsInternalCall_Die;
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 }

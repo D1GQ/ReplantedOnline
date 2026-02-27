@@ -15,9 +15,6 @@ internal static class LawnMowerSyncPatch
     [HarmonyPrefix]
     private static bool LawnMower_MowZombie_Prefix(LawnMower __instance, Zombie theZombie)
     {
-        // Skip network logic if this is an internal call (prevents infinite recursion)
-        if (InternalCallContext.IsInternalCall_StartMower) return true;
-
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
@@ -41,31 +38,10 @@ internal static class LawnMowerSyncPatch
         return true;
     }
 
-    /// <summary>
-    /// Extension method that safely calls the original MowZombie method
-    /// while preventing our patch from intercepting the call (avoiding recursion)
-    /// </summary>
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(LawnMower), nameof(LawnMower.MowZombie))]
     internal static void MowZombieOriginal(this LawnMower __instance, Zombie theZombie)
     {
-        InternalCallContext.IsInternalCall_StartMower = true;
-        try
-        {
-            __instance.MowZombie(theZombie);
-        }
-        finally
-        {
-            // Always reset the flag, even if an exception occurs
-            InternalCallContext.IsInternalCall_StartMower = false;
-        }
-    }
-
-    /// <summary>
-    /// Thread-safe context flags to prevent infinite recursion when calling patched methods from within patches.
-    /// [ThreadStatic] ensures each thread has its own copy of these flags.
-    /// </summary>
-    private static class InternalCallContext
-    {
-        [ThreadStatic]
-        public static bool IsInternalCall_StartMower;
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 }
