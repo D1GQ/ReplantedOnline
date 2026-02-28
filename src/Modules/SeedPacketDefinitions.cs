@@ -29,9 +29,7 @@ internal static class SeedPacketDefinitions
 
         // Zombies
         SeedType.ZombieGravestone,
-        SeedType.ZombiePolevaulter,
         SeedType.Zomboni,
-        SeedType.ZombieJackInTheBox,
         SeedType.ZombieCatapult,
         SeedType.ZombieGargantuar
     ];

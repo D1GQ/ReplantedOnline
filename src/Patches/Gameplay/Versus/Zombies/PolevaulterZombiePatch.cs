@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Steam;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -9,23 +11,43 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class PolevaulterZombiePatch
 {
-    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombiePolevaulter))]
-    [HarmonyPrefix]
-    private static bool Zombie_UpdateZombiePolevaulter_Prefix(Zombie __instance)
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
+    [HarmonyPostfix]
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant __result)
     {
-        if (__instance.mZombieType != ZombieType.Polevaulter) return true;
+        if (__instance.mZombieType != ZombieType.Polevaulter) return;
 
         if (NetLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide)
             {
-                if (__instance.mZombiePhase is ZombiePhase.PolevaulterPreVault)
+                if (__instance.mZombiePhase == ZombiePhase.PolevaulterPreVault)
                 {
-                    return false;
+                    // Wait for plant side to find target to vault
+                    var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                    if (netZombie._State is Plant plant)
+                    {
+                        __result = plant;
+                    }
+                    else
+                    {
+                        __result = null;
+
+                        // Push back until plant side has vaulted
+                        if (_FindPlantTargetOriginal(__instance, ZombieAttackType.Vault) != null)
+                        {
+                            __instance.mPosX += 1;
+                        }
+                    }
                 }
             }
         }
+    }
 
-        return true;
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
+    private static Plant _FindPlantTargetOriginal(Zombie __instance, ZombieAttackType theAttackType)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 }

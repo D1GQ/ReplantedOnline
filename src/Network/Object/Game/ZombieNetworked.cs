@@ -25,6 +25,7 @@ internal sealed class ZombieNetworked : NetworkObject
         TakeDamage,
         Death,
         DieNoLoot,
+        SetPlantTarget,
         EnteringHouse,
         MindControlled,
         SetFrozen,
@@ -159,7 +160,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
             {
                 _State = States.UpdateState;
                 SendSetStateRpc(States.UpdateState);
@@ -167,7 +168,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
         else
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.BungeeGrabbing)
+            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
             {
                 if (_State is not States.UpdateState)
                 {
@@ -187,12 +188,12 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxPopping && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && _State is not States.UpdateState)
             {
                 Dead = true;
                 _State = States.UpdateState;
                 SendSetStateRpc(States.UpdateState);
-                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie.mDead, () =>
+                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
                 {
                     DespawnAndDestroy();
                 }).WrapToIl2cpp());
@@ -200,7 +201,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
         else
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.JackInTheBoxRunning)
+            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
                 if (_State is not States.UpdateState)
                 {
@@ -209,7 +210,7 @@ internal sealed class ZombieNetworked : NetworkObject
                 else
                 {
                     Dead = true;
-                    _Zombie.mZombiePhase = ZombiePhase.JackInTheBoxPopping;
+                    _Zombie.mPhaseCounter = 0;
                 }
             }
         }
@@ -219,39 +220,37 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         if (_Zombie == null) return;
 
+        if (_Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterInVault && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && _State == null)
             {
-                _State = States.UpdateState;
-                SendSetStateRpc(States.UpdateState);
+                // Send target to vault
+                Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Vault);
+                SendSetPlantTargetRpc(target);
             }
         }
-        else
+
+        // Non owner logic is handled in PolevaulterZombiePatch.cs
+
+        if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
         {
-            if (_State is States.UpdateState)
-            {
-                _State = "vaulted";
-                _Zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
-            }
-            else if (_State is not "vaulted")
-            {
-                _Zombie.mZombiePhase = ZombiePhase.PolevaulterPreVault;
-            }
+            _State = null;
         }
     }
 
     [HideFromIl2Cpp]
     internal void CheckDeath(Action callback)
     {
-        if (_Zombie.mZombieType is ZombieType.Gravestone)
+        if (_Zombie.mZombieType == ZombieType.Gravestone)
         {
             Instances.GameplayActivity.Board.m_vsGravestones.Remove(_Zombie);
             _Zombie.mGraveX = 0;
             _Zombie.mGraveY = 0;
             callback();
         }
-        else if (_Zombie.mZombieType is ZombieType.Target)
+        else if (_Zombie.mZombieType == ZombieType.Target)
         {
             Instances.GameplayActivity.VersusMode.ZombieLife--;
 
@@ -332,6 +331,23 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             _Zombie.DieNoLoot();
         }
+    }
+
+    internal void SendSetPlantTargetRpc(Plant target)
+    {
+        if (_State != target)
+        {
+            _State = target;
+            var writer = PacketWriter.Get();
+            writer.WriteNetworkObject(target.GetNetworked<PlantNetworked>());
+            SendNetworkClassRpc((byte)ZombieRpcs.SetPlantTarget, writer);
+            writer.Recycle();
+        }
+    }
+
+    private void HandleSetPlantTargetRpc(Plant target)
+    {
+        _State = target;
     }
 
     internal void SendEnteringHouseRpc(float xPos)
@@ -452,6 +468,12 @@ internal sealed class ZombieNetworked : NetworkObject
             case ZombieRpcs.DieNoLoot:
                 {
                     HandleDieNoLootRpc();
+                }
+                break;
+            case ZombieRpcs.SetPlantTarget:
+                {
+                    var target = (PlantNetworked)packetReader.ReadNetworkObject();
+                    HandleSetPlantTargetRpc(target._Plant);
                 }
                 break;
             case ZombieRpcs.EnteringHouse:

@@ -125,7 +125,7 @@ internal sealed class PlantNetworked : NetworkObject
         {
             if (_State is Zombie)
             {
-                _Plant.MagnetShroomAttactItem(null); // MagnetshroomPlantPatch will get the target
+                _Plant.MagnetShroomAttactItem(null); // MagnetshroomPlantPatch.cs will get the target
             }
         }
     }
