@@ -205,18 +205,30 @@ internal static class SeedPacketSyncPatch
         // This makes the zombie emerge from the ground rather than just appearing
         if (rise && !shakeBush)
         {
-            zombie.RiseFromGrave(gridX, gridY);
+            zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
+            zombie.mPhaseCounter = 150;
+            Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_DIRT_RISE);
+            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
+            var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
+            switch (zombieType)
+            {
+                case ZombieType.Gravestone:
+                    Instances.GameplayActivity.AddTodParticle(theX + 25, theY + 75, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
+                    zombie.mPosX = theX - 25;
+                    break;
+                case ZombieType.BackupDancer:
+                    Instances.GameplayActivity.AddTodParticle(gridX + 55, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    zombie.mPosX = gridX;
+                    break;
+                default:
+                    Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    zombie.mPosX = theX - 25;
+                    break;
+            }
         }
-
-        if (shakeBush)
+        else if (shakeBush)
         {
             Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
-        }
-
-        // Special handling for Backup Dancer zombies to set their exact X position
-        if (zombieType == ZombieType.BackupDancer)
-        {
-            zombie.mPosX = gridX;
         }
 
         // Set Gravestone grid pos

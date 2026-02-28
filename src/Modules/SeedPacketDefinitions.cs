@@ -23,14 +23,12 @@ internal static class SeedPacketDefinitions
         SeedType.Seashroom,
         SeedType.Plantern,
         SeedType.Blover,
-        SeedType.Flowerpot,
         SeedType.Umbrella,
         SeedType.Marigold,
         SeedType.Kernelpult,
 
         // Zombies
         SeedType.ZombieGravestone,
-        SeedType.ZombieDancer,
         SeedType.ZombiePolevaulter,
         SeedType.Zomboni,
         SeedType.ZombieJackInTheBox,
