@@ -1,8 +1,8 @@
-﻿using BloomEngine.Config;
-using BloomEngine.Config.Inputs;
-using BloomEngine.Menu;
+﻿using BloomEngine.Config.Inputs;
+using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Config.Services;
+using BloomEngine.ModMenu.Services;
 using MelonLoader;
-using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using System.Reflection;
 
@@ -14,50 +14,6 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal static class BloomEngineManager
 {
-    private static MelonPreferences_Category m_configCategory;
-    internal static MelonPreferences_Entry<uint> m_gameServer;
-    internal static MelonPreferences_Entry<bool> m_modifyMusic;
-
-    /// <summary>
-    /// Ensures MelonPreferences are only initialized once.
-    /// </summary>
-    private static bool m_hasInit;
-
-    /// <summary>
-    /// Initializes MelonPreferences entries and validates stored values.
-    /// Safe to call multiple times.
-    /// </summary>
-    internal static void InitializeMelon()
-    {
-        if (m_hasInit) return;
-        m_hasInit = true;
-
-        m_configCategory = MelonPreferences.CreateCategory(
-            ModInfo.MOD_NAME.Replace(" ", ""),
-            "configs"
-        );
-
-        m_gameServer = m_configCategory.CreateEntry(
-            "game_server_id",
-            (uint)AppIdServers.PVZ_Replanted,
-            "Steam Game ID Server",
-            "The Steam App ID to connect to for P2P"
-        );
-
-        m_modifyMusic = m_configCategory.CreateEntry(
-            "modify_music",
-            true,
-            "Modify Music",
-            "Rather to Modify Music or not"
-        );
-
-        // Reset to default if an invalid enum value was stored
-        if (!Enum.GetValues<AppIdServers>().Contains((AppIdServers)m_gameServer.Value))
-        {
-            m_gameServer.Value = (uint)AppIdServers.PVZ_Replanted;
-        }
-    }
-
     /// <summary>
     /// Initializes BloomEngine menu integration and registers
     /// the mod's configuration UI.
@@ -65,14 +21,13 @@ internal static class BloomEngineManager
     /// <param name="replantedOnline">The active MelonMod instance.</param>
     internal static void InitializeBloom(MelonMod replantedOnline)
     {
-        InitializeMelon();
         BloomConfigs.Init();
 
-        var mod = ModMenu.CreateEntry(replantedOnline);
+        var mod = ModMenuService.CreateEntry(replantedOnline);
         mod.AddIcon(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png"));
         mod.AddDisplayName(ModInfo.MOD_NAME);
         mod.AddDescription("PvZ-R Online is a mod that adds online support to versus!");
-        mod.AddConfig(typeof(BloomConfigs));
+        mod.AddConfigClass(typeof(BloomConfigs));
         mod.Register();
     }
 
@@ -81,8 +36,7 @@ internal static class BloomEngineManager
     /// </summary>
     internal static class BloomConfigs
     {
-        internal static EnumInputField GameServer;
-        internal static BoolInputField ModifyMusic;
+        internal static BoolConfigInput ModifyMusic;
 
         /// <summary>
         /// Initializes BloomEngine config fields and syncs values
@@ -90,41 +44,16 @@ internal static class BloomEngineManager
         /// </summary>
         internal static void Init()
         {
-            MelonPreferences.Save();
-
-            GameServer = ConfigMenu.CreateEnumInput(
-                "Game Server (Restart Required)",
-                (AppIdServers)m_gameServer.Value,
-                value =>
-                {
-                    if (value is AppIdServers appIdServer)
-                    {
-                        bool changed = ((uint)appIdServer) != m_gameServer.Value;
-                        if (changed)
-                        {
-                            m_gameServer.Value = (uint)appIdServer;
-                            MelonPreferences.Save();
-                        }
-                    }
-                },
-                validateValue: value =>
-                {
-                    return Enum.GetValues<AppIdServers>()
-                        .Contains((AppIdServers)value);
-                }
-            );
-
-            ModifyMusic = ConfigMenu.CreateBoolInput(
+            var ModifyMusicConfig =
+            ModifyMusic = ConfigService.CreateBool(
                 "Modify Music",
-                m_modifyMusic.Value,
-                value =>
+                "Modifies music tracks.",
+                true,
+                new ConfigInputOptions<bool>()
                 {
-                    bool changed = value != m_modifyMusic.Value;
-                    if (changed)
+                    OnValueChanged = @bool =>
                     {
-                        AudioManager.OnModifyMusic(value, true);
-                        m_modifyMusic.Value = value;
-                        MelonPreferences.Save();
+                        AudioManager.OnModifyMusic(@bool, true);
                     }
                 }
             );

@@ -10,9 +10,4 @@ internal enum AppIdServers : uint
     /// Steam App ID for the Plants vs. Zombies: Replanted P2P server.
     /// </summary>
     PVZ_Replanted = 3654560,
-
-    /// <summary>
-    /// Steam App ID for the Space War P2P server.
-    /// </summary>
-    Space_War = 480
 }

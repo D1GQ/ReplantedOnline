@@ -5,6 +5,7 @@ using ReplantedOnline.Modules;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
+using static ReplantedOnline.Managers.BloomEngineManager;
 
 namespace ReplantedOnline.Managers;
 
@@ -21,7 +22,7 @@ internal static class AudioManager
         MelonCoroutines.Start(WaitForAppCore(() =>
         {
             CatchAudio();
-            OnModifyMusic(BloomEngineManager.m_modifyMusic.Value, false);
+            OnModifyMusic(BloomConfigs.ModifyMusic.Value, false);
         }));
     }
 
@@ -44,6 +45,16 @@ internal static class AudioManager
     /// </summary>
     internal static void OnModifyMusic(bool custom, bool fromSetting)
     {
+        if (MainMenuTheme == null || CustomMainMenuTheme == null)
+        {
+            return;
+        }
+
+        if (Instances.AppCore?.m_audioSourcesService?.m_musicSourceMappings == null)
+        {
+            return;
+        }
+
         if (custom)
         {
             ReplaceAudio(MusicFile.MainMusic, MusicTune.TitleCrazyDaveMainTheme, CustomMainMenuTheme, fromSetting);

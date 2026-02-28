@@ -53,6 +53,8 @@ internal static class ReplantedOnlinePopup
     /// <param name="label">The text to display on the button. If empty, defaults to "Ok" when shown.</param>
     internal static void SetButtonLabel(string label)
     {
+        if (!_hasInit) return;
+
         Label?.SetText(label);
     }
 
@@ -63,6 +65,8 @@ internal static class ReplantedOnlinePopup
     /// <param name="text">The body/subtext content of the popup message.</param>
     internal static void Show(string header, string text)
     {
+        if (!_hasInit) return;
+
         if (Label?.text == string.Empty)
         {
             Label?.SetText("Ok");
@@ -77,6 +81,8 @@ internal static class ReplantedOnlinePopup
     /// </summary>
     internal static void Hide()
     {
+        if (!_hasInit) return;
+
         Panel?.gameObject.SetActive(false);
         Header?.SetText(string.Empty);
         SubText?.SetText(string.Empty);

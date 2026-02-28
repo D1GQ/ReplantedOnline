@@ -1,7 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Online;
-using ReplantedOnline.Patches.Client;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -122,7 +121,7 @@ internal sealed class InfoDisplay : MonoBehaviour
     /// </summary>
     private static string GetInfo()
     {
-        return $"{ModInfo.MOD_NAME}: v{ModInfo.MOD_VERSION_FORMATTED}-{ModInfo.RELEASE_DATE} Server: {Enum.GetName(SteamPatch.AppServer).ToLower()}";
+        return $"{ModInfo.MOD_NAME}: v{ModInfo.MOD_VERSION_FORMATTED}-{ModInfo.RELEASE_DATE}";
     }
 
     /// <summary>

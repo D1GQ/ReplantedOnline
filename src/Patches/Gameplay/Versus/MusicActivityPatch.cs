@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
-using ReplantedOnline.Managers;
 using ReplantedOnline.Network.Online;
+using static ReplantedOnline.Managers.BloomEngineManager;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 
@@ -20,7 +20,7 @@ internal static class MusicActivityPatch
         if (__instance.name == "StartMatch")
         {
             // Check if in multiplayer lobby and music modification is enabled
-            if (NetLobby.AmInLobby() && BloomEngineManager.m_modifyMusic.Value)
+            if (NetLobby.AmInLobby() && BloomConfigs.ModifyMusic.Value)
             {
                 // Save original music tune to state
                 __state = __instance.m_musicTune;
