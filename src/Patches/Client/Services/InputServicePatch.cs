@@ -5,7 +5,7 @@ using ReplantedOnline.Network.Online;
 namespace ReplantedOnline.Patches.Client.Services;
 
 [HarmonyPatch]
-internal class InputServicePatch
+internal static class InputServicePatch
 {
     [HarmonyPatch(typeof(InputService), nameof(InputService.BeginListeningForGuestInputDevice))]
     [HarmonyPrefix]
