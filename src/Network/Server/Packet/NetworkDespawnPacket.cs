@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Network.Object;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Server.Packet;
 
 /// <summary>
 /// Represents a network packet for despawning network objects across clients.

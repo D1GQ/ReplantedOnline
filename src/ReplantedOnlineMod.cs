@@ -8,7 +8,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Client.UI;
 using System.Reflection;
 using UnityEngine;

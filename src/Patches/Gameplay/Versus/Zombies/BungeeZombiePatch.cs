@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 

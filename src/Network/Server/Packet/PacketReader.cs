@@ -1,10 +1,10 @@
 ﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 using System.Text;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Server.Packet;
 
 /// <summary>
 /// Provides a pooled packet reader for efficient network packet parsing.

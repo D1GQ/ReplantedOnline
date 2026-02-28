@@ -3,7 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 

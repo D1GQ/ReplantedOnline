@@ -3,8 +3,8 @@ using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.Online.ClientRPC;
+using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 

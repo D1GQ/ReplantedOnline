@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Network.Object;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Server.Packet;
 
 /// <summary>
 /// Represents a packet used to synchronize the state of a networked object across clients, including its network

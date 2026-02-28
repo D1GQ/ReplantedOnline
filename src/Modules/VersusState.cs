@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSteamworks;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Modules;
 

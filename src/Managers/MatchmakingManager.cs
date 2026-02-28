@@ -4,7 +4,7 @@ using Il2CppSteamworks.Data;
 using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 using System.Text;
 
 namespace ReplantedOnline.Managers;

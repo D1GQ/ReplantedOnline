@@ -8,11 +8,12 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
 
-namespace ReplantedOnline.Network.Online.ClientRPC;
+namespace ReplantedOnline.Network.Server.ClientRPC;
 
 [RegisterClientRPC]
 internal sealed class StartGameClientRPC : BaseClientRPC

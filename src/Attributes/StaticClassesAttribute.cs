@@ -1,5 +1,5 @@
-﻿using ReplantedOnline.Network.Online.ClientRPC;
-using ReplantedOnline.Network.Online.PacketHandler;
+﻿using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Server.PacketHandler;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes;

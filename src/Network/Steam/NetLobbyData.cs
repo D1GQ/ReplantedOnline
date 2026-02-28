@@ -3,8 +3,9 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Server;
 
-namespace ReplantedOnline.Network.Online;
+namespace ReplantedOnline.Network.Steam;
 
 /// <summary>
 /// Represents the network data and state for a ReplantedOnline lobby.

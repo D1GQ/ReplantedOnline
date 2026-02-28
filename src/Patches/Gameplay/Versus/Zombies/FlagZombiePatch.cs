@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 

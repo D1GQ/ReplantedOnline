@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppReloaded.TreeStateActivities;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Client;
 

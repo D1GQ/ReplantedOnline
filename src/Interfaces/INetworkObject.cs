@@ -1,6 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
 
 namespace ReplantedOnline.Interfaces;
 

@@ -1,10 +1,11 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Online.ClientRPC;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 
-namespace ReplantedOnline.Network.Online.PacketHandler;
+namespace ReplantedOnline.Network.Server.PacketHandler;
 
 [RegisterPacketHandler]
 internal sealed class RpcPacketHandler : BasePacketHandler

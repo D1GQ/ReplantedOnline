@@ -5,11 +5,12 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Online.PacketHandler;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Server.PacketHandler;
+using ReplantedOnline.Network.Steam;
 using System.Collections;
 
-namespace ReplantedOnline.Network.Online;
+namespace ReplantedOnline.Network.Server;
 
 /// <summary>
 /// Handles network packet dispatching and reception for ReplantedOnline.

@@ -1,9 +1,8 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Online;
 
-namespace ReplantedOnline.Network;
+namespace ReplantedOnline.Network.Steam;
 
 /// <summary>
 /// Represents a networked client in ReplantedOnline, managing Steam ID, client information,

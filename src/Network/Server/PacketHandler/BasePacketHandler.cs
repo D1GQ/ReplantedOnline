@@ -1,8 +1,9 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 
-namespace ReplantedOnline.Network.Online.PacketHandler;
+namespace ReplantedOnline.Network.Server.PacketHandler;
 
 /// <summary>
 /// Abstract base class for handling network packets in ReplantedOnline.

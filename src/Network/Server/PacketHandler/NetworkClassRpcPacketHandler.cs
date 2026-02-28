@@ -1,11 +1,12 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 using System.Collections;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Online.PacketHandler;
+namespace ReplantedOnline.Network.Server.PacketHandler;
 
 [RegisterPacketHandler]
 internal class NetworkClassRpcPacketHandler : BasePacketHandler

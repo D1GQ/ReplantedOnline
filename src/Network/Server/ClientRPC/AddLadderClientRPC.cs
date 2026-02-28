@@ -1,10 +1,11 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.Online.ClientRPC;
+namespace ReplantedOnline.Network.Server.ClientRPC;
 
 [RegisterClientRPC]
 internal sealed class AddLadderClientRPC : BaseClientRPC

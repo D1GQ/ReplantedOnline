@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Server.Packet;
 
 /// <summary>
 /// Provides a pooled buffer for P2P network packets in Steamworks, handling packet data storage and memory management.

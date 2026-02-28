@@ -1,6 +1,5 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Network;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Helper;
 

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Input;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Client.Services;
 

@@ -3,7 +3,7 @@ using ReplantedOnline.Network.Object;
 using System.Text;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Server.Packet;
 
 /// <summary>
 /// Provides a pooled packet writer for efficient network packet construction.

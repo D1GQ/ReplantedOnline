@@ -3,8 +3,9 @@ using Il2CppSteamworks;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object.Game;
-using ReplantedOnline.Network.Online;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Object;

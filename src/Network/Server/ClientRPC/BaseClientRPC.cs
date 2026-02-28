@@ -1,8 +1,9 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Steam;
 
-namespace ReplantedOnline.Network.Online.ClientRPC;
+namespace ReplantedOnline.Network.Server.ClientRPC;
 
 /// <summary>
 /// Abstract base class for handling Remote Procedure Calls (RPCs) in ReplantedOnline.

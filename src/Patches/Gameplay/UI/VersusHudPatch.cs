@@ -3,7 +3,7 @@ using Il2CppReloaded.Binders;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 using UnityEngine;
 using UnityEngine.UI;
 

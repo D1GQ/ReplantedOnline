@@ -2,7 +2,7 @@
 using Il2CppReloaded.Characters;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Object.Game;
-using ReplantedOnline.Network.Online;
+using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
