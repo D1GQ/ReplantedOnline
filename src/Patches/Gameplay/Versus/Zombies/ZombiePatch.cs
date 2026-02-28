@@ -21,16 +21,13 @@ internal static class ZombiePatch
         // Only intercept during active gameplay in multiplayer
         if (NetLobby.AmInLobby() && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath)
         {
-            // Allow Target zombies (like Target Zombie from I, Zombie) to use original logic
-            if (theZombieType is ZombieType.Target) return true;
+            // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
+            if (theZombieType is ZombieType.Target or ZombieType.Imp) return true;
 
             if (!VersusState.AmPlantSide)
             {
                 // Fix flag zombie on other sides
-                if (theZombieType != ZombieType.Imp)
-                {
-                    __result = ObjectHelper.CreateReloadedObject<Zombie>();
-                }
+                __result = ObjectHelper.CreateReloadedObject<Zombie>();
 
                 return false;
             }

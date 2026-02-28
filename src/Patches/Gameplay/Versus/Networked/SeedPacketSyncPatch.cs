@@ -162,22 +162,28 @@ internal static class SeedPacketSyncPatch
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this plant across all clients
-            var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
-            {
-                net._Plant = plant;
-                net.SeedType = seedType;
-                net.ImitaterType = imitaterType;
-                net.GridX = gridX;
-                net.GridY = gridY;
-            }, VersusState.PlantSteamId);
-            plant.AddNetworkedLookup(networkObj);
-            networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
-            networkObj.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({networkObj.NetworkId})";
+            SpawnPlantOnNetwork(plant, gridX, gridY);
         }
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
 
         return plant;
+    }
+
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY)
+    {
+        var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
+        {
+            net._Plant = plant;
+            net.SeedType = plant.mSeedType;
+            net.ImitaterType = plant.mImitaterType;
+            net.GridX = gridX;
+            net.GridY = gridY;
+        }, VersusState.PlantSteamId);
+        plant.AddNetworkedLookup(networkObj);
+        networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
+        networkObj.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({networkObj.NetworkId})";
+        return networkObj;
     }
 
     internal static Il2CppReloaded.Gameplay.Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool shakeBush, bool spawnOnNetwork)
@@ -232,17 +238,7 @@ internal static class SeedPacketSyncPatch
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this zombie across all clients
-            var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
-            {
-                net._Zombie = zombie;
-                net.ZombieType = zombieType;
-                net.ShakeBush = shakeBush;
-                net.GridX = gridX;
-                net.GridY = gridY;
-            }, VersusState.PlantSteamId);
-            zombie.AddNetworkedLookup(networkObj);
-            networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
-            networkObj.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({networkObj.NetworkId})";
+            SpawnZombieOnNetwork(zombie, gridX, gridY, shakeBush);
         }
 
         // Fix rendering issues
@@ -258,5 +254,21 @@ internal static class SeedPacketSyncPatch
         Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
 
         return zombie;
+    }
+
+    internal static ZombieNetworked SpawnZombieOnNetwork(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY, bool shakeBush)
+    {
+        var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
+        {
+            net._Zombie = zombie;
+            net.ZombieType = zombie.mZombieType;
+            net.ShakeBush = shakeBush;
+            net.GridX = gridX;
+            net.GridY = gridY;
+        }, VersusState.PlantSteamId);
+        zombie.AddNetworkedLookup(networkObj);
+        networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
+        networkObj.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({networkObj.NetworkId})";
+        return networkObj;
     }
 }
