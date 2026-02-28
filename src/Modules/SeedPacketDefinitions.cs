@@ -19,16 +19,20 @@ internal static class SeedPacketDefinitions
         SeedType.Gravebuster,
         SeedType.Lilypad,
         SeedType.Tanglekelp,
-        SeedType.Hypnoshroom,
         SeedType.Seashroom,
         SeedType.Plantern,
         SeedType.Blover,
         SeedType.Umbrella,
         SeedType.Marigold,
+
+        // Needs to be fixed
+        SeedType.Hypnoshroom,
         SeedType.Kernelpult,
 
         // Zombies
         SeedType.ZombieGravestone,
+
+        // Needs to be fixed
         SeedType.Zomboni,
         SeedType.ZombieCatapult,
         SeedType.ZombieGargantuar

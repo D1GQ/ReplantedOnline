@@ -5,6 +5,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Object.Game;
@@ -19,6 +20,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         Die,
         Squash,
+        Fire,
         SetZombieTarget,
         SetState
     }
@@ -183,6 +185,21 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
+    internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    {
+        var writer = PacketWriter.Get();
+        writer.WriteNetworkObject(theTargetZombie.GetNetworked<ZombieNetworked>());
+        writer.WriteInt(theRow);
+        writer.WriteInt((int)thePlantWeapon);
+        SendNetworkClassRpc((byte)PlantRpcs.Fire, writer);
+        writer.Recycle();
+    }
+
+    private void HandleFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    {
+        _Plant.FireOriginal(theTargetZombie, theRow, thePlantWeapon);
+    }
+
     internal void SendSetZombieTargetRpc(Zombie target)
     {
         if (_State != target)
@@ -230,6 +247,14 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     var target = (ZombieNetworked)packetReader.ReadNetworkObject();
                     HandleSquashRpc(target._Zombie);
+                }
+                break;
+            case PlantRpcs.Fire:
+                {
+                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
+                    var row = packetReader.ReadInt();
+                    var plantWeapon = (PlantWeapon)packetReader.ReadInt();
+                    HandleFireRpc(target._Zombie, row, plantWeapon);
                 }
                 break;
             case PlantRpcs.SetZombieTarget:

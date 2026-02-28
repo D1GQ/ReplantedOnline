@@ -25,18 +25,21 @@ internal static class PolevaulterZombiePatch
                 {
                     // Wait for plant side to find target to vault
                     var netZombie = __instance.GetNetworked<ZombieNetworked>();
-                    if (netZombie._State is Plant plant)
+                    if (netZombie != null)
                     {
-                        __result = plant;
-                    }
-                    else
-                    {
-                        __result = null;
-
-                        // Push back until plant side has vaulted
-                        if (_FindPlantTargetOriginal(__instance, ZombieAttackType.Vault) != null)
+                        if (netZombie._State is Plant plant)
                         {
-                            __instance.mPosX += 1;
+                            __result = plant;
+                        }
+                        else
+                        {
+                            __result = null;
+
+                            // Push back until plant side has vaulted
+                            if (_FindPlantTargetOriginal(__instance, ZombieAttackType.Vault) != null)
+                            {
+                                __instance.mPosX += 1;
+                            }
                         }
                     }
                 }
