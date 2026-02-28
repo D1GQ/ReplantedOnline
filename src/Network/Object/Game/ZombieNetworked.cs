@@ -221,7 +221,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterPreVault && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase is ZombiePhase.PolevaulterInVault && _State is not States.UpdateState)
             {
                 _State = States.UpdateState;
                 SendSetStateRpc(States.UpdateState);
@@ -231,8 +231,12 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (_State is States.UpdateState)
             {
-                _State = null;
+                _State = "vaulted";
                 _Zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
+            }
+            else if (_State is not "vaulted")
+            {
+                _Zombie.mZombiePhase = ZombiePhase.PolevaulterPreVault;
             }
         }
     }
