@@ -72,6 +72,10 @@ internal static class ZombiePatch
                 var netZombie = __instance.GetNetworked<ZombieNetworked>();
                 netZombie.SendMindControlledRpc();
             }
+            else
+            {
+                return false;
+            }
         }
 
         return true;

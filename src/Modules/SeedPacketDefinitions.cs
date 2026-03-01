@@ -26,7 +26,6 @@ internal static class SeedPacketDefinitions
         SeedType.Marigold,
 
         // Needs to be fixed
-        SeedType.Hypnoshroom,
         SeedType.Kernelpult,
 
         // Zombies
