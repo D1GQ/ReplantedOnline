@@ -26,6 +26,12 @@ internal sealed class PlantNetworked : NetworkObject
         SetState
     }
 
+    /// <summary>
+    /// Gets the current target zombie.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal Zombie _Target { get; set; }
+
     internal static bool DoNotSyncDeath(Plant plant)
     {
         return plant.mSeedType == SeedType.Potatomine && plant.mState == PlantState.PotatoArmed;
@@ -126,7 +132,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!AmOwner)
         {
-            if (_State is Zombie)
+            if (_Target is Zombie)
             {
                 _Plant.MagnetShroomAttactItem(null); // MagnetshroomPlantPatch.cs will get the target
             }
@@ -213,9 +219,9 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSetZombieTargetRpc(Zombie target)
     {
-        if (_State != target)
+        if (_Target != target)
         {
-            _State = target;
+            _Target = target;
             var writer = PacketWriter.Get();
             writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
             SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
@@ -225,7 +231,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void HandleSetZombieTargetRpc(Zombie target)
     {
-        _State = target;
+        _Target = target;
     }
 
     internal void SendSetStateRpc(string state)

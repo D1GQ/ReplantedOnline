@@ -11,7 +11,6 @@ internal sealed class P2PPacketBuffer
 {
     private static readonly Queue<P2PPacketBuffer> _pool = [];
     private const int MAX_POOL_SIZE = 5;
-    private const int BUFFER_SIZE = 250;
     internal static int AmountInUse;
 
     /// <summary>
@@ -27,7 +26,7 @@ internal sealed class P2PPacketBuffer
     /// <summary>
     /// The packet data stored in an Il2Cpp-compatible byte array.
     /// </summary>
-    public Il2CppStructArray<byte> Data = new(BUFFER_SIZE);
+    public Il2CppStructArray<byte> Data;
 
     /// <summary>
     /// Retrieves a P2PPacketBuffer instance from the pool or creates a new one if the pool is empty.
@@ -49,6 +48,12 @@ internal sealed class P2PPacketBuffer
     /// <param name="requiredSize">The minimum required capacity in bytes.</param>
     private void EnsureCapacity(uint requiredSize)
     {
+        if (requiredSize == 0)
+        {
+            Data = new Il2CppStructArray<byte>(1);
+            return;
+        }
+
         if (Data == null || Data.Length < requiredSize)
         {
             Data = new Il2CppStructArray<byte>((int)requiredSize);

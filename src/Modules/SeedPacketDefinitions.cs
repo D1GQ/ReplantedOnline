@@ -20,13 +20,8 @@ internal static class SeedPacketDefinitions
         SeedType.Lilypad,
         SeedType.Tanglekelp,
         SeedType.Seashroom,
-        SeedType.Plantern,
         SeedType.Blover,
         SeedType.Umbrella,
-        SeedType.Marigold,
-
-        // Needs to be fixed
-        SeedType.Kernelpult,
 
         // Zombies
         SeedType.ZombieGravestone,

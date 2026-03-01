@@ -58,11 +58,11 @@ internal static class PotatominePlantPatch
                 else
                 {
                     // For other players, get the target from network state instead of local AI
-                    if (netPlant._State is Zombie zombie)
+                    if (netPlant._Target != null)
                     {
                         // Override the result with the networked zombie target
-                        __result = zombie;
-                        netPlant._State = null;
+                        __result = netPlant._Target;
+                        netPlant._Target = null;
                         __instance.mController.StartCoroutine(CoWaitAndDie(__instance).WrapToIl2cpp());
                     }
                 }

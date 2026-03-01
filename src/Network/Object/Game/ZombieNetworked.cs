@@ -24,7 +24,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         TakeDamage,
         Death,
-        DieNoLoot,
+        DieWithLoot,
         SetPlantTarget,
         EnteringHouse,
         MindControlled,
@@ -32,6 +32,12 @@ internal sealed class ZombieNetworked : NetworkObject
         ApplyBurn,
         SetState
     }
+
+    /// <summary>
+    /// Gets the current target zombie.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal Plant _Target { get; set; }
 
     /// <summary>
     /// Represents the networked animation controller used to synchronize animation states across multiple clients.
@@ -89,6 +95,18 @@ internal sealed class ZombieNetworked : NetworkObject
     public void Update()
     {
         if (!IsOnNetwork) return;
+
+        if (AmOwner)
+        {
+            if (_State is States.MindControlledState)
+            {
+                if (_Zombie == null)
+                {
+                    DespawnAndDestroy();
+                }
+            }
+        }
+
         if (_Zombie == null) return;
 
         if (_Zombie.mDead)
@@ -116,7 +134,11 @@ internal sealed class ZombieNetworked : NetworkObject
                 break;
             case ZombieType.Polevaulter:
                 PolevaulterUpdate();
-                break;
+                if (_Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
+                {
+                    NormalUpdate();
+                }
+                return;
         }
 
         NormalUpdate();
@@ -224,7 +246,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && _State == null)
+            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && _Target == null)
             {
                 // Send target to vault
                 Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Vault);
@@ -236,7 +258,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
         {
-            _State = null;
+            _Target = null;
         }
     }
 
@@ -314,30 +336,30 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendDieNoLootRpc()
+    internal void SendDieWithLootRpc()
     {
         if (!Dead)
         {
             Dead = true;
-            SendNetworkClassRpc((byte)ZombieRpcs.DieNoLoot);
+            SendNetworkClassRpc((byte)ZombieRpcs.DieWithLoot);
             DespawnAndDestroy();
         }
     }
 
-    private void HandleDieNoLootRpc()
+    private void HandleDieWithLootRpc()
     {
         if (!Dead)
         {
             Dead = true;
-            _Zombie.DieNoLoot();
+            CheckDeath(_Zombie.DieWithLoot);
         }
     }
 
     internal void SendSetPlantTargetRpc(Plant target)
     {
-        if (_State != target)
+        if (_Target != target)
         {
-            _State = target;
+            _Target = target;
             var writer = PacketWriter.Get();
             writer.WriteNetworkObject(target.GetNetworked<PlantNetworked>());
             SendNetworkClassRpc((byte)ZombieRpcs.SetPlantTarget, writer);
@@ -347,7 +369,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleSetPlantTargetRpc(Plant target)
     {
-        _State = target;
+        _Target = target;
     }
 
     internal void SendEnteringHouseRpc(float xPos)
@@ -369,13 +391,14 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendMindControlledRpc()
     {
+        _State = States.MindControlledState;
         SendNetworkClassRpc((byte)ZombieRpcs.MindControlled);
     }
 
     private void HandleMindControlledRpc()
     {
         _State = States.MindControlledState;
-        _Zombie.StartMindControlled();
+        _Zombie.StartMindControlledOriginal();
     }
 
     internal void SendSetFrozenRpc(bool frozen)
@@ -465,9 +488,9 @@ internal sealed class ZombieNetworked : NetworkObject
                     HandleDeathRpc(damageFlags);
                 }
                 break;
-            case ZombieRpcs.DieNoLoot:
+            case ZombieRpcs.DieWithLoot:
                 {
-                    HandleDieNoLootRpc();
+                    HandleDieWithLootRpc();
                 }
                 break;
             case ZombieRpcs.SetPlantTarget:

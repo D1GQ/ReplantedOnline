@@ -49,7 +49,7 @@ internal static class ChomperPlantPatch
                         var netZombie = __result.GetNetworked<ZombieNetworked>();
                         if (netZombie != null && !netZombie.Dead)
                         {
-                            netZombie.SendDieNoLootRpc();
+                            netZombie.SendDieWithLootRpc();
                         }
                     }
                 }

@@ -36,11 +36,11 @@ internal static class MagnetshroomPlantPatch
                 else
                 {
                     // For other players, get the target from network state instead of local AI
-                    if (netPlant._State is Zombie zombie)
+                    if (netPlant._Target != null)
                     {
                         // Override the result with the networked zombie target
-                        netPlant._State = null;
-                        theZombie = zombie;
+                        theZombie = netPlant._Target;
+                        netPlant._Target = null;
                     }
                     else
                     {

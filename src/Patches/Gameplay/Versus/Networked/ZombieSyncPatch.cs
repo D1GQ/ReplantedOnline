@@ -146,4 +146,31 @@ internal static class ZombieSyncPatch
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.StartMindControlled))]
+    [HarmonyPrefix]
+    private static bool Zombie_StartMindControlled_Prefix(Zombie __instance)
+    {
+        if (NetLobby.AmInLobby())
+        {
+            if (VersusState.AmPlantSide)
+            {
+                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                netZombie.SendMindControlledRpc();
+
+                __instance.StartMindControlledOriginal();
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.StartMindControlled))]
+    internal static void StartMindControlledOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

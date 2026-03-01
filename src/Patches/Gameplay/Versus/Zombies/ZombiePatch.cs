@@ -22,7 +22,7 @@ internal static class ZombiePatch
         if (NetLobby.AmInLobby() && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath)
         {
             // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
-            if (theZombieType is ZombieType.Target or ZombieType.Imp) return true;
+            if (theZombieType is ZombieType.Target) return true;
 
             if (!VersusState.AmPlantSide)
             {
@@ -31,6 +31,8 @@ internal static class ZombiePatch
 
                 return false;
             }
+
+            if (theZombieType is ZombieType.Imp) return true;
 
             // Spawn zombie at column 9 (right side of board) with network synchronization
             __result = Utils.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
@@ -56,26 +58,6 @@ internal static class ZombiePatch
             }
 
             return false;
-        }
-
-        return true;
-    }
-
-    [HarmonyPatch(typeof(Zombie), nameof(Zombie.StartMindControlled))]
-    [HarmonyPrefix]
-    private static bool Zombie_StartMindControlled_Prefix(Zombie __instance)
-    {
-        if (NetLobby.AmInLobby())
-        {
-            if (VersusState.AmPlantSide)
-            {
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
-                netZombie.SendMindControlledRpc();
-            }
-            else
-            {
-                return false;
-            }
         }
 
         return true;

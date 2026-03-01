@@ -209,7 +209,7 @@ internal static class NetworkDispatcher
     /// <returns>Enumerator for coroutine execution</returns>
     internal static IEnumerator CoListening()
     {
-        MelonLogger.Msg("Starting NetworkDispatcher");
+        MelonLogger.Msg("[NetworkDispatcher] Starting NetworkDispatcher");
 
         while (NetLobby.AmInLobby())
         {
@@ -249,7 +249,7 @@ internal static class NetworkDispatcher
             yield return null;
         }
 
-        MelonLogger.Msg("Stoping NetworkDispatcher");
+        MelonLogger.Msg("[NetworkDispatcher] Stoping NetworkDispatcher");
 
         listeningToken = null;
     }

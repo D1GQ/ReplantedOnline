@@ -27,9 +27,9 @@ internal static class PolevaulterZombiePatch
                     var netZombie = __instance.GetNetworked<ZombieNetworked>();
                     if (netZombie != null)
                     {
-                        if (netZombie._State is Plant plant)
+                        if (netZombie._Target != null)
                         {
-                            __result = plant;
+                            __result = netZombie._Target;
                         }
                         else
                         {
