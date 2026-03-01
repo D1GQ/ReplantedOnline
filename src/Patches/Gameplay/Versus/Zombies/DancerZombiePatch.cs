@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -46,7 +47,7 @@ internal static class DancerZombiePatch
             var backupDancer = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
             __instance.AddNextId(backupDancer);
 
-            throw new Exception("This is a intentional Exception!");
+            throw new CodeBreakException();
         }
 
         return true;

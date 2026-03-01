@@ -87,7 +87,7 @@ internal static class VersusModePatch
 
         VersusGameplayManager.OnStart();
 
-        throw new Exception("This is a intentional exception!"); // For some reason needed to prevent original method to run ???
+        throw new CodeBreakException(); // For some reason needed to prevent original method to run ???
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]
