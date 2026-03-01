@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Steam;
@@ -87,7 +88,7 @@ internal static class VersusModePatch
 
         VersusGameplayManager.OnStart();
 
-        throw new CodeBreakException(); // For some reason needed to prevent original method to run ???
+        throw new SilentException(); // For some reason needed to prevent original method to run ???
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]

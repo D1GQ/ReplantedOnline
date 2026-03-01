@@ -9,6 +9,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Patches;
 using ReplantedOnline.Patches.Client.UI;
 using System.Reflection;
 using UnityEngine;
@@ -59,6 +60,8 @@ internal class ReplantedOnlineMod : MelonMod
 
         HarmonyInstance.Unpatch(AccessTools.Method("HarmonyLib.PatchFunctions:ReversePatch"), badPatch);
         HarmonyInstance.Unpatch(AccessTools.Method("HarmonyLib.HarmonyMethod:ImportMethod"), badPatch);
+
+        Il2CppInteropExceptionLogPatch.Patch(HarmonyInstance);
     }
 
     public override void OnUpdate()
