@@ -19,7 +19,8 @@ internal sealed class PlantNetworked : NetworkObject
     internal enum PlantRpcs
     {
         Die,
-        Squash,
+        SquashTarget,
+        SquishPlant,
         Fire,
         SetZombieTarget,
         SetState
@@ -161,19 +162,19 @@ internal sealed class PlantNetworked : NetworkObject
         _Plant.DieOriginal();
     }
 
-    internal void SendSquashRpc(Zombie target)
+    internal void SendSquashTargetRpc(Zombie target)
     {
         if (_State is not PlantState.DoingSpecial)
         {
             _State = PlantState.DoingSpecial;
             var writer = PacketWriter.Get();
             writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
-            SendNetworkClassRpc((byte)PlantRpcs.Squash, writer);
+            SendNetworkClassRpc((byte)PlantRpcs.SquashTarget, writer);
             writer.Recycle();
         }
     }
 
-    private void HandleSquashRpc(Zombie target)
+    private void HandleSquashTargetRpc(Zombie target)
     {
         if (_State is not PlantState.DoingSpecial)
         {
@@ -183,6 +184,16 @@ internal sealed class PlantNetworked : NetworkObject
             _Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
             _Plant.mState = PlantState.SquashLook;
         }
+    }
+
+    internal void SendSquashPlantRpc()
+    {
+        SendNetworkClassRpc((byte)PlantRpcs.SquishPlant);
+    }
+
+    private void HandleSquashPlantRpc()
+    {
+        _Plant.SquishOriginal();
     }
 
     internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
@@ -243,10 +254,10 @@ internal sealed class PlantNetworked : NetworkObject
                     HandleDieRpc();
                 }
                 break;
-            case PlantRpcs.Squash:
+            case PlantRpcs.SquashTarget:
                 {
                     var target = (ZombieNetworked)packetReader.ReadNetworkObject();
-                    HandleSquashRpc(target._Zombie);
+                    HandleSquashTargetRpc(target._Zombie);
                 }
                 break;
             case PlantRpcs.Fire:
@@ -261,6 +272,11 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     var target = (ZombieNetworked)packetReader.ReadNetworkObject();
                     HandleSetZombieTargetRpc(target._Zombie);
+                }
+                break;
+            case PlantRpcs.SquishPlant:
+                {
+                    HandleSquashPlantRpc();
                 }
                 break;
             case PlantRpcs.SetState:

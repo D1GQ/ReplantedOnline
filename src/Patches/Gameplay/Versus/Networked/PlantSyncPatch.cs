@@ -41,4 +41,36 @@ internal static class PlantSyncPatch
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }
+
+    [HarmonyPatch(typeof(Plant), nameof(Plant.Squish))]
+    [HarmonyPrefix]
+    private static bool Plant_Squish_Prefix(Plant __instance)
+    {
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (VersusState.AmPlantSide)
+            {
+                // Sync Squish
+                var netPlant = __instance.GetNetworked<PlantNetworked>();
+                if (netPlant != null)
+                {
+                    netPlant.SendSquashPlantRpc();
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Plant), nameof(Plant.Squish))]
+    internal static void SquishOriginal(this Plant __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

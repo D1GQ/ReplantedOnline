@@ -36,7 +36,7 @@ internal static class PolevaulterZombiePatch
                             __result = null;
 
                             // Push back until plant side has vaulted
-                            if (_FindPlantTargetOriginal(__instance, ZombieAttackType.Vault) != null)
+                            if (__instance.FindPlantTargetOriginal(ZombieAttackType.Vault) != null)
                             {
                                 __instance.mPosX += 1;
                             }
@@ -45,12 +45,5 @@ internal static class PolevaulterZombiePatch
                 }
             }
         }
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
-    private static Plant _FindPlantTargetOriginal(Zombie __instance, ZombieAttackType theAttackType)
-    {
-        throw new NotImplementedException("Reverse Patch Stub");
     }
 }

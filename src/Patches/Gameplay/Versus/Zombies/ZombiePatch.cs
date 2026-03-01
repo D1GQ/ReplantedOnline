@@ -76,4 +76,11 @@ internal static class ZombiePatch
 
         return true;
     }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
+    internal static Plant FindPlantTargetOriginal(this Zombie __instance, ZombieAttackType theAttackType)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

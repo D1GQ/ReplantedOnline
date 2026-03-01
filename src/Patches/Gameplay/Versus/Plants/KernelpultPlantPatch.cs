@@ -21,6 +21,7 @@ internal static class KernelpultPlantPatch
         {
             if (VersusState.AmPlantSide)
             {
+                // Sync Butter
                 var netPlant = __instance.GetNetworked<PlantNetworked>();
                 if (netPlant != null)
                 {
