@@ -47,7 +47,7 @@ internal static class DancerZombiePatch
             var backupDancer = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
             __instance.AddNextId(backupDancer);
 
-            throw new SilentException();
+            throw new SilentPatchException();
         }
 
         return true;

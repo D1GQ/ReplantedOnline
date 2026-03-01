@@ -88,7 +88,7 @@ internal static class VersusModePatch
 
         VersusGameplayManager.OnStart();
 
-        throw new SilentException(); // For some reason needed to prevent original method to run ???
+        throw new SilentPatchException(); // For some reason needed to prevent original method to run ???
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]

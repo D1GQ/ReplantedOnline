@@ -148,7 +148,7 @@ internal static class Il2CppInteropExceptionLogPatch
     private static bool OurReportException_Prefix(Exception __0)
     {
         // If it's our control-flow SilentException, do nothing (suppress the log)
-        if (__0 is SilentException)
+        if (__0 is SilentPatchException)
         {
             return false;
         }
