@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -17,7 +18,7 @@ internal static class ImpZombiePatch
     {
         if (theType != ZombieType.Imp) return;
 
-        if (NetLobby.AmInLobby() && NetLobby.AmLobbyHost())
+        if (NetLobby.AmInLobby() && VersusState.AmPlantSide)
         {
             // Spawn imp on network, for some reason this gets initialized twice...
             if (__instance.GetNetworked<ZombieNetworked>() == null)

@@ -98,7 +98,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_State is States.MindControlledState)
+            if (ZombieType == ZombieType.Bungee || _State is States.MindControlledState)
             {
                 if (_Zombie == null)
                 {

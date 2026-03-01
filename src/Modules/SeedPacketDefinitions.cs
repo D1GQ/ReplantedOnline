@@ -21,7 +21,6 @@ internal static class SeedPacketDefinitions
         SeedType.Tanglekelp,
         SeedType.Seashroom,
         SeedType.Blover,
-        SeedType.Umbrella,
 
         // Zombies
         SeedType.ZombieGravestone,
