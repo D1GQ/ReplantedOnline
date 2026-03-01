@@ -86,6 +86,19 @@ internal sealed class PlantNetworked : NetworkObject
     public void Update()
     {
         if (!IsOnNetwork) return;
+
+        if (AmOwner)
+        {
+            if (_Plant == null)
+            {
+                if (SeedType == SeedType.Potatomine)
+                {
+                    DespawnAndDestroy();
+                    return;
+                }
+            }
+        }
+
         if (_Plant == null) return;
 
         if (_Plant.mDead)
