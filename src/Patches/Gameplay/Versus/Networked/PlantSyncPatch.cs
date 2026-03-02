@@ -26,10 +26,6 @@ internal static class PlantSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             __instance.GetNetworked<PlantNetworked>().SendDieRpc();
-
-            __instance.DieOriginal();
-
-            return false;
         }
 
         return true;

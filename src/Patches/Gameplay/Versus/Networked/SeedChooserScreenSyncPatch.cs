@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
+using ReplantedOnline.Logging;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Server.ClientRPC;
 using ReplantedOnline.Network.Steam;
@@ -41,7 +42,8 @@ internal static class SeedChooserScreenSyncPatch
                 }
             }
 
-            return false;
+            // Fully prevent the original method from running, due to using reverse patche to call the original method instead of the prefix
+            throw new SilentPatchException();
         }
 
         return true;

@@ -131,9 +131,7 @@ internal static class ZombieSyncPatch
                 __instance.GetNetworked<ZombieNetworked>().SendApplyBurnRpc();
             }
 
-            __instance.ApplyBurnOriginal();
-
-            return false;
+            return true;
         }
 
         return true;
@@ -157,7 +155,7 @@ internal static class ZombieSyncPatch
                 var netZombie = __instance.GetNetworked<ZombieNetworked>();
                 netZombie.SendMindControlledRpc();
 
-                __instance.StartMindControlledOriginal();
+                return true;
             }
 
             return false;
