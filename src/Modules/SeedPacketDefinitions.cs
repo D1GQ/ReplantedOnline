@@ -15,7 +15,6 @@ internal static class SeedPacketDefinitions
         SeedType.None,
 
         // Plants
-        SeedType.Sunflower,
         SeedType.Gravebuster,
         SeedType.Lilypad,
         SeedType.Tanglekelp,
@@ -23,12 +22,9 @@ internal static class SeedPacketDefinitions
         SeedType.Blover,
 
         // Zombies
-        SeedType.ZombieGravestone,
-
         // Needs to be fixed
         SeedType.Zomboni,
         SeedType.ZombieCatapult,
-        SeedType.ZombieGargantuar
     ];
 
     internal static SeedType[] IgnoreInitialCooldown = [
