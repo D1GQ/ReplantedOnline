@@ -99,7 +99,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (ZombieType == ZombieType.Bungee || _State is States.MindControlledState)
+            if (ZombieType == ZombieType.Bungee || _State is NetStates.MindControlledState)
             {
                 if (_Zombie == null)
                 {
@@ -189,17 +189,17 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not NetStates.UpdateState)
             {
-                _State = States.UpdateState;
-                SendSetStateRpc(States.UpdateState);
+                _State = NetStates.UpdateState;
+                SendSetStateRpc(NetStates.UpdateState);
             }
         }
         else
         {
             if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
             {
-                if (_State is not States.UpdateState)
+                if (_State is not NetStates.UpdateState)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -217,11 +217,11 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && _State is not States.UpdateState)
+            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && _State is not NetStates.UpdateState)
             {
                 Dead = true;
-                _State = States.UpdateState;
-                SendSetStateRpc(States.UpdateState);
+                _State = NetStates.UpdateState;
+                SendSetStateRpc(NetStates.UpdateState);
                 StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
                 {
                     DespawnAndDestroy();
@@ -232,7 +232,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
-                if (_State is not States.UpdateState)
+                if (_State is not NetStates.UpdateState)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -374,7 +374,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            CheckDeath(_Zombie.DieWithLoot);
+            _Zombie.DieWithLootOriginal();
         }
     }
 
@@ -414,13 +414,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendMindControlledRpc()
     {
-        _State = States.MindControlledState;
+        _State = NetStates.MindControlledState;
         SendNetworkClassRpc((byte)ZombieRpcs.MindControlled);
     }
 
     private void HandleMindControlledRpc()
     {
-        _State = States.MindControlledState;
+        _State = NetStates.MindControlledState;
         _Zombie.StartMindControlledOriginal();
     }
 

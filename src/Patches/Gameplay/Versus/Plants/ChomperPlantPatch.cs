@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -22,38 +20,11 @@ internal static class ChomperPlantPatch
             // If player is NOT on the plant side
             if (!VersusState.AmPlantSide)
             {
-                // The chomper targeting/animations will be handled by network code
+                // The chomper animations will be handled by PlantNetworked.cs
                 return false;
             }
         }
 
         return true;
-    }
-
-    [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
-    [HarmonyPostfix]
-    private static void Plant_FindTargetZombie_Postfix(Plant __instance, Zombie __result)
-    {
-        if (__instance.mSeedType != SeedType.Chomper) return;
-
-        // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
-        {
-            // Only plant-side players need to send network updates
-            if (VersusState.AmPlantSide)
-            {
-                if (__result != null)
-                {
-                    if (__result.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar))
-                    {
-                        var netZombie = __result.GetNetworked<ZombieNetworked>();
-                        if (netZombie != null && !netZombie.Dead)
-                        {
-                            netZombie.SendDieWithLootRpc();
-                        }
-                    }
-                }
-            }
-        }
     }
 }

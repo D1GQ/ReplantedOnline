@@ -45,7 +45,7 @@ internal static class GargantuarZombiePatch
                 {
                     if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie._State is States.GargantuarSmash)
+                        if (netZombie._State is NetStates.GargantuarSmash)
                         {
                             // If the gargantuar is in synced smashing state, move it forward to find a target
                             if (__result == null)
@@ -54,10 +54,10 @@ internal static class GargantuarZombiePatch
                             }
                             else
                             {
-                                netZombie._State = States.GargantuarTarget;
+                                netZombie._State = NetStates.GargantuarTarget;
                             }
                         }
-                        else if (netZombie._State is not States.GargantuarTarget)
+                        else if (netZombie._State is not NetStates.GargantuarTarget)
                         {
                             // If the gargantuar is not in synced smashing state, move it backward if target is found
                             if (__result != null)
@@ -70,7 +70,7 @@ internal static class GargantuarZombiePatch
                     else
                     {
                         // If the gargantuar is in smashing phase, clear target state
-                        if (netZombie._State is States.GargantuarTarget)
+                        if (netZombie._State is NetStates.GargantuarTarget)
                         {
                             netZombie._State = null;
                         }
@@ -101,10 +101,10 @@ internal static class GargantuarZombiePatch
                 {
                     if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie._State is not States.GargantuarSmash)
+                        if (netZombie._State is not NetStates.GargantuarSmash)
                         {
-                            netZombie._State = States.GargantuarSmash;
-                            netZombie.SendSetStateRpc(States.GargantuarSmash);
+                            netZombie._State = NetStates.GargantuarSmash;
+                            netZombie.SendSetStateRpc(NetStates.GargantuarSmash);
                         }
                     }
                     else
@@ -146,7 +146,7 @@ internal static class GargantuarZombiePatch
     {
         gargantuar.mZombiePhase = ZombiePhase.GargantuarThrowing;
         float animSpeed = gargantuar.mBoard.StageHasRoof() ? 24f : 18f;
-        gargantuar.PlayZombieReanim("anim_gargantuar_throw", ReanimLoopType.Loop, 20, animSpeed);
+        gargantuar.PlayZombieReanim(Animations.GARGANTUAR_THROW, ReanimLoopType.Loop, 20, animSpeed);
 
         // Set hasObject to false
         gargantuar.mHasObject = false;
@@ -202,7 +202,7 @@ internal static class GargantuarZombiePatch
             ConfigureImpArc(gargantuar, imp);
 
             // Play imp flying animation
-            imp.PlayZombieReanim("anim_imp_flying", ReanimLoopType.Loop, 3, 18f);
+            imp.PlayZombieReanim(Animations.IMP_FLYING, ReanimLoopType.Loop, 3, 18f);
 
             // Force immediate animation update
             imp.UpdateReanim();

@@ -1,6 +1,8 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
+using Il2CppSource.Controllers;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Steam;
@@ -87,6 +89,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!IsOnNetwork) return;
 
+        // Remove Potatomine off network if blown up
         if (AmOwner)
         {
             if (_Plant == null)
@@ -127,6 +130,9 @@ internal sealed class PlantNetworked : NetworkObject
 
         switch (SeedType)
         {
+            case SeedType.Chomper:
+                ChopperUpdate();
+                break;
             case SeedType.Magnetshroom:
                 MagnetShroomUpdate();
                 break;
@@ -138,6 +144,40 @@ internal sealed class PlantNetworked : NetworkObject
         if (!AmOwner)
         {
             _Plant.mDoSpecialCountdown = int.MaxValue;
+        }
+    }
+
+    private void ChopperUpdate()
+    {
+        if (AmOwner)
+        {
+            string plantStateStr = _Plant.mState.ToString();
+
+            if (_State?.ToString() != plantStateStr)
+            {
+                _State = plantStateStr;
+                SendSetStateRpc(plantStateStr);
+            }
+        }
+        else
+        {
+            if (_State is string stateStr)
+            {
+                if (Enum.TryParse(stateStr, out PlantState state))
+                {
+                    if (_Plant.mState != state)
+                    {
+                        _Plant.mStateCountdown = 0;
+                        _Plant.mState = state;
+
+                        if (state == PlantState.ChomperBiting)
+                        {
+                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30, ReanimLoopType.PlayOnce);
+                            _State = PlantState.ChomperBitingMissed.ToString();
+                        }
+                    }
+                }
+            }
         }
     }
 

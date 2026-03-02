@@ -39,6 +39,28 @@ internal static class ZombieSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DieWithLoot))]
+    [HarmonyPrefix]
+    private static bool Zombie_DieWithLoot_Prefix(Zombie __instance)
+    {
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide) return false;
+
+            __instance.GetNetworked<ZombieNetworked>().SendDieWithLootRpc();
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DieWithLoot))]
+    internal static void DieWithLootOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.TakeDamage))]
     [HarmonyPrefix]
     private static bool Zombie_TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
