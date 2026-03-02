@@ -148,12 +148,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar))
-            {
-                __instance.GetNetworked<ZombieNetworked>().SendApplyBurnRpc();
-            }
-
-            return true;
+            __instance.GetNetworked<ZombieNetworked>().SendApplyBurnRpc();
         }
 
         return true;

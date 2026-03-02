@@ -460,21 +460,24 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendApplyBurnRpc()
     {
-        if (!Dead)
+        bool reallyDead = _Zombie.mBodyHealth <= 1800;
+
+        var writer = PacketWriter.Get();
+        writer.WriteBool(reallyDead);
+        SendNetworkClassRpc((byte)ZombieRpcs.ApplyBurn, writer);
+        writer.Recycle();
+
+        if (reallyDead && !Dead)
         {
             Dead = true;
-            SendNetworkClassRpc((byte)ZombieRpcs.ApplyBurn);
             DespawnAndDestroy();
         }
     }
 
-    private void HandleApplyBurnRpc()
+    private void HandleApplyBurnRpc(bool reallyDead)
     {
-        if (!Dead)
-        {
-            Dead = true;
-            _Zombie.ApplyBurnOriginal();
-        }
+        Dead = Dead || reallyDead;
+        _Zombie.ApplyBurnOriginal();
     }
 
     internal void SendSetStateRpc(string state)
@@ -542,7 +545,8 @@ internal sealed class ZombieNetworked : NetworkObject
                 break;
             case ZombieRpcs.ApplyBurn:
                 {
-                    HandleApplyBurnRpc();
+                    bool reallyDead = packetReader.ReadBool();
+                    HandleApplyBurnRpc(reallyDead);
                 }
                 break;
             case ZombieRpcs.SetState:
