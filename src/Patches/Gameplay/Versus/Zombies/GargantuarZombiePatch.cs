@@ -30,6 +30,56 @@ internal static class GargantuarZombiePatch
         }
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
+    [HarmonyPostfix]
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant __result)
+    {
+        if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
+
+        if (NetLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide)
+            {
+                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                if (netZombie != null)
+                {
+                    if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
+                    {
+                        if (netZombie._State is States.GargantuarSmash)
+                        {
+                            // If the gargantuar is in synced smashing state, move it forward to find a target
+                            if (__result == null)
+                            {
+                                __instance.mPosX--;
+                            }
+                            else
+                            {
+                                netZombie._State = States.GargantuarTarget;
+                            }
+                        }
+                        else if (netZombie._State is not States.GargantuarTarget)
+                        {
+                            // If the gargantuar is not in synced smashing state, move it backward if target is found
+                            if (__result != null)
+                            {
+                                __result = null;
+                                __instance.mPosX++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // If the gargantuar is in smashing phase, clear target state
+                        if (netZombie._State is States.GargantuarTarget)
+                        {
+                            netZombie._State = null;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombieGargantuar))]
     [HarmonyPrefix]
     private static bool Zombie_UpdateZombieGargantuar_Prefix(Zombie __instance)
@@ -51,22 +101,17 @@ internal static class GargantuarZombiePatch
                 {
                     if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie._Target == null && __instance.mTargetPlantID != PlantID.Null)
+                        if (netZombie._State is not States.GargantuarSmash)
                         {
-                            Plant targetPlant = __instance.mBoard.m_plants.DataArrayTryToGet(__instance.mTargetPlantID);
-                            if (targetPlant != null)
-                            {
-                                netZombie._Target = targetPlant;
-                                netZombie.SendSetPlantTargetRpc(targetPlant);
-                            }
-
+                            netZombie._State = States.GargantuarSmash;
+                            netZombie.SendSetStateRpc(States.GargantuarSmash);
                         }
                     }
                     else
                     {
-                        if (netZombie._Target != null)
+                        if (netZombie._State != null)
                         {
-                            netZombie._Target = null;
+                            netZombie._State = null;
                         }
                     }
                 }
@@ -89,23 +134,6 @@ internal static class GargantuarZombiePatch
                     {
                         // Allow gargantuar to go into throwing phase
                         __instance.mHasObject = true;
-                    }
-                }
-
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
-                if (netZombie != null)
-                {
-                    if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
-                    {
-                        // Push gargantuar forward to trigger the smash if it has a target but isn't in smashing phase yet
-                        if (netZombie._Target != null)
-                        {
-                            __instance.mPosX--;
-                        }
-                    }
-                    else
-                    {
-                        netZombie._Target = null;
                     }
                 }
             }
@@ -215,10 +243,8 @@ internal static class GargantuarZombiePatch
     {
         Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()._Zombie;
 
-        if (gargantuar != null)
-        {
-            gargantuar.mRelatedZombieID = imp.DataID;
-        }
+        // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
+        gargantuar?.mRelatedZombieID = imp.DataID;
     }
 
     // Waits for the Gargantuar's throw animation to reach the point where the imp is thrown before executing the callback

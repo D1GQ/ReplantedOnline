@@ -38,7 +38,7 @@ internal static class PolevaulterZombiePatch
                             // Push back until plant side has vaulted
                             if (__instance.FindPlantTargetOriginal(ZombieAttackType.Vault) != null)
                             {
-                                __instance.mPosX += 1;
+                                __instance.mPosX++;
                             }
                         }
                     }
