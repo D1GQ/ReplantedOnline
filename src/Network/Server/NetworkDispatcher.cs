@@ -213,37 +213,50 @@ internal static class NetworkDispatcher
 
         while (NetLobby.AmInLobby())
         {
-            foreach (var networkObj in NetLobby.LobbyData?.NetworkObjectsSpawned.Values)
+            try
             {
-                if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
-                var packet = PacketWriter.Get();
-                NetworkSyncPacket.SerializePacket(networkObj, false, packet);
-                SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
-                packet.Recycle();
-            }
+                foreach (var networkObj in NetLobby.LobbyData?.NetworkObjectsSpawned.Values)
+                {
+                    if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
+                    var packet = PacketWriter.Get();
+                    NetworkSyncPacket.SerializePacket(networkObj, false, packet);
+                    SendPacket(packet, false, PacketTag.NetworkClassSync, PacketChannel.Buffered);
+                    packet.Recycle();
+                }
 
-            processed = 5;
-            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
-            {
-                if (processed <= 0) break;
-                ReadPacket(messageSize, (int)PacketChannel.Rpc);
-                processed--;
-            }
+                processed = 5;
+                while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
+                {
+                    if (processed <= 0) break;
+                    ReadPacket(messageSize, (int)PacketChannel.Rpc);
+                    processed--;
+                }
 
-            processed = 5;
-            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
-            {
-                if (processed <= 0) break;
-                ReadPacket(messageSize, (int)PacketChannel.Main);
-                processed--;
-            }
+                processed = 5;
+                while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
+                {
+                    if (processed <= 0) break;
+                    ReadPacket(messageSize, (int)PacketChannel.Main);
+                    processed--;
+                }
 
-            processed = 5;
-            while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
+                processed = 5;
+                while (SteamNetworking.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
+                {
+                    if (processed <= 0) break;
+                    ReadPacket(messageSize, (int)PacketChannel.Buffered);
+                    processed--;
+                }
+            }
+            catch (Exception ex)
             {
-                if (processed <= 0) break;
-                ReadPacket(messageSize, (int)PacketChannel.Buffered);
-                processed--;
+                MelonLogger.Error($"[NetworkDispatcher] Exception in CoListening: {ex}");
+                NetLobby.LeaveLobby(() =>
+                {
+                    ReplantedOnlinePopup.Show("Error", "An error occurred while processing network packets.");
+                });
+                listeningToken = null;
+                yield break;
             }
 
             yield return null;
