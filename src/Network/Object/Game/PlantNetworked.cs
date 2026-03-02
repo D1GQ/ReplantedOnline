@@ -275,13 +275,13 @@ internal sealed class PlantNetworked : NetworkObject
                 break;
             case PlantRpcs.SquashTarget:
                 {
-                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
+                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
                     HandleSquashTargetRpc(target._Zombie);
                 }
                 break;
             case PlantRpcs.Fire:
                 {
-                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
+                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
                     var row = packetReader.ReadInt();
                     var plantWeapon = (PlantWeapon)packetReader.ReadInt();
                     HandleFireRpc(target._Zombie, row, plantWeapon);
@@ -289,7 +289,7 @@ internal sealed class PlantNetworked : NetworkObject
                 break;
             case PlantRpcs.SetZombieTarget:
                 {
-                    var target = (ZombieNetworked)packetReader.ReadNetworkObject();
+                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
                     HandleSetZombieTargetRpc(target._Zombie);
                 }
                 break;

@@ -29,7 +29,7 @@ internal sealed class MowZombieClientRPC : BaseClientRPC
         if (sender.Team is PlayerTeam.Plants)
         {
             var row = packetReader.ReadInt();
-            var netZombie = (ZombieNetworked)packetReader.ReadNetworkObject();
+            var netZombie = packetReader.ReadNetworkObject<ZombieNetworked>();
             var lawnMower = Instances.GameplayActivity.Board.FindLawnMowerInRow(row);
             lawnMower.MowZombieOriginal(netZombie._Zombie);
         }

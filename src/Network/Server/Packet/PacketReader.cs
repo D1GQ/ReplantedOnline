@@ -81,6 +81,19 @@ internal sealed class PacketReader
     }
 
     /// <summary>
+    /// Reads a networkclass from the packet and attempts to cast it to the specified type T. If the cast fails, returns null.
+    /// </summary>
+    /// <typeparam name="T">The type of network object to return. Must inherit from NetworkObject.</typeparam>
+    /// <returns>The decoded networkclass value.</returns>
+    internal T ReadNetworkObject<T>() where T : NetworkObject
+    {
+        var netObj = ReadNetworkObject();
+        if (netObj is T typedObj)
+            return typedObj;
+        return null;
+    }
+
+    /// <summary>
     /// Reads a Vector2 from the packet as two consecutive float values (X and Y).
     /// </summary>
     /// <returns>The Vector2 value.</returns>

@@ -502,7 +502,7 @@ internal sealed class ZombieNetworked : NetworkObject
                 break;
             case ZombieRpcs.SetPlantTarget:
                 {
-                    var target = (PlantNetworked)packetReader.ReadNetworkObject();
+                    var target = packetReader.ReadNetworkObject<PlantNetworked>();
                     HandleSetPlantTargetRpc(target._Plant);
                 }
                 break;

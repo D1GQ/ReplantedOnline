@@ -150,7 +150,7 @@ internal static class GargantuarZombiePatch
 
     internal static void ImpDeserialize(Zombie imp, PacketReader packetReader)
     {
-        Zombie gargantuar = ((ZombieNetworked)packetReader.ReadNetworkObject())._Zombie;
+        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()._Zombie;
 
         if (gargantuar != null)
         {
