@@ -8,6 +8,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 using System.Collections;
 using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
@@ -125,6 +126,12 @@ internal sealed class ZombieNetworked : NetworkObject
                 return;
             case ZombieType.Digger:
                 if (_Zombie.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
+                {
+                    NormalUpdate();
+                }
+                return;
+            case ZombieType.Imp:
+                if (_Zombie.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
                 {
                     NormalUpdate();
                 }
@@ -544,7 +551,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (ZombieType == ZombieType.Imp)
             {
-                packetWriter.WriteFloat(_Zombie.mPosX);
+                GargantuarZombiePatch.ImpSerialize(_Zombie, packetWriter);
             }
 
             return;
@@ -576,8 +583,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (ZombieType == ZombieType.Imp)
             {
-                var posX = packetReader.ReadFloat();
-                _Zombie.mPosX = posX;
+                GargantuarZombiePatch.ImpDeserialize(_Zombie, packetReader);
             }
 
             return;

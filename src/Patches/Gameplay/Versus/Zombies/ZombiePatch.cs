@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object.Game;
@@ -32,7 +33,8 @@ internal static class ZombiePatch
                 return false;
             }
 
-            if (theZombieType is ZombieType.Imp) return true;
+            // Prevent imps from spawning normally, this is handled in GargantuarZombiePatch.cs
+            if (theZombieType is ZombieType.Imp) throw new SilentPatchException();
 
             // Spawn zombie at column 9 (right side of board) with network synchronization
             __result = Utils.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
@@ -42,6 +44,13 @@ internal static class ZombiePatch
         }
 
         return true; // Allow original method in single player or non-gameplay phases
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
+    internal static Zombie AddZombieInRowOriginal(this Board __instance, ZombieType theZombieType, int theRow, int theFromWave, bool shakeBrush = true)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.WalkIntoHouse))]
