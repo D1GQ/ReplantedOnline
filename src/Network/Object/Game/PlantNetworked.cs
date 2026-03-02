@@ -183,6 +183,8 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashTargetRpc(Zombie target)
     {
+        if (SeedType != SeedType.Squash) return;
+
         if (_State is not PlantState.DoingSpecial)
         {
             _State = PlantState.DoingSpecial;
@@ -195,6 +197,8 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void HandleSquashTargetRpc(Zombie target)
     {
+        if (SeedType != SeedType.Squash) return;
+
         if (_State is not PlantState.DoingSpecial)
         {
             _State = PlantState.DoingSpecial;
@@ -207,7 +211,10 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashPlantRpc()
     {
+        // Dont know if this should be sycned yet 
+        /*
         SendNetworkClassRpc((byte)PlantRpcs.SquishPlant);
+        */
     }
 
     private void HandleSquashPlantRpc()

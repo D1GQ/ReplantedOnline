@@ -42,6 +42,7 @@ internal static class PlantSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
+    /*
     [HarmonyPatch(typeof(Plant), nameof(Plant.Squish))]
     [HarmonyPrefix]
     private static bool Plant_Squish_Prefix(Plant __instance)
@@ -61,6 +62,7 @@ internal static class PlantSyncPatch
 
         return true;
     }
+    */
 
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(Plant), nameof(Plant.Squish))]
