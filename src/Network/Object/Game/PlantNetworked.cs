@@ -167,21 +167,24 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     if (_Plant.mState != state)
                     {
-                        _Plant.mStateCountdown = 0;
                         _Plant.mState = state;
+                        _Plant.mStateCountdown = int.MaxValue;
 
                         if (state == PlantState.ChomperBiting)
                         {
-                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30, ReanimLoopType.PlayOnce);
+                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30f, ReanimLoopType.PlayOnce);
                             _State = PlantState.ChomperBitingMissed.ToString();
                         }
-                    }
-
-                    if (state == PlantState.ChomperDigesting)
-                    {
-                        if (!_Plant.mController.IsAnimationPlaying(Animations.CHOMPER_CHEW))
+                        else if (state == PlantState.ChomperDigesting)
                         {
-                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15, ReanimLoopType.Loop);
+                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15f, ReanimLoopType.Loop);
+                        }
+                    }
+                    else if (state == PlantState.Ready)
+                    {
+                        if (!_Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE))
+                        {
+                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE, CharacterAnimationTrack.Body, 10.26f, ReanimLoopType.Loop);
                         }
                     }
                 }
