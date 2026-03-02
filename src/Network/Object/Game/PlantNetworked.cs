@@ -176,6 +176,14 @@ internal sealed class PlantNetworked : NetworkObject
                             _State = PlantState.ChomperBitingMissed.ToString();
                         }
                     }
+
+                    if (state == PlantState.ChomperDigesting)
+                    {
+                        if (!_Plant.mController.IsAnimationPlaying(Animations.CHOMPER_CHEW))
+                        {
+                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15, ReanimLoopType.Loop);
+                        }
+                    }
                 }
             }
         }

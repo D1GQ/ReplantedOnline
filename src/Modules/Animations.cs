@@ -10,4 +10,5 @@ internal static class Animations
     internal const string IMP_FLYING = "anim_imp_flying";
 
     internal const string CHOMPER_BITE = "bite";
+    internal const string CHOMPER_CHEW = "chew";
 }
