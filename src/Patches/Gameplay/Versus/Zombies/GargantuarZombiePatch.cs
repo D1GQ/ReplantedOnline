@@ -22,7 +22,7 @@ internal static class GargantuarZombiePatch
 
         if (NetLobby.AmInLobby())
         {
-            // Set imp as throne - this will be synced when the imp is thrown
+            // Stop gargantuar from going into throwing phase
             if (!VersusState.AmPlantSide)
             {
                 __instance.mHasObject = false;
@@ -44,6 +44,27 @@ internal static class GargantuarZombiePatch
                     HandleImpThrown(__instance);
 
                     return false;
+                }
+            }
+            else
+            {
+                if (__instance.mRelatedZombieID != ZombieID.Null)
+                {
+                    if (__instance.mHasObject && __instance.mZombiePhase == ZombiePhase.GargantuarThrowing)
+                    {
+                        // Get imp from deserialization
+                        Zombie imp = __instance.mBoard.ZombieGet(__instance.mRelatedZombieID);
+                        __instance.mRelatedZombieID = ZombieID.Null; // Clear related ID after getting the imp
+                        HandleGargantuarThrow(__instance);
+                        SetupImp(__instance, imp);
+
+                        return false;
+                    }
+                    else
+                    {
+                        // Allow gargantuar to go into throwing phase
+                        __instance.mHasObject = true;
+                    }
                 }
             }
         }
@@ -73,7 +94,7 @@ internal static class GargantuarZombiePatch
         imp.mRelatedZombieID = gargantuar.DataID;
 
         SetupImp(gargantuar, imp);
-        SeedPacketSyncPatch.SpawnZombieOnNetwork(imp, 0, 0, false);
+        SeedPacketSyncPatch.SpawnZombieOnNetwork(imp, 20, 0, false); // spawn imp on network off screen for plant side to sync the throw
     }
 
     private static void SetupImp(Zombie gargantuar, Zombie imp)
@@ -136,7 +157,7 @@ internal static class GargantuarZombiePatch
     // Serialization and deserialization for the imp to sync the throw across the network
     internal static void ImpSerialize(Zombie imp, PacketWriter packetWriter)
     {
-        Zombie gargantuar = imp.mBoard.m_zombies.DataArrayGet(imp.mRelatedZombieID);
+        Zombie gargantuar = imp.mBoard.ZombieGet(imp.mRelatedZombieID);
 
         if (gargantuar != null)
         {
@@ -154,8 +175,7 @@ internal static class GargantuarZombiePatch
 
         if (gargantuar != null)
         {
-            HandleGargantuarThrow(gargantuar);
-            SetupImp(gargantuar, imp);
+            gargantuar.mRelatedZombieID = imp.DataID;
         }
     }
 

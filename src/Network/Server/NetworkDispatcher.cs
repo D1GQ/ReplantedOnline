@@ -213,7 +213,7 @@ internal static class NetworkDispatcher
 
         while (NetLobby.AmInLobby())
         {
-            foreach (var networkObj in NetLobby.LobbyData.NetworkObjectsSpawned.Values)
+            foreach (var networkObj in NetLobby.LobbyData?.NetworkObjectsSpawned.Values)
             {
                 if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                 var packet = PacketWriter.Get();
