@@ -67,6 +67,12 @@ internal sealed class PacketReader
     internal NetworkObject ReadNetworkObject()
     {
         var netId = ReadUInt();
+
+        if (netId == NetworkObject.NULL)
+        {
+            return null;
+        }
+
         if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(netId, out var networkObj))
         {
             return networkObj;

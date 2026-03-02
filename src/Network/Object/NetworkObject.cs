@@ -17,6 +17,11 @@ namespace ReplantedOnline.Network.Object;
 internal abstract class NetworkObject : RuntimePrefab, INetworkObject
 {
     /// <summary>
+    /// Represents a null or uninitialized value.
+    /// </summary>
+    internal const uint NULL = uint.MaxValue;
+
+    /// <summary>
     /// Gets the parent network object associated with this instance.
     /// </summary>
     [HideFromIl2Cpp]

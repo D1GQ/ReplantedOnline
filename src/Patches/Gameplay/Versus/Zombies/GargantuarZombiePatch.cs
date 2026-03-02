@@ -138,15 +138,25 @@ internal static class GargantuarZombiePatch
     {
         Zombie gargantuar = imp.mBoard.m_zombies.DataArrayGet(imp.mRelatedZombieID);
 
-        packetWriter.WriteNetworkObject(gargantuar.GetNetworked<ZombieNetworked>());
+        if (gargantuar != null)
+        {
+            packetWriter.WriteNetworkObject(gargantuar.GetNetworked<ZombieNetworked>());
+        }
+        else
+        {
+            packetWriter.WriteNetworkObject(null);
+        }
     }
 
     internal static void ImpDeserialize(Zombie imp, PacketReader packetReader)
     {
         Zombie gargantuar = ((ZombieNetworked)packetReader.ReadNetworkObject())._Zombie;
 
-        HandleGargantuarThrow(gargantuar);
-        SetupImp(gargantuar, imp);
+        if (gargantuar != null)
+        {
+            HandleGargantuarThrow(gargantuar);
+            SetupImp(gargantuar, imp);
+        }
     }
 
     // Waits for the Gargantuar's throw animation to reach the point where the imp is thrown before executing the callback
@@ -161,7 +171,7 @@ internal static class GargantuarZombiePatch
 
             if (gargantuar.mZombiePhase == ZombiePhase.GargantuarThrowing)
             {
-                if (gargantuar.mController.ShouldTriggerTimedEvent(0.75f, CharacterAnimationTrack.Body))
+                if (gargantuar.mController.ShouldTriggerTimedEvent(0.72f, CharacterAnimationTrack.Body))
                 {
                     break;
                 }

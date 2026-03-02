@@ -42,7 +42,14 @@ internal sealed class PacketWriter
     /// </summary>
     internal void WriteNetworkObject(NetworkObject networkObj)
     {
-        WriteUInt(networkObj.NetworkId);
+        if (networkObj != null)
+        {
+            WriteUInt(networkObj.NetworkId);
+        }
+        else
+        {
+            WriteUInt(NetworkObject.NULL);
+        }
     }
 
     /// <summary>
