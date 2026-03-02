@@ -211,10 +211,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashPlantRpc()
     {
-        // Dont know if this should be sycned yet 
-        /*
         SendNetworkClassRpc((byte)PlantRpcs.SquishPlant);
-        */
     }
 
     private void HandleSquashPlantRpc()

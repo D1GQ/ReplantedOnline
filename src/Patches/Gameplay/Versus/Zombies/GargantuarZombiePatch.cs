@@ -45,6 +45,31 @@ internal static class GargantuarZombiePatch
 
                     return false;
                 }
+
+                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                if (netZombie != null)
+                {
+                    if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
+                    {
+                        if (netZombie._Target == null && __instance.mTargetPlantID != PlantID.Null)
+                        {
+                            Plant targetPlant = __instance.mBoard.m_plants.DataArrayTryToGet(__instance.mTargetPlantID);
+                            if (targetPlant != null)
+                            {
+                                netZombie._Target = targetPlant;
+                                netZombie.SendSetPlantTargetRpc(targetPlant);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        if (netZombie._Target != null)
+                        {
+                            netZombie._Target = null;
+                        }
+                    }
+                }
             }
             else
             {
@@ -64,6 +89,23 @@ internal static class GargantuarZombiePatch
                     {
                         // Allow gargantuar to go into throwing phase
                         __instance.mHasObject = true;
+                    }
+                }
+
+                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                if (netZombie != null)
+                {
+                    if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
+                    {
+                        // Push gargantuar forward to trigger the smash if it has a target but isn't in smashing phase yet
+                        if (netZombie._Target != null)
+                        {
+                            __instance.mPosX--;
+                        }
+                    }
+                    else
+                    {
+                        netZombie._Target = null;
                     }
                 }
             }
