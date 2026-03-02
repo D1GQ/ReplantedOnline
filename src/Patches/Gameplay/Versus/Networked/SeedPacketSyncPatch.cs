@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Logging;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
@@ -41,24 +42,28 @@ internal static class SeedPacketSyncPatch
                     if (__instance.Board.CanTakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX) && seedPacket.mActive)
                     {
                         // Mark the packet as used and deduct the sun cost
-                        seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX); // TODO: Fix no cooldown on gamepad
+                        seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
                     }
                     else
                     {
-                        Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_BUZZER);
+                        Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
                     }
 
-                    // Return false to skip the original method since we've handled planting
-                    return false;
+                    // This has to be done to prevent Buzzer sound always playing after planting with GamePad
+                    // not sure why the original method doesn't work properly but this is the only way I found to fix it
+                    // Most likely the method calling _onCursorConfirmed
+                    throw new SilentPatchException();
                 }
 
-                Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_BUZZER);
+                Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
 
-                // Return false to skip original method (invalid placement)
-                return false;
+                // This has to be done to prevent Buzzer sound always playing after planting with GamePad
+                // not sure why the original method doesn't work properly but this is the only way I found to fix it
+                // Most likely the method calling _onCursorConfirmed
+                throw new SilentPatchException();
             }
         }
 
@@ -103,17 +108,15 @@ internal static class SeedPacketSyncPatch
                     }
                     else
                     {
-                        Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_BUZZER);
+                        Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
                     }
 
-                    // Return false to skip the original method since we've handled planting
                     return false;
                 }
 
                 // If planting is not valid, play buzzer sound
-                Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_BUZZER);
+                Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
 
-                // Return false to skip original method (invalid placement)
                 return false;
             }
         }
