@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
-using Il2CppSteamworks;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Modules;
 
@@ -24,25 +24,25 @@ internal static class VersusState
     /// <summary>
     /// Determines if the local player is currently on the zombie team.
     /// </summary>
-    internal static bool AmZombieSide => SteamNetClient.LocalClient?.Team == PlayerTeam.Zombies;
+    internal static bool AmZombieSide => NetClient.LocalClient?.Team == PlayerTeam.Zombies;
 
     /// <summary>
     /// Determines if the local player is currently on the plant team.
     /// </summary>
-    internal static bool AmPlantSide => SteamNetClient.LocalClient?.Team == PlayerTeam.Plants;
+    internal static bool AmPlantSide => NetClient.LocalClient?.Team == PlayerTeam.Plants;
 
     /// <summary>
     /// Determines if the local player is currently spectating..
     /// </summary>
-    internal static bool AmSpectator => SteamNetClient.LocalClient?.Team == PlayerTeam.Spectators;
+    internal static bool AmSpectator => NetClient.LocalClient?.Team == PlayerTeam.Spectators;
 
     /// <summary>
     /// Gets the Steam ID of the player currently assigned to the plant team.
     /// </summary>
-    internal static SteamId PlantSteamId => SteamNetClient.GetPlantClient()?.SteamId ?? 0;
+    internal static ID PlantClientId => NetClient.GetPlantClient()?.ClientId ?? 0;
 
     /// <summary>
     /// Gets the Steam ID of the player currently assigned to the zombie team.
     /// </summary>
-    internal static SteamId ZombieSteamId => SteamNetClient.GetZombieClient()?.SteamId ?? 0;
+    internal static ID ZombieClientId => NetClient.GetZombieClient()?.ClientId ?? 0;
 }

@@ -1,7 +1,7 @@
-﻿using Il2CppSteamworks;
-using ReplantedOnline.Monos;
+﻿using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Server.Packet;
 
@@ -15,7 +15,7 @@ internal sealed class NetworkSpawnPacket
     /// Gets the Steam ID of the client who owns the spawned network object.
     /// Determines which client has authority over the object's behavior.
     /// </summary>
-    public SteamId OwnerId { get; private set; }
+    public ID OwnerId { get; private set; }
 
     /// <summary>
     /// Gets the unique network identifier assigned to the spawned object.
@@ -37,7 +37,7 @@ internal sealed class NetworkSpawnPacket
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     internal static void SerializePacket(NetworkObject networkObj, PacketWriter packetWriter)
     {
-        packetWriter.WriteULong(networkObj.OwnerId);
+        packetWriter.WriteID(networkObj.OwnerId);
         packetWriter.WriteUInt(networkObj.NetworkId);
         if (RuntimePrefab.Prefabs.TryGetValue(networkObj.GUID, out var prefab) && prefab is NetworkObject netprefab)
         {
@@ -76,7 +76,7 @@ internal sealed class NetworkSpawnPacket
     {
         NetworkSpawnPacket networkSpawnPacket = new()
         {
-            OwnerId = packetReader.ReadULong(),
+            OwnerId = packetReader.ReadID(),
             NetworkId = packetReader.ReadUInt(),
             PrefabId = packetReader.ReadByte(),
         };

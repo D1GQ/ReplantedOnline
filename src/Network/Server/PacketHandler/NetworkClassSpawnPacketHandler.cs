@@ -1,9 +1,9 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Network.Server.PacketHandler;
 
@@ -14,7 +14,7 @@ internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassSpawn;
 
     /// <inheritdoc/>
-    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
         var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
 

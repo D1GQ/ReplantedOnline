@@ -5,9 +5,9 @@ using Il2CppSource.Controllers;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
-using ReplantedOnline.Network.Steam;
 using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -182,7 +182,7 @@ internal static class SeedPacketSyncPatch
             net.ImitaterType = plant.mImitaterType;
             net.GridX = gridX;
             net.GridY = gridY;
-        }, VersusState.PlantSteamId);
+        }, VersusState.PlantClientId);
         plant.AddNetworkedLookup(networkObj);
         networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
         networkObj.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({networkObj.NetworkId})";
@@ -280,7 +280,7 @@ internal static class SeedPacketSyncPatch
             net.ShakeBush = shakeBush;
             net.GridX = gridX;
             net.GridY = gridY;
-        }, VersusState.PlantSteamId);
+        }, VersusState.PlantClientId);
         zombie.AddNetworkedLookup(networkObj);
         networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
         networkObj.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({networkObj.NetworkId})";

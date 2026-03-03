@@ -1,6 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;

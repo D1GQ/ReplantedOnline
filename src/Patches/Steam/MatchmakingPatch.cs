@@ -1,20 +1,21 @@
 ﻿using HarmonyLib;
 using Il2CppSteamworks;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Patches.Steam;
 
 [HarmonyPatch]
-internal static class SteamMatchmakingPatch
+internal static class MatchmakingPatch
 {
     /// <summary>
     /// Bans the specified player from the current Steam lobby if the caller is the lobby host.
     /// </summary>
-    internal static void Ban(this SteamId playerId)
+    internal static void Ban(this ID clientId)
     {
         if (NetLobby.AmInLobby() && NetLobby.AmLobbyHost())
         {
-            SteamMatchmaking.Internal.SetLobbyData(NetLobby.LobbyData.LobbyId, $"ignore:{playerId}", bool.TrueString);
+            NetLobby.NetworkTransport.SetLobbyData(NetLobby.LobbyData.LobbyId, $"ban:{clientId}", bool.TrueString);
         }
     }
 
@@ -22,11 +23,11 @@ internal static class SteamMatchmakingPatch
     /// Determines whether the specified player is marked as banned in the current Steam lobby.
     /// </summary>
     /// <returns>true if the player is banned in the current lobby; otherwise, false.</returns>
-    internal static bool IsBanned(this SteamId playerId)
+    internal static bool IsBanned(this ID clientId)
     {
         if (NetLobby.AmInLobby())
         {
-            return SteamMatchmaking.Internal.GetLobbyData(NetLobby.LobbyData.LobbyId, $"ignore:{playerId}") == bool.TrueString;
+            return NetLobby.NetworkTransport.GetLobbyData(NetLobby.LobbyData.LobbyId, $"ban:{clientId}") == bool.TrueString;
         }
 
         return false;

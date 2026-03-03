@@ -4,7 +4,9 @@ using Il2CppSteamworks.Data;
 using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs;
+using System.Net;
 using System.Text;
 
 namespace ReplantedOnline.Managers;
@@ -29,7 +31,7 @@ internal static class MatchmakingManager
     /// Find lobby by gamecode
     /// </summary>
     /// <param name="gameCode"></param>
-    internal static void SearchLobbyByGameCode(string gameCode)
+    internal static void SearchSteamLobbyByGameCode(string gameCode)
     {
         Transitions.SetLoading();
         MelonLogger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
@@ -118,7 +120,7 @@ internal static class MatchmakingManager
     /// <param name="maxResults">The maximum number of lobbies to return in the search results.</param>
     /// <param name="callback">Callback method invoked with the array of found lobbies when the search completes successfully.</param>
     /// <param name="errorCallback">Optional callback method invoked when an error occurs or no lobbies are found.</param>
-    internal static void GetLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError> errorCallback = null)
+    internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError> errorCallback = null)
     {
         Transitions.SetLoading();
         MelonLogger.Msg($"[NetLobby] Searching for lobbies");
@@ -168,10 +170,10 @@ internal static class MatchmakingManager
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(NetLobbyData data)
     {
-        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
+        NetLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
-        SteamMatchmaking.Internal.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-        SteamMatchmaking.Internal.SetLobbyType(data.LobbyId, LobbyType.Public);
+        NetLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
+        NetLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
     }
 
     /// <summary>
@@ -183,19 +185,43 @@ internal static class MatchmakingManager
 
         if (@override != null)
         {
-            SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @override.Value);
+            NetLobby.NetworkTransport.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @override.Value);
         }
 
-        SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, !NetLobby.LobbyData.HasStarted);
+        NetLobby.NetworkTransport.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, !NetLobby.LobbyData.HasStarted);
     }
 
     /// <summary>
-    /// Generates a consistent game code based on the lobby Steam ID
+    /// Generates a consistent game code based on the lobby ID
     /// </summary>
-    private static string GenerateGameCode(SteamId lobbyId)
+    private static string GenerateGameCode(ID lobbyId)
     {
-        // Use the lobby ID as a seed for consistent code generation
-        ulong seed = lobbyId;
+        // Extract a numeric seed from the ID
+        ulong seed = 0;
+
+        if (lobbyId.TryGetSteamId(out SteamId steamId))
+        {
+            seed = steamId.AccountId;
+        }
+        else if (lobbyId.TryGetUInt(out uint uintId))
+        {
+            seed = uintId;
+        }
+        else if (lobbyId.TryGetIPEndPoint(out IPEndPoint endpoint))
+        {
+            // Combine address bytes and port for a seed
+            byte[] addressBytes = endpoint.Address.GetAddressBytes();
+            seed = (ulong)endpoint.Port;
+            for (int i = 0; i < Math.Min(4, addressBytes.Length); i++)
+            {
+                seed = (seed << 8) | addressBytes[i];
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException($"Unsupported lobby ID type for generating game code: {lobbyId.UnderlyingType}");
+        }
+
         var random = new Random((int)(seed & 0xFFFFFFFF));
 
         StringBuilder codeBuilder = new();

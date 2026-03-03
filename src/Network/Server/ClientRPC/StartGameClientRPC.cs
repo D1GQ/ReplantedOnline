@@ -8,8 +8,8 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
 
@@ -32,7 +32,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
     }
 
     /// <inheritdoc/>
-    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
         // Only process StartGame RPCs from the actual lobby host
         if (sender.AmHost)
@@ -47,7 +47,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
             switch (selectionSet)
             {
                 case SelectionSet.CustomAll:
-                    SteamNetClient.LocalClient?.Ready = false;
+                    NetClient.LocalClient?.Ready = false;
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChooseZombiePacket;
                     Transitions.ToChooseSeeds();
                     Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap().WrapToIl2cpp());
@@ -79,7 +79,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
             yield return null;
         }
 
-        SteamNetClient.LocalClient?.Ready = true;
+        NetClient.LocalClient?.Ready = true;
 
         if (ModInfo.DEBUG)
         {

@@ -2,7 +2,7 @@
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using System.Collections;
 using UnityEngine;
 using static Il2CppReloaded.Constants;

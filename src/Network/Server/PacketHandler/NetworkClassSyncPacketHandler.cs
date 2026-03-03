@@ -1,8 +1,8 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Server.PacketHandler;
@@ -14,12 +14,12 @@ internal sealed class NetworkClassSyncPacketHandler : BasePacketHandler
     internal sealed override PacketTag Tag => PacketTag.NetworkClassSync;
 
     /// <inheritdoc/>
-    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
         MelonCoroutines.Start(CoWaitForNetworkClassSync(sender, packetReader));
     }
 
-    private static IEnumerator CoWaitForNetworkClassSync(SteamNetClient sender, PacketReader packetReader)
+    private static IEnumerator CoWaitForNetworkClassSync(NetClient sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader);
         var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packet);
@@ -30,7 +30,7 @@ internal sealed class NetworkClassSyncPacketHandler : BasePacketHandler
             {
                 if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkSyncPacket.NetworkId, out var networkObj))
                 {
-                    if (networkObj.OwnerId != sender.SteamId)
+                    if (networkObj.OwnerId != sender.ClientId)
                     {
                         MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
                         break;

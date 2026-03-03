@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Network.Server.PacketHandler;
 
@@ -32,7 +32,7 @@ internal abstract class BasePacketHandler
     /// Implementations should handle deserialization, validation, and any necessary
     /// game state modifications based on the packet contents.
     /// </remarks>
-    internal abstract void Handle(SteamNetClient sender, PacketReader packetReader);
+    internal abstract void Handle(NetClient sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming packet to the appropriate registered handler based on its tag.
@@ -44,7 +44,7 @@ internal abstract class BasePacketHandler
     /// <c>true</c> if a handler was found and successfully processed the packet;
     /// otherwise, <c>false</c> if no handler is registered for the specified tag.
     /// </returns>
-    internal static bool HandlePacket(PacketTag tag, SteamNetClient sender, PacketReader packetReader)
+    internal static bool HandlePacket(PacketTag tag, NetClient sender, PacketReader packetReader)
     {
         foreach (var dispatcher in RegisterPacketHandler.Instances)
         {

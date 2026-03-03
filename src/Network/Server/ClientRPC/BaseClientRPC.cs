@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 
 namespace ReplantedOnline.Network.Server.ClientRPC;
 
@@ -22,7 +22,7 @@ internal abstract class BaseClientRPC
     /// </summary>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data to process.</param>
-    internal abstract void Handle(SteamNetClient sender, PacketReader packetReader);
+    internal abstract void Handle(NetClient sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming RPC to the appropriate handler based on the RPC type.
@@ -30,7 +30,7 @@ internal abstract class BaseClientRPC
     /// <param name="rpc">The type of RPC to handle.</param>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data.</param>
-    internal static void HandleRpc(ClientRpcType rpc, SteamNetClient sender, PacketReader packetReader)
+    internal static void HandleRpc(ClientRpcType rpc, NetClient sender, PacketReader packetReader)
     {
         foreach (var handler in RegisterClientRPC.Instances)
         {

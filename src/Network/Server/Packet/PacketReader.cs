@@ -1,6 +1,10 @@
-﻿using ReplantedOnline.Enums;
+﻿using Il2CppSteamworks;
+using ReplantedOnline.Enums;
+using ReplantedOnline.Helper;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Structs;
+using System.Net;
 using System.Text;
 using UnityEngine;
 
@@ -58,6 +62,40 @@ internal sealed class PacketReader
     internal PacketTag GetTag()
     {
         return (PacketTag)ReadByte();
+    }
+
+    /// <summary>
+    /// Reads an ID from the packet.
+    /// </summary>
+    internal ID ReadID()
+    {
+        byte type = ReadByte();
+
+        switch (type)
+        {
+            case 0: // Null
+                return ID.Null;
+
+            case 1: // SteamId
+                ulong steamIdValue = ReadULong();
+                return ((SteamId)steamIdValue).AsID();
+
+            case 2: // UInt
+                uint uintValue = ReadUInt();
+                return uintValue.AsID();
+
+            case 3: // IPEndPoint
+                string ipString = ReadString();
+                int port = ReadInt();
+                if (IPAddress.TryParse(ipString, out IPAddress address))
+                {
+                    return new IPEndPoint(address, port).AsID();
+                }
+                return ID.Null;
+
+            default:
+                return ID.Null;
+        }
     }
 
     /// <summary>

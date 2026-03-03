@@ -2,8 +2,8 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using System.Collections;
 using UnityEngine;

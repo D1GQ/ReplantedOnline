@@ -1,5 +1,8 @@
-﻿using ReplantedOnline.Enums;
+﻿using Il2CppSteamworks;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Object;
+using ReplantedOnline.Structs;
+using System.Net;
 using System.Text;
 using UnityEngine;
 
@@ -35,6 +38,40 @@ internal sealed class PacketWriter
     {
         AmountInUse++;
         return _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
+    }
+
+    /// <summary>
+    /// Writes an ID to the packet.
+    /// </summary>
+    /// <param name="id">The ID value to write.</param>
+    internal void WriteID(ID id)
+    {
+        if (id == null || id.IsNull)
+        {
+            WriteByte(0); // None type
+            return;
+        }
+
+        if (id.IsSteamId && id.TryGetSteamId(out SteamId steamId))
+        {
+            WriteByte(1); // SteamId type
+            WriteULong(steamId.AccountId);
+        }
+        else if (id.IsUInt && id.TryGetUInt(out uint uintValue))
+        {
+            WriteByte(2); // UInt type
+            WriteUInt(uintValue);
+        }
+        else if (id.IsIPEndPoint && id.TryGetIPEndPoint(out IPEndPoint endpoint))
+        {
+            WriteByte(3); // IPEndPoint type
+            WriteString(endpoint.Address.ToString());
+            WriteInt(endpoint.Port);
+        }
+        else
+        {
+            WriteByte(0);
+        }
     }
 
     /// <summary>

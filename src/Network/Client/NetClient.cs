@@ -1,25 +1,24 @@
-﻿using Il2CppSteamworks;
-using MelonLoader;
+﻿using MelonLoader;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Structs;
 
-namespace ReplantedOnline.Network.Steam;
+namespace ReplantedOnline.Network.Client;
 
 /// <summary>
 /// Represents a networked client in ReplantedOnline, managing Steam ID, client information,
 /// and network state for players connected via Steamworks P2P.
 /// </summary>
-internal sealed class SteamNetClient
+internal sealed class NetClient
 {
     /// <summary>
     /// Initializes a new instance of the SteamNetClient class.
     /// </summary>
     /// <param name="id">The Steam ID of the client.</param>
-    internal SteamNetClient(SteamId id)
+    internal NetClient(ID id)
     {
-        SteamId = id;
-        ClientId = (int)id.AccountId;
-        Name = SteamFriends.Internal.GetFriendPersonaName(SteamId);
-        AmLocal = id == SteamUser.Internal.GetSteamID();
+        ClientId = id;
+        Name = NetLobby.NetworkTransport.GetMemberName(id);
+        AmLocal = id == NetLobby.NetworkTransport.LocalClientId;
         if (AmLocal)
         {
             LocalClient = this;
@@ -28,7 +27,7 @@ internal sealed class SteamNetClient
         {
             OpponentClient = this;
         }
-        MelonLogger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({SteamId})");
+        MelonLogger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({id})");
     }
 
     /// <summary>
@@ -38,13 +37,13 @@ internal sealed class SteamNetClient
     {
         get
         {
-            return SteamMatchmaking.Internal.GetLobbyMemberData(NetLobby.LobbyData.LobbyId, SteamId, nameof(Ready)) == bool.TrueString;
+            return NetLobby.NetworkTransport.GetLobbyMemberData(NetLobby.LobbyData.LobbyId, ClientId, nameof(Ready)) == bool.TrueString;
         }
         set
         {
             if (AmLocal)
             {
-                SteamMatchmaking.Internal.SetLobbyMemberData(NetLobby.LobbyData.LobbyId, nameof(Ready), value.ToString());
+                NetLobby.NetworkTransport.SetLobbyMemberData(NetLobby.LobbyData.LobbyId, nameof(Ready), value.ToString());
             }
         }
     }
@@ -52,22 +51,17 @@ internal sealed class SteamNetClient
     /// <summary>
     /// Get the local SteamNetClient
     /// </summary>
-    internal static SteamNetClient LocalClient { get; private set; }
+    internal static NetClient LocalClient { get; private set; }
 
     /// <summary>
     /// Get the opponent SteamNetClient
     /// </summary>
-    internal static SteamNetClient OpponentClient { get; private set; }
+    internal static NetClient OpponentClient { get; private set; }
 
     /// <summary>
     /// The Steam ID of this client.
     /// </summary>
-    internal readonly SteamId SteamId;
-
-    /// <summary>
-    /// The client ID derived from the Steam account ID.
-    /// </summary>
-    internal readonly int ClientId;
+    internal readonly ID ClientId;
 
     /// <summary>
     /// The display name of this client from Steam friends.
@@ -82,7 +76,7 @@ internal sealed class SteamNetClient
     /// <summary>
     /// Gets whether this client is the host of the current lobby.
     /// </summary>
-    internal bool AmHost => NetLobby.AmLobbyHost(SteamId);
+    internal bool AmHost => NetLobby.AmLobbyHost(ClientId);
 
     /// <summary>
     /// The team that the player is on.
@@ -92,7 +86,7 @@ internal sealed class SteamNetClient
     /// <summary>
     /// Gets the plants SteamNetClient
     /// </summary>
-    internal static SteamNetClient GetPlantClient()
+    internal static NetClient GetPlantClient()
     {
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {
@@ -108,7 +102,7 @@ internal sealed class SteamNetClient
     /// <summary>
     /// Gets the zombies SteamNetClient
     /// </summary>
-    internal static SteamNetClient GetZombieClient()
+    internal static NetClient GetZombieClient()
     {
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {

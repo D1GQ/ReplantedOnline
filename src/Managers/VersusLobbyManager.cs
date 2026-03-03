@@ -5,7 +5,7 @@ using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using System.Collections;
 using System.Text;

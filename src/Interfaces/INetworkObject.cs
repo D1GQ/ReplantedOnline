@@ -1,6 +1,6 @@
-﻿using Il2CppSteamworks;
-using ReplantedOnline.Network.Object;
+﻿using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Interfaces;
 
@@ -29,10 +29,10 @@ internal interface INetworkObject
     uint NetworkId { get; }
 
     /// <summary>
-    /// Gets the Steam ID of the client who owns and controls this network object.
+    /// Gets the Client ID of the client who owns and controls this network object.
     /// Determines which client has authority over this object's state.
     /// </summary>
-    SteamId OwnerId { get; }
+    ID OwnerId { get; }
 
     /// <summary>
     /// Serializes the network object state into a packet for network transmission.

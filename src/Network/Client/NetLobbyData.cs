@@ -1,11 +1,11 @@
-﻿using Il2CppSteamworks;
-using ReplantedOnline.Enums;
+﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server;
+using ReplantedOnline.Structs;
 
-namespace ReplantedOnline.Network.Steam;
+namespace ReplantedOnline.Network.Client;
 
 /// <summary>
 /// Represents the network data and state for a ReplantedOnline lobby.
@@ -14,13 +14,13 @@ namespace ReplantedOnline.Network.Steam;
 internal sealed class NetLobbyData
 {
     /// <summary>
-    /// Initializes a new instance of the NetLobbyData class with the specified Steam ID.
+    /// Initializes a new instance of the NetLobbyData class with specified IDs.
     /// </summary>
-    /// <param name="steamId">The Steam ID of the lobby.</param>
-    /// <param name="hostId">The Steam ID of the lobby host.</param>
-    internal NetLobbyData(SteamId steamId, SteamId hostId)
+    /// <param name="lobbyId">The Lobby ID of the lobby.</param>
+    /// <param name="hostId">The Client ID of the lobby host.</param>
+    internal NetLobbyData(ID lobbyId, ID hostId)
     {
-        LobbyId = steamId;
+        LobbyId = lobbyId;
         HostId = hostId;
     }
 
@@ -32,17 +32,17 @@ internal sealed class NetLobbyData
     /// <summary>
     /// Gets the Steam ID of this lobby.
     /// </summary>
-    internal readonly SteamId LobbyId;
+    internal readonly ID LobbyId;
 
     /// <summary>
     /// Gets or Sets the Steam ID of the host.
     /// </summary>
-    internal readonly SteamId HostId;
+    internal readonly ID HostId;
 
     /// <summary>
     /// Gets or sets the dictionary of all connected clients in the lobby, keyed by their Steam ID.
     /// </summary>
-    internal Dictionary<SteamId, SteamNetClient> AllClients = [];
+    internal Dictionary<ID, NetClient> AllClients = [];
 
     /// <summary>
     /// Gets or sets the dictionary of all network objects spawned.
@@ -63,7 +63,7 @@ internal sealed class NetLobbyData
     /// Processes the current list of lobby members, adding new clients and removing disconnected ones.
     /// </summary>
     /// <param name="members">The current list of Steam IDs of members in the lobby.</param>
-    internal void ProcessMembers(List<SteamId> members)
+    internal void ProcessMembers(List<ID> members)
     {
         var ids = AllClients.Keys.ToArray();
 
@@ -178,13 +178,13 @@ internal sealed class NetLobbyData
     {
         get
         {
-            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(LobbyRestarting)) == bool.TrueString;
+            return NetLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(LobbyRestarting)) == bool.TrueString;
         }
         set
         {
             if (NetLobby.AmLobbyHost())
             {
-                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(LobbyRestarting), value.ToString());
+                NetLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(LobbyRestarting), value.ToString());
                 UpdateLobbyStates();
             }
         }
@@ -194,13 +194,13 @@ internal sealed class NetLobbyData
     {
         get
         {
-            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(PickingSides)) == bool.TrueString;
+            return NetLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(PickingSides)) == bool.TrueString;
         }
         set
         {
             if (NetLobby.AmLobbyHost())
             {
-                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(PickingSides), value.ToString());
+                NetLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(PickingSides), value.ToString());
                 UpdateLobbyStates();
             }
         }
@@ -210,13 +210,13 @@ internal sealed class NetLobbyData
     {
         get
         {
-            return SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(HasStarted)) == bool.TrueString;
+            return NetLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(HasStarted)) == bool.TrueString;
         }
         set
         {
             if (NetLobby.AmLobbyHost())
             {
-                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(HasStarted), value.ToString());
+                NetLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(HasStarted), value.ToString());
                 UpdateLobbyStates();
             }
         }
@@ -226,7 +226,7 @@ internal sealed class NetLobbyData
     {
         get
         {
-            var data = SteamMatchmaking.Internal.GetLobbyData(LobbyId, nameof(HostTeam));
+            var data = NetLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(HostTeam));
             if (int.TryParse(data, out var @int))
             {
                 return (PlayerTeam)@int;
@@ -238,7 +238,7 @@ internal sealed class NetLobbyData
         {
             if (NetLobby.AmLobbyHost())
             {
-                SteamMatchmaking.Internal.SetLobbyData(LobbyId, nameof(HostTeam), ((int)value).ToString());
+                NetLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(HostTeam), ((int)value).ToString());
                 UpdateLobbyStates();
             }
         }
@@ -294,14 +294,14 @@ internal sealed class NetLobbyData
             var otherTeam = Utils.GetOppositeTeam(hostTeam);
             if (NetLobby.AmLobbyHost())
             {
-                SteamNetClient.LocalClient.Team = hostTeam;
-                SteamNetClient.OpponentClient?.Team = otherTeam;
+                NetClient.LocalClient.Team = hostTeam;
+                NetClient.OpponentClient?.Team = otherTeam;
                 VersusLobbyManager.SetPlayerInput(hostTeam);
             }
             else
             {
-                SteamNetClient.LocalClient.Team = otherTeam;
-                SteamNetClient.OpponentClient?.Team = hostTeam;
+                NetClient.LocalClient.Team = otherTeam;
+                NetClient.OpponentClient?.Team = hostTeam;
                 VersusLobbyManager.SetPlayerInput(otherTeam);
             }
 

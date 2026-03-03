@@ -69,7 +69,7 @@ internal static class JoinLobbyCodePanelPatch
             if (_reloadedInputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
             {
                 lobbyCodePanel.gameObject.SetActive(false);
-                MatchmakingManager.SearchLobbyByGameCode(_reloadedInputField.m_Text.ToUpper());
+                MatchmakingManager.SearchSteamLobbyByGameCode(_reloadedInputField.m_Text.ToUpper());
             }
             else
             {

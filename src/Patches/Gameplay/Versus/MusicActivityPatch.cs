@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using static ReplantedOnline.Managers.BloomEngineManager;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;

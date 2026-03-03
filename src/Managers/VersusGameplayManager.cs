@@ -3,7 +3,7 @@ using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using UnityEngine;
 

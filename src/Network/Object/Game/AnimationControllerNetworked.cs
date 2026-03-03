@@ -3,8 +3,8 @@ using Il2CppReloaded.Characters;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Object.Game;
@@ -79,9 +79,9 @@ internal sealed class AnimationControllerNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    public override void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader)
+    public override void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader)
     {
-        if (sender.SteamId != OwnerId) return;
+        if (sender.ClientId != OwnerId) return;
 
         var rpc = (AnimationRpcs)rpcId;
         switch (rpc)

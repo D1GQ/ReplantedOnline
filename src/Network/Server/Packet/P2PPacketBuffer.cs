@@ -1,5 +1,5 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSteamworks;
+using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Server.Packet;
 
@@ -21,7 +21,7 @@ internal sealed class P2PPacketBuffer
     /// <summary>
     /// The Steam ID of the peer that sent this packet.
     /// </summary>
-    public SteamId Steamid;
+    public ID ClientId;
 
     /// <summary>
     /// The packet data stored in an Il2Cpp-compatible byte array.
@@ -85,7 +85,7 @@ internal sealed class P2PPacketBuffer
     {
         AmountInUse--;
         Size = 0;
-        Steamid = 0;
+        ClientId = 0;
 
         if (_pool.Count < MAX_POOL_SIZE)
         {

@@ -4,7 +4,7 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 

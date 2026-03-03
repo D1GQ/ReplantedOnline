@@ -5,8 +5,8 @@ using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 using System.Collections;
@@ -494,9 +494,9 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    public override void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader)
+    public override void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader)
     {
-        if (sender.SteamId != OwnerId) return;
+        if (sender.ClientId != OwnerId) return;
 
         var rpc = (ZombieRpcs)rpcId;
         switch (rpc)

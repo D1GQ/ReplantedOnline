@@ -1,9 +1,9 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Server.ClientRPC;
@@ -24,7 +24,7 @@ internal sealed class MowZombieClientRPC : BaseClientRPC
     }
 
     /// <inheritdoc/>
-    internal sealed override void Handle(SteamNetClient sender, PacketReader packetReader)
+    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
         if (sender.Team is PlayerTeam.Plants)
         {

@@ -1,11 +1,11 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using Il2CppSteamworks;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Structs;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Object;
@@ -120,13 +120,13 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Gets whether the local client is the owner of this network object.
     /// Determines if this client has authority to modify the object's state.
     /// </summary>
-    internal bool AmOwner => SteamUser.Internal.GetSteamID() == OwnerId;
+    internal bool AmOwner => NetLobby.NetworkTransport.LocalClientId == OwnerId;
 
     /// <summary>
     /// Gets or sets the Steam ID of the client who owns this network object.
     /// The owner has authority over the object's state and behavior.
     /// </summary>
-    public SteamId OwnerId { get; set; } = default;
+    public ID OwnerId { get; set; } = default;
 
     /// <summary>
     /// Gets or sets whether this network object has been successfully spawned across the network.
@@ -240,7 +240,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// <param name="rpcId">The identifier of the RPC method.</param>
     /// <param name="packetReader">The packet reader containing RPC data.</param>
     [HideFromIl2Cpp]
-    public virtual void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader) { }
+    public virtual void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader) { }
 
     /// <summary>
     /// Serializes the object's state for network transmission.
@@ -282,10 +282,8 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
     /// <returns>The newly spawned NetworkClass instance.</returns>
-    public static T SpawnNew<T>(Action<T> callback = default, SteamId? owner = null) where T : NetworkObject
+    public static T SpawnNew<T>(Action<T> callback = default, ID owner = default) where T : NetworkObject
     {
-        owner ??= SteamUser.Internal.GetSteamID();
-
         if (PrefabIdTypeLookup.TryGetValue(typeof(T), out var prefabId))
         {
             if (NetworkPrefabs.TryGetValue(prefabId, out var prefab))
@@ -293,7 +291,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
                 T networkObj = prefab.Clone<T>();
                 networkObj.transform.SetParent(NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
-                NetworkDispatcher.SpawnNetworkObject(networkObj, owner.Value);
+                NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
                 networkObj.gameObject.name = $"{typeof(T).Name}({networkObj.NetworkId})";
                 return networkObj;

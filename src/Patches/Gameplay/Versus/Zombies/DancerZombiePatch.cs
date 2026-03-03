@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Steam;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;

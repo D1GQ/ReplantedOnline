@@ -4,8 +4,8 @@ using Il2CppSource.Controllers;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Steam;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using UnityEngine;
@@ -316,9 +316,9 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    public override void HandleRpc(SteamNetClient sender, byte rpcId, PacketReader packetReader)
+    public override void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader)
     {
-        if (sender.SteamId != OwnerId) return;
+        if (sender.ClientId != OwnerId) return;
 
         var rpc = (PlantRpcs)rpcId;
         switch (rpc)
