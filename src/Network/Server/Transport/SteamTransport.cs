@@ -179,6 +179,7 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("GetLobbyOwner requires a SteamId");
     }
 
+    // ===== Lobby Event Methods =====
     public void OnLobbyCreatedCompleted(Result result, Lobby data)
     {
         if (result == Result.OK)
