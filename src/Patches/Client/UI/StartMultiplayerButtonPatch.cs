@@ -68,6 +68,7 @@ internal static class StartMultiplayerButtonPatch
         if (__instance.gameObject.name != "CoopVS_VS_Button")
         {
             // Host button clicked - create a new lobby
+            NetLobby.SetTransportMode(0);
             NetLobby.CreateLobby();
         }
         else

@@ -16,9 +16,9 @@ internal enum IdType : byte
     SteamId,
 
     /// <summary>
-    /// Represents a simple unsigned 32-bit integer identifier, useful for testing or simplified ID systems.
+    /// Represents a simple unsigned 64-bit integer identifier, useful for testing or simplified ID systems.
     /// </summary>
-    UInt,
+    ULong,
 
     /// <summary>
     /// Represents an IP endpoint (IP address and port) identifier, used for LAN or direct IP networking.

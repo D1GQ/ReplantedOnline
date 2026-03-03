@@ -38,7 +38,7 @@ internal static class NetExtensions
     /// </summary>
     /// <param name="id">The unsigned integer value to be encapsulated in the <see cref="ID"/>.</param>
     /// <returns>An <see cref="ID"/> that represents the provided unsigned integer value.</returns>
-    internal static ID AsID(this uint id) => new(id, IdType.UInt);
+    internal static ID AsID(this ulong id) => new(id, IdType.ULong);
 
     /// <summary>
     /// Creates an ID instance that uniquely represents the specified IP endpoint.

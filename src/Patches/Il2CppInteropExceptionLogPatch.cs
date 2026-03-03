@@ -106,7 +106,6 @@ internal static class Il2CppInteropExceptionLogPatch
             // Remove MelonLoader's patch from the original method
             // Now ReportException will do nothing when called
             Harmony.Unpatch(reportException, melonPatch);
-            MelonLogger.Msg("Successfully unpatched MelonLoader's exception logging");
         }
         catch (Exception ex)
         {

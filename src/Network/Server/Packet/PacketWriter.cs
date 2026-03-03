@@ -57,10 +57,10 @@ internal sealed class PacketWriter
             WriteByte(1); // SteamId type
             WriteULong(steamId.AccountId);
         }
-        else if (id.IsUInt && id.TryGetUInt(out uint uintValue))
+        else if (id.IsULong && id.TryGetULong(out ulong ulongValue))
         {
             WriteByte(2); // UInt type
-            WriteUInt(uintValue);
+            WriteULong(ulongValue);
         }
         else if (id.IsIPEndPoint && id.TryGetIPEndPoint(out IPEndPoint endpoint))
         {

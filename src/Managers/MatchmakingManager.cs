@@ -34,6 +34,7 @@ internal static class MatchmakingManager
     internal static void SearchSteamLobbyByGameCode(string gameCode)
     {
         Transitions.SetLoading();
+        NetLobby.SetTransportMode(0);
         MelonLogger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
 
         try
@@ -165,6 +166,26 @@ internal static class MatchmakingManager
     }
 
     /// <summary>
+    ///  Executes a LAN command to either host or join a LAN game based on the provided command string.
+    /// </summary>
+    /// <param name="cmd">The command</param>
+    internal static void ExecuteLanCommand(string cmd)
+    {
+        switch (cmd)
+        {
+            case ReplantedOnlineMod.Constants.LAN_HOST_CODE:
+                NetLobby.SetTransportMode(1);
+                NetLobby.CreateLobby();
+                break;
+            case ReplantedOnlineMod.Constants.LAN_JOIN_CODE:
+                Transitions.SetLoading();
+                NetLobby.SetTransportMode(1);
+                _ = NetLobby.LanTransport.JoinFirstLanLobby();
+                break;
+        }
+    }
+
+    /// <summary>
     /// Sets the lobby data including version information and game code.
     /// </summary>
     /// <param name="data">The network lobby data containing the lobby ID.</param>
@@ -194,7 +215,7 @@ internal static class MatchmakingManager
     /// <summary>
     /// Generates a consistent game code based on the lobby ID
     /// </summary>
-    private static string GenerateGameCode(ID lobbyId)
+    internal static string GenerateGameCode(ID lobbyId)
     {
         // Extract a numeric seed from the ID
         ulong seed = 0;
@@ -203,9 +224,9 @@ internal static class MatchmakingManager
         {
             seed = steamId.AccountId;
         }
-        else if (lobbyId.TryGetUInt(out uint uintId))
+        else if (lobbyId.TryGetULong(out ulong ulongId))
         {
-            seed = uintId;
+            seed = ulongId;
         }
         else if (lobbyId.TryGetIPEndPoint(out IPEndPoint endpoint))
         {

@@ -29,71 +29,87 @@ internal static class NetLobby
     /// <summary>
     /// Gets the current network transport implementation for lobby and P2P operations.
     /// </summary>
-    internal static INetworkTransport NetworkTransport { get; } = new SteamTransport();
+    internal static INetworkTransport NetworkTransport { get; private set; }
+
+    /// <summary>
+    /// Pre-instantiated SteamTransport for use when the player chooses to use Steamworks for lobby management and P2P networking. 
+    /// </summary>
+    internal static SteamTransport SteamTransport;
+
+    /// <summary>
+    /// Pre-instantiated LanTransport for use when the player chooses to use LAN for lobby management and P2P networking. 
+    /// </summary>
+    internal static LanTransport LanTransport;
+
+    internal static void SetTransportMode(int mode)
+    {
+        switch (mode)
+        {
+            case 0:
+                NetworkTransport = SteamTransport;
+                MelonLogger.Msg("[NetLobby] Network transport set to Steam");
+                break;
+            case 1:
+                NetworkTransport = LanTransport;
+                MelonLogger.Msg("[NetLobby] Network transport set to LAN");
+                break;
+            default:
+                MelonLogger.Warning($"[NetLobby] Invalid transport mode: {mode}, defaulting to Steam");
+                NetworkTransport = SteamTransport;
+                break;
+        }
+    }
 
     /// <summary>
     /// Initializes all Steamworks callbacks for lobby and P2P networking events.
     /// </summary>
-    internal static void Initialize()
+    internal static void InitializeSteam()
     {
-        SteamMatchmaking.OnLobbyCreated += (Action<Result, Lobby>)((result, data) =>
+        SteamMatchmaking.OnLobbyCreated += (Action<Result, Lobby>)((result, lobby) =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnLobbyCreatedCompleted(result, data);
-            }
+            OnLobbyCreatedCompleted(result, new LobbyData(lobby));
         });
 
-        SteamMatchmaking.OnLobbyEntered += (Action<Lobby>)(data =>
+        SteamMatchmaking.OnLobbyEntered += (Action<Lobby>)(lobby =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnLobbyEnteredCompleted(data);
-            }
+            OnLobbyEnteredCompleted(new LobbyData(lobby));
         });
 
         SteamMatchmaking.OnLobbyDataChanged += (Action<Lobby>)((lobby) =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnLobbyDataChanged(lobby);
-            }
+            OnLobbyDataChanged(new LobbyData(lobby));
         });
 
         SteamMatchmaking.OnLobbyMemberJoined += (Action<Lobby, Friend>)((lobby, friend) =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnLobbyMemberJoined(lobby, friend.Id);
-            }
+            OnLobbyMemberJoined(new LobbyData(lobby), friend.Id);
         });
 
-        SteamMatchmaking.OnLobbyMemberLeave += (Action<Lobby, Friend>)((data, user) =>
+        SteamMatchmaking.OnLobbyMemberLeave += (Action<Lobby, Friend>)((lobby, user) =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnLobbyMemberLeave(data, user.Id);
-            }
+            OnLobbyMemberLeave(new LobbyData(lobby), user.Id);
         });
 
         SteamNetworking.OnP2PSessionRequest += (Action<SteamId>)(steamId =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnP2PSessionRequest(steamId);
-            }
+            OnP2PSessionRequest(steamId);
         });
 
         SteamNetworking.OnP2PConnectionFailed += (Action<SteamId, P2PSessionError>)((steamId, error) =>
         {
-            if (NetworkTransport is SteamTransport transport)
-            {
-                transport.OnP2PSessionConnectFail(steamId, error);
-            }
+            OnP2PSessionConnectFail(steamId, error);
         });
 
+        SteamTransport = new();
 
-        MelonLogger.Msg("[NetLobby] Steamworks callbacks initialized");
+        MelonLogger.Msg("[NetLobby] Steamworks initialized");
+    }
+
+    internal static void InitializeLan()
+    {
+        LanTransport = new();
+
+        MelonLogger.Msg("[NetLobby] LAN initialized");
     }
 
     /// <summary>
@@ -123,7 +139,7 @@ internal static class NetLobby
     /// </summary>
     internal static void CreateLobby()
     {
-        SteamMatchmaking.CreateLobbyAsync(MAX_LOBBY_SIZE);
+        NetworkTransport.CreateLobby(MAX_LOBBY_SIZE);
         Transitions.SetLoading();
     }
 
@@ -149,11 +165,122 @@ internal static class NetLobby
         }
 
         MelonLogger.Msg($"[NetLobby] Leaving lobby {LobbyData.LobbyId}");
-        NetworkTransport.LeaveLobby(LobbyData.LobbyId);
         LobbyData.LocalDespawnAll();
         Transitions.ToMainMenu(callback);
+        var lobbyId = LobbyData.LobbyId;
         LobbyData = null;
+        NetworkTransport.LeaveLobby(lobbyId);
         MelonLogger.Msg("[NetLobby] Successfully left lobby");
+    }
+
+    internal static void OnLobbyCreatedCompleted(Result result, LobbyData data)
+    {
+        if (result == Result.OK)
+        {
+            LobbyData = new(data.Id, data.OwnerId);
+            LobbyData.InitializeData();
+            MelonLogger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
+            MatchmakingManager.SetLobbyData(LobbyData);
+        }
+        else
+        {
+            Transitions.ToMainMenu();
+            MelonLogger.Error($"[NetLobby] Lobby creation failed with result: {result}");
+        }
+    }
+
+    internal static void OnLobbyEnteredCompleted(LobbyData data)
+    {
+        LobbyData ??= new(data.Id, data.OwnerId);
+        LobbyData.LobbyCode = NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
+        Transitions.ToVersus(() =>
+        {
+            NetworkDispatcher.StartListening();
+            LobbyData.UpdateLobbyStates();
+            NetClient.LocalClient?.Ready = true;
+        });
+
+        ProcessMemberList();
+
+        int memberCount = GetLobbyMemberCount();
+
+        if (memberCount > 1)
+        {
+            MelonLogger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} players");
+        }
+        else
+        {
+            MelonLogger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} player");
+        }
+    }
+
+    internal static void OnLobbyDataChanged(LobbyData lobby)
+    {
+        if (lobby.OwnerId != LobbyData?.HostId)
+        {
+            LeaveLobby(() =>
+            {
+                ReplantedOnlinePopup.Show("Disconnected", "Host has left the game!");
+            });
+            MelonLogger.Warning("[NetLobby] Lobby host left the game");
+        }
+        else
+        {
+            LobbyData.UpdateLobbyStates();
+            ProcessMemberList();
+        }
+    }
+
+    internal static void OnLobbyMemberJoined(LobbyData lobby, ID clientId)
+    {
+        if (lobby.Id != LobbyData.LobbyId)
+        {
+            MelonLogger.Warning($"[NetLobby] Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
+            return;
+        }
+
+        MelonLogger.Msg($"[NetLobby] Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
+        ProcessMemberList();
+
+        // If we're the host, request P2P session with the new player
+        if (AmLobbyHost())
+        {
+            MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {clientId}");
+            NetworkDispatcher.SendNetworkObjectsTo(clientId);
+        }
+    }
+
+    internal static void OnLobbyMemberLeave(LobbyData lobby, ID user)
+    {
+        if (AmLobbyHost())
+        {
+            ResetLobby(() =>
+            {
+                ReplantedOnlinePopup.Show("Lobby Restarted", "The other player has left the game!");
+            });
+        }
+
+        ProcessMemberList();
+    }
+
+    internal static void OnP2PSessionRequest(ID clientId)
+    {
+        if (IsPlayerInOurLobby(clientId))
+        {
+            if (clientId.IsBanned()) return;
+
+            NetworkTransport.AcceptP2PSessionWithUser(clientId);
+            MelonLogger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
+        }
+        else
+        {
+            MelonLogger.Warning($"[NetLobby] Rejected P2P session from non-lobby member: {clientId}");
+        }
+    }
+
+    internal static void OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
+    {
+        MelonLogger.Warning($"[NetLobby] P2P session connection failed with {clientId}: {error}");
     }
 
     /// <summary>
@@ -175,7 +302,7 @@ internal static class NetLobby
             var member = NetworkTransport.GetLobbyMemberByIndex(LobbyData.LobbyId, i);
             if (!member.IsBanned())
             {
-                members.Add(member.AsSteamId());
+                members.Add(member);
             }
             else
             {

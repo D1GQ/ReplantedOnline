@@ -1,6 +1,5 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
-using Il2CppSteamworks.Data;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Interfaces;
@@ -144,6 +143,12 @@ internal interface INetworkTransport
     bool CloseP2PSessionWithUser(ID clientId);
 
     /// <summary>
+    /// Creates a new lobby with the specified maximum number of players.
+    /// </summary>
+    /// <param name="maxPlayers"></param>
+    void CreateLobby(int maxPlayers);
+
+    /// <summary>
     /// Joins a lobby.
     /// </summary>
     /// <param name="lobbyId">The ID of the lobby to join.</param>
@@ -177,50 +182,4 @@ internal interface INetworkTransport
     /// <param name="lobbyId">The ID of the lobby.</param>
     /// <returns>The ID of the lobby owner.</returns>
     ID GetLobbyOwner(ID lobbyId);
-
-    /// <summary>
-    /// Called when a lobby creation operation completes.
-    /// </summary>
-    /// <param name="result">The result of the creation attempt.</param>
-    /// <param name="data">Data about the created lobby.</param>
-    void OnLobbyCreatedCompleted(Result result, Lobby data);
-
-    /// <summary>
-    /// Called when the client successfully enters a lobby.
-    /// </summary>
-    /// <param name="data">Data about the entered lobby.</param>
-    void OnLobbyEnteredCompleted(Lobby data);
-
-    /// <summary>
-    /// Called when lobby data has been updated.
-    /// </summary>
-    /// <param name="lobby">The lobby whose data changed.</param>
-    void OnLobbyDataChanged(Lobby lobby);
-
-    /// <summary>
-    /// Called when a new member joins the lobby.
-    /// </summary>
-    /// <param name="lobby">The lobby that was joined.</param>
-    /// <param name="clientId">The ID of the member who joined.</param>
-    void OnLobbyMemberJoined(Lobby lobby, ID clientId);
-
-    /// <summary>
-    /// Called when a member leaves the lobby.
-    /// </summary>
-    /// <param name="lobby">The lobby that was left.</param>
-    /// <param name="clientId">The ID of the member who left.</param>
-    void OnLobbyMemberLeave(Lobby lobby, ID clientId);
-
-    /// <summary>
-    /// Called when a P2P session request is received from a client.
-    /// </summary>
-    /// <param name="clientId">The ID of the client requesting the session.</param>
-    void OnP2PSessionRequest(ID clientId);
-
-    /// <summary>
-    /// Called when a P2P connection fails.
-    /// </summary>
-    /// <param name="clientId">The ID of the client the connection failed with.</param>
-    /// <param name="error">The error that occurred.</param>
-    void OnP2PSessionConnectFail(ID clientId, P2PSessionError error);
 }

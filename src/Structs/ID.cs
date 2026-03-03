@@ -1,13 +1,16 @@
 ﻿using Il2CppSteamworks;
+using ReplantedOnline.Data.Json;
 using ReplantedOnline.Enums;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Structs;
 
 /// <summary>
-/// Unified identifier supporting SteamId (Steam), uint (simplified IDs), and IPEndPoint (LAN).
+/// Unified identifier supporting SteamId (Steam), ulong (simplified IDs), and IPEndPoint (LAN).
 /// Provides type-safe storage and comparison between different ID types.
 /// </summary>
+[JsonConverter(typeof(IDJsonConverter))]
 internal readonly struct ID : IEquatable<ID>, IComparable<ID>
 {
     private readonly object _id;
@@ -40,9 +43,9 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     internal bool IsSteamId => _type == IdType.SteamId;
 
     /// <summary>
-    /// Gets a value indicating whether this ID represents a 32-bit unsigned integer ID.
+    /// Gets a value indicating whether this ID represents a 64-bit unsigned integer ID.
     /// </summary>
-    internal bool IsUInt => _type == IdType.UInt;
+    internal bool IsULong => _type == IdType.ULong;
 
     /// <summary>
     /// Gets a value indicating whether this ID represents an IP endpoint (LAN).
@@ -66,22 +69,36 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
             steamId = (SteamId)_id;
             return true;
         }
+
+        if (_type == IdType.ULong && _id != null)
+        {
+            steamId = (ulong)_id;
+            return true;
+        }
+
         steamId = default;
         return false;
     }
 
     /// <summary>
-    /// Attempts to retrieve the ID as a 32-bit unsigned integer.
+    /// Attempts to retrieve the ID as a 64-bit unsigned integer.
     /// </summary>
-    /// <param name="id">When this method returns, contains the uint ID if successful; otherwise, 0.</param>
-    /// <returns>true if the ID is a uint; otherwise, false.</returns>
-    internal bool TryGetUInt(out uint id)
+    /// <param name="id">When this method returns, contains the ulong ID if successful; otherwise, 0.</param>
+    /// <returns>true if the ID is a ulong; otherwise, false.</returns>
+    internal bool TryGetULong(out ulong id)
     {
-        if (_type == IdType.UInt && _id != null)
+        if (_type == IdType.ULong && _id != null)
         {
-            id = (uint)_id;
+            id = (ulong)_id;
             return true;
         }
+
+        if (_type == IdType.SteamId && _id != null)
+        {
+            id = (SteamId)_id;
+            return true;
+        }
+
         id = 0;
         return false;
     }
@@ -106,24 +123,24 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// Returns the ID as a Steam ID.
     /// </summary>
     /// <returns>The Steam ID value.</returns>
-    /// <exception cref="InvalidCastException">Thrown when the ID is not a Steam ID.</exception>
+    /// <exception cref="InvalidCastException">Thrown when the ID cannot be converted to a Steam ID.</exception>
     internal SteamId AsSteamId()
     {
         if (TryGetSteamId(out var id))
             return id;
-        throw new InvalidCastException($"ID is not a SteamId (current type: {_type})");
+        throw new InvalidCastException($"ID cannot be converted to SteamId (current type: {_type})");
     }
 
     /// <summary>
-    /// Returns the ID as a 32-bit unsigned integer.
+    /// Returns the ID as a 64-bit unsigned integer.
     /// </summary>
-    /// <returns>The uint value.</returns>
-    /// <exception cref="InvalidCastException">Thrown when the ID is not a uint.</exception>
-    internal uint AsUInt()
+    /// <returns>The ulong value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the ID cannot be converted to a ulong.</exception>
+    internal ulong AsULong()
     {
-        if (TryGetUInt(out var id))
+        if (TryGetULong(out var id))
             return id;
-        throw new InvalidCastException($"ID is not a uint (current type: {_type})");
+        throw new InvalidCastException($"ID cannot be converted to ulong (current type: {_type})");
     }
 
     /// <summary>
@@ -148,57 +165,69 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// </summary>
     public static bool operator !=(ID left, ID right) => !left.Equals(right);
 
+    // ===== IMPLICIT CONVERSIONS =====
+
     /// <summary>
-    /// Implicitly converts a SteamId to an ID.
+    /// Implicitly converts a SteamId to an ID (stores as SteamId type).
     /// </summary>
-    /// <param name="steamId">The Steam ID to convert.</param>
     public static implicit operator ID(SteamId steamId) => new(steamId, IdType.SteamId);
 
     /// <summary>
-    /// Implicitly converts a uint to an ID.
+    /// Implicitly converts a ulong to an ID (stores as ULong type).
     /// </summary>
-    /// <param name="id">The uint to convert.</param>
-    public static implicit operator ID(uint id) => new(id, IdType.UInt);
+    public static implicit operator ID(ulong id) => new(id, IdType.ULong);
 
     /// <summary>
-    /// Implicitly converts an IPEndPoint to an ID.
+    /// Implicitly converts an IPEndPoint to an ID (stores as IPEndPoint type).
     /// </summary>
-    /// <param name="endpoint">The IP endpoint to convert.</param>
     public static implicit operator ID(IPEndPoint endpoint) => new(endpoint, IdType.IPEndPoint);
+
+    // ===== EXPLICIT CONVERSIONS =====
 
     /// <summary>
     /// Explicitly converts an ID to a SteamId.
+    /// Works for both SteamId and ULong types (since ulong implicitly converts to SteamId).
     /// </summary>
-    /// <param name="id">The ID to convert.</param>
-    /// <exception cref="InvalidCastException">Thrown when the ID is not a Steam ID.</exception>
-    public static explicit operator SteamId(ID id) => id.AsSteamId();
+    /// <exception cref="InvalidCastException">Thrown when the ID is neither SteamId nor ULong.</exception>
+    public static explicit operator SteamId(ID id)
+    {
+        if (id.TryGetSteamId(out var steamId))
+            return steamId;
+        if (id.TryGetULong(out var ulongValue))
+            return ulongValue; // implicit conversion from ulong to SteamId
+        throw new InvalidCastException($"Cannot convert ID of type {id._type} to SteamId");
+    }
 
     /// <summary>
-    /// Explicitly converts an ID to a uint.
+    /// Explicitly converts an ID to a ulong.
+    /// Works for both ULong and SteamId types (since SteamId implicitly converts to ulong).
     /// </summary>
-    /// <param name="id">The ID to convert.</param>
-    /// <exception cref="InvalidCastException">Thrown when the ID is not a uint.</exception>
-    public static explicit operator uint(ID id) => id.AsUInt();
+    /// <exception cref="InvalidCastException">Thrown when the ID is neither ULong nor SteamId.</exception>
+    public static explicit operator ulong(ID id)
+    {
+        if (id.TryGetULong(out var ulongValue))
+            return ulongValue;
+        if (id.TryGetSteamId(out var steamId))
+            return steamId; // implicit conversion from SteamId to ulong
+        throw new InvalidCastException($"Cannot convert ID of type {id._type} to ulong");
+    }
 
     /// <summary>
     /// Explicitly converts an ID to an IPEndPoint.
     /// </summary>
-    /// <param name="id">The ID to convert.</param>
-    /// <exception cref="InvalidCastException">Thrown when the ID is not an IP endpoint.</exception>
+    /// <exception cref="InvalidCastException">Thrown when the ID is not an IPEndPoint.</exception>
     public static explicit operator IPEndPoint(ID id) => id.AsIPEndPoint();
+
+    // ===== EQUALITY MEMBERS =====
 
     /// <summary>
     /// Determines whether the specified object is equal to the current ID.
     /// </summary>
-    /// <param name="obj">The object to compare with the current ID.</param>
-    /// <returns>true if the specified object is equal to the current ID; otherwise, false.</returns>
     public override bool Equals(object obj) => obj is ID other && Equals(other);
 
     /// <summary>
     /// Indicates whether the current ID is equal to another ID.
     /// </summary>
-    /// <param name="other">An ID to compare with this ID.</param>
-    /// <returns>true if the current ID is equal to the other ID; otherwise, false.</returns>
     public bool Equals(ID other)
     {
         if (_type == IdType.Null && other._type == IdType.Null)
@@ -207,24 +236,26 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
         if (_type == IdType.Null || other._type == IdType.Null)
             return false;
 
+        // Same type comparison
         if (_type == other._type)
         {
             return _type switch
             {
                 IdType.SteamId => ((SteamId)_id).Equals((SteamId)other._id),
-                IdType.UInt => (uint)_id == (uint)other._id,
+                IdType.ULong => (ulong)_id == (ulong)other._id,
                 IdType.IPEndPoint => ((IPEndPoint)_id).Equals((IPEndPoint)other._id),
                 _ => false
             };
         }
 
-        if (_type == IdType.SteamId && other._type == IdType.UInt)
+        // Cross-type comparisons (SteamId <-> ULong)
+        if (_type == IdType.SteamId && other._type == IdType.ULong)
         {
-            return ((SteamId)_id).AccountId == (ulong)(uint)other._id;
+            return ((SteamId)_id).Value == (ulong)other._id;
         }
-        if (_type == IdType.UInt && other._type == IdType.SteamId)
+        if (_type == IdType.ULong && other._type == IdType.SteamId)
         {
-            return (ulong)(uint)_id == ((SteamId)other._id).AccountId;
+            return (ulong)_id == ((SteamId)other._id).Value;
         }
 
         return false;
@@ -235,8 +266,6 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// whether the current instance precedes, follows, or occurs in the same position 
     /// in the sort order as the other ID.
     /// </summary>
-    /// <param name="other">An ID to compare with this ID.</param>
-    /// <returns>A value that indicates the relative order of the IDs being compared.</returns>
     public int CompareTo(ID other)
     {
         if (_type == IdType.Null && other._type == IdType.Null)
@@ -246,24 +275,26 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
         if (other._type == IdType.Null)
             return 1;
 
+        // Same type comparison
         if (_type == other._type)
         {
             return _type switch
             {
-                IdType.SteamId => ((SteamId)_id).AccountId.CompareTo(((SteamId)other._id).AccountId),
-                IdType.UInt => ((uint)_id).CompareTo((uint)other._id),
+                IdType.SteamId => ((SteamId)_id).Value.CompareTo(((SteamId)other._id).Value),
+                IdType.ULong => ((ulong)_id).CompareTo((ulong)other._id),
                 IdType.IPEndPoint => CompareIPEndPoints((IPEndPoint)_id, (IPEndPoint)other._id),
                 _ => 0
             };
         }
 
-        if (_type == IdType.SteamId && other._type == IdType.UInt)
+        // Cross-type comparisons (SteamId <-> ULong)
+        if (_type == IdType.SteamId && other._type == IdType.ULong)
         {
-            return ((SteamId)_id).AccountId.CompareTo((ulong)(uint)other._id);
+            return ((SteamId)_id).Value.CompareTo((ulong)other._id);
         }
-        if (_type == IdType.UInt && other._type == IdType.SteamId)
+        if (_type == IdType.ULong && other._type == IdType.SteamId)
         {
-            return ((ulong)(uint)_id).CompareTo(((SteamId)other._id).AccountId);
+            return ((ulong)_id).CompareTo(((SteamId)other._id).Value);
         }
 
         return ToString().CompareTo(other.ToString());
@@ -272,9 +303,6 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// <summary>
     /// Compares two IP endpoints for sorting purposes.
     /// </summary>
-    /// <param name="a">The first IP endpoint.</param>
-    /// <param name="b">The second IP endpoint.</param>
-    /// <returns>A value indicating the relative order of the endpoints.</returns>
     private static int CompareIPEndPoints(IPEndPoint a, IPEndPoint b)
     {
         byte[] aBytes = a.Address.GetAddressBytes();
@@ -292,7 +320,6 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// <summary>
     /// Returns a hash code for this ID.
     /// </summary>
-    /// <returns>A hash code for the current ID.</returns>
     public override int GetHashCode()
     {
         if (_type == IdType.Null)
@@ -300,8 +327,8 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
 
         return _type switch
         {
-            IdType.SteamId => ((SteamId)_id).AccountId.GetHashCode(),
-            IdType.UInt => ((uint)_id).GetHashCode(),
+            IdType.SteamId => ((SteamId)_id).Value.GetHashCode(),
+            IdType.ULong => ((ulong)_id).GetHashCode(),
             IdType.IPEndPoint => ((IPEndPoint)_id).GetHashCode(),
             _ => 0
         };
@@ -310,7 +337,6 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// <summary>
     /// Returns a string representation of the ID.
     /// </summary>
-    /// <returns>A string that represents the current ID.</returns>
     public override string ToString()
     {
         if (_type == IdType.Null)
@@ -318,9 +344,9 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
 
         return _type switch
         {
-            IdType.SteamId => $"Steam:{((SteamId)_id).AccountId}",
-            IdType.UInt => $"Uint:{_id}",
-            IdType.IPEndPoint => $"Id:{(IPEndPoint)_id}",
+            IdType.SteamId => $"Steam:{((SteamId)_id).Value}",
+            IdType.ULong => $"ULong:{_id}",
+            IdType.IPEndPoint => $"IP:{((IPEndPoint)_id).Address}:{((IPEndPoint)_id).Port}",
             _ => "Unknown"
         };
     }
@@ -331,7 +357,7 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     public Type UnderlyingType => _type switch
     {
         IdType.SteamId => typeof(SteamId),
-        IdType.UInt => typeof(uint),
+        IdType.ULong => typeof(ulong),
         IdType.IPEndPoint => typeof(IPEndPoint),
         _ => typeof(object)
     };

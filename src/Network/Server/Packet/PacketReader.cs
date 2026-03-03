@@ -81,7 +81,7 @@ internal sealed class PacketReader
                 return ((SteamId)steamIdValue).AsID();
 
             case 2: // UInt
-                uint uintValue = ReadUInt();
+                ulong uintValue = ReadULong();
                 return uintValue.AsID();
 
             case 3: // IPEndPoint

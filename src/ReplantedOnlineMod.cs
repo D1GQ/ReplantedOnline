@@ -41,7 +41,8 @@ internal class ReplantedOnlineMod : MelonMod
         LevelEntries.Initialize();
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
-        NetLobby.Initialize();
+        NetLobby.InitializeSteam();
+        NetLobby.InitializeLan();
     }
 
     public override void OnPreSupportModule()
@@ -110,12 +111,13 @@ internal class ReplantedOnlineMod : MelonMod
 
     internal class Constants
     {
+        internal const string LAN_HOST_CODE = "/host";
+        internal const string LAN_JOIN_CODE = "/join";
         internal const int DEFAULT_PLAYER_INDEX = -1;
         internal const int LOCAL_PLAYER_INDEX = 0;
         internal const int OPPONENT_PLAYER_INDEX = 1;
         internal const string MOD_VERSION_KEY = "mod_version";
         internal const string GAME_CODE_KEY = "game_code";
-        internal const string Heartbeat_KEY = "game_code";
         internal const int MAX_NETWORK_CHILDREN = 5;
     }
 }

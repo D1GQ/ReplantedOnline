@@ -1,12 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
-using Il2CppSteamworks.Data;
-using MelonLoader;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
-using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
 
@@ -139,6 +134,11 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== Lobby Lifecycle Methods =====
+    public void CreateLobby(int maxPlayers)
+    {
+        SteamMatchmaking.CreateLobbyAsync(maxPlayers);
+    }
+
     public void JoinLobby(ID lobbyId)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
@@ -177,116 +177,5 @@ internal sealed class SteamTransport : INetworkTransport
             return owner.AsID();
         }
         throw new ArgumentException("GetLobbyOwner requires a SteamId");
-    }
-
-    // ===== Lobby Event Methods =====
-    public void OnLobbyCreatedCompleted(Result result, Lobby data)
-    {
-        if (result == Result.OK)
-        {
-            NetLobby.LobbyData = new(data.Id, data.Owner.Id);
-            NetLobby.LobbyData.InitializeData();
-            MelonLogger.Msg($"[NetLobby] Lobby created successfully: {NetLobby.LobbyData.LobbyId}");
-            MatchmakingManager.SetLobbyData(NetLobby.LobbyData);
-        }
-        else
-        {
-            Transitions.ToMainMenu();
-            MelonLogger.Error($"[NetLobby] Lobby creation failed with result: {result}");
-        }
-    }
-
-    public void OnLobbyEnteredCompleted(Lobby data)
-    {
-        NetLobby.LobbyData ??= new(data.Id, data.Owner.Id);
-        NetLobby.LobbyData.LobbyCode = NetLobby.NetworkTransport.GetLobbyData(NetLobby.LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
-        Transitions.ToVersus(() =>
-        {
-            NetworkDispatcher.StartListening();
-            NetLobby.LobbyData.UpdateLobbyStates();
-            NetClient.LocalClient?.Ready = true;
-        });
-
-        NetLobby.ProcessMemberList();
-
-        int memberCount = NetLobby.GetLobbyMemberCount();
-
-        if (memberCount > 1)
-        {
-            MelonLogger.Msg($"[NetLobby] Joined lobby {NetLobby.LobbyData.LobbyId} with {memberCount} players");
-        }
-        else
-        {
-            MelonLogger.Msg($"[NetLobby] Joined lobby {NetLobby.LobbyData.LobbyId} with {memberCount} player");
-        }
-    }
-
-    public void OnLobbyDataChanged(Lobby lobby)
-    {
-        if (lobby.Owner.Id != NetLobby.LobbyData?.HostId)
-        {
-            NetLobby.LeaveLobby(() =>
-            {
-                ReplantedOnlinePopup.Show("Disconnected", "Host has left the game!");
-            });
-            MelonLogger.Warning("[NetLobby] Lobby host left the game");
-        }
-        else
-        {
-            NetLobby.LobbyData.UpdateLobbyStates();
-            NetLobby.ProcessMemberList();
-        }
-    }
-
-    public void OnLobbyMemberJoined(Lobby lobby, ID clientId)
-    {
-        if (lobby.Id != NetLobby.LobbyData.LobbyId)
-        {
-            MelonLogger.Warning($"[NetLobby] Member joined different lobby (ours: {NetLobby.LobbyData.LobbyId}, theirs: {lobby.Id})");
-            return;
-        }
-
-        MelonLogger.Msg($"[NetLobby] Player {clientId} ({GetMemberName(clientId)}) joined the lobby");
-        NetLobby.ProcessMemberList();
-
-        // If we're the host, request P2P session with the new player
-        if (NetLobby.AmLobbyHost())
-        {
-            MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {clientId}");
-            NetworkDispatcher.SendNetworkObjectsTo(clientId);
-        }
-    }
-
-    public void OnLobbyMemberLeave(Lobby lobby, ID user)
-    {
-        if (NetLobby.AmLobbyHost())
-        {
-            NetLobby.ResetLobby(() =>
-            {
-                ReplantedOnlinePopup.Show("Lobby Restarted", "The other player has left the game!");
-            });
-        }
-
-        NetLobby.ProcessMemberList();
-    }
-
-    public void OnP2PSessionRequest(ID clientId)
-    {
-        if (NetLobby.IsPlayerInOurLobby(clientId))
-        {
-            if (clientId.IsBanned()) return;
-
-            AcceptP2PSessionWithUser(clientId);
-            MelonLogger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
-        }
-        else
-        {
-            MelonLogger.Warning($"[NetLobby] Rejected P2P session from non-lobby member: {clientId}");
-        }
-    }
-
-    public void OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
-    {
-        MelonLogger.Warning($"[NetLobby] P2P session connection failed with {clientId}: {error}");
     }
 }
