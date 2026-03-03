@@ -6,6 +6,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Patches.Steam;
 
 namespace ReplantedOnline.Network.Steam;
 
@@ -198,6 +199,7 @@ internal static class NetLobby
         else
         {
             LobbyData.UpdateLobbyStates();
+            ProcessMemberList();
         }
     }
 
@@ -252,6 +254,8 @@ internal static class NetLobby
     {
         if (IsPlayerInOurLobby(steamId))
         {
+            if (steamId.IsBanned()) return;
+
             SteamNetworking.AcceptP2PSessionWithUser(steamId);
             MelonLogger.Msg($"[NetLobby] Accepted P2P session with {steamId}");
         }
@@ -277,12 +281,21 @@ internal static class NetLobby
     /// </summary>
     internal static void ProcessMemberList()
     {
+        SteamMatchmaking.Internal.SetLobbyMemberLimit(LobbyData.LobbyId, ReplantedOnlineMod.Constants.MAX_LOBBY_COUNT);
+
         List<SteamId> members = [];
-        var num = SteamMatchmaking.Internal.GetNumLobbyMembers(LobbyData.LobbyId);
+        var num = SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(LobbyData.LobbyId);
         for (int i = 0; i < num; i++)
         {
-            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndex(LobbyData.LobbyId, i);
-            members.Add(member);
+            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndexOriginal(LobbyData.LobbyId, i);
+            if (!member.IsBanned())
+            {
+                members.Add(member);
+            }
+            else
+            {
+                SteamNetworking.CloseP2PSessionWithUser(member);
+            }
         }
         LobbyData.ProcessMembers(members);
     }
@@ -292,7 +305,7 @@ internal static class NetLobby
     /// </summary>
     /// <param name="steamId">The Steam ID of the player to remove.</param>
     /// <param name="reason">The reason for the bam.</param>
-    internal static void TryRemoveFromLobby(SteamId steamId, BanReasons reason)
+    internal static void BanFromLobby(SteamId steamId, BanReasons reason)
     {
         if (!AmInLobby())
         {
@@ -323,28 +336,7 @@ internal static class NetLobby
         NetworkDispatcher.SendPacketTo(steamId, packetWriter, PacketTag.RemoveClient, PacketChannel.Main);
         packetWriter.Recycle();
 
-        TerminateP2PSession(steamId);
-    }
-
-    /// <summary>
-    /// Terminates all P2P sessions with a player, preventing network communication.
-    /// </summary>
-    /// <param name="steamId">The Steam ID of the player to disconnect from.</param>
-    private static void TerminateP2PSession(SteamId steamId)
-    {
-        try
-        {
-            bool sessionClosed = SteamNetworking.CloseP2PSessionWithUser(steamId);
-
-            if (sessionClosed)
-            {
-                MelonLogger.Msg($"[NetLobby] P2P session terminated with {steamId}");
-            }
-        }
-        catch (Exception ex)
-        {
-            MelonLogger.Error($"[NetLobby] Error terminating P2P session with {steamId}: {ex.Message}");
-        }
+        SteamMatchmakingPatch.Ban(steamId);
     }
 
     /// <summary>
@@ -363,7 +355,7 @@ internal static class NetLobby
     /// <returns>The Steam ID of the lobby member at the specified index.</returns>
     internal static SteamId GetLobbyMemberByIndex(int index)
     {
-        return SteamMatchmaking.Internal.GetLobbyMemberByIndex(LobbyData.LobbyId, index);
+        return SteamMatchmaking.Internal.GetLobbyMemberByIndexOriginal(LobbyData.LobbyId, index);
     }
 
     /// <summary>

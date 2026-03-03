@@ -110,6 +110,7 @@ internal class ReplantedOnlineMod : MelonMod
 
     internal class Constants
     {
+        internal const int MAX_LOBBY_COUNT = 2;
         internal const int DEFAULT_PLAYER_INDEX = -1;
         internal const int LOCAL_PLAYER_INDEX = 0;
         internal const int OPPONENT_PLAYER_INDEX = 1;
