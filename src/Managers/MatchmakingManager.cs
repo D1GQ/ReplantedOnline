@@ -175,14 +175,18 @@ internal static class MatchmakingManager
     }
 
     /// <summary>
-    /// Sets whether the current lobby can be joined by other players.
+    /// Updates the joinable state of the current lobby, optionally overriding the value. By default, the lobby is joinable if the game has not started and not joinable if the game has started.
     /// </summary>
-    /// <param name="bool">True to allow players to join, false to make the lobby private/invite-only.</param>
-    internal static void SetJoinable(bool @bool)
+    internal static void UpdateLobbyJoinable(bool? @override = null)
     {
         if (!NetLobby.AmInLobby()) return;
 
-        SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @bool);
+        if (@override != null)
+        {
+            SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @override.Value);
+        }
+
+        SteamMatchmaking.Internal.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, !NetLobby.LobbyData.HasStarted);
     }
 
     /// <summary>

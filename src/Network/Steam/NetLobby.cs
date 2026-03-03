@@ -87,11 +87,6 @@ internal static class NetLobby
                 SteamNetClient.LocalClient?.Ready = true;
             });
         });
-
-        if (AmLobbyHost())
-        {
-            MatchmakingManager.SetJoinable(true);
-        }
     }
 
     /// <summary>
@@ -281,7 +276,11 @@ internal static class NetLobby
     /// </summary>
     internal static void ProcessMemberList()
     {
-        SteamMatchmaking.Internal.SetLobbyMemberLimit(LobbyData.LobbyId, ReplantedOnlineMod.Constants.MAX_LOBBY_COUNT);
+        if (AmLobbyHost())
+        {
+            MatchmakingManager.UpdateLobbyJoinable(false);
+            SteamMatchmaking.Internal.SetLobbyMemberLimit(LobbyData.LobbyId, MAX_LOBBY_SIZE);
+        }
 
         List<SteamId> members = [];
         var num = SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(LobbyData.LobbyId);
@@ -298,6 +297,11 @@ internal static class NetLobby
             }
         }
         LobbyData.ProcessMembers(members);
+
+        if (AmLobbyHost())
+        {
+            MatchmakingManager.UpdateLobbyJoinable();
+        }
     }
 
     /// <summary>

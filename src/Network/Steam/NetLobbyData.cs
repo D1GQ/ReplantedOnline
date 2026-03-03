@@ -253,6 +253,11 @@ internal sealed class NetLobbyData
         PickingSides = false;
         HasStarted = false;
         HostTeam = PlayerTeam.None;
+
+        if (NetLobby.AmLobbyHost())
+        {
+            MatchmakingManager.UpdateLobbyJoinable();
+        }
     }
 
 
