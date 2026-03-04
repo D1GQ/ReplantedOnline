@@ -20,7 +20,7 @@ internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
 
         if (spawnPacket.PrefabId == NetworkObject.NO_PREFAB_ID)
         {
-            MelonLogger.Error("Serialized network object had a unset prefab id!");
+            ReplantedOnlineMod.Logger.Error("Serialized network object had a unset prefab id!");
         }
         else
         {
@@ -34,11 +34,11 @@ internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
                 NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
                 networkObj.gameObject.SetActive(true);
                 networkObj.name = $"{networkObj.GetType().Name}({networkObj.NetworkId})";
-                MelonLogger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
+                ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }
             else
             {
-                MelonLogger.Error($"[NetworkDispatcher] Failed to spawn NetworkClass: Prefab ID {spawnPacket.PrefabId} not found");
+                ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Failed to spawn NetworkClass: Prefab ID {spawnPacket.PrefabId} not found");
             }
         }
     }

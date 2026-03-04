@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using Il2CppSource.Utils;
-using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
@@ -39,7 +38,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
         {
             var selectionSet = (SelectionSet)packetReader.ReadByte();
 
-            MelonLogger.Msg("[RPCHandler] Game Starting...");
+            ReplantedOnlineMod.Logger.Msg("[RPCHandler] Game Starting...");
 
             // Configure the game with the host's selected game mode
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
@@ -62,7 +61,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
         }
         else
         {
-            MelonLogger.Warning($"[RPCHandler] Rejected StartGame RPC from non-host: {sender.Name}");
+            ReplantedOnlineMod.Logger.Warning($"[RPCHandler] Rejected StartGame RPC from non-host: {sender.Name}");
         }
     }
 

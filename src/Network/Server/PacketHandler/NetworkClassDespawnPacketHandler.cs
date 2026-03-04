@@ -25,17 +25,17 @@ internal sealed class NetworkClassDespawnPacketHandler : BasePacketHandler
                 {
                     NetLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                     UnityEngine.Object.Destroy(networkObj.gameObject);
-                    MelonLogger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkDespawnPacket.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkDespawnPacket.NetworkId}");
                 }
                 else
                 {
-                    MelonLogger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkDespawnPacket.NetworkId}, only the parent can be despawned!");
+                    ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkDespawnPacket.NetworkId}, only the parent can be despawned!");
                 }
             }
         }
         else
         {
-            MelonLogger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkDespawnPacket.NetworkId} not found");
+            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkDespawnPacket.NetworkId} not found");
         }
     }
 }

@@ -17,7 +17,7 @@ internal sealed class RpcPacketHandler : BasePacketHandler
     internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
         ClientRpcType rpc = (ClientRpcType)packetReader.ReadByte();
-        MelonLogger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {rpc}");
         BaseClientRPC.HandleRpc(rpc, sender, packetReader);
     }
 }

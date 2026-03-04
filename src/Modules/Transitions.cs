@@ -91,7 +91,7 @@ internal static class Transitions
         {
             if (Time.time - startTime > timeout)
             {
-                MelonLogger.Error($"Timeout waiting for transition '{transitionName}' to start");
+                ReplantedOnlineMod.Logger.Error($"Timeout waiting for transition '{transitionName}' to start");
                 yield break;
             }
             yield return null;
@@ -102,7 +102,7 @@ internal static class Transitions
         {
             if (Time.time - startTime > timeout)
             {
-                MelonLogger.Error($"Timeout waiting for transition '{transitionName}' to complete");
+                ReplantedOnlineMod.Logger.Error($"Timeout waiting for transition '{transitionName}' to complete");
                 yield break;
             }
 

@@ -79,7 +79,7 @@ internal sealed class LanTransport : INetworkTransport
         GamePort = CalculateGamePort();
         _localIPAddress = GetLocalIPAddress();
 
-        MelonLogger.Msg($"[LAN] Instance {InstanceId} | Local ID: {_localClientId} | Game Port: {GamePort} | IP: {_localIPAddress}");
+        ReplantedOnlineMod.Logger.Msg($"[LAN] Instance {InstanceId} | Local ID: {_localClientId} | Game Port: {GamePort} | IP: {_localIPAddress}");
 
         BroadcastListener = CreateBroadcastListener();
         P2PListener = CreateP2PListener();
@@ -127,7 +127,7 @@ internal sealed class LanTransport : INetworkTransport
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Failed to bind broadcast listener: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Failed to bind broadcast listener: {ex.Message}");
             throw;
         }
     }
@@ -147,14 +147,14 @@ internal sealed class LanTransport : INetworkTransport
             {
                 client.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
                 var actualPort = ((IPEndPoint)client.Client.LocalEndPoint).Port;
-                MelonLogger.Msg($"[LAN] Using random port {actualPort}");
+                ReplantedOnlineMod.Logger.Msg($"[LAN] Using random port {actualPort}");
             }
 
             return client;
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Failed to bind P2P listener: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Failed to bind P2P listener: {ex.Message}");
             throw;
         }
     }
@@ -171,7 +171,7 @@ internal sealed class LanTransport : INetworkTransport
         {
             IsJoining = true;
             HandshakeCompletionSource = new TaskCompletionSource<bool>();
-            MelonLogger.Msg("[LAN] Searching for lobbies...");
+            ReplantedOnlineMod.Logger.Msg("[LAN] Searching for lobbies...");
 
             var startTime = DateTime.UtcNow;
             while ((DateTime.UtcNow - startTime).TotalSeconds < 3)
@@ -179,7 +179,7 @@ internal sealed class LanTransport : INetworkTransport
                 if (DiscoveredLobbies.Count > 0)
                 {
                     var lobby = DiscoveredLobbies.Values.First();
-                    MelonLogger.Msg($"[LAN] Found lobby: {lobby.ServerName} at {lobby.EndPoint}:{lobby.GamePort}");
+                    ReplantedOnlineMod.Logger.Msg($"[LAN] Found lobby: {lobby.ServerName} at {lobby.EndPoint}:{lobby.GamePort}");
 
                     JoinLobby(lobby.LobbyId);
 
@@ -194,7 +194,7 @@ internal sealed class LanTransport : INetworkTransport
                     {
                         if (CurrentLobbyId == lobby.LobbyId)
                         {
-                            MelonLogger.Msg($"[LAN] Successfully joined lobby {lobby.ServerName}");
+                            ReplantedOnlineMod.Logger.Msg($"[LAN] Successfully joined lobby {lobby.ServerName}");
                             MainThreadDispatcher.Execute(() =>
                             {
                                 NetLobby.OnLobbyEnteredCompleted(CurrentLobbyData);
@@ -204,7 +204,7 @@ internal sealed class LanTransport : INetworkTransport
                         }
                     }
 
-                    MelonLogger.Error($"[LAN] Failed to join lobby - handshake timeout");
+                    ReplantedOnlineMod.Logger.Error($"[LAN] Failed to join lobby - handshake timeout");
                     CurrentLobbyId = ID.Null;
                     CurrentLobbyData = Structs.LobbyData.Null;
                     IsJoining = false;
@@ -214,13 +214,13 @@ internal sealed class LanTransport : INetworkTransport
                 await Task.Delay(100, CTS.Token);
             }
 
-            MelonLogger.Msg("[LAN] No lobbies found");
+            ReplantedOnlineMod.Logger.Msg("[LAN] No lobbies found");
             IsJoining = false;
             ShowDisconnectPopup("No LAN lobbies found");
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Error: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Error: {ex.Message}");
             IsJoining = false;
             ShowDisconnectPopup("Error joining LAN lobby");
         }
@@ -259,7 +259,7 @@ internal sealed class LanTransport : INetworkTransport
             MemberData[lobbyId][_localClientId] = [];
             ConnectionStates[_localClientId] = ConnectionState.Connected;
 
-            MelonLogger.Msg($"[LAN] Hosting lobby: {lobbyName} | Host: {PlayerName} | Code: {CurrentLobbyData.GameCode} | Port: {GamePort}");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Hosting lobby: {lobbyName} | Host: {PlayerName} | Code: {CurrentLobbyData.GameCode} | Port: {GamePort}");
 
             MainThreadDispatcher.Execute(() =>
             {
@@ -279,11 +279,11 @@ internal sealed class LanTransport : INetworkTransport
 
             if (!DiscoveredLobbies.TryGetValue(lobbyId, out var lobby))
             {
-                MelonLogger.Error($"[LAN] Lobby {lobbyId} not found");
+                ReplantedOnlineMod.Logger.Error($"[LAN] Lobby {lobbyId} not found");
                 return;
             }
 
-            MelonLogger.Msg($"[LAN] Joining lobby {lobbyId}");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Joining lobby {lobbyId}");
 
             CurrentLobbyId = lobbyId;
             IsHost = false;
@@ -305,7 +305,7 @@ internal sealed class LanTransport : INetworkTransport
             AddClient(lobby.ServerId, hostEndPoint, lobby.ServerName);
             ConnectionStates[lobby.ServerId] = ConnectionState.Handshaking;
 
-            MelonLogger.Msg($"[LAN] Joining as {PlayerName}");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Joining as {PlayerName}");
 
             // Send handshake request WITH our client info
             var clientInfo = new ClientInfo
@@ -324,7 +324,7 @@ internal sealed class LanTransport : INetworkTransport
         {
             if (CurrentLobbyId != lobbyId) return;
 
-            MelonLogger.Msg($"[LAN] Leaving lobby {lobbyId}");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Leaving lobby {lobbyId}");
 
             if (!IsHost && DiscoveredLobbies.TryGetValue(lobbyId, out var lobby))
             {
@@ -341,7 +341,7 @@ internal sealed class LanTransport : INetworkTransport
         {
             if (!IsHost || !CurrentLobbyId.HasValue) return;
 
-            MelonLogger.Msg($"[LAN] Stopping host");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Stopping host");
 
             foreach (var client in Clients.Values.Where(c => c.ClientId != _localClientId && c.EndPoint != null))
             {
@@ -415,7 +415,7 @@ internal sealed class LanTransport : INetworkTransport
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Send error: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Send error: {ex.Message}");
             return false;
         }
         finally
@@ -489,7 +489,7 @@ internal sealed class LanTransport : INetworkTransport
             }
             catch (Exception ex)
             {
-                MelonLogger.Error($"[LAN] Broadcast error: {ex.Message}");
+                ReplantedOnlineMod.Logger.Error($"[LAN] Broadcast error: {ex.Message}");
                 await Task.Delay(1000, CTS.Token);
             }
         }
@@ -514,7 +514,7 @@ internal sealed class LanTransport : INetworkTransport
                     // Verify mod version compatibility
                     if (presence.ModVersion != ModInfo.MOD_VERSION_FORMATTED)
                     {
-                        MelonLogger.Warning($"[LAN] Ignoring lobby with mismatched mod version: {presence.ModVersion} vs {ModInfo.MOD_VERSION_FORMATTED}");
+                        ReplantedOnlineMod.Logger.Warning($"[LAN] Ignoring lobby with mismatched mod version: {presence.ModVersion} vs {ModInfo.MOD_VERSION_FORMATTED}");
                         continue;
                     }
 
@@ -531,7 +531,7 @@ internal sealed class LanTransport : INetworkTransport
             }
             catch (Exception ex)
             {
-                MelonLogger.Error($"[LAN] Broadcast listen error: {ex.Message}");
+                ReplantedOnlineMod.Logger.Error($"[LAN] Broadcast listen error: {ex.Message}");
                 await Task.Delay(1000, CTS.Token);
             }
         }
@@ -556,7 +556,7 @@ internal sealed class LanTransport : INetworkTransport
             }
             catch (Exception ex)
             {
-                MelonLogger.Error($"[LAN] P2P listen error: {ex.Message}");
+                ReplantedOnlineMod.Logger.Error($"[LAN] P2P listen error: {ex.Message}");
                 await Task.Delay(100, CTS.Token);
             }
         }
@@ -587,14 +587,14 @@ internal sealed class LanTransport : INetworkTransport
                     }
                     else
                     {
-                        MelonLogger.Warning($"[LAN] Ignoring RPC from unconnected client {senderId}");
+                        ReplantedOnlineMod.Logger.Warning($"[LAN] Ignoring RPC from unconnected client {senderId}");
                     }
                     break;
             }
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Process error: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Process error: {ex.Message}");
         }
         finally
         {
@@ -610,11 +610,11 @@ internal sealed class LanTransport : INetworkTransport
         {
             if (!PendingRequests.Contains(clientId))
             {
-                MelonLogger.Warning($"[LAN] No pending request from {clientId}");
+                ReplantedOnlineMod.Logger.Warning($"[LAN] No pending request from {clientId}");
                 return false;
             }
 
-            MelonLogger.Msg($"[LAN] Accepting connection from {clientId}");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Accepting connection from {clientId}");
 
             ConnectionStates[clientId] = ConnectionState.Connected;
             LanDispatcher.SendHandshake(clientId, LanHandshakeType.Accept);
@@ -919,7 +919,7 @@ internal sealed class LanTransport : INetworkTransport
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Dispose error: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Dispose error: {ex.Message}");
         }
     }
 }

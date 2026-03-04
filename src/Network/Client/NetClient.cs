@@ -27,7 +27,7 @@ internal sealed class NetClient
         {
             OpponentClient = this;
         }
-        MelonLogger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({id})");
+        ReplantedOnlineMod.Logger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({id})");
     }
 
     /// <summary>

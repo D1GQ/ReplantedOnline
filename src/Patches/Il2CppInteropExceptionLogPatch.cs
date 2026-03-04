@@ -18,7 +18,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (exceptionLogType == null)
             {
-                MelonLogger.Error("Could not find Il2CppInteropExceptionLog type");
+                ReplantedOnlineMod.Logger.Error("Could not find Il2CppInteropExceptionLog type");
                 return null;
             }
 
@@ -28,7 +28,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (loggerField == null)
             {
-                MelonLogger.Error("Could not find _logger field");
+                ReplantedOnlineMod.Logger.Error("Could not find _logger field");
                 return null;
             }
 
@@ -37,7 +37,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (logger == null)
             {
-                MelonLogger.Error("Logger field was null");
+                ReplantedOnlineMod.Logger.Error("Logger field was null");
                 return null;
             }
 
@@ -46,7 +46,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"Failed to get Il2CppInterop logger: {ex}");
+            ReplantedOnlineMod.Logger.Error($"Failed to get Il2CppInterop logger: {ex}");
             return null;
         }
     }
@@ -71,7 +71,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (harmonySupportAssembly == null)
             {
-                MelonLogger.Error("Could not find Il2CppInterop.HarmonySupport assembly");
+                ReplantedOnlineMod.Logger.Error("Could not find Il2CppInterop.HarmonySupport assembly");
                 return;
             }
 
@@ -79,7 +79,7 @@ internal static class Il2CppInteropExceptionLogPatch
             var detourMethodPatcherType = harmonySupportAssembly.GetType("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher");
             if (detourMethodPatcherType == null)
             {
-                MelonLogger.Error("Could not find Il2CppDetourMethodPatcher type");
+                ReplantedOnlineMod.Logger.Error("Could not find Il2CppDetourMethodPatcher type");
                 return;
             }
 
@@ -89,7 +89,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (reportException == null)
             {
-                MelonLogger.Error("Could not find ReportException method");
+                ReplantedOnlineMod.Logger.Error("Could not find ReportException method");
                 return;
             }
 
@@ -99,7 +99,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (melonPatch == null)
             {
-                MelonLogger.Error("Could not find MelonLoader's ReportException_Prefix");
+                ReplantedOnlineMod.Logger.Error("Could not find MelonLoader's ReportException_Prefix");
                 return;
             }
 
@@ -109,7 +109,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"Failed to unpatch MelonLoader exception log: {ex}");
+            ReplantedOnlineMod.Logger.Error($"Failed to unpatch MelonLoader exception log: {ex}");
         }
     }
 
@@ -138,7 +138,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"Failed to install our exception log: {ex}");
+            ReplantedOnlineMod.Logger.Error($"Failed to install our exception log: {ex}");
         }
     }
 

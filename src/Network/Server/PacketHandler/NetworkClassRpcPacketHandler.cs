@@ -33,7 +33,7 @@ internal class NetworkClassRpcPacketHandler : BasePacketHandler
             {
                 if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
                 {
-                    MelonLogger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
                     networkObj.HandleRpc(sender, rpcId, packet);
                     break;
                 }

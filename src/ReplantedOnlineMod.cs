@@ -20,7 +20,7 @@ internal class ReplantedOnlineMod : MelonMod
 {
     internal static HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
 
-    internal static MelonLogger.Instance Logger = new(ModInfo.MOD_NAME);
+    internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""));
 
     public override void OnInitializeMelon()
     {
@@ -106,7 +106,7 @@ internal class ReplantedOnlineMod : MelonMod
             }
             catch (Exception ex)
             {
-                MelonLogger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+                ReplantedOnlineMod.Logger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
             }
         }
     }

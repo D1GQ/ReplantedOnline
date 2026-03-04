@@ -48,14 +48,14 @@ internal static class NetLobby
         {
             case 0:
                 NetworkTransport = new SteamTransport();
-                MelonLogger.Msg("[NetLobby] Network transport set to Steam");
+                ReplantedOnlineMod.Logger.Msg("[NetLobby] Network transport set to Steam");
                 break;
             case 1:
                 NetworkTransport = new LanTransport();
-                MelonLogger.Msg("[NetLobby] Network transport set to LAN");
+                ReplantedOnlineMod.Logger.Msg("[NetLobby] Network transport set to LAN");
                 break;
             default:
-                MelonLogger.Warning($"[NetLobby] Invalid transport mode: {mode}, defaulting to Steam");
+                ReplantedOnlineMod.Logger.Warning($"[NetLobby] Invalid transport mode: {mode}, defaulting to Steam");
                 NetworkTransport = new SteamTransport();
                 break;
         }
@@ -105,7 +105,7 @@ internal static class NetLobby
 
         SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
 
-        MelonLogger.Msg("[NetLobby] Steamworks initialized");
+        ReplantedOnlineMod.Logger.Msg("[NetLobby] Steamworks initialized");
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ internal static class NetLobby
     /// </summary>
     internal static void ResetLobby(Action callback = null)
     {
-        MelonLogger.Msg("[NetLobby] Restarting the lobby");
+        ReplantedOnlineMod.Logger.Msg("[NetLobby] Restarting the lobby");
         NetClient.LocalClient?.Ready = false;
         VersusLobbyManager.ResetPlayerInput();
         LobbyData.UnsetAllTeams();
@@ -146,7 +146,7 @@ internal static class NetLobby
     {
         NetworkTransport.JoinLobby(lobbyId);
         Transitions.SetLoading();
-        MelonLogger.Msg($"[NetLobby] Joining lobby: {lobbyId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Joining lobby: {lobbyId}");
     }
 
     /// <summary>
@@ -156,17 +156,17 @@ internal static class NetLobby
     {
         if (LobbyData == null)
         {
-            MelonLogger.Warning("[NetLobby] Cannot leave - not in a lobby");
+            ReplantedOnlineMod.Logger.Warning("[NetLobby] Cannot leave - not in a lobby");
             return;
         }
 
-        MelonLogger.Msg($"[NetLobby] Leaving lobby {LobbyData.LobbyId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Leaving lobby {LobbyData.LobbyId}");
         LobbyData.LocalDespawnAll();
         Transitions.ToMainMenu(callback);
         var lobbyId = LobbyData.LobbyId;
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
-        MelonLogger.Msg("[NetLobby] Successfully left lobby");
+        ReplantedOnlineMod.Logger.Msg("[NetLobby] Successfully left lobby");
     }
 
     internal static void OnLobbyCreatedCompleted(Result result, LobbyData data)
@@ -175,13 +175,13 @@ internal static class NetLobby
         {
             LobbyData = new(data.Id, data.OwnerId);
             LobbyData.InitializeData();
-            MelonLogger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
+            ReplantedOnlineMod.Logger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
             MatchmakingManager.SetLobbyData(LobbyData);
         }
         else
         {
             Transitions.ToMainMenu();
-            MelonLogger.Error($"[NetLobby] Lobby creation failed with result: {result}");
+            ReplantedOnlineMod.Logger.Error($"[NetLobby] Lobby creation failed with result: {result}");
         }
     }
 
@@ -202,11 +202,11 @@ internal static class NetLobby
 
         if (memberCount > 1)
         {
-            MelonLogger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} players");
+            ReplantedOnlineMod.Logger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} players");
         }
         else
         {
-            MelonLogger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} player");
+            ReplantedOnlineMod.Logger.Msg($"[NetLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} player");
         }
     }
 
@@ -218,7 +218,7 @@ internal static class NetLobby
             {
                 ReplantedOnlinePopup.Show("Disconnected", "Host has left the game!");
             });
-            MelonLogger.Warning("[NetLobby] Lobby host left the game");
+            ReplantedOnlineMod.Logger.Warning("[NetLobby] Lobby host left the game");
         }
         else
         {
@@ -231,17 +231,17 @@ internal static class NetLobby
     {
         if (lobby.Id != LobbyData.LobbyId)
         {
-            MelonLogger.Warning($"[NetLobby] Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
+            ReplantedOnlineMod.Logger.Warning($"[NetLobby] Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
             return;
         }
 
-        MelonLogger.Msg($"[NetLobby] Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
         ProcessMemberList();
 
         // If we're the host, request P2P session with the new player
         if (AmLobbyHost())
         {
-            MelonLogger.Msg($"[NetLobby] Host initiating P2P connection with new player {clientId}");
+            ReplantedOnlineMod.Logger.Msg($"[NetLobby] Host initiating P2P connection with new player {clientId}");
             NetworkDispatcher.SendNetworkObjectsTo(clientId);
         }
     }
@@ -264,12 +264,12 @@ internal static class NetLobby
         if (clientId.IsBanned()) return;
 
         NetworkTransport.AcceptP2PSessionWithUser(clientId);
-        MelonLogger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
     }
 
     internal static void Steam_OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
     {
-        MelonLogger.Warning($"[NetLobby] P2P session connection failed with {clientId}: {error}");
+        ReplantedOnlineMod.Logger.Warning($"[NetLobby] P2P session connection failed with {clientId}: {error}");
     }
 
     /// <summary>
@@ -315,25 +315,25 @@ internal static class NetLobby
     {
         if (!AmInLobby())
         {
-            MelonLogger.Warning("[NetLobby] Cannot kick player - not in a lobby");
+            ReplantedOnlineMod.Logger.Warning("[NetLobby] Cannot kick player - not in a lobby");
             return;
         }
 
         if (!AmLobbyHost())
         {
-            MelonLogger.Warning("[NetLobby] Only the lobby host can kick players");
+            ReplantedOnlineMod.Logger.Warning("[NetLobby] Only the lobby host can kick players");
             return;
         }
 
         if (clientId == NetworkTransport.LocalClientId)
         {
-            MelonLogger.Warning("[NetLobby] Cannot kick yourself");
+            ReplantedOnlineMod.Logger.Warning("[NetLobby] Cannot kick yourself");
             return;
         }
 
         if (!IsPlayerInOurLobby(clientId))
         {
-            MelonLogger.Warning($"[NetLobby] Player {clientId} is not in the lobby");
+            ReplantedOnlineMod.Logger.Warning($"[NetLobby] Player {clientId} is not in the lobby");
             return;
         }
 

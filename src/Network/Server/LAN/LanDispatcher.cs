@@ -55,7 +55,7 @@ internal static class LanDispatcher
             var endpoint = transport.GetClientEndpoint(targetId);
             if (endpoint == null)
             {
-                MelonLogger.Warning($"[LAN] No endpoint for {targetId}");
+                ReplantedOnlineMod.Logger.Warning($"[LAN] No endpoint for {targetId}");
                 return;
             }
 
@@ -265,7 +265,7 @@ internal static class LanDispatcher
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Error handling RPC: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Error handling RPC: {ex.Message}");
         }
     }
 
@@ -290,11 +290,11 @@ internal static class LanDispatcher
                     {
                         if (clientInfo == null)
                         {
-                            MelonLogger.Error($"[LAN] Received handshake request without client info from {senderId}");
+                            ReplantedOnlineMod.Logger.Error($"[LAN] Received handshake request without client info from {senderId}");
                             return;
                         }
 
-                        MelonLogger.Msg($"[LAN] Host processing connection request from {clientInfo.Name} ({senderId})");
+                        ReplantedOnlineMod.Logger.Msg($"[LAN] Host processing connection request from {clientInfo.Name} ({senderId})");
 
                         // Get endpoint for this client
                         var endpoint = transport.GetClientEndpoint(senderId);
@@ -345,7 +345,7 @@ internal static class LanDispatcher
                     {
                         transport.PendingRequests.Add(senderId);
                         transport.ConnectionStates[senderId] = LanTransport.ConnectionState.Handshaking;
-                        MelonLogger.Msg($"[LAN] Handshake request from {senderId}");
+                        ReplantedOnlineMod.Logger.Msg($"[LAN] Handshake request from {senderId}");
 
                         MainThreadDispatcher.Execute(() =>
                         {
@@ -356,7 +356,7 @@ internal static class LanDispatcher
                 break;
 
             case LanHandshakeType.Accept:
-                MelonLogger.Msg($"[LAN] Handshake accepted by {senderId}");
+                ReplantedOnlineMod.Logger.Msg($"[LAN] Handshake accepted by {senderId}");
                 lock (transport._lock)
                 {
                     transport.ConnectionStates[senderId] = LanTransport.ConnectionState.Connected;
@@ -371,7 +371,7 @@ internal static class LanDispatcher
                 break;
 
             case LanHandshakeType.Leave:
-                MelonLogger.Msg($"[LAN] Client left: {senderId}");
+                ReplantedOnlineMod.Logger.Msg($"[LAN] Client left: {senderId}");
 
                 if (transport.IsHost)
                 {
@@ -403,7 +403,7 @@ internal static class LanDispatcher
             var clientInfo = new ClientInfo();
             clientInfo.Deserialize(reader);
 
-            MelonLogger.Msg($"[LAN] Received client info: {clientInfo.Name} ({clientInfo.ClientId})");
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Received client info: {clientInfo.Name} ({clientInfo.ClientId})");
 
             lock (transport._lock)
             {
@@ -442,7 +442,7 @@ internal static class LanDispatcher
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[LAN] Error handling client info: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[LAN] Error handling client info: {ex.Message}");
         }
     }
 

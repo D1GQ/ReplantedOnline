@@ -74,7 +74,7 @@ internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
         }
         catch (Exception ex)
         {
-            MelonLogger.Error("Unhandled exception in coroutine. It will not continue executing.", ex);
+            ReplantedOnlineMod.Logger.Error("Unhandled exception in coroutine. It will not continue executing.", ex);
             return false;
         }
     }

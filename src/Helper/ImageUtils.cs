@@ -1,5 +1,4 @@
-﻿using MelonLoader;
-using System.Reflection;
+﻿using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Helper;
@@ -35,7 +34,7 @@ internal static class ImageUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error(ex);
+            ReplantedOnlineMod.Logger.Error(ex);
             return null;
         }
     }
@@ -55,7 +54,7 @@ internal static class ImageUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error(ex);
+            ReplantedOnlineMod.Logger.Error(ex);
             return null;
         }
     }
@@ -85,7 +84,7 @@ internal static class ImageUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error(ex);
+            ReplantedOnlineMod.Logger.Error(ex);
             return null;
         }
     }
@@ -110,7 +109,7 @@ internal static class ImageUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error(ex);
+            ReplantedOnlineMod.Logger.Error(ex);
             return null;
         }
     }

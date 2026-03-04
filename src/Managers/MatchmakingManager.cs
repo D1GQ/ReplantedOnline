@@ -34,7 +34,7 @@ internal static class MatchmakingManager
     internal static void SearchSteamLobbyByGameCode(string gameCode)
     {
         Transitions.SetLoading();
-        MelonLogger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
 
         try
         {
@@ -49,7 +49,7 @@ internal static class MatchmakingManager
             {
                 if (task.IsFaulted)
                 {
-                    MelonLogger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
+                    ReplantedOnlineMod.Logger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
                     Transitions.ToMainMenu(() =>
                     {
                         ReplantedOnlinePopup.Show("Disconnected", $"An critical error occurred!");
@@ -61,7 +61,7 @@ internal static class MatchmakingManager
 
                 if (lobbies == null)
                 {
-                    MelonLogger.Msg("[NetLobby] No lobbies found");
+                    ReplantedOnlineMod.Logger.Msg("[NetLobby] No lobbies found");
                     Transitions.ToMainMenu(() =>
                     {
                         ReplantedOnlinePopup.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
@@ -69,7 +69,7 @@ internal static class MatchmakingManager
                     return;
                 }
 
-                MelonLogger.Msg($"[NetLobby] Found {lobbies.Length} lobbies matching filters");
+                ReplantedOnlineMod.Logger.Msg($"[NetLobby] Found {lobbies.Length} lobbies matching filters");
 
                 if (lobbies.Length > 0)
                 {
@@ -85,7 +85,7 @@ internal static class MatchmakingManager
 
                         if (modVersion != ModInfo.MOD_VERSION_FORMATTED)
                         {
-                            MelonLogger.Warning($"[NetLobby] Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
+                            ReplantedOnlineMod.Logger.Warning($"[NetLobby] Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
                                 ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
@@ -93,12 +93,12 @@ internal static class MatchmakingManager
                             return;
                         }
 
-                        MelonLogger.Msg($"[NetLobby] Found matching lobby: {lobby.Id} with code {gameCode}");
+                        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Found matching lobby: {lobby.Id} with code {gameCode}");
                         NetLobby.JoinLobby(lobby.Id);
                     }
                     else
                     {
-                        MelonLogger.Warning($"[NetLobby] Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetLobby] Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
                         Transitions.ToMainMenu(() =>
                         {
                             ReplantedOnlinePopup.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
@@ -109,7 +109,7 @@ internal static class MatchmakingManager
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
             Transitions.ToMainMenu();
         }
     }
@@ -123,7 +123,7 @@ internal static class MatchmakingManager
     internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError> errorCallback = null)
     {
         Transitions.SetLoading();
-        MelonLogger.Msg($"[NetLobby] Searching for lobbies");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Searching for lobbies");
 
         try
         {
@@ -138,7 +138,7 @@ internal static class MatchmakingManager
             {
                 if (task.IsFaulted)
                 {
-                    MelonLogger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
+                    ReplantedOnlineMod.Logger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
                     errorCallback?.Invoke(LobbyListError.Error);
                     return;
                 }
@@ -147,19 +147,19 @@ internal static class MatchmakingManager
 
                 if (lobbies == null)
                 {
-                    MelonLogger.Msg("[NetLobby] No lobbies found");
+                    ReplantedOnlineMod.Logger.Msg("[NetLobby] No lobbies found");
                     errorCallback?.Invoke(LobbyListError.NoneFound);
                     return;
                 }
 
-                MelonLogger.Msg($"[NetLobby] Found {lobbies.Length} lobbies");
+                ReplantedOnlineMod.Logger.Msg($"[NetLobby] Found {lobbies.Length} lobbies");
 
                 callback(lobbies);
             }));
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
             errorCallback?.Invoke(LobbyListError.Error);
         }
     }
@@ -231,7 +231,7 @@ internal static class MatchmakingManager
         }
 
         string gameCode = codeBuilder.ToString();
-        MelonLogger.Msg($"[NetLobby] Generated game code: {gameCode} for lobby {lobbyId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetLobby] Generated game code: {gameCode} for lobby {lobbyId}");
         return gameCode;
     }
 }

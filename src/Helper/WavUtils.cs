@@ -22,7 +22,7 @@ internal static class WavUtils
             using Stream stream = assembly.GetManifestResourceStream(resourcePath);
             if (stream == null)
             {
-                MelonLogger.Error($"Resource not found: {resourcePath}");
+                ReplantedOnlineMod.Logger.Error($"Resource not found: {resourcePath}");
                 return null;
             }
 
@@ -35,7 +35,7 @@ internal static class WavUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"Failed to load WAV from resources: {ex}");
+            ReplantedOnlineMod.Logger.Error($"Failed to load WAV from resources: {ex}");
             return null;
         }
     }
@@ -49,13 +49,13 @@ internal static class WavUtils
     {
         if (!File.Exists(filePath))
         {
-            MelonLogger.Error($"File not found: {filePath}");
+            ReplantedOnlineMod.Logger.Error($"File not found: {filePath}");
             return null;
         }
 
         if (Path.GetExtension(filePath).ToLower() != ".wav")
         {
-            MelonLogger.Error("Only .wav files are supported.");
+            ReplantedOnlineMod.Logger.Error("Only .wav files are supported.");
             return null;
         }
 
@@ -68,7 +68,7 @@ internal static class WavUtils
         }
         catch (Exception ex)
         {
-            MelonLogger.Error($"Failed to load WAV: {ex}");
+            ReplantedOnlineMod.Logger.Error($"Failed to load WAV: {ex}");
             return null;
         }
     }

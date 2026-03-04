@@ -26,7 +26,7 @@ internal static class NetworkDispatcher
     /// <param name="targetId">The ID of the target client to receive the packet.</param>
     internal static void SendNetworkObjectsTo(ID targetId)
     {
-        MelonLogger.Msg($"[NetworkDispatcher] Sending network objects to {targetId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sending network objects to {targetId}");
 
         if (NetLobby.LobbyData.NetworkObjectsSpawned.Count > 0)
         {
@@ -59,7 +59,7 @@ internal static class NetworkDispatcher
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);
         packet.Recycle();
 
-        MelonLogger.Msg($"[NetworkDispatcher] Spawned Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ internal static class NetworkDispatcher
     /// <param name="networkObj">The network object instance to despawn.</param>
     internal static void DespawnNetworkObject(NetworkObject networkObj)
     {
-        MelonLogger.Msg($"[NetworkDispatcher] Despawning Network Object with ID: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawning Network Object with ID: {networkObj.NetworkId}");
 
         var packet = PacketWriter.Get();
         NetworkDespawnPacket.SerializePacket(networkObj, packet);
@@ -94,7 +94,7 @@ internal static class NetworkDispatcher
         }
         SendPacket(packet, receiveLocally, PacketTag.Rpc, PacketChannel.Rpc);
         packet.Recycle();
-        MelonLogger.Msg($"[NetworkDispatcher] Sent RPC: {Enum.GetName(rpc)}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent RPC: {Enum.GetName(rpc)}");
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ internal static class NetworkDispatcher
         }
         SendPacket(packet, receiveLocally, PacketTag.NetworkClassRpc, PacketChannel.Rpc);
         packet.Recycle();
-        MelonLogger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ internal static class NetworkDispatcher
             NetLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
         }
 
-        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
         packet.Recycle();
     }
 
@@ -183,7 +183,7 @@ internal static class NetworkDispatcher
             Streamline(NetClient.LocalClient, rePacket);
         }
 
-        MelonLogger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
         packet.Recycle();
     }
 
@@ -211,7 +211,7 @@ internal static class NetworkDispatcher
     /// <returns>Enumerator for coroutine execution</returns>
     internal static IEnumerator CoListening()
     {
-        MelonLogger.Msg("[NetworkDispatcher] Starting NetworkDispatcher");
+        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] Starting NetworkDispatcher");
 
         while (NetLobby.AmInLobby())
         {
@@ -254,7 +254,7 @@ internal static class NetworkDispatcher
             }
             catch (Exception ex)
             {
-                MelonLogger.Error($"[NetworkDispatcher] Exception in CoListening: {ex}");
+                ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Exception in CoListening: {ex}");
                 NetLobby.LeaveLobby(() =>
                 {
                     ReplantedOnlinePopup.Show("Error", "An error occurred while processing network packets.");
@@ -266,7 +266,7 @@ internal static class NetworkDispatcher
             yield return null;
         }
 
-        MelonLogger.Msg("[NetworkDispatcher] Stoping NetworkDispatcher");
+        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] Stoping NetworkDispatcher");
 
         listeningToken = null;
     }
@@ -284,7 +284,7 @@ internal static class NetworkDispatcher
             if (NetLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
             {
                 var sender = buffer.ClientId.GetNetClient();
-                MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
+                ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
 
                 if (buffer.Size > 0)
                 {
@@ -294,12 +294,12 @@ internal static class NetworkDispatcher
                 }
                 else
                 {
-                    MelonLogger.Error("[NetworkDispatcher] Received packet with zero size");
+                    ReplantedOnlineMod.Logger.Error("[NetworkDispatcher] Received packet with zero size");
                 }
             }
             else
             {
-                MelonLogger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
+                ReplantedOnlineMod.Logger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
             }
         }
         finally
@@ -316,14 +316,14 @@ internal static class NetworkDispatcher
     internal static void Streamline(NetClient sender, PacketReader packetReader)
     {
         var tag = packetReader.GetTag();
-        MelonLogger.Msg($"[NetworkDispatcher] Processing {tag} packet from {sender?.Name ?? "Unknown"}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing {tag} packet from {sender?.Name ?? "Unknown"}");
 
         try
         {
             switch (tag)
             {
                 case PacketTag.None:
-                    MelonLogger.Warning("[NetworkDispatcher] Received packet with no tag");
+                    ReplantedOnlineMod.Logger.Warning("[NetworkDispatcher] Received packet with no tag");
                     break;
                 case PacketTag.RemoveClient:
                     if (sender.AmHost && !NetLobby.AmLobbyHost())
@@ -333,7 +333,7 @@ internal static class NetworkDispatcher
                         {
                             ReplantedOnlinePopup.Show("Disconnected", "You have been disconnected by the Host!");
                         });
-                        MelonLogger.Msg("[NetworkDispatcher] P2P closed by host");
+                        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] P2P closed by host");
                     }
                     break;
                 case PacketTag.ResetLobby:
@@ -345,7 +345,7 @@ internal static class NetworkDispatcher
                 default:
                     if (!BasePacketHandler.HandlePacket(tag, sender, packetReader))
                     {
-                        MelonLogger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
                     }
                     break;
             }

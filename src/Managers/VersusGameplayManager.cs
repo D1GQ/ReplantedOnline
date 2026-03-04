@@ -54,7 +54,7 @@ internal class VersusGameplayManager
     {
         if (focus == null)
         {
-            MelonLogger.Error("Can not end game, Focus gameobject is null!");
+            ReplantedOnlineMod.Logger.Error("Can not end game, Focus gameobject is null!");
             return;
         }
 

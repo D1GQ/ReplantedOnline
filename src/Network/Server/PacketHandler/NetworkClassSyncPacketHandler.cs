@@ -32,13 +32,13 @@ internal sealed class NetworkClassSyncPacketHandler : BasePacketHandler
                 {
                     if (networkObj.OwnerId != sender.ClientId)
                     {
-                        MelonLogger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncPacket.NetworkId}");
                         break;
                     }
 
                     networkObj.SyncedBits.SyncedDirtyBits = networkSyncPacket.DirtyBits;
                     networkObj.Deserialize(packet, networkSyncPacket.Init);
-                    MelonLogger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncPacket.NetworkId}");
                     break;
                 }
 
