@@ -196,9 +196,10 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!AmOwner)
         {
-            if (_Target is Zombie)
+            if (_Target != null)
             {
-                _Plant.MagnetShroomAttactItem(null); // MagnetshroomPlantPatch.cs will get the target
+                _Plant.MagnetShroomAttactItemOriginal(_Target);
+                _Target = null;
             }
         }
     }
@@ -287,14 +288,10 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSetZombieTargetRpc(Zombie target)
     {
-        if (_Target != target)
-        {
-            _Target = target;
-            var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
-            SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
-            writer.Recycle();
-        }
+        var writer = PacketWriter.Get();
+        writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
+        SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
+        writer.Recycle();
     }
 
     private void HandleSetZombieTargetRpc(Zombie target)

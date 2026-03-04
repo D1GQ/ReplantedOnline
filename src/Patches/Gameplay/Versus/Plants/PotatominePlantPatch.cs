@@ -52,7 +52,11 @@ internal static class PotatominePlantPatch
                     if (__result != null)
                     {
                         // Send network message to tell other players about the potato mine target
-                        netPlant.SendSetZombieTargetRpc(__result);
+                        if (netPlant._Target != __result)
+                        {
+                            netPlant._Target = __result;
+                            netPlant.SendSetZombieTargetRpc(__result);
+                        }
                     }
                 }
                 else

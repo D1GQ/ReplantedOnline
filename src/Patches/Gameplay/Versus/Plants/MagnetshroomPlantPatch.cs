@@ -23,33 +23,32 @@ internal static class MagnetshroomPlantPatch
 
             if (netPlant != null)
             {
-                // PLANT-SIDE PLAYER LOGIC
                 if (VersusState.AmPlantSide)
                 {
-                    // If the plant found a target zombie (original logic worked)
                     if (theZombie != null)
                     {
                         // Send network message to tell other players about the magnet shroom target
-                        netPlant.SendSetZombieTargetRpc(theZombie);
+                        if (netPlant._Target != theZombie)
+                        {
+                            netPlant._Target = theZombie;
+                            netPlant.SendSetZombieTargetRpc(theZombie);
+                        }
                     }
                 }
                 else
                 {
-                    // For other players, get the target from network state instead of local AI
-                    if (netPlant._Target != null)
-                    {
-                        // Override the result with the networked zombie target
-                        theZombie = netPlant._Target;
-                        netPlant._Target = null;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
 
         return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Plant), nameof(Plant.MagnetShroomAttactItem))]
+    internal static void MagnetShroomAttactItemOriginal(this Plant __instance, Zombie theZombie)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 }
