@@ -99,15 +99,19 @@ internal static class DebugRenderHelper
     /// <param name="H">The height available for the text.</param>
     /// <param name="strs">The text strings to display.</param>
     /// <param name="col">The color of the main text (shadow will be black).</param>
-    /// <param name="offset">The offsets between each text.</param>
+    /// <param name="offset">The offsets between each text (will be scaled automatically if not provided).</param>
     internal static void Strings(float X, float Y, float W, float H, string[] strs, Color col, Vector2? offset = null)
     {
-        offset ??= new Vector2(0f, 15f);
+        Vector2 actualOffset = offset ?? new Vector2(0f, 15f);
+
+        float currentX = X;
+        float currentY = Y;
+
         foreach (var str in strs)
         {
-            String(X, Y, W, H, str, col);
-            X += offset.Value.x;
-            Y += offset.Value.y;
+            String(currentX, currentY, W, H, str, col);
+            currentX += actualOffset.x;
+            currentY += actualOffset.y;
         }
     }
 
