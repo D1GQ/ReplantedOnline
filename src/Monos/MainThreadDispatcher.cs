@@ -9,7 +9,6 @@ namespace ReplantedOnline.Monos;
 internal class MainThreadDispatcher : MonoBehaviour
 {
     private static readonly Queue<Action> _executionQueue = new();
-    private static readonly object _lock = new();
 
     /// <summary>
     /// Gets the singleton instance of the MainThreadDispatcher.
@@ -38,18 +37,15 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        lock (_lock)
+        while (_executionQueue.Count > 0)
         {
-            while (_executionQueue.Count > 0)
+            try
             {
-                try
-                {
-                    _executionQueue.Dequeue().Invoke();
-                }
-                catch (Exception ex)
-                {
-                    ReplantedOnlineMod.Logger.Error($"Error in main thread action: {ex}");
-                }
+                _executionQueue.Dequeue().Invoke();
+            }
+            catch (Exception ex)
+            {
+                ReplantedOnlineMod.Logger.Error($"Error in main thread action: {ex}");
             }
         }
     }
@@ -63,21 +59,15 @@ internal class MainThreadDispatcher : MonoBehaviour
     {
         if (action == null) return;
 
-        lock (_lock)
-        {
-            _executionQueue.Enqueue(action);
-        }
+        _executionQueue.Enqueue(action);
     }
 
     /// <summary>
     /// Cleans up the dispatcher when the object is destroyed.
     /// </summary>
-    internal void OnDestroy()
+    private void OnDestroy()
     {
-        lock (_lock)
-        {
-            _executionQueue.Clear();
-        }
+        _executionQueue.Clear();
         Instance = null;
     }
 }
