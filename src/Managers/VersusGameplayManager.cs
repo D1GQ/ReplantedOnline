@@ -1,5 +1,4 @@
 ﻿using Il2CppReloaded.Gameplay;
-using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
@@ -48,6 +47,22 @@ internal class VersusGameplayManager
             seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             seedPacket.mRefreshing = true;
         }
+
+        // Disable inputs for starting countdown 
+        Instances.GameplayActivity.InputService
+            .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
+            .Player.DeactivateInput();
+
+        Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() =>
+            {
+                return Instances.GameplayActivity.VersusMode.m_versusTime > 3.5f;
+            }, () =>
+            {
+                Instances.GameplayActivity.InputService
+                    .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
+                    .Player.ActivateInput();
+            }
+        ).WrapToIl2cpp());
     }
 
     internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
