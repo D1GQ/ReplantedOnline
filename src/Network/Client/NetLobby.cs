@@ -1,6 +1,5 @@
 ﻿using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
-using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Managers;

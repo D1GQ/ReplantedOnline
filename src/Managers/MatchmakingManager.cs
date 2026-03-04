@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
-using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;

@@ -1,5 +1,4 @@
-﻿using MelonLoader;
-using ReplantedOnline.Enums;
+﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Enums.LAN;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
