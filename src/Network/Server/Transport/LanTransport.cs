@@ -25,6 +25,8 @@ namespace ReplantedOnline.Network.Server.Transport;
 /// </summary>
 internal sealed class LanTransport : INetworkTransport
 {
+    internal string PlayerName => IsHost ? "Client 1" : "Client 2";
+
     private const int BROADCAST_PORT = 14242;
     private const int GAME_PORT_BASE = 14243;
     private const int BROADCAST_INTERVAL_MS = 2000;
@@ -232,6 +234,8 @@ internal sealed class LanTransport : INetworkTransport
         {
             var lobbyId = ID.CreateRandomULong();
 
+            string lobbyName = $"{PlayerName}'s Lobby";
+
             CurrentLobbyData = new LobbyData(
                 lobbyId: lobbyId,
                 ownerId: _localClientId,
@@ -239,7 +243,7 @@ internal sealed class LanTransport : INetworkTransport
                 maxPlayers: maxPlayers,
                 modVersion: ModInfo.MOD_VERSION_FORMATTED,
                 gameCode: MatchmakingManager.GenerateGameCode(lobbyId),
-                name: Environment.MachineName
+                name: lobbyName
             );
 
             CurrentLobbyId = lobbyId;
@@ -249,13 +253,13 @@ internal sealed class LanTransport : INetworkTransport
             LobbyData[lobbyId] = [];
             MemberData[lobbyId] = [];
 
-            // Add self
+            // Add self with player name
             var localEndPoint = (IPEndPoint)P2PListener.Client.LocalEndPoint;
-            AddClient(_localClientId, localEndPoint, CurrentLobbyData.Name);
+            AddClient(_localClientId, localEndPoint, PlayerName);
             MemberData[lobbyId][_localClientId] = [];
             ConnectionStates[_localClientId] = ConnectionState.Connected;
 
-            MelonLogger.Msg($"[LAN] Hosting lobby: {lobbyId} | Code: {CurrentLobbyData.GameCode} | Port: {GamePort}");
+            MelonLogger.Msg($"[LAN] Hosting lobby: {lobbyName} | Host: {PlayerName} | Code: {CurrentLobbyData.GameCode} | Port: {GamePort}");
 
             MainThreadDispatcher.Execute(() =>
             {
@@ -285,9 +289,9 @@ internal sealed class LanTransport : INetworkTransport
             IsHost = false;
             CurrentLobbyData = CreateLobbyDataFromPresence(lobby);
 
-            // Add YOURSELF as a client
+            // Add YOURSELF as a client with player name
             var localEndPoint = (IPEndPoint)P2PListener.Client.LocalEndPoint;
-            AddClient(_localClientId, localEndPoint, CurrentLobbyData.Name);
+            AddClient(_localClientId, localEndPoint, PlayerName);
             ConnectionStates[_localClientId] = ConnectionState.Connected;
 
             // Initialize member data
@@ -296,13 +300,21 @@ internal sealed class LanTransport : INetworkTransport
             if (!MemberData[lobbyId].ContainsKey(_localClientId))
                 MemberData[lobbyId][_localClientId] = [];
 
-            // Store host info with correct endpoint
+            // Store host info with correct endpoint (temporary name until we get real one)
             var hostEndPoint = new IPEndPoint(IPAddress.Parse(lobby.EndPoint), lobby.GamePort);
             AddClient(lobby.ServerId, hostEndPoint, lobby.ServerName);
             ConnectionStates[lobby.ServerId] = ConnectionState.Handshaking;
 
-            // Send handshake request
-            LanDispatcher.SendHandshake(lobby.ServerId, LanHandshakeType.Request);
+            MelonLogger.Msg($"[LAN] Joining as {PlayerName}");
+
+            // Send handshake request WITH our client info
+            var clientInfo = new ClientInfo
+            {
+                ClientId = _localClientId,
+                Name = PlayerName,
+                EndPoint = localEndPoint
+            };
+            LanDispatcher.SendHandshake(lobby.ServerId, LanHandshakeType.Request, clientInfo);
         }
     }
 
@@ -750,7 +762,7 @@ internal sealed class LanTransport : INetworkTransport
     public string GetMemberName(ID clientId)
     {
         if (clientId == _localClientId)
-            return CurrentLobbyData.Name;
+            return PlayerName;
 
         lock (_lock)
         {
