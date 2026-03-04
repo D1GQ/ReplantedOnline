@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Attributes;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
@@ -14,10 +15,10 @@ internal sealed class MowZombieClientRPC : BaseClientRPC
     /// <inheritdoc/>
     internal sealed override ClientRpcType Rpc => ClientRpcType.MowZombie;
 
-    internal static void Send(int row, ZombieNetworked netZombie)
+    internal static void Send(LawnMower lawnMower, ZombieNetworked netZombie)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteInt(row);
+        packetWriter.WriteInt(lawnMower.DataID);
         packetWriter.WriteNetworkObject(netZombie);
         NetworkDispatcher.SendRpc(ClientRpcType.MowZombie, packetWriter);
         packetWriter.Recycle();
@@ -28,16 +29,14 @@ internal sealed class MowZombieClientRPC : BaseClientRPC
     {
         if (sender.Team == PlayerTeam.Plants)
         {
-            var row = packetReader.ReadInt();
+            var id = packetReader.ReadInt();
             var netZombie = packetReader.ReadNetworkObject<ZombieNetworked>();
-            var lawnMower = Instances.GameplayActivity.Board.FindLawnMowerInRow(row);
+            var lawnMower = Instances.GameplayActivity.Board.m_lawnMowers.DataArrayGet(id);
 
-            // Need to find out why this is throwing errors when synched...
-            try
+            if (lawnMower != null)
             {
                 lawnMower.MowZombieOriginal(netZombie._Zombie);
             }
-            catch { }
         }
     }
 }

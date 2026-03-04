@@ -22,20 +22,30 @@ internal static class LawnMowerSyncPatch
 
             // Send network message to sync this action with other players
             var netZombie = theZombie.GetNetworked<ZombieNetworked>();
+            MowZombieClientRPC.Send(__instance, netZombie);
 
-            MowZombieClientRPC.Send(__instance.Row, netZombie);
-
-            __instance.MowZombieOriginal(theZombie);
-
-            if (netZombie.ZombieType is not (ZombieType.Target or ZombieType.Gravestone))
-            {
-                netZombie.DespawnAndDestroy();
-            }
-
-            return false;
+            return true;
         }
 
         return true;
+    }
+
+    [HarmonyPatch(typeof(LawnMower), nameof(LawnMower.MowZombie))]
+    [HarmonyPostfix]
+    private static void LawnMower_MowZombie_Postfix(LawnMower __instance, Zombie theZombie)
+    {
+        if (NetLobby.AmInLobby())
+        {
+            if (VersusState.AmPlantSide)
+            {
+                var netZombie = theZombie.GetNetworked<ZombieNetworked>();
+
+                if (netZombie.ZombieType is not (ZombieType.Target or ZombieType.Gravestone))
+                {
+                    netZombie.DespawnAndDestroy();
+                }
+            }
+        }
     }
 
     [HarmonyReversePatch]

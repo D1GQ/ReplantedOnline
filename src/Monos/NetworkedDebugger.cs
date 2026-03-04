@@ -69,7 +69,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
             _cachedTexts =
             [
-                $"{Enum.GetName(zombieNetworked.ZombieType)} Zombie",
+                zombieNetworked.gameObject.name,
                 $"{Enum.GetName(zombie.mZombiePhase)}: {zombie.mPhaseCounter}"
             ];
 
@@ -133,7 +133,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
             _cachedTexts =
             [
-                $"{Enum.GetName(plant.mSeedType)} Plant",
+                plantNetworked.gameObject.name,
                 $"{Enum.GetName(plant.mState)}: {plant.mStateCountdown}"
             ];
 
