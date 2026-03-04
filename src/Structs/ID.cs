@@ -2,6 +2,7 @@
 using ReplantedOnline.Data.Json;
 using ReplantedOnline.Enums;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Structs;
@@ -30,6 +31,22 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     {
         _id = id;
         _type = type;
+    }
+
+    /// <summary>
+    /// Creates a new ID instance with a randomly generated 64-bit unsigned integer value.
+    /// </summary>
+    /// <returns></returns>
+    internal static ID CreateRandomULong()
+    {
+        ulong randomId;
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            var bytes = new byte[8];
+            rng.GetBytes(bytes);
+            randomId = BitConverter.ToUInt64(bytes, 0);
+        }
+        return new ID(randomId, IdType.ULong);
     }
 
     /// <summary>

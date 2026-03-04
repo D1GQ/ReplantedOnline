@@ -4,6 +4,7 @@ using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
 using MelonLoader;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Network.Client;
 using System.Reflection;
 
 namespace ReplantedOnline.Managers;
@@ -37,6 +38,7 @@ internal static class BloomEngineManager
     internal static class BloomConfigs
     {
         internal static BoolConfigInput ModifyMusic;
+        internal static BoolConfigInput UseLan;
 
         /// <summary>
         /// Initializes BloomEngine config fields and syncs values
@@ -54,6 +56,26 @@ internal static class BloomEngineManager
                     OnValueChanged = @bool =>
                     {
                         AudioManager.OnModifyMusic(@bool, true);
+                    }
+                }
+            );
+
+            UseLan = ConfigService.CreateBool(
+                "Use LAN",
+                "Makes Client Use Local Network For Testing.",
+                false,
+                new ConfigInputOptions<bool>()
+                {
+                    OnValueChanged = @bool =>
+                    {
+                        if (@bool)
+                        {
+                            NetLobby.SetTransportMode(1);
+                        }
+                        else
+                        {
+                            NetLobby.SetTransportMode(0);
+                        }
                     }
                 }
             );

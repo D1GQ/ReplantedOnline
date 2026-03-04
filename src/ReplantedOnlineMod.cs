@@ -20,6 +20,8 @@ internal class ReplantedOnlineMod : MelonMod
 {
     internal static HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
 
+    internal static MelonLogger.Instance Logger = new(ModInfo.MOD_NAME);
+
     public override void OnInitializeMelon()
     {
         File.WriteAllText("steam_appid.txt", ((uint)AppIdServers.PVZ_Replanted).ToString());
@@ -41,8 +43,8 @@ internal class ReplantedOnlineMod : MelonMod
         LevelEntries.Initialize();
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
+        MainThreadDispatcher.Initialize();
         NetLobby.InitializeSteam();
-        NetLobby.InitializeLan();
     }
 
     public override void OnPreSupportModule()
@@ -111,8 +113,6 @@ internal class ReplantedOnlineMod : MelonMod
 
     internal class Constants
     {
-        internal const string LAN_HOST_CODE = "/host";
-        internal const string LAN_JOIN_CODE = "/join";
         internal const int DEFAULT_PLAYER_INDEX = -1;
         internal const int LOCAL_PLAYER_INDEX = 0;
         internal const int OPPONENT_PLAYER_INDEX = 1;

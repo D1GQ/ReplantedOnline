@@ -66,12 +66,7 @@ internal static class JoinLobbyCodePanelPatch
         // Set up OK button to search for lobby with entered code
         SetButton("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK", () =>
         {
-            if (_reloadedInputField.m_Text.ToLower().StartsWith(ReplantedOnlineMod.Constants.LAN_HOST_CODE) ||
-                _reloadedInputField.m_Text.ToLower().StartsWith(ReplantedOnlineMod.Constants.LAN_JOIN_CODE))
-            {
-                MatchmakingManager.ExecuteLanCommand(_reloadedInputField.m_Text.ToLower());
-            }
-            else if (_reloadedInputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
+            if (_reloadedInputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
             {
                 lobbyCodePanel.gameObject.SetActive(false);
                 MatchmakingManager.SearchSteamLobbyByGameCode(_reloadedInputField.m_Text.ToUpper());
@@ -97,22 +92,7 @@ internal static class JoinLobbyCodePanelPatch
             if (_reloadedInputField.text != lastText)
             {
                 string currentText = _reloadedInputField.text;
-                string cleanValue;
-
-                // Check if current input is a prefix of either exact word
-                bool isPrefixOfHostCode = ReplantedOnlineMod.Constants.LAN_HOST_CODE.StartsWith(currentText, StringComparison.OrdinalIgnoreCase);
-                bool isPrefixOfJoinCode = ReplantedOnlineMod.Constants.LAN_JOIN_CODE.StartsWith(currentText, StringComparison.OrdinalIgnoreCase);
-
-                if (isPrefixOfHostCode || isPrefixOfJoinCode)
-                {
-                    // User is still typing towards an exact word - don't filter
-                    cleanValue = currentText;
-                }
-                else
-                {
-                    // Not matching any exact word prefix, apply normal filtering
-                    cleanValue = new([.. currentText.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
-                }
+                string cleanValue = new([.. currentText.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
 
                 _reloadedInputField?.SetText(cleanValue, false);
                 _reloadedInputField?.ForceLabelUpdate();

@@ -31,33 +31,36 @@ internal static class NetLobby
     /// </summary>
     internal static INetworkTransport NetworkTransport { get; private set; }
 
-    /// <summary>
-    /// Pre-instantiated SteamTransport for use when the player chooses to use Steamworks for lobby management and P2P networking. 
-    /// </summary>
-    internal static SteamTransport SteamTransport;
+    private static int lastTransportMode = -1;
 
     /// <summary>
-    /// Pre-instantiated LanTransport for use when the player chooses to use LAN for lobby management and P2P networking. 
+    /// Sets the network transport mode based on the provided mode index.
     /// </summary>
-    internal static LanTransport LanTransport;
-
+    /// <param name="mode"></param>
     internal static void SetTransportMode(int mode)
     {
+        if (lastTransportMode == mode) return;
+
+        NetworkTransport?.Dispose();
+        NetworkTransport = null;
+
         switch (mode)
         {
             case 0:
-                NetworkTransport = SteamTransport;
+                NetworkTransport = new SteamTransport();
                 MelonLogger.Msg("[NetLobby] Network transport set to Steam");
                 break;
             case 1:
-                NetworkTransport = LanTransport;
+                NetworkTransport = new LanTransport();
                 MelonLogger.Msg("[NetLobby] Network transport set to LAN");
                 break;
             default:
                 MelonLogger.Warning($"[NetLobby] Invalid transport mode: {mode}, defaulting to Steam");
-                NetworkTransport = SteamTransport;
+                NetworkTransport = new SteamTransport();
                 break;
         }
+
+        lastTransportMode = mode;
     }
 
     /// <summary>
@@ -97,19 +100,12 @@ internal static class NetLobby
 
         SteamNetworking.OnP2PConnectionFailed += (Action<SteamId, P2PSessionError>)((steamId, error) =>
         {
-            OnP2PSessionConnectFail(steamId, error);
+            Steam_OnP2PSessionConnectFail(steamId, error);
         });
 
-        SteamTransport = new();
+        SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
 
         MelonLogger.Msg("[NetLobby] Steamworks initialized");
-    }
-
-    internal static void InitializeLan()
-    {
-        LanTransport = new();
-
-        MelonLogger.Msg("[NetLobby] LAN initialized");
     }
 
     /// <summary>
@@ -265,20 +261,13 @@ internal static class NetLobby
 
     internal static void OnP2PSessionRequest(ID clientId)
     {
-        if (IsPlayerInOurLobby(clientId))
-        {
-            if (clientId.IsBanned()) return;
+        if (clientId.IsBanned()) return;
 
-            NetworkTransport.AcceptP2PSessionWithUser(clientId);
-            MelonLogger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
-        }
-        else
-        {
-            MelonLogger.Warning($"[NetLobby] Rejected P2P session from non-lobby member: {clientId}");
-        }
+        NetworkTransport.AcceptP2PSessionWithUser(clientId);
+        MelonLogger.Msg($"[NetLobby] Accepted P2P session with {clientId}");
     }
 
-    internal static void OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
+    internal static void Steam_OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
     {
         MelonLogger.Warning($"[NetLobby] P2P session connection failed with {clientId}: {error}");
     }

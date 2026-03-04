@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
+using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Interfaces;
@@ -7,7 +8,7 @@ namespace ReplantedOnline.Interfaces;
 /// <summary>
 /// Network transport interface using the unified ID wrapper.
 /// </summary>
-internal interface INetworkTransport
+internal interface INetworkTransport : IDisposable
 {
     /// <summary>
     /// Gets the unique identifier assigned to the local client instance.
@@ -43,11 +44,9 @@ internal interface INetworkTransport
     /// Reads an incoming P2P packet.
     /// </summary>
     /// <param name="buffer">The buffer to read the packet data into.</param>
-    /// <param name="size">Input: size of buffer. Output: actual size of packet read.</param>
-    /// <param name="userId">Output parameter that receives the ID of the sender.</param>
     /// <param name="channel">The channel to read the packet from.</param>
     /// <returns>True if a packet was successfully read, false otherwise.</returns>
-    bool ReadP2PPacket(Il2CppStructArray<byte> buffer, ref uint size, ref ID userId, int channel = 0);
+    bool ReadP2PPacket(P2PPacketBuffer buffer, int channel = 0);
 
     /// <summary>
     /// Gets data associated with a lobby.

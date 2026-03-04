@@ -2,6 +2,7 @@
 using Il2CppSteamworks;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
+using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
 
@@ -32,12 +33,12 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("SendP2PPacket requires a SteamId");
     }
 
-    public bool ReadP2PPacket(Il2CppStructArray<byte> buffer, ref uint size, ref ID userId, int channel = 0)
+    public bool ReadP2PPacket(P2PPacketBuffer buffer, int channel = 0)
     {
         SteamId steamId = default;
-        var result = SteamNetworking.ReadP2PPacket(buffer, ref size, ref steamId, channel);
+        var result = SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref steamId, channel);
         if (result)
-            userId = steamId.AsID();
+            buffer.ClientId = steamId.AsID();
         return result;
     }
 
@@ -177,5 +178,9 @@ internal sealed class SteamTransport : INetworkTransport
             return owner.AsID();
         }
         throw new ArgumentException("GetLobbyOwner requires a SteamId");
+    }
+
+    public void Dispose()
+    {
     }
 }

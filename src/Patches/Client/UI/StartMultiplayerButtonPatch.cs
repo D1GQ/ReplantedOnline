@@ -2,7 +2,9 @@
 using Il2CppSource.Binders;
 using Il2CppTMPro;
 using ReplantedOnline.Helper;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Server.Transport;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Client.UI;
@@ -68,13 +70,20 @@ internal static class StartMultiplayerButtonPatch
         if (__instance.gameObject.name != "CoopVS_VS_Button")
         {
             // Host button clicked - create a new lobby
-            NetLobby.SetTransportMode(0);
             NetLobby.CreateLobby();
         }
         else
         {
             // Join button clicked - show the lobby code input panel
-            JoinLobbyCodePanelPatch.ShowLobbyCodePanel();
+            if (NetLobby.NetworkTransport is LanTransport lanTransport)
+            {
+                Transitions.SetLoading();
+                _ = lanTransport.JoinFirstLanLobby();
+            }
+            else
+            {
+                JoinLobbyCodePanelPatch.ShowLobbyCodePanel();
+            }
         }
 
         // Return false to prevent the original method from running

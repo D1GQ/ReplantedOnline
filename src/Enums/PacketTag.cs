@@ -12,6 +12,11 @@ internal enum PacketTag
     None,
 
     /// <summary>
+    /// LAN packet used for local network discovery and communication between clients on the same network.
+    /// </summary>
+    LAN,
+
+    /// <summary>
     /// Packet used removing a client from the game.
     /// </summary>
     RemoveClient,

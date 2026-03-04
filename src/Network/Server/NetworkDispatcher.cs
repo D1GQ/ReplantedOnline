@@ -281,7 +281,7 @@ internal static class NetworkDispatcher
 
         try
         {
-            if (NetLobby.NetworkTransport.ReadP2PPacket(buffer.Data, ref buffer.Size, ref buffer.ClientId, channel))
+            if (NetLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
             {
                 var sender = buffer.ClientId.GetNetClient();
                 MelonLogger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");

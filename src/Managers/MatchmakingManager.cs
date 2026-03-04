@@ -34,7 +34,6 @@ internal static class MatchmakingManager
     internal static void SearchSteamLobbyByGameCode(string gameCode)
     {
         Transitions.SetLoading();
-        NetLobby.SetTransportMode(0);
         MelonLogger.Msg($"[NetLobby] Searching for lobby with code: {gameCode}");
 
         try
@@ -162,26 +161,6 @@ internal static class MatchmakingManager
         {
             MelonLogger.Error($"[NetLobby] Error starting lobby search: {ex.Message}");
             errorCallback?.Invoke(LobbyListError.Error);
-        }
-    }
-
-    /// <summary>
-    ///  Executes a LAN command to either host or join a LAN game based on the provided command string.
-    /// </summary>
-    /// <param name="cmd">The command</param>
-    internal static void ExecuteLanCommand(string cmd)
-    {
-        switch (cmd)
-        {
-            case ReplantedOnlineMod.Constants.LAN_HOST_CODE:
-                NetLobby.SetTransportMode(1);
-                NetLobby.CreateLobby();
-                break;
-            case ReplantedOnlineMod.Constants.LAN_JOIN_CODE:
-                Transitions.SetLoading();
-                NetLobby.SetTransportMode(1);
-                _ = NetLobby.LanTransport.JoinFirstLanLobby();
-                break;
         }
     }
 
