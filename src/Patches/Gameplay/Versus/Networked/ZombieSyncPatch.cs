@@ -143,6 +143,9 @@ internal static class ZombieSyncPatch
     [HarmonyPrefix]
     private static bool Zombie_ApplyBurn_Prefix(Zombie __instance)
     {
+        // Fix Invulnerable zombies sometimes getting burned for some reason ¯\_(ツ)_/¯
+        if (__instance.mZombieType is ZombieType.Target or ZombieType.Gravestone) return false;
+
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
