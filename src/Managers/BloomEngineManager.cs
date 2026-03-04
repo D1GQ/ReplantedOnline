@@ -27,7 +27,7 @@ internal static class BloomEngineManager
         var mod = ModMenuService.CreateEntry(replantedOnline);
         mod.AddIcon(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png"));
         mod.AddDisplayName(ModInfo.MOD_NAME);
-        mod.AddDescription("PvZ-R Online is a mod that adds online support to versus!");
+        mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
         mod.AddConfigClass(typeof(BloomConfigs));
         mod.Register();
     }
