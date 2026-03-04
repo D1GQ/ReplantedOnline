@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Network.Server.Packet;
@@ -20,23 +21,23 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== P2P Packet Methods =====
-    public bool IsP2PPacketAvailable(out uint msgSize, int channel = 0)
+    public bool IsP2PPacketAvailable(out uint msgSize, PacketChannel channel = PacketChannel.Main)
     {
         msgSize = 0;
-        return SteamNetworking.Internal.IsP2PPacketAvailable(ref msgSize, channel);
+        return SteamNetworking.Internal.IsP2PPacketAvailable(ref msgSize, (int)channel);
     }
 
-    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, int nChannel = 0, P2PSend sendType = P2PSend.Reliable)
+    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
     {
         if (clientId.TryGetSteamId(out SteamId steamId))
-            return SteamNetworking.SendP2PPacket(steamId, data, length, nChannel, sendType);
+            return SteamNetworking.SendP2PPacket(steamId, data, length, (int)channel, sendType);
         throw new ArgumentException("SendP2PPacket requires a SteamId");
     }
 
-    public bool ReadP2PPacket(P2PPacketBuffer buffer, int channel = 0)
+    public bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
     {
         SteamId steamId = default;
-        var result = SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref steamId, channel);
+        var result = SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref steamId, (int)channel);
         if (result)
             buffer.ClientId = steamId.AsID();
         return result;
@@ -95,11 +96,11 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("GetNumLobbyMembers requires a SteamId");
     }
 
-    public ID GetLobbyMemberByIndex(ID lobbyId, int iMember)
+    public ID GetLobbyMemberByIndex(ID lobbyId, int memberIndex)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
-            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndexOriginal(id, iMember);
+            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndexOriginal(id, memberIndex);
             return member.AsID();
         }
         throw new ArgumentException("GetLobbyMemberByIndex requires a SteamId");
@@ -112,10 +113,10 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("GetMemberName requires a SteamId");
     }
 
-    public bool SetLobbyMemberLimit(ID lobbyId, int cMaxMembers)
+    public bool SetLobbyMemberLimit(ID lobbyId, int maxMembers)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
-            return SteamMatchmaking.Internal.SetLobbyMemberLimit(id, cMaxMembers);
+            return SteamMatchmaking.Internal.SetLobbyMemberLimit(id, maxMembers);
         throw new ArgumentException("SetLobbyMemberLimit requires a SteamId");
     }
 
@@ -156,17 +157,17 @@ internal sealed class SteamTransport : INetworkTransport
             throw new ArgumentException("LeaveLobby requires a SteamId");
     }
 
-    public bool SetLobbyJoinable(ID lobbyId, bool bLobbyJoinable)
+    public bool SetLobbyJoinable(ID lobbyId, bool lobbyJoinable)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
-            return SteamMatchmaking.Internal.SetLobbyJoinable(id, bLobbyJoinable);
+            return SteamMatchmaking.Internal.SetLobbyJoinable(id, lobbyJoinable);
         throw new ArgumentException("SetLobbyJoinable requires a SteamId");
     }
 
-    public bool SetLobbyType(ID lobbyId, LobbyType eLobbyType)
+    public bool SetLobbyType(ID lobbyId, LobbyType lobbyType)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
-            return SteamMatchmaking.Internal.SetLobbyType(id, eLobbyType);
+            return SteamMatchmaking.Internal.SetLobbyType(id, lobbyType);
         throw new ArgumentException("SetLobbyType requires a SteamId");
     }
 

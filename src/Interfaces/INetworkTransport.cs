@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 
@@ -27,7 +28,7 @@ internal interface INetworkTransport : IDisposable
     /// <param name="msgSize">Output parameter that receives the size of the available packet in bytes.</param>
     /// <param name="channel">The channel to check for packets on.</param>
     /// <returns>True if a packet is available, false otherwise.</returns>
-    bool IsP2PPacketAvailable(out uint msgSize, int channel = 0);
+    bool IsP2PPacketAvailable(out uint msgSize, PacketChannel channel = PacketChannel.Main);
 
     /// <summary>
     /// Sends a P2P packet to a specific client.
@@ -35,10 +36,10 @@ internal interface INetworkTransport : IDisposable
     /// <param name="clientId">The ID of the target client.</param>
     /// <param name="data">The byte array containing the packet data.</param>
     /// <param name="length">Length of data to send. Use -1 to send the entire array.</param>
-    /// <param name="nChannel">The channel to send the packet on.</param>
+    /// <param name="channel">The channel to send the packet on.</param>
     /// <param name="sendType">The reliability type of the packet.</param>
     /// <returns>True if the packet was sent successfully, false otherwise.</returns>
-    bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, int nChannel = 0, P2PSend sendType = P2PSend.Reliable);
+    bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable);
 
     /// <summary>
     /// Reads an incoming P2P packet.
@@ -46,7 +47,7 @@ internal interface INetworkTransport : IDisposable
     /// <param name="buffer">The buffer to read the packet data into.</param>
     /// <param name="channel">The channel to read the packet from.</param>
     /// <returns>True if a packet was successfully read, false otherwise.</returns>
-    bool ReadP2PPacket(P2PPacketBuffer buffer, int channel = 0);
+    bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main);
 
     /// <summary>
     /// Gets data associated with a lobby.
@@ -108,9 +109,9 @@ internal interface INetworkTransport : IDisposable
     /// Gets a lobby member by index.
     /// </summary>
     /// <param name="lobbyId">The ID of the lobby.</param>
-    /// <param name="iMember">The index of the member to retrieve.</param>
+    /// <param name="memberIndex">The index of the member to retrieve.</param>
     /// <returns>The ID of the member at the specified index.</returns>
-    ID GetLobbyMemberByIndex(ID lobbyId, int iMember);
+    ID GetLobbyMemberByIndex(ID lobbyId, int memberIndex);
 
     /// <summary>
     /// Gets the display name of a client.
@@ -123,9 +124,9 @@ internal interface INetworkTransport : IDisposable
     /// Sets the maximum number of members allowed in a lobby.
     /// </summary>
     /// <param name="lobbyId">The ID of the lobby.</param>
-    /// <param name="cMaxMembers">The maximum number of members.</param>
+    /// <param name="maxMembers">The maximum number of members.</param>
     /// <returns>True if successful, false otherwise.</returns>
-    bool SetLobbyMemberLimit(ID lobbyId, int cMaxMembers);
+    bool SetLobbyMemberLimit(ID lobbyId, int maxMembers);
 
     /// <summary>
     /// Accepts a P2P session request from a client.
@@ -171,9 +172,9 @@ internal interface INetworkTransport : IDisposable
     /// Sets the type of a lobby.
     /// </summary>
     /// <param name="lobbyId">The ID of the lobby.</param>
-    /// <param name="eLobbyType">The lobby type to set.</param>
+    /// <param name="lobbyType">The lobby type to set.</param>
     /// <returns>True if successful, false otherwise.</returns>
-    bool SetLobbyType(ID lobbyId, LobbyType eLobbyType);
+    bool SetLobbyType(ID lobbyId, LobbyType lobbyType);
 
     /// <summary>
     /// Gets the owner of a lobby.

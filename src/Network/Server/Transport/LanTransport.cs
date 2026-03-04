@@ -35,7 +35,7 @@ internal sealed class LanTransport : INetworkTransport
     internal readonly UdpClient P2PListener;
     internal readonly CancellationTokenSource CTS = new();
     internal readonly object _lock = new();
-    internal readonly Queue<PendingPacket> PacketQueue = new();
+    internal readonly Dictionary<PacketChannel, Queue<PendingPacket>> PacketQueue = [];
 
     private readonly ID _localClientId;
     internal readonly int GamePort;
@@ -44,7 +44,7 @@ internal sealed class LanTransport : INetworkTransport
 
     internal ID CurrentLobbyId = ID.Null;
     internal bool IsHost;
-    internal LobbyData CurrentLobbyData = Structs.LobbyData.Null;
+    internal LanLobbyData CurrentLobbyData = Structs.LanLobbyData.Null;
     internal bool IsJoining = false;
 
     // Client storage
@@ -83,6 +83,11 @@ internal sealed class LanTransport : INetworkTransport
         BroadcastListener = CreateBroadcastListener();
         P2PListener = CreateP2PListener();
 
+        foreach (var channel in Enum.GetValues<PacketChannel>())
+        {
+            PacketQueue[channel] = [];
+        }
+
         Task.Run(ListenForBroadcasts, CTS.Token);
         Task.Run(ListenForP2P, CTS.Token);
     }
@@ -114,7 +119,7 @@ internal sealed class LanTransport : INetworkTransport
 
     private int CalculateGamePort() => GAME_PORT_BASE + (InstanceId % 100);
 
-    private UdpClient CreateBroadcastListener()
+    private static UdpClient CreateBroadcastListener()
     {
         try
         {
@@ -205,7 +210,7 @@ internal sealed class LanTransport : INetworkTransport
 
                     ReplantedOnlineMod.Logger.Error($"[LAN] Failed to join lobby - handshake timeout");
                     CurrentLobbyId = ID.Null;
-                    CurrentLobbyData = Structs.LobbyData.Null;
+                    CurrentLobbyData = Structs.LanLobbyData.Null;
                     IsJoining = false;
                     ShowDisconnectPopup("Failed to join LAN lobby - timeout");
                     return;
@@ -235,7 +240,7 @@ internal sealed class LanTransport : INetworkTransport
 
             string lobbyName = $"{PlayerName}'s Lobby";
 
-            CurrentLobbyData = new LobbyData(
+            CurrentLobbyData = new LanLobbyData(
                 lobbyId: lobbyId,
                 ownerId: _localClientId,
                 isJoinable: true,
@@ -286,7 +291,7 @@ internal sealed class LanTransport : INetworkTransport
 
             CurrentLobbyId = lobbyId;
             IsHost = false;
-            CurrentLobbyData = CreateLobbyDataFromPresence(lobby);
+            CurrentLobbyData = LanLobbyData.CreateLobbyDataFromPresence(lobby);
 
             // Add YOURSELF as a client with player name
             var localEndPoint = (IPEndPoint)P2PListener.Client.LocalEndPoint;
@@ -354,13 +359,16 @@ internal sealed class LanTransport : INetworkTransport
     private void CleanupLobby()
     {
         CurrentLobbyId = ID.Null;
-        CurrentLobbyData = Structs.LobbyData.Null;
+        CurrentLobbyData = LanLobbyData.Null;
         IsHost = false;
         IsJoining = false;
         PendingRequests.Clear();
         ConnectionStates.Clear();
-        // Don't clear Clients entirely - keep discovered lobbies
-        var keepClients = Clients.Keys.Where(id => DiscoveredLobbies.ContainsKey(id)).ToList();
+        foreach (var channel in Enum.GetValues<PacketChannel>())
+        {
+            PacketQueue[channel].Clear();
+        }
+        var keepClients = Clients.Keys.Where(DiscoveredLobbies.ContainsKey).ToList();
         var toRemove = Clients.Keys.Except(keepClients).ToList();
         foreach (var id in toRemove)
         {
@@ -387,11 +395,11 @@ internal sealed class LanTransport : INetworkTransport
 
     // ===== EXTERNAL RPC PACKET METHODS =====
 
-    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, int nChannel = 0, P2PSend sendType = P2PSend.Reliable)
+    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
     {
         if (clientId == _localClientId)
         {
-            QueueLocalPacket(data, length);
+            QueueLocalPacket(data, length, channel);
             return true;
         }
 
@@ -406,6 +414,7 @@ internal sealed class LanTransport : INetworkTransport
         {
             writer.AddTag(PacketTag.Rpc);
             writer.WriteID(_localClientId);
+            writer.WriteInt((int)channel);
             writer.WriteBytes(data);
             var packetData = writer.GetBytes();
 
@@ -423,29 +432,32 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
-    public bool ReadP2PPacket(P2PPacketBuffer buffer, int channel = 0)
+    public bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
     {
         lock (PacketQueue)
         {
-            if (PacketQueue.Count == 0) return false;
+            if (PacketQueue.TryGetValue(channel, out var queue) && queue.Count > 0)
+            {
+                var packet = queue.Dequeue();
 
-            var packet = PacketQueue.Dequeue();
+                buffer.Data = packet.Data;
+                buffer.Size = packet.Size;
+                buffer.ClientId = packet.SenderId;
 
-            buffer.Data = packet.Data;
-            buffer.Size = packet.Size;
-            buffer.ClientId = packet.SenderId;
-
-            return true;
+                return true;
+            }
         }
+
+        return false;
     }
 
-    public bool IsP2PPacketAvailable(out uint msgSize, int channel = 0)
+    public bool IsP2PPacketAvailable(out uint msgSize, PacketChannel channel = PacketChannel.Main)
     {
         lock (PacketQueue)
         {
-            if (PacketQueue.Count > 0)
+            if (PacketQueue.TryGetValue(channel, out var queue) && queue.Count > 0)
             {
-                msgSize = PacketQueue.Peek().Size;
+                msgSize = queue.Peek().Size;
                 return true;
             }
         }
@@ -458,7 +470,6 @@ internal sealed class LanTransport : INetworkTransport
     private async Task BroadcastPresence()
     {
         var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, BROADCAST_PORT);
-        var localEndPoint = (IPEndPoint)P2PListener.Client.LocalEndPoint;
 
         while (!CTS.Token.IsCancellationRequested && IsHost)
         {
@@ -869,7 +880,7 @@ internal sealed class LanTransport : INetworkTransport
         return false;
     }
 
-    private void QueueLocalPacket(Il2CppStructArray<byte> data, int length)
+    private void QueueLocalPacket(Il2CppStructArray<byte> data, int length, PacketChannel channel)
     {
         int actualLength = length == -1 ? data.Length : length;
         var localData = new byte[actualLength];
@@ -877,26 +888,13 @@ internal sealed class LanTransport : INetworkTransport
 
         lock (PacketQueue)
         {
-            PacketQueue.Enqueue(new PendingPacket
+            PacketQueue[channel].Enqueue(new PendingPacket
             {
                 Data = localData,
                 SenderId = _localClientId,
                 Size = (uint)localData.Length
             });
         }
-    }
-
-    private LobbyData CreateLobbyDataFromPresence(LanServerPresence presence)
-    {
-        return new LobbyData(
-            lobbyId: presence.LobbyId,
-            ownerId: presence.ServerId,
-            isJoinable: presence.IsJoinable,
-            maxPlayers: presence.MaxPlayers,
-            modVersion: presence.ModVersion,
-            gameCode: presence.GameCode,
-            name: presence.ServerName
-        );
     }
 
     private static void ShowDisconnectPopup(string message)

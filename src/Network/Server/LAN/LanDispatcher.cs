@@ -250,16 +250,20 @@ internal static class LanDispatcher
     {
         try
         {
+            var channel = reader.ReadInt();
             var rpcData = reader.ReadBytes();
 
             lock (transport.PacketQueue)
             {
-                transport.PacketQueue.Enqueue(new PendingPacket
+                if (transport.PacketQueue.TryGetValue((PacketChannel)channel, out var queue))
                 {
-                    Data = rpcData,
-                    SenderId = senderId,
-                    Size = (uint)rpcData.Length
-                });
+                    queue.Enqueue(new PendingPacket
+                    {
+                        Data = rpcData,
+                        SenderId = senderId,
+                        Size = (uint)rpcData.Length
+                    });
+                }
             }
         }
         catch (Exception ex)

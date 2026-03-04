@@ -141,7 +141,7 @@ internal static class NetworkDispatcher
         if (NetLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            NetLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
+            NetLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetBytes(), packet.Length, packetChannel, sendType);
         }
 
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -172,7 +172,7 @@ internal static class NetworkDispatcher
             if (NetLobby.IsPlayerInOurLobby(client.ClientId))
             {
                 var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-                bool sent = NetLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetBytes(), packet.Length, (int)packetChannel, sendType);
+                bool sent = NetLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetBytes(), packet.Length, packetChannel, sendType);
                 if (sent) sentCount++;
             }
         }
@@ -229,26 +229,26 @@ internal static class NetworkDispatcher
                 }
 
                 processed = 5;
-                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Rpc))
+                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
                 {
                     if (processed <= 0) break;
-                    ReadPacket(messageSize, (int)PacketChannel.Rpc);
+                    ReadPacket(messageSize, PacketChannel.Rpc);
                     processed--;
                 }
 
                 processed = 5;
-                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Main))
+                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
                 {
                     if (processed <= 0) break;
-                    ReadPacket(messageSize, (int)PacketChannel.Main);
+                    ReadPacket(messageSize, PacketChannel.Main);
                     processed--;
                 }
 
                 processed = 5;
-                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, (int)PacketChannel.Buffered))
+                while (NetLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Buffered))
                 {
                     if (processed <= 0) break;
-                    ReadPacket(messageSize, (int)PacketChannel.Buffered);
+                    ReadPacket(messageSize, PacketChannel.Buffered);
                     processed--;
                 }
             }
@@ -275,7 +275,7 @@ internal static class NetworkDispatcher
     /// Reads and processes a single P2P packet from the specified network channel.
     /// Handles packet reception, buffer management, and routing to the appropriate packet handler.
     /// </summary>
-    private static void ReadPacket(uint messageSize, int channel)
+    private static void ReadPacket(uint messageSize, PacketChannel channel)
     {
         var buffer = P2PPacketBuffer.Get(messageSize);
 

@@ -69,27 +69,27 @@ internal static class NetLobby
     {
         SteamMatchmaking.OnLobbyCreated += (Action<Result, Lobby>)((result, lobby) =>
         {
-            OnLobbyCreatedCompleted(result, new LobbyData(lobby));
+            OnLobbyCreatedCompleted(result, new LanLobbyData(lobby));
         });
 
         SteamMatchmaking.OnLobbyEntered += (Action<Lobby>)(lobby =>
         {
-            OnLobbyEnteredCompleted(new LobbyData(lobby));
+            OnLobbyEnteredCompleted(new LanLobbyData(lobby));
         });
 
         SteamMatchmaking.OnLobbyDataChanged += (Action<Lobby>)((lobby) =>
         {
-            OnLobbyDataChanged(new LobbyData(lobby));
+            OnLobbyDataChanged(new LanLobbyData(lobby));
         });
 
         SteamMatchmaking.OnLobbyMemberJoined += (Action<Lobby, Friend>)((lobby, friend) =>
         {
-            OnLobbyMemberJoined(new LobbyData(lobby), friend.Id);
+            OnLobbyMemberJoined(new LanLobbyData(lobby), friend.Id);
         });
 
         SteamMatchmaking.OnLobbyMemberLeave += (Action<Lobby, Friend>)((lobby, user) =>
         {
-            OnLobbyMemberLeave(new LobbyData(lobby), user.Id);
+            OnLobbyMemberLeave(new LanLobbyData(lobby), user.Id);
         });
 
         SteamNetworking.OnP2PSessionRequest += (Action<SteamId>)(steamId =>
@@ -168,7 +168,7 @@ internal static class NetLobby
         ReplantedOnlineMod.Logger.Msg("[NetLobby] Successfully left lobby");
     }
 
-    internal static void OnLobbyCreatedCompleted(Result result, LobbyData data)
+    internal static void OnLobbyCreatedCompleted(Result result, LanLobbyData data)
     {
         if (result == Result.OK)
         {
@@ -184,7 +184,7 @@ internal static class NetLobby
         }
     }
 
-    internal static void OnLobbyEnteredCompleted(LobbyData data)
+    internal static void OnLobbyEnteredCompleted(LanLobbyData data)
     {
         LobbyData ??= new(data.Id, data.OwnerId);
         LobbyData.LobbyCode = NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
@@ -209,7 +209,7 @@ internal static class NetLobby
         }
     }
 
-    internal static void OnLobbyDataChanged(LobbyData lobby)
+    internal static void OnLobbyDataChanged(LanLobbyData lobby)
     {
         if (lobby.OwnerId != LobbyData?.HostId)
         {
@@ -226,7 +226,7 @@ internal static class NetLobby
         }
     }
 
-    internal static void OnLobbyMemberJoined(LobbyData lobby, ID clientId)
+    internal static void OnLobbyMemberJoined(LanLobbyData lobby, ID clientId)
     {
         if (lobby.Id != LobbyData.LobbyId)
         {
@@ -245,7 +245,7 @@ internal static class NetLobby
         }
     }
 
-    internal static void OnLobbyMemberLeave(LobbyData lobby, ID user)
+    internal static void OnLobbyMemberLeave(LanLobbyData lobby, ID user)
     {
         if (AmLobbyHost())
         {
