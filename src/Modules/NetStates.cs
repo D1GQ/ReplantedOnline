@@ -2,11 +2,12 @@
 
 internal class NetStates
 {
-    internal const string UpdateState = "update";
-    internal const string MindControlledState = "mind_controlled";
+    internal const string UPDATE_STATE = "update";
+    internal const string MIND_CONTROLLED_STATE = "mind_controlled";
+    internal const string MOWED_DOWN_STATE = "mowed_down";
 
-    internal const string GargantuarSmash = "gargantuar_smash";
-    internal const string GargantuarTarget = "gargantuar_target";
+    internal const string GARGANTUAR_SMASH_STATE = "gargantuar_smash";
+    internal const string GARGANTUAR_TARGET_STATE = "gargantuar_target";
 
-    internal const string ChomperBite = "chomper_bite";
+    internal const string CHOMPER_BITE_STATE = "chomper_bite";
 }

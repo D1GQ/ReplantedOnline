@@ -45,7 +45,7 @@ internal static class GargantuarZombiePatch
                 {
                     if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie._State is NetStates.GargantuarSmash)
+                        if (netZombie._State is NetStates.GARGANTUAR_SMASH_STATE)
                         {
                             // If the gargantuar is in synced smashing state, move it forward to find a target
                             if (__result == null)
@@ -54,10 +54,10 @@ internal static class GargantuarZombiePatch
                             }
                             else
                             {
-                                netZombie._State = NetStates.GargantuarTarget;
+                                netZombie._State = NetStates.GARGANTUAR_TARGET_STATE;
                             }
                         }
-                        else if (netZombie._State is not NetStates.GargantuarTarget)
+                        else if (netZombie._State is not NetStates.GARGANTUAR_TARGET_STATE)
                         {
                             // If the gargantuar is not in synced smashing state, move it backward if target is found
                             if (__result != null)
@@ -70,7 +70,7 @@ internal static class GargantuarZombiePatch
                     else
                     {
                         // If the gargantuar is in smashing phase, clear target state
-                        if (netZombie._State is NetStates.GargantuarTarget)
+                        if (netZombie._State is NetStates.GARGANTUAR_TARGET_STATE)
                         {
                             netZombie._State = null;
                         }
@@ -101,10 +101,10 @@ internal static class GargantuarZombiePatch
                 {
                     if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie._State is not NetStates.GargantuarSmash)
+                        if (netZombie._State is not NetStates.GARGANTUAR_SMASH_STATE)
                         {
-                            netZombie._State = NetStates.GargantuarSmash;
-                            netZombie.SendSetStateRpc(NetStates.GargantuarSmash);
+                            netZombie._State = NetStates.GARGANTUAR_SMASH_STATE;
+                            netZombie.SendSetStateRpc(NetStates.GARGANTUAR_SMASH_STATE);
                         }
                     }
                     else
