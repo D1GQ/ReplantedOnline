@@ -61,8 +61,8 @@ internal static class BloomEngineManager
             );
 
             UseLan = ConfigService.CreateBool(
-                "Use LAN",
-                "Makes Client Use Local Network For Testing.",
+                "(LAN) Mode",
+                "Bypass Steam servers and connect directly via local network for Testing.",
                 false,
                 new ConfigInputOptions<bool>()
                 {
