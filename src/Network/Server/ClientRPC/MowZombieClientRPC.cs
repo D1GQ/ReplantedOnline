@@ -26,12 +26,18 @@ internal sealed class MowZombieClientRPC : BaseClientRPC
     /// <inheritdoc/>
     internal sealed override void Handle(NetClient sender, PacketReader packetReader)
     {
-        if (sender.Team is PlayerTeam.Plants)
+        if (sender.Team == PlayerTeam.Plants)
         {
             var row = packetReader.ReadInt();
             var netZombie = packetReader.ReadNetworkObject<ZombieNetworked>();
             var lawnMower = Instances.GameplayActivity.Board.FindLawnMowerInRow(row);
-            lawnMower.MowZombieOriginal(netZombie._Zombie);
+
+            // Need to find out why this is throwing errors when synched...
+            try
+            {
+                lawnMower.MowZombieOriginal(netZombie._Zombie);
+            }
+            catch { }
         }
     }
 }
