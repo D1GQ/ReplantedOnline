@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
@@ -9,6 +8,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Zombies;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;

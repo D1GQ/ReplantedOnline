@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides utility methods for loading and converting WAV audio files.

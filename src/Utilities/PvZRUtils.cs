@@ -2,13 +2,13 @@
 using Il2CppReloaded.Utils;
 using ReplantedOnline.Modules;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides extension methods for game-specific types to simplify common operations
 /// in multiplayer scenarios.
 /// </summary>
-internal static class PvZRHelper
+internal static class PvZRUtils
 {
     /// <summary>
     /// Converts a X position field to X position on board.

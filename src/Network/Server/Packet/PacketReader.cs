@@ -1,9 +1,9 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 using System.Net;
 using System.Text;
 using UnityEngine;

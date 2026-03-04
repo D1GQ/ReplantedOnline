@@ -4,12 +4,12 @@ using Il2CppSource.Binders;
 using Il2CppSource.Utils;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Utilities;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Server.ClientRPC;

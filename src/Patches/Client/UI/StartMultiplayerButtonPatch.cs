@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
 using Il2CppSource.Binders;
 using Il2CppTMPro;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Transport;
+using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Client.UI;

@@ -3,7 +3,7 @@ using Il2CppTekly.PanelViews;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 internal static class Utils
 {

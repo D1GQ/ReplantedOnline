@@ -1,7 +1,6 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
@@ -9,6 +8,7 @@ using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Server.PacketHandler;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 

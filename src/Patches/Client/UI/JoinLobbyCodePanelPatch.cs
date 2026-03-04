@@ -3,9 +3,9 @@ using Il2CppReloaded.Input;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 

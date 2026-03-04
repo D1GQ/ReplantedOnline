@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides utility methods for loading and managing images and sprites from various sources.
@@ -128,10 +128,10 @@ internal static class ImageUtils
             int step = Math.Max(1, bytes.Length / 32);
             for (int i = 0; i < bytes.Length; i += step)
             {
-                hash = (hash * 397) ^ bytes[i];
+                hash = hash * 397 ^ bytes[i];
             }
             int ppuHash = pixelsPerUnit.GetHashCode();
-            hash = (hash * 397) ^ ppuHash;
+            hash = hash * 397 ^ ppuHash;
             return hash;
         }
     }

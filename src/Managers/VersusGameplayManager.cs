@@ -1,9 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 
 namespace ReplantedOnline.Managers;

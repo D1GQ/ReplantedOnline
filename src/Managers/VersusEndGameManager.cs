@@ -1,8 +1,8 @@
 ﻿using Il2CppTMPro;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 using static Il2CppReloaded.Constants;

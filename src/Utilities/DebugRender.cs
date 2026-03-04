@@ -1,12 +1,12 @@
 ﻿using ReplantedOnline.Monos;
 using UnityEngine;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides helper methods for rendering debug graphics in the Unity GUI system.
 /// </summary>
-internal static class DebugRenderHelper
+internal static class DebugRender
 {
     /// <summary>
     /// Draws a line between two points with specified thickness and color.

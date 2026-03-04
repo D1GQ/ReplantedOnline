@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Services;
 using MelonLoader;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;

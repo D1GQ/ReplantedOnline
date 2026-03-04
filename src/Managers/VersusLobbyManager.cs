@@ -3,10 +3,10 @@
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using System.Text;
 using UnityEngine;

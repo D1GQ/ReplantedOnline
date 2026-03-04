@@ -4,12 +4,12 @@ using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
 using UnityEngine;
 
-namespace ReplantedOnline.Helper;
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides helper methods for GameObject manipulation and cleanup.
 /// </summary>
-internal static class ObjectHelper
+internal static class ObjectUtils
 {
     /// <summary>
     /// Creates and returns a new instance of a disposable <see cref="ReloadedObject"/> of type <typeparamref name="T"/>.

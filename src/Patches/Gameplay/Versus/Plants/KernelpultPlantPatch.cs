@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
 

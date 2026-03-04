@@ -1,11 +1,11 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Characters;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Object.Game;
 

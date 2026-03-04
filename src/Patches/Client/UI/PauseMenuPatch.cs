@@ -2,8 +2,8 @@
 using HarmonyLib;
 using Il2CppReloaded.UI;
 using Il2CppTMPro;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Client.UI;

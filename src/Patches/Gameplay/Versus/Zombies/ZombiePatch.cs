@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 
@@ -28,7 +28,7 @@ internal static class ZombiePatch
             if (!VersusState.AmPlantSide)
             {
                 // Fix flag zombie on other sides
-                __result = ObjectHelper.CreateReloadedObject<Zombie>();
+                __result = ObjectUtils.CreateReloadedObject<Zombie>();
 
                 return false;
             }

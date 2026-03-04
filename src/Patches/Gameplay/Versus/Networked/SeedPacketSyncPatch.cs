@@ -2,12 +2,12 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Utilities;
 using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;

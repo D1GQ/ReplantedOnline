@@ -1,8 +1,8 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 
 namespace ReplantedOnline.Monos;
@@ -77,15 +77,15 @@ internal sealed class NetworkedDebugger : MonoBehaviour
             Vector2 boxSize = new Vector2(100f, 150f) * ScreenScale.y;
             Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (75f * ScreenScale.y));
 
-            DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
+            DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
                 1f, 1f, _cachedTexts, Color.white,
                 new Vector2(0f, 15f * ScreenScale.y));
-            DebugRenderHelper.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
+            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
 
             if (zombieNetworked.lastSyncPosX != null)
             {
                 var syncWorldPos = new Vector3(
-                    PvZRHelper.GetGridOffsetXPosFromBoardXPos(zombieNetworked.lastSyncPosX.Value),
+                    PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.lastSyncPosX.Value),
                     _cachedControllerPosition.y
                 );
                 var syncPos = GetWorldPos(syncWorldPos);
@@ -94,10 +94,10 @@ internal sealed class NetworkedDebugger : MonoBehaviour
                 Vector2 syncOffset = new Vector2(75f, 125f) * ScreenScale.y;
                 syncPos += new Vector3(syncOffset.x, syncOffset.y, 0f);
 
-                DebugRenderHelper.Line(_cachedWPos, syncPos, 1 * ScreenScale.y, Color.magenta);
+                DebugRender.Line(_cachedWPos, syncPos, 1 * ScreenScale.y, Color.magenta);
 
                 Vector2 syncBoxSize = new Vector2(50f, 50f) * ScreenScale.y;
-                DebugRenderHelper.Box(new Vector2(syncPos.x, syncPos.y), syncBoxSize,
+                DebugRender.Box(new Vector2(syncPos.x, syncPos.y), syncBoxSize,
                     1f * ScreenScale.y, Color.magenta);
             }
         }
@@ -105,13 +105,13 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         {
             if (_cachedTexts != null && _cachedTexts.Length > 0)
             {
-                DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
+                DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
                     1f, 1f, _cachedTexts, Color.red,
                     new Vector2(0f, 15f * ScreenScale.y));
 
                 Vector2 boxSize = new Vector2(100f, 150f) * ScreenScale.y;
                 Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (75f * ScreenScale.y));
-                DebugRenderHelper.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
+                DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
             }
         }
     }
@@ -141,22 +141,22 @@ internal sealed class NetworkedDebugger : MonoBehaviour
             Vector2 boxSize = new Vector2(100f, 100f) * ScreenScale.y;
             Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (25f * ScreenScale.y));
 
-            DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
+            DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
                 1f, 1f, _cachedTexts, Color.white,
                 new Vector2(0f, 15f * ScreenScale.y));
-            DebugRenderHelper.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
+            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
         }
         else
         {
             if (_cachedTexts != null && _cachedTexts.Length > 0)
             {
-                DebugRenderHelper.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
+                DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
                     1f, 1f, _cachedTexts, Color.red,
                     new Vector2(0f, 15f * ScreenScale.y));
 
                 Vector2 boxSize = new Vector2(100f, 100f) * ScreenScale.y;
                 Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (25f * ScreenScale.y));
-                DebugRenderHelper.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
+                DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
             }
         }
     }

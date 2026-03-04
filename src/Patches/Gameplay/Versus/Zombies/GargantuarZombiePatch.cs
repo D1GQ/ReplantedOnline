@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Utilities;
 using System.Collections;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;

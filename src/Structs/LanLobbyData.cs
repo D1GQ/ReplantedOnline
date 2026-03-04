@@ -1,6 +1,6 @@
 ﻿using Il2CppSteamworks.Data;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Network.Server.LAN;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Structs;
 

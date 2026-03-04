@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Helper;
+﻿namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides extension methods for Il2Cpp types to improve interoperability with C# and simplify common operations.

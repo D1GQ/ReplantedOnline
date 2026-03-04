@@ -1,9 +1,9 @@
 ﻿using ReplantedOnline.Enums;
-using ReplantedOnline.Helper;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client;
 
