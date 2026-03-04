@@ -310,17 +310,21 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
     {
-        // Calculate total current health
-        int totalHealth = _Zombie.mBodyHealth + _Zombie.mHelmHealth + _Zombie.mShieldHealth;
+        int relevantHealth;
 
-        // Calculate health after damage
-        int healthAfterDamage = totalHealth - theDamage;
-
-        // If damage would kill the zombie (bring to 0 or below)
-        if (healthAfterDamage <= 0)
+        if ((damageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
+            (damageFlags & DamageFlags.BypassesShield) == DamageFlags.BypassesShield)
         {
-            // Only apply enough damage to leave 1 HP
-            int damageToApply = totalHealth - 1;
+            relevantHealth = _Zombie.mBodyHealth + _Zombie.mHelmHealth;
+        }
+        else
+        {
+            relevantHealth = _Zombie.mBodyHealth + _Zombie.mHelmHealth + _Zombie.mShieldHealth;
+        }
+
+        if (theDamage >= relevantHealth)
+        {
+            int damageToApply = relevantHealth - 1;
 
             if (damageToApply > 0)
             {
