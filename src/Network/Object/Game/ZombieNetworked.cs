@@ -26,6 +26,7 @@ internal sealed class ZombieNetworked : NetworkObject
         TakeDamage,
         Death,
         DieWithLoot,
+        MowDown,
         SetPlantTarget,
         EnteringHouse,
         MindControlled,
@@ -387,6 +388,25 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
+    internal void SendMowDownRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            SendNetworkClassRpc((byte)ZombieRpcs.MowDown);
+            DespawnAndDestroy();
+        }
+    }
+
+    private void HandleMowDownRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            _Zombie.MowDownOriginal();
+        }
+    }
+
     internal void SendSetPlantTargetRpc(Plant target)
     {
         if (_Target != target)
@@ -532,6 +552,11 @@ internal sealed class ZombieNetworked : NetworkObject
             case ZombieRpcs.DieWithLoot:
                 {
                     HandleDieWithLootRpc();
+                }
+                break;
+            case ZombieRpcs.MowDown:
+                {
+                    HandleMowDownRpc();
                 }
                 break;
             case ZombieRpcs.SetPlantTarget:

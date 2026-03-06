@@ -24,7 +24,7 @@ internal enum ClientRpcType
     /// <summary>
     /// Sync starting a mower
     /// </summary>
-    MowZombie,
+    StartMower,
 
     /// <summary>
     /// Sync adding a ladder to a plant

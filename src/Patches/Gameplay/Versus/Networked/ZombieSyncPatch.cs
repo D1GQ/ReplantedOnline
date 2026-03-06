@@ -61,6 +61,28 @@ internal static class ZombieSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.MowDown))]
+    [HarmonyPrefix]
+    private static bool Zombie_MowDown_Prefix(Zombie __instance)
+    {
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide) return false;
+
+            __instance.GetZombieNetworked().SendMowDownRpc();
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.MowDown))]
+    internal static void MowDownOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.TakeDamage))]
     [HarmonyPrefix]
     private static bool Zombie_TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
