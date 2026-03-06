@@ -305,13 +305,19 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
+    // For some reason TakeDamage gets triggered twice naturally, so we must not send the rpc on the second time using damageInterval.
+    private int damageInterval;
     internal void SendTakeDamageRpc(int theDamage, DamageFlags theDamageFlags)
     {
-        var writer = PacketWriter.Get();
-        writer.WriteInt(theDamage);
-        writer.WriteByte((byte)theDamageFlags);
-        SendNetworkClassRpc((byte)ZombieRpcs.TakeDamage, writer);
-        writer.Recycle();
+        damageInterval++;
+        if (damageInterval % 2 != 0)
+        {
+            var writer = PacketWriter.Get();
+            writer.WriteInt(theDamage);
+            writer.WriteByte((byte)theDamageFlags);
+            SendNetworkClassRpc((byte)ZombieRpcs.TakeDamage, writer);
+            writer.Recycle();
+        }
     }
 
     private void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
