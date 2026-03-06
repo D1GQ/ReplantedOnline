@@ -322,6 +322,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
     {
+        int minimumHealth = 5;
         int relevantHealth;
 
         if ((damageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
@@ -334,9 +335,9 @@ internal sealed class ZombieNetworked : NetworkObject
             relevantHealth = _Zombie.mBodyHealth + _Zombie.mHelmHealth + _Zombie.mShieldHealth;
         }
 
-        if (theDamage >= relevantHealth)
+        if (theDamage >= relevantHealth - (minimumHealth - 1))
         {
-            int damageToApply = relevantHealth - 1;
+            int damageToApply = relevantHealth - minimumHealth;
 
             if (damageToApply > 0)
             {
