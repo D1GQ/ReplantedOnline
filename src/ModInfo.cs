@@ -39,7 +39,7 @@ internal static class ModInfo
     /// Format: vMajor.Minor.Patch-prereleaseNumber.
     /// </summary>
 #if DEBUG
-    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-Debug";
+    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-debug-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #else
     internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #endif

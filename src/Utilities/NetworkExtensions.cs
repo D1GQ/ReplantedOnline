@@ -74,7 +74,7 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="zombie">The zombie instance to look up.</param>
     /// <returns>The associated ZombieNetworked instance, or null if not found.</returns>
-    internal static ZombieNetworked GetZombieNetworked(this Zombie zombie)
+    internal static ZombieNetworked GetNetworked(this Zombie zombie)
     {
         return zombie.GetNetworked<ZombieNetworked>();
     }
@@ -84,7 +84,7 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="plant">The plant instance to look up.</param>
     /// <returns>The associated PlantNetworked instance, or null if not found.</returns>
-    internal static PlantNetworked GetPlantNetworked(this Plant plant)
+    internal static PlantNetworked GetNetworked(this Plant plant)
     {
         return plant.GetNetworked<PlantNetworked>();
     }

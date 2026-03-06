@@ -18,7 +18,7 @@ internal static class MagnetshroomPlantPatch
         // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            var netPlant = __instance.GetPlantNetworked();
+            var netPlant = __instance.GetNetworked();
 
             if (netPlant != null)
             {

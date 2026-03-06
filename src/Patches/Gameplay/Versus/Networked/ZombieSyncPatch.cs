@@ -18,7 +18,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            var netZombie = __instance.GetZombieNetworked();
+            var netZombie = __instance.GetNetworked();
             netZombie.SendDeathRpc(theDamageFlags);
 
             netZombie.CheckDeath(() =>
@@ -48,7 +48,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetZombieNetworked().SendDieWithLootRpc();
+            __instance.GetNetworked().SendDieWithLootRpc();
         }
 
         return true;
@@ -70,7 +70,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetZombieNetworked().SendMowDownRpc();
+            __instance.GetNetworked().SendMowDownRpc();
         }
 
         return true;
@@ -92,7 +92,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetZombieNetworked().SendTakeDamageRpc(theDamage, theDamageFlags);
+            __instance.GetNetworked().SendTakeDamageRpc(theDamage, theDamageFlags);
 
             return true;
         }
@@ -119,7 +119,7 @@ internal static class ZombieSyncPatch
             // Execute the original HitIceTrap logic locally
             __instance.HitIceTrapOriginal();
 
-            __instance.GetZombieNetworked().SendSetFrozenRpc(true);
+            __instance.GetNetworked().SendSetFrozenRpc(true);
 
             return false;
         }
@@ -146,7 +146,7 @@ internal static class ZombieSyncPatch
             // Execute the original RemoveIceTrap logic locally
             __instance.RemoveIceTrapOriginal();
 
-            __instance.GetZombieNetworked().SendSetFrozenRpc(false);
+            __instance.GetNetworked().SendSetFrozenRpc(false);
 
             return false;
         }
@@ -170,7 +170,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetZombieNetworked().SendApplyBurnRpc();
+            __instance.GetNetworked().SendApplyBurnRpc();
         }
 
         return true;
@@ -191,7 +191,7 @@ internal static class ZombieSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetZombieNetworked();
+                var netZombie = __instance.GetNetworked();
                 netZombie.SendMindControlledRpc();
 
                 return true;

@@ -34,14 +34,30 @@ internal sealed class PlantNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Zombie _Target { get; set; }
 
-    internal static bool DoNotSyncDeath(Plant plant)
+    internal static bool DoNotSyncDeath(Plant plant, int doSpecialCountdown)
     {
-        return plant.mSeedType == SeedType.Potatomine && plant.mState == PlantState.PotatoArmed;
-    }
-
-    private bool IsSuicide()
-    {
-        return SeedType is SeedType.Doomshroom or SeedType.Iceshroom or SeedType.Cherrybomb or SeedType.Jalapeno;
+        switch (plant.mSeedType)
+        {
+            case SeedType.Potatomine:
+                return plant?.GetNetworked()?._Target != null;
+            case SeedType.Doomshroom:
+            case SeedType.Iceshroom:
+            case SeedType.Cherrybomb:
+            case SeedType.Jalapeno:
+                {
+                    if (doSpecialCountdown == 0)
+                    {
+                        plant?.GetNetworked()?.dead = true;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            default:
+                return false;
+        }
     }
 
     /// <summary>
@@ -89,6 +105,19 @@ internal sealed class PlantNetworked : NetworkObject
         return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
     }
 
+    public void OnDestroy()
+    {
+        if (_Plant != null)
+        {
+            _Plant.RemoveNetworkedLookup();
+
+            if (!dead && !_Plant.mDead)
+            {
+                _Plant.DieOriginal();
+            }
+        }
+    }
+
     private bool dead;
     public void Update()
     {
@@ -127,12 +156,6 @@ internal sealed class PlantNetworked : NetworkObject
             }
         }
 
-        if (IsSuicide())
-        {
-            SuicideUpdate();
-            return;
-        }
-
         switch (SeedType)
         {
             case SeedType.Chomper:
@@ -141,14 +164,6 @@ internal sealed class PlantNetworked : NetworkObject
             case SeedType.Magnetshroom:
                 MagnetShroomUpdate();
                 break;
-        }
-    }
-
-    private void SuicideUpdate()
-    {
-        if (!AmOwner)
-        {
-            _Plant.mDoSpecialCountdown = int.MaxValue;
         }
     }
 
@@ -209,33 +224,24 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
-    public void OnDestroy()
-    {
-        if (_Plant != null)
-        {
-            _Plant.RemoveNetworkedLookup();
-
-            if (!dead && !_Plant.mDead)
-            {
-                _Plant.DieOriginal();
-            }
-        }
-    }
-
     internal void SendDieRpc()
     {
         if (!dead)
         {
             dead = true;
-            SendNetworkClassRpc((byte)PlantRpcs.Die);
+            var writer = PacketWriter.Get();
+            writer.WriteInt(_Plant.mDoSpecialCountdown);
+            SendNetworkClassRpc((byte)PlantRpcs.Die, writer);
             DespawnAndDestroy();
         }
     }
 
-    private void HandleDieRpc()
+    private void HandleDieRpc(int doSpecialCountdown)
     {
+        if (DoNotSyncDeath(_Plant, doSpecialCountdown)) return;
+
         dead = true;
-        _Plant.DieOriginal();
+        _Plant?.DieOriginal();
     }
 
     internal void SendSquashTargetRpc(Zombie target)
@@ -246,7 +252,7 @@ internal sealed class PlantNetworked : NetworkObject
         {
             _State = PlantState.DoingSpecial;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetZombieNetworked());
+            writer.WriteNetworkObject(target.GetNetworked());
             SendNetworkClassRpc((byte)PlantRpcs.SquashTarget, writer);
             writer.Recycle();
         }
@@ -279,7 +285,7 @@ internal sealed class PlantNetworked : NetworkObject
     internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
     {
         var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(theTargetZombie.GetZombieNetworked());
+        writer.WriteNetworkObject(theTargetZombie.GetNetworked());
         writer.WriteInt(theRow);
         writer.WriteInt((int)thePlantWeapon);
         SendNetworkClassRpc((byte)PlantRpcs.Fire, writer);
@@ -294,7 +300,7 @@ internal sealed class PlantNetworked : NetworkObject
     internal void SendSetZombieTargetRpc(Zombie target)
     {
         var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(target.GetZombieNetworked());
+        writer.WriteNetworkObject(target.GetNetworked());
         SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
         writer.Recycle();
     }
@@ -327,7 +333,8 @@ internal sealed class PlantNetworked : NetworkObject
         {
             case PlantRpcs.Die:
                 {
-                    HandleDieRpc();
+                    var doSpecialCountdown = packetReader.ReadInt();
+                    HandleDieRpc(doSpecialCountdown);
                 }
                 break;
             case PlantRpcs.SquashTarget:

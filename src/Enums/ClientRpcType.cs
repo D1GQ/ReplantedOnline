@@ -29,5 +29,5 @@ internal enum ClientRpcType
     /// <summary>
     /// Sync adding a ladder to a plant
     /// </summary>
-    AddLadder,
+    AddLadder
 }

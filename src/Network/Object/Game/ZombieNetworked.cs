@@ -413,7 +413,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             _Target = target;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetPlantNetworked());
+            writer.WriteNetworkObject(target.GetNetworked());
             SendNetworkClassRpc((byte)ZombieRpcs.SetPlantTarget, writer);
             writer.Recycle();
         }

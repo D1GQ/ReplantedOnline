@@ -21,11 +21,10 @@ internal static class PlantSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (PlantNetworked.DoNotSyncDeath(__instance)) return true;
+            if (!VersusState.AmPlantSide) return PlantNetworked.DoNotSyncDeath(__instance, __instance.mDoSpecialCountdown);
 
-            if (!VersusState.AmPlantSide) return false;
-
-            __instance.GetPlantNetworked().SendDieRpc();
+            var netPlant = __instance.GetNetworked();
+            netPlant.SendDieRpc();
         }
 
         return true;
@@ -48,7 +47,7 @@ internal static class PlantSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             // Sync Squish
-            var netPlant = __instance.GetPlantNetworked();
+            var netPlant = __instance.GetNetworked();
             if (netPlant != null)
             {
                 netPlant.SendSquashPlantRpc();
