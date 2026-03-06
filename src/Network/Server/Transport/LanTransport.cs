@@ -541,6 +541,8 @@ internal sealed class LanTransport : INetworkTransport
             }
             catch (Exception ex)
             {
+                if (ex.Message.StartsWith("The I/O operation has been aborted")) return;
+
                 ReplantedOnlineMod.Logger.Error($"[LAN] Broadcast listen error: {ex.Message}");
                 await Task.Delay(1000, CTS.Token);
             }
@@ -556,16 +558,10 @@ internal sealed class LanTransport : INetworkTransport
                 var result = await P2PListener.ReceiveAsync();
                 ProcessPacket(result.Buffer, result.RemoteEndPoint);
             }
-            catch (ObjectDisposedException)
-            {
-                break;
-            }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
             catch (Exception ex)
             {
+                if (ex.Message.StartsWith("The I/O operation has been aborted")) return;
+
                 ReplantedOnlineMod.Logger.Error($"[LAN] P2P listen error: {ex.Message}");
                 await Task.Delay(100, CTS.Token);
             }
