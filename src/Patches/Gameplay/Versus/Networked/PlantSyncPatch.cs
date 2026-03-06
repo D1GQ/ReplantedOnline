@@ -25,7 +25,7 @@ internal static class PlantSyncPatch
 
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked<PlantNetworked>().SendDieRpc();
+            __instance.GetPlantNetworked().SendDieRpc();
         }
 
         return true;
@@ -48,7 +48,7 @@ internal static class PlantSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             // Sync Squish
-            var netPlant = __instance.GetNetworked<PlantNetworked>();
+            var netPlant = __instance.GetPlantNetworked();
             if (netPlant != null)
             {
                 netPlant.SendSquashPlantRpc();

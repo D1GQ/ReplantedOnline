@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -19,9 +18,10 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked<ZombieNetworked>().SendDeathRpc(theDamageFlags);
+            var netZombie = __instance.GetZombieNetworked();
+            netZombie.SendDeathRpc(theDamageFlags);
 
-            __instance.GetNetworked<ZombieNetworked>().CheckDeath(() =>
+            netZombie.CheckDeath(() =>
             {
                 __instance.PlayDeathAnimOriginal(theDamageFlags);
             });
@@ -48,7 +48,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked<ZombieNetworked>().SendDieWithLootRpc();
+            __instance.GetZombieNetworked().SendDieWithLootRpc();
         }
 
         return true;
@@ -70,7 +70,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked<ZombieNetworked>().SendTakeDamageRpc(theDamage, theDamageFlags);
+            __instance.GetZombieNetworked().SendTakeDamageRpc(theDamage, theDamageFlags);
 
             return true;
         }
@@ -97,7 +97,7 @@ internal static class ZombieSyncPatch
             // Execute the original HitIceTrap logic locally
             __instance.HitIceTrapOriginal();
 
-            __instance.GetNetworked<ZombieNetworked>().SendSetFrozenRpc(true);
+            __instance.GetZombieNetworked().SendSetFrozenRpc(true);
 
             return false;
         }
@@ -124,7 +124,7 @@ internal static class ZombieSyncPatch
             // Execute the original RemoveIceTrap logic locally
             __instance.RemoveIceTrapOriginal();
 
-            __instance.GetNetworked<ZombieNetworked>().SendSetFrozenRpc(false);
+            __instance.GetZombieNetworked().SendSetFrozenRpc(false);
 
             return false;
         }
@@ -143,15 +143,12 @@ internal static class ZombieSyncPatch
     [HarmonyPrefix]
     private static bool Zombie_ApplyBurn_Prefix(Zombie __instance)
     {
-        // Fix Invulnerable zombies sometimes getting burned for some reason ¯\_(ツ)_/¯
-        if (__instance.mZombieType is ZombieType.Target or ZombieType.Gravestone) return false;
-
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked<ZombieNetworked>().SendApplyBurnRpc();
+            __instance.GetZombieNetworked().SendApplyBurnRpc();
         }
 
         return true;
@@ -172,7 +169,7 @@ internal static class ZombieSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                var netZombie = __instance.GetZombieNetworked();
                 netZombie.SendMindControlledRpc();
 
                 return true;

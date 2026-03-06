@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -44,7 +43,7 @@ internal static class SquashPlantPatch
                 // If the Squash found a target zombie
                 if (__result != null)
                 {
-                    var netPlant = __instance.GetNetworked<PlantNetworked>();
+                    var netPlant = __instance.GetPlantNetworked();
                     netPlant?.SendSquashTargetRpc(__result);
                 }
             }

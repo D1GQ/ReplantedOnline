@@ -5,7 +5,6 @@ using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
@@ -27,10 +26,7 @@ internal static class ZombiePatch
 
             if (!VersusState.AmPlantSide)
             {
-                // Fix flag zombie on other sides
-                __result = ObjectUtils.CreateReloadedObject<Zombie>();
-
-                return false;
+                throw new SilentPatchException();
             }
 
             // Prevent imps from spawning normally, this is handled in GargantuarZombiePatch.cs
@@ -61,7 +57,7 @@ internal static class ZombiePatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                var netZombie = __instance.GetZombieNetworked();
                 netZombie.SendEnteringHouseRpc(__instance.mPosX);
                 VersusGameplayManager.EndGame(__instance.mController?.gameObject, PlayerTeam.Zombies);
             }

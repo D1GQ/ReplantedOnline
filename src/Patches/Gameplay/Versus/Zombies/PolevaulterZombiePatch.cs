@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -24,7 +23,7 @@ internal static class PolevaulterZombiePatch
                 if (__instance.mZombiePhase == ZombiePhase.PolevaulterPreVault)
                 {
                     // Wait for plant side to find target to vault
-                    var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                    var netZombie = __instance.GetZombieNetworked();
                     if (netZombie != null)
                     {
                         if (netZombie._Target != null)

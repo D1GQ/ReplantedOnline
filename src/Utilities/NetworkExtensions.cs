@@ -1,7 +1,9 @@
-﻿using Il2CppSteamworks;
+﻿using Il2CppReloaded.Gameplay;
+using Il2CppSteamworks;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Structs;
 using System.Net;
 
@@ -51,9 +53,9 @@ internal static class NetworkExtensions
     /// <summary>
     /// Retrieves the network object associated with the specified object instance.
     /// </summary>
-    /// <typeparam name="T">The type of NetworkClass to retrieve.</typeparam>
+    /// <typeparam name="T">The type of NetworkObject to retrieve.</typeparam>
     /// <param name="child">The object instance to look up.</param>
-    /// <returns>The associated NetworkClass instance, or null if not found.</returns>
+    /// <returns>The associated NetworkObject instance, or null if not found.</returns>
     internal static T GetNetworked<T>(this object child) where T : NetworkObject
     {
         if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
@@ -65,6 +67,26 @@ internal static class NetworkExtensions
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Retrieves the network zombie associated with the specified zombie instance.
+    /// </summary>
+    /// <param name="zombie">The zombie instance to look up.</param>
+    /// <returns>The associated ZombieNetworked instance, or null if not found.</returns>
+    internal static ZombieNetworked GetZombieNetworked(this Zombie zombie)
+    {
+        return zombie.GetNetworked<ZombieNetworked>();
+    }
+
+    /// <summary>
+    /// Retrieves the network plant associated with the specified plant instance.
+    /// </summary>
+    /// <param name="plant">The plant instance to look up.</param>
+    /// <returns>The associated PlantNetworked instance, or null if not found.</returns>
+    internal static PlantNetworked GetPlantNetworked(this Plant plant)
+    {
+        return plant.GetNetworked<PlantNetworked>();
     }
 
     /// <summary>

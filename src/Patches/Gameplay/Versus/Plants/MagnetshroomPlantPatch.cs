@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -19,7 +18,7 @@ internal static class MagnetshroomPlantPatch
         // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            var netPlant = __instance.GetNetworked<PlantNetworked>();
+            var netPlant = __instance.GetPlantNetworked();
 
             if (netPlant != null)
             {

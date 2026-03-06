@@ -40,7 +40,7 @@ internal static class GargantuarZombiePatch
         {
             if (!VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                var netZombie = __instance.GetZombieNetworked();
                 if (netZombie != null)
                 {
                     if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
@@ -96,7 +96,7 @@ internal static class GargantuarZombiePatch
                     return false;
                 }
 
-                var netZombie = __instance.GetNetworked<ZombieNetworked>();
+                var netZombie = __instance.GetZombieNetworked();
                 if (netZombie != null)
                 {
                     if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
@@ -231,7 +231,7 @@ internal static class GargantuarZombiePatch
 
         if (gargantuar != null)
         {
-            packetWriter.WriteNetworkObject(gargantuar.GetNetworked<ZombieNetworked>());
+            packetWriter.WriteNetworkObject(gargantuar.GetZombieNetworked());
         }
         else
         {

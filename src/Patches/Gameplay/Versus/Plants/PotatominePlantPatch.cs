@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
 using System.Collections;
@@ -41,7 +40,7 @@ internal static class PotatominePlantPatch
         // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            var netPlant = __instance.GetNetworked<PlantNetworked>();
+            var netPlant = __instance.GetPlantNetworked();
 
             if (netPlant != null)
             {

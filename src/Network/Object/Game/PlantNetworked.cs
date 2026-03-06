@@ -246,7 +246,7 @@ internal sealed class PlantNetworked : NetworkObject
         {
             _State = PlantState.DoingSpecial;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
+            writer.WriteNetworkObject(target.GetZombieNetworked());
             SendNetworkClassRpc((byte)PlantRpcs.SquashTarget, writer);
             writer.Recycle();
         }
@@ -279,7 +279,7 @@ internal sealed class PlantNetworked : NetworkObject
     internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
     {
         var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(theTargetZombie.GetNetworked<ZombieNetworked>());
+        writer.WriteNetworkObject(theTargetZombie.GetZombieNetworked());
         writer.WriteInt(theRow);
         writer.WriteInt((int)thePlantWeapon);
         SendNetworkClassRpc((byte)PlantRpcs.Fire, writer);
@@ -294,7 +294,7 @@ internal sealed class PlantNetworked : NetworkObject
     internal void SendSetZombieTargetRpc(Zombie target)
     {
         var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(target.GetNetworked<ZombieNetworked>());
+        writer.WriteNetworkObject(target.GetZombieNetworked());
         SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
         writer.Recycle();
     }

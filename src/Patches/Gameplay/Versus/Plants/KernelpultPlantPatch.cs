@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -22,7 +21,7 @@ internal static class KernelpultPlantPatch
             if (VersusState.AmPlantSide)
             {
                 // Sync Butter
-                var netPlant = __instance.GetNetworked<PlantNetworked>();
+                var netPlant = __instance.GetPlantNetworked();
                 if (netPlant != null)
                 {
                     netPlant.SendFireRpc(theTargetZombie, theRow, thePlantWeapon);

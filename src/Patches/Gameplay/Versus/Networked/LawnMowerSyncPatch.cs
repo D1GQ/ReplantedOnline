@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server.ClientRPC;
 using ReplantedOnline.Utilities;
 
@@ -21,7 +20,7 @@ internal static class LawnMowerSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             // Send network message to sync this action with other players
-            var netZombie = theZombie.GetNetworked<ZombieNetworked>();
+            var netZombie = theZombie.GetZombieNetworked();
             MowZombieClientRPC.Send(__instance, netZombie);
 
             return true;
@@ -38,7 +37,7 @@ internal static class LawnMowerSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = theZombie.GetNetworked<ZombieNetworked>();
+                var netZombie = theZombie.GetZombieNetworked();
 
                 if (netZombie.ZombieType is not (ZombieType.Target or ZombieType.Gravestone))
                 {
