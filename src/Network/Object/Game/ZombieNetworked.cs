@@ -469,6 +469,9 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendApplyBurnRpc()
     {
+        // For some reason the first target zombie that spawns in likes to get burned, i have no idea why...
+        if (_Zombie.mZombieType is ZombieType.Target) return;
+
         bool reallyDead = _Zombie.mBodyHealth <= 1800;
 
         var writer = PacketWriter.Get();
@@ -485,6 +488,9 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleApplyBurnRpc(bool reallyDead)
     {
+        // For some reason the first target zombie that spawns in likes to get burned, i have no idea why...
+        if (_Zombie.mZombieType is ZombieType.Target) return;
+
         Dead = Dead || reallyDead;
         _Zombie.ApplyBurnOriginal();
     }
