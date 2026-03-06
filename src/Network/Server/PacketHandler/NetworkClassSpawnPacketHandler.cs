@@ -32,7 +32,6 @@ internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
                 NetworkSpawnPacket.DeserializeNetworkObject(networkObj, packetReader);
                 NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
                 networkObj.gameObject.SetActive(true);
-                networkObj.name = $"{networkObj.GetType().Name}({networkObj.NetworkId})";
                 ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkClass from {sender.Name}: {spawnPacket.NetworkId}, Prefab: {spawnPacket.PrefabId}");
             }
             else

@@ -84,6 +84,11 @@ internal sealed class PlantNetworked : NetworkObject
         networkedDebugger.Initialize(this);
     }
 
+    public override string GetObjectName()
+    {
+        return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
+    }
+
     private bool dead;
     public void Update()
     {
@@ -396,8 +401,6 @@ internal sealed class PlantNetworked : NetworkObject
             _Plant = Utils.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
             _Plant.AddNetworkedLookup(this);
             AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
-
-            gameObject.name = $"{Enum.GetName(_Plant.mSeedType)}_Plant ({NetworkId})";
         }
     }
 }

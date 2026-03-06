@@ -185,7 +185,6 @@ internal static class SeedPacketSyncPatch
         }, VersusState.PlantClientId);
         plant.AddNetworkedLookup(networkObj);
         networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
-        networkObj.name = $"{Enum.GetName(plant.mSeedType)}_Plant ({networkObj.NetworkId})";
         return networkObj;
     }
 
@@ -283,7 +282,6 @@ internal static class SeedPacketSyncPatch
         }, VersusState.PlantClientId);
         zombie.AddNetworkedLookup(networkObj);
         networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
-        networkObj.name = $"{Enum.GetName(zombie.mZombieType)}_Zombie ({networkObj.NetworkId})";
         return networkObj;
     }
 }

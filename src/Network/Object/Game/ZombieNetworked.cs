@@ -70,6 +70,11 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    public override string GetObjectName()
+    {
+        return $"{Enum.GetName(_Zombie.mZombieType)}Zombie ({NetworkId})";
+    }
+
     [HideFromIl2Cpp]
     protected override void OnClone(RuntimePrefab prefab)
     {
@@ -602,8 +607,6 @@ internal sealed class ZombieNetworked : NetworkObject
             _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
             _Zombie.AddNetworkedLookup(this);
             AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
-
-            gameObject.name = $"{Enum.GetName(_Zombie.mZombieType)}_Zombie ({NetworkId})";
 
             if (ZombieType == ZombieType.Imp)
             {

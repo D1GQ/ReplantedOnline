@@ -224,6 +224,15 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     public virtual void OnDespawn() { }
 
     /// <summary>
+    /// Gets the name to set the GameObject when the network object is spawned.
+    /// </summary>
+    /// <returns></returns>
+    public virtual string GetObjectName()
+    {
+        return GetType().Name + $" ({NetworkId})";
+    }
+
+    /// <summary>
     /// Sends an RPC (Remote Procedure Call) for this network object.
     /// </summary>
     [HideFromIl2Cpp]
@@ -293,7 +302,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
                 callback?.Invoke(networkObj);
                 NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
-                networkObj.gameObject.name = $"{typeof(T).Name}({networkObj.NetworkId})";
                 return networkObj;
             }
         }
