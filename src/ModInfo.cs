@@ -38,7 +38,11 @@ internal static class ModInfo
     /// The formatted version string of the mod using semantic versioning.
     /// Format: vMajor.Minor.Patch-prereleaseNumber.
     /// </summary>
+#if DEBUG
+    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-Debug";
+#else
     internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
+#endif
 
     /// <summary>
     /// The date when this version was released, formatted as mm.dd.yyyy.
