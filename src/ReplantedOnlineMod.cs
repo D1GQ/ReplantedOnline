@@ -10,6 +10,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Patches;
+using ReplantedOnline.Patches.Client;
 using ReplantedOnline.Patches.Client.UI;
 using System.Reflection;
 using UnityEngine;
@@ -21,11 +22,13 @@ internal class ReplantedOnlineMod : MelonMod
     internal static HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
 
     internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""));
+    internal static MelonLogger.Instance DebugLogger { get; } = new(ModInfo.MOD_NAME.Replace(" ", "") + "Debug");
 
     public override void OnInitializeMelon()
     {
         File.WriteAllText("steam_appid.txt", ((uint)AppIdServers.PVZ_Replanted).ToString());
         harmony.PatchAll();
+        DebugLoggerPatch.Patch();
         InstanceAttribute.RegisterAll();
         RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();

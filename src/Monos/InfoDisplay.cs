@@ -13,6 +13,7 @@ namespace ReplantedOnline.Monos;
 internal sealed class InfoDisplay : MonoBehaviour
 {
     internal static bool DebugEnabled { get; private set; }
+    internal static bool DebugLoggerEnabled { get; private set; }
     private bool _enabled = true;
 
     /// <summary>
@@ -29,17 +30,22 @@ internal sealed class InfoDisplay : MonoBehaviour
 
     public void Update()
     {
-        if (Keyboard.current.f1Key.wasPressedThisFrame)
+        if (ModInfo.DEBUG)
+        {
+            if (Keyboard.current.f1Key.wasPressedThisFrame)
+            {
+                _enabled = !_enabled;
+            }
+        }
+
+        if (Keyboard.current.f2Key.wasPressedThisFrame)
         {
             DebugEnabled = !DebugEnabled;
         }
 
-        if (ModInfo.DEBUG)
+        if (Keyboard.current.f3Key.wasPressedThisFrame)
         {
-            if (Keyboard.current.f2Key.wasPressedThisFrame)
-            {
-                _enabled = !_enabled;
-            }
+            DebugLoggerEnabled = !DebugLoggerEnabled;
         }
     }
 
@@ -132,6 +138,10 @@ internal sealed class InfoDisplay : MonoBehaviour
         StringBuilder sb = new();
 
         sb.AppendLine("Debug Info >");
+        if (DebugLoggerEnabled)
+        {
+            sb.AppendLine($" Debug Logger: True");
+        }
         sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
         sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
         sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
