@@ -13,7 +13,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Object.Game;
 
 /// <summary>
-/// Represents a networked plant entity in the game world, handling synchronization of plant state
+/// Represents a networked plant on the board, handling synchronization of plant state
 /// across connected clients including plant type, position, and imitater type.
 /// </summary>
 internal sealed class PlantNetworked : NetworkObject

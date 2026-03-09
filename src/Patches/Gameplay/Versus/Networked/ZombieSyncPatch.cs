@@ -70,7 +70,7 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            __instance.GetNetworked().SendMowDownRpc();
+            __instance.GetNetworked()?.SendMowDownRpc();
         }
 
         return true;

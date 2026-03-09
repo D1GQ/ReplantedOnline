@@ -9,5 +9,7 @@ internal class NetStates
     internal const string GARGANTUAR_SMASH_STATE = "gargantuar_smash";
     internal const string GARGANTUAR_TARGET_STATE = "gargantuar_target";
 
+    internal const string LADDER_ZOMBIE_PLACED_LADDER = "placed_ladder";
+
     internal const string CHOMPER_BITE_STATE = "chomper_bite";
 }

@@ -12,4 +12,6 @@ internal static class Animations
     internal const string CHOMPER_IDLE = "idle";
     internal const string CHOMPER_BITE = "bite";
     internal const string CHOMPER_CHEW = "chew";
+
+    internal const string LADDER_ZOMBIE_PLACELADDER = "placeladder"; // 24 fps
 }

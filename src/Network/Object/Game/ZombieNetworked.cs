@@ -16,7 +16,7 @@ using Zombie = Il2CppReloaded.Gameplay.Zombie;
 namespace ReplantedOnline.Network.Object.Game;
 
 /// <summary>
-/// Represents a networked zombie entity in the game world, handling synchronization of zombie state
+/// Represents a networked zombie on the board, handling synchronization of zombie state
 /// across connected clients including health, position, and follower relationships.
 /// </summary>
 internal sealed class ZombieNetworked : NetworkObject
@@ -152,6 +152,9 @@ internal sealed class ZombieNetworked : NetworkObject
                     NormalUpdate();
                 }
                 return;
+            case ZombieType.Ladder:
+                LadderUpdate();
+                break;
         }
 
         NormalUpdate();
@@ -270,6 +273,50 @@ internal sealed class ZombieNetworked : NetworkObject
         // Non owner logic is handled in PolevaulterZombiePatch.cs
 
         if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
+        {
+            _Target = null;
+        }
+    }
+
+    private void LadderUpdate()
+    {
+        if (_Zombie == null) return;
+
+        if (_Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+
+        if (AmOwner)
+        {
+            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && _Target == null)
+            {
+                // Send target to place ladder
+                Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Ladder);
+                SendSetPlantTargetRpc(target);
+            }
+            else if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
+            {
+                if (_State is not NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                {
+                    _State = NetStates.LADDER_ZOMBIE_PLACED_LADDER;
+                    SendSetStateRpc(NetStates.LADDER_ZOMBIE_PLACED_LADDER);
+                }
+            }
+        }
+        else
+        {
+            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && _Zombie.mPhaseCounter == 0)
+            {
+                if (_State is NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                {
+                    _Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
+                    _Zombie.DetachShield();
+                    _State = null;
+                }
+            }
+
+            // Rest of non owner logic is handled in LadderZombiePatch.cs
+        }
+
+        if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
         {
             _Target = null;
         }

@@ -1,6 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Characters;
-using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
@@ -42,22 +41,6 @@ internal sealed class AnimationControllerNetworked : NetworkObject
     internal bool DoSendAnimate()
     {
         if (!AmOwner) return false;
-
-        if (ParentNetworkObject is PlantNetworked netPlant)
-        {
-            if (netPlant._Plant.mSeedType is SeedType.Chomper)
-            {
-                return true;
-            }
-        }
-
-        if (ParentNetworkObject is ZombieNetworked netZombie)
-        {
-            if (netZombie.ZombieType is ZombieType.Ladder)
-            {
-                return true;
-            }
-        }
 
         return false;
     }
