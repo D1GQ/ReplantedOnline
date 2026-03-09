@@ -187,9 +187,6 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     if (_Plant.mState != state)
                     {
-                        _Plant.mState = state;
-                        _Plant.mStateCountdown = int.MaxValue;
-
                         if (state == PlantState.ChomperBiting)
                         {
                             _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30f, ReanimLoopType.PlayOnce);
@@ -199,6 +196,15 @@ internal sealed class PlantNetworked : NetworkObject
                         {
                             _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15f, ReanimLoopType.Loop);
                         }
+                        else if (state == PlantState.ChomperSwallowing)
+                        {
+                            _Plant.mState = PlantState.ChomperDigesting;
+                            _Plant.mStateCountdown = 0;
+                            return;
+                        }
+
+                        _Plant.mState = state;
+                        _Plant.mStateCountdown = int.MaxValue;
                     }
                     else if (state == PlantState.Ready)
                     {
