@@ -23,8 +23,7 @@ internal static class PlantSyncPatch
         {
             if (!VersusState.AmPlantSide) return PlantNetworked.DoNotSyncDeath(__instance, __instance.mDoSpecialCountdown);
 
-            var netPlant = __instance.GetNetworked();
-            netPlant.SendDieRpc();
+            __instance.GetNetworked()?.SendDieRpc();
         }
 
         return true;
@@ -47,11 +46,7 @@ internal static class PlantSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             // Sync Squish
-            var netPlant = __instance.GetNetworked();
-            if (netPlant != null)
-            {
-                netPlant.SendSquashPlantRpc();
-            }
+            __instance.GetNetworked()?.SendSquashPlantRpc();
         }
 
         return true;

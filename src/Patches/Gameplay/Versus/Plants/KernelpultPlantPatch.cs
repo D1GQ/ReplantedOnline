@@ -21,8 +21,7 @@ internal static class KernelpultPlantPatch
             if (VersusState.AmPlantSide)
             {
                 // Sync Butter
-                var netPlant = __instance.GetNetworked();
-                netPlant?.SendFireRpc(theTargetZombie, theRow, thePlantWeapon);
+                __instance.GetNetworked()?.SendFireRpc(theTargetZombie, theRow, thePlantWeapon);
             }
             else
             {

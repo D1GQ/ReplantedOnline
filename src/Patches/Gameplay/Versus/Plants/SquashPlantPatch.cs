@@ -43,8 +43,7 @@ internal static class SquashPlantPatch
                 // If the Squash found a target zombie
                 if (__result != null)
                 {
-                    var netPlant = __instance.GetNetworked();
-                    netPlant?.SendSquashTargetRpc(__result);
+                    __instance.GetNetworked()?.SendSquashTargetRpc(__result);
                 }
             }
         }
