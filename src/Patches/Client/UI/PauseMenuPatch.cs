@@ -1,4 +1,4 @@
-﻿using BloomEngine.Utilities;
+﻿using BloomEngine.Extensions;
 using HarmonyLib;
 using Il2CppReloaded.UI;
 using Il2CppTMPro;

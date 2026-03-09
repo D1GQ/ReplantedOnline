@@ -1,7 +1,6 @@
-﻿using BloomEngine.Config.Inputs;
-using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Config.Services;
-using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config;
+using BloomEngine.Config.Inputs;
+using BloomEngine.ModMenu;
 using MelonLoader;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
@@ -28,7 +27,7 @@ internal static class BloomEngineManager
         mod.AddIcon(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png"));
         mod.AddDisplayName(ModInfo.MOD_NAME);
         mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
-        mod.AddConfigClass(typeof(BloomConfigs));
+        mod.AddConfigInputs(BloomConfigs.UseLan, BloomConfigs.ModifyMusic);
         mod.Register();
     }
 
@@ -50,35 +49,29 @@ internal static class BloomEngineManager
             ModifyMusic = ConfigService.CreateBool(
                 "Modify Music",
                 "Modifies music tracks.",
-                true,
-                new ConfigInputOptions<bool>()
-                {
-                    OnValueChanged = @bool =>
-                    {
-                        AudioManager.OnModifyMusic(@bool, true);
-                    }
-                }
+                true
             );
+            ModifyMusic.OnValueChanged += @bool =>
+            {
+                AudioManager.OnModifyMusic(@bool, true);
+            };
 
             UseLan = ConfigService.CreateBool(
                 "(LAN) Mode",
                 "Bypass Steam servers and connect directly via local network for Testing.",
-                false,
-                new ConfigInputOptions<bool>()
-                {
-                    OnValueChanged = @bool =>
-                    {
-                        if (@bool)
-                        {
-                            NetLobby.SetTransportMode(1);
-                        }
-                        else
-                        {
-                            NetLobby.SetTransportMode(0);
-                        }
-                    }
-                }
+                false
             );
+            UseLan.OnValueChanged += @bool =>
+            {
+                if (@bool)
+                {
+                    NetLobby.SetTransportMode(1);
+                }
+                else
+                {
+                    NetLobby.SetTransportMode(0);
+                }
+            };
         }
     }
 }
