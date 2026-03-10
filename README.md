@@ -2,13 +2,9 @@
 
 <img width="2560" height="1440" alt="PVZR-Online-Promo" src="/assets/PVZR-Online-Promo-Logo.png" />
 
-<p align="center">
-    <a href='https://discord.gg/9PN4gxHC4B' target="_blank">
-        <img alt='Discord' src='https://img.shields.io/badge/Discord-100000?style=for-the-badge&logo=Discord&logoColor=white&labelColor=000000&color=5865F2' style="width: 250px; height: 58px;"/>
-    </a>
-    <a href='https://gamebanana.com/wips/96467' target="_blank">
-        <img alt='Gamebanana' src='https://img.shields.io/badge/Game_Banana-100000?style=for-the-badge&logo=Gamebanana&logoColor=FFEE00&labelColor=000000&color=FBFF00' style="width: 300px; height: 58px;"/>
-    </a>
+<p align="left">
+  <a href="https://gamebanana.com/wips/96467"><img src="https://img.shields.io/badge/GameBanana-Visit-orange?logo=gamebanana&logoColor=white&style=for-the-badge" width="250" height="50"></a>
+  <a href="https://discord.gg/9PN4gxHC4B"><img src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge" width="200" height="50"></a>
 </p>
 
 A peer-to-peer (P2P) online multiplayer mod for **Plants vs. Zombies: Replanted** on Steam.
