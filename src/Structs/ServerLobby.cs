@@ -6,14 +6,13 @@ namespace ReplantedOnline.Structs;
 
 /// <summary>
 /// Represents essential information about a lobby, including its unique identifier and the owner's identifier.
-/// Used for LAN lobby management.
 /// </summary>
-internal struct LanLobbyData
+internal struct ServerLobby
 {
     /// <summary>
     /// Gets a null/empty lobby data instance.
     /// </summary>
-    internal static LanLobbyData Null { get; } = new(ID.Null, ID.Null);
+    internal static ServerLobby Null { get; } = new(ID.Null, ID.Null);
 
     /// <summary>
     /// Gets the unique identifier of the lobby.
@@ -51,10 +50,10 @@ internal struct LanLobbyData
     internal string Name;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LanLobbyData"/> struct from a Steam lobby.
+    /// Initializes a new instance of the <see cref="ServerLobby"/> struct from a Steam lobby.
     /// </summary>
     /// <param name="lobby">The Steam lobby to extract data from.</param>
-    internal LanLobbyData(Lobby lobby)
+    internal ServerLobby(Lobby lobby)
     {
         Id = lobby.Id.AsID();
         OwnerId = lobby.Owner.Id.AsID();
@@ -66,7 +65,7 @@ internal struct LanLobbyData
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LanLobbyData"/> struct with the specified parameters.
+    /// Initializes a new instance of the <see cref="ServerLobby"/> struct with the specified parameters.
     /// </summary>
     /// <param name="lobbyId">The unique identifier of the lobby.</param>
     /// <param name="ownerId">The unique identifier of the lobby owner.</param>
@@ -75,7 +74,7 @@ internal struct LanLobbyData
     /// <param name="modVersion">Mod version for compatibility.</param>
     /// <param name="gameCode">Game code for lobby access.</param>
     /// <param name="name">Display name of the lobby.</param>
-    internal LanLobbyData(ID lobbyId, ID ownerId, bool isJoinable = true, int maxPlayers = 2, string modVersion = "", string gameCode = "", string name = "")
+    internal ServerLobby(ID lobbyId, ID ownerId, bool isJoinable = true, int maxPlayers = 2, string modVersion = "", string gameCode = "", string name = "")
     {
         Id = lobbyId;
         OwnerId = ownerId;
@@ -87,13 +86,13 @@ internal struct LanLobbyData
     }
 
     /// <summary>
-    /// Creates a new <see cref="LanLobbyData"/> instance from a LAN server presence broadcast.
+    /// Creates a new <see cref="ServerLobby"/> instance from a LAN server presence broadcast.
     /// </summary>
     /// <param name="presence">The LAN server presence data.</param>
     /// <returns>A new lobby data instance populated from the presence information.</returns>
-    internal static LanLobbyData CreateLobbyDataFromPresence(LanServerPresence presence)
+    internal static ServerLobby CreateLobbyDataFromPresence(LanServerPresence presence)
     {
-        return new LanLobbyData(
+        return new ServerLobby(
             lobbyId: presence.LobbyId,
             ownerId: presence.ServerId,
             isJoinable: presence.IsJoinable,

@@ -44,7 +44,7 @@ internal sealed class LanTransport : INetworkTransport
 
     internal ID CurrentLobbyId = ID.Null;
     internal bool IsHost;
-    internal LanLobbyData CurrentLobbyData = Structs.LanLobbyData.Null;
+    internal ServerLobby CurrentLobbyData = Structs.ServerLobby.Null;
     internal bool IsJoining = false;
 
     // Client storage
@@ -210,7 +210,7 @@ internal sealed class LanTransport : INetworkTransport
 
                     ReplantedOnlineMod.Logger.Error($"[LAN] Failed to join lobby - handshake timeout");
                     CurrentLobbyId = ID.Null;
-                    CurrentLobbyData = Structs.LanLobbyData.Null;
+                    CurrentLobbyData = Structs.ServerLobby.Null;
                     IsJoining = false;
                     ShowDisconnectPopup("Failed to join LAN lobby - timeout");
                     return;
@@ -240,7 +240,7 @@ internal sealed class LanTransport : INetworkTransport
 
             string lobbyName = $"{PlayerName}'s Lobby";
 
-            CurrentLobbyData = new LanLobbyData(
+            CurrentLobbyData = new ServerLobby(
                 lobbyId: lobbyId,
                 ownerId: _localClientId,
                 isJoinable: true,
@@ -291,7 +291,7 @@ internal sealed class LanTransport : INetworkTransport
 
             CurrentLobbyId = lobbyId;
             IsHost = false;
-            CurrentLobbyData = LanLobbyData.CreateLobbyDataFromPresence(lobby);
+            CurrentLobbyData = ServerLobby.CreateLobbyDataFromPresence(lobby);
 
             // Add YOURSELF as a client with player name
             var localEndPoint = (IPEndPoint)P2PListener.Client.LocalEndPoint;
@@ -359,7 +359,7 @@ internal sealed class LanTransport : INetworkTransport
     private void CleanupLobby()
     {
         CurrentLobbyId = ID.Null;
-        CurrentLobbyData = LanLobbyData.Null;
+        CurrentLobbyData = ServerLobby.Null;
         IsHost = false;
         IsJoining = false;
         PendingRequests.Clear();
