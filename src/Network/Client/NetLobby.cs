@@ -211,6 +211,8 @@ internal static class NetLobby
 
     internal static void OnLobbyDataChanged(LanLobbyData lobby)
     {
+        if (!AmInLobby()) return;
+
         if (lobby.OwnerId != LobbyData?.HostId)
         {
             LeaveLobby(() =>
