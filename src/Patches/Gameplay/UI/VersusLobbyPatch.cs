@@ -2,6 +2,7 @@
 
 using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using Il2CppSource.Controllers;
 using Il2CppSource.DataModels;
 using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
@@ -24,6 +25,7 @@ internal static class VersusLobbyPatch
 {
     private static GameObject InteractableBlocker;
     private static GameObject InteractableGamePad;
+    private static GameObject LobbyBackground;
     internal static PanelView VsSideChooser;
 
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
@@ -86,6 +88,34 @@ internal static class VersusLobbyPatch
             VersusLobbyManager.SetTextComps(VsSideChooser);
             VersusLobbyManager.UpdateSideVisuals();
         }
+    }
+
+    [HarmonyPatch(typeof(BackgroundController), nameof(BackgroundController.Awake))]
+    [HarmonyPostfix]
+    private static void PanelViewContainer_Awake_Postfix(BackgroundController __instance)
+    {
+        if (!NetLobby.AmInLobby()) return;
+
+        // Use Rip clouds as lobby background 
+        if (LobbyBackground == null)
+        {
+            LobbyBackground = UnityEngine.Object.Instantiate(__instance.transform.Find("Sky RIP").gameObject, VsSideChooser.transform.parent);
+            LobbyBackground.SetActive(true);
+            foreach (var spriteRenderer in LobbyBackground.transform.GetComponentsInChildren<SpriteRenderer>())
+            {
+                spriteRenderer.sortingLayerID = 0;
+            }
+            LobbyBackground.transform.position = new Vector3(0f, 0f, -100f);
+            LobbyBackground.transform.localScale = Vector3.one * 2f;
+            var lowerClouds = UnityEngine.Object.Instantiate(LobbyBackground.transform.Find("RIP SkySprites Parent/Clouds_RIP"), LobbyBackground.transform.Find("RIP SkySprites Parent"));
+            lowerClouds.transform.localPosition = new Vector3(0f, -900f, 0f);
+        }
+    }
+
+    internal static void OnGameStart()
+    {
+        Instances.GameplayActivity.BackgroundController.gameObject.SetActive(true);
+        LobbyBackground?.SetActive(false);
     }
 
     private static void SetVSButton(this PanelView panelView, string name, Action callback)

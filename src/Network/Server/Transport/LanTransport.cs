@@ -210,7 +210,7 @@ internal sealed class LanTransport : INetworkTransport
 
                     ReplantedOnlineMod.Logger.Error($"[LAN] Failed to join lobby - handshake timeout");
                     CurrentLobbyId = ID.Null;
-                    CurrentLobbyData = Structs.ServerLobby.Null;
+                    CurrentLobbyData = ServerLobby.Null;
                     IsJoining = false;
                     ShowDisconnectPopup("Failed to join LAN lobby - timeout");
                     return;
