@@ -224,7 +224,6 @@ internal static class NetLobby
         else
         {
             LobbyData.UpdateLobbyStates();
-            ProcessMemberList();
         }
     }
 
