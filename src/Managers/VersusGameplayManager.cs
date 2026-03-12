@@ -3,6 +3,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus.Gamemodes;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;

@@ -1,9 +1,10 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Structs;
 
-namespace ReplantedOnline.Modules;
+namespace ReplantedOnline.Modules.Versus;
 
 /// <summary>
 /// Provides centralized access to versus (PvP) multiplayer state information.

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppTekly.PanelViews;
-using ReplantedOnline.Modules.Panels;
+using ReplantedOnline.Modules.Panel;
 
 namespace ReplantedOnline.Patches.Client.UI;
 

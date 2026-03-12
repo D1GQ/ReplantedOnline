@@ -4,7 +4,7 @@ using Il2CppTMPro;
 using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
-namespace ReplantedOnline.Modules.Panels;
+namespace ReplantedOnline.Modules.Panel;
 
 /// <summary>
 /// Provides a custom popup dialog system for Replanted Online mod.

@@ -6,8 +6,8 @@ using Il2CppSource.DataModels;
 using Il2CppTekly.Extensions.DataProviders;
 using Il2CppTekly.PanelViews;
 using Il2CppTekly.TreeState;
-using ReplantedOnline.Modules;
-using ReplantedOnline.Modules.Panels;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Patches;

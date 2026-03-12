@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Data;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Modules;

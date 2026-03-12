@@ -3,7 +3,7 @@
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Transport;
 using ReplantedOnline.Patches.Gameplay.UI;

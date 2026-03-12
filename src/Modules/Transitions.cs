@@ -2,6 +2,7 @@
 using Il2CppSource.Utils;
 using Il2CppTekly.TreeState;
 using MelonLoader;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;

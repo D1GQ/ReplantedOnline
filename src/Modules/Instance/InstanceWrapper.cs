@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Modules;
+﻿namespace ReplantedOnline.Modules.Instance;
 
 /// <summary>
 /// Provides a simple wrapper for managing singleton instances of classes.

@@ -4,10 +4,11 @@ using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
-namespace ReplantedOnline.Modules.Panels;
+namespace ReplantedOnline.Modules.Panel;
 
 /// <summary>
 /// Manages the lobby code entry panel for joining games via lobby codes.
@@ -90,7 +91,7 @@ internal static class LobbyCodePanel
             }
 
             cancelButton.onClick = new();
-            cancelButton.onClick.AddListener((System.Action)(() =>
+            cancelButton.onClick.AddListener((Action)(() =>
             {
                 _lobbyCodePanel.gameObject.SetActive(false);
             }));

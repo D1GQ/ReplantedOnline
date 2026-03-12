@@ -2,7 +2,8 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using static ReplantedOnline.Managers.BloomEngineManager;
 

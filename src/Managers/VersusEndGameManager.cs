@@ -1,6 +1,7 @@
 ﻿using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using System.Collections;

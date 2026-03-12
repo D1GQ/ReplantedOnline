@@ -3,7 +3,8 @@ using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using ReplantedOnline.Logging;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.ClientRPC;
 

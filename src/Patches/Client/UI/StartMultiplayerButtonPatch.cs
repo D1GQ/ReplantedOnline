@@ -2,7 +2,7 @@
 using Il2CppSource.Binders;
 using Il2CppTMPro;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Modules.Panels;
+using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Transport;
 using ReplantedOnline.Utilities;

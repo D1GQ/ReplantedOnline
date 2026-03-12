@@ -1,5 +1,5 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using System.Text;
 using UnityEngine;

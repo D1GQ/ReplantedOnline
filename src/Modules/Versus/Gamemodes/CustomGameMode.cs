@@ -4,6 +4,7 @@ using Il2CppSource.Binders;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using System.Collections;

@@ -3,7 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 

@@ -1,7 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Binders;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using UnityEngine;

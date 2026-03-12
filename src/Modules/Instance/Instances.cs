@@ -4,7 +4,7 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.DataModels;
 using Il2CppTekly.PanelViews;
 
-namespace ReplantedOnline.Modules;
+namespace ReplantedOnline.Modules.Instance;
 
 /// <summary>
 /// Provides centralized access to critical game instances used throughout ReplantedOnline.

@@ -3,6 +3,7 @@ using Il2CppSource.Utils;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 

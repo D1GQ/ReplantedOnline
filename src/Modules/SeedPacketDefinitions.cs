@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Modules.Instance;
 
 namespace ReplantedOnline.Modules;
 

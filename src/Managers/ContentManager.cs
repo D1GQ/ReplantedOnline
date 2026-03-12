@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualBasic;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Managers;
