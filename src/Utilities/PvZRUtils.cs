@@ -92,4 +92,14 @@ internal static class PvZRUtils
     {
         return board.m_plants.GetItems();
     }
+
+    /// <summary>
+    /// Checks if the zombie type is invulnerable to insta kills.
+    /// </summary>
+    /// <param name="zombieType">The zombie type.</param>
+    /// <returns></returns>
+    internal static bool IsInvulnerableZombieType(this ZombieType zombieType)
+    {
+        return zombieType is ZombieType.Target or ZombieType.Gravestone;
+    }
 }

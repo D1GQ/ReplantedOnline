@@ -1,5 +1,4 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
@@ -58,7 +57,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         if (zombie != null)
         {
             if (zombie.mDead) return;
-            if (zombieNetworked.ZombieType is ZombieType.Target or ZombieType.Gravestone) return;
+            if (zombieNetworked.ZombieType.IsInvulnerableZombieType()) return;
 
             _cachedControllerPosition = zombie.mController.transform.position;
             _cachedWPos = GetWorldPos(_cachedControllerPosition);

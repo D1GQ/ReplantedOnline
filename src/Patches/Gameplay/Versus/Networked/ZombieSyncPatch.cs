@@ -69,6 +69,7 @@ internal static class ZombieSyncPatch
         if (NetLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
+            if (__instance.mZombieType.IsInvulnerableZombieType()) return false;
 
             __instance.GetNetworked()?.SendMowDownRpc();
         }
@@ -169,6 +170,7 @@ internal static class ZombieSyncPatch
         if (NetLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
+            if (__instance.mZombieType.IsInvulnerableZombieType()) return false;
 
             __instance.GetNetworked()?.SendApplyBurnRpc();
         }
