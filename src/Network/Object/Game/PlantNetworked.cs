@@ -169,6 +169,7 @@ internal sealed class PlantNetworked : NetworkObject
         NormalUpdate();
     }
 
+    private float _syncCooldown = 2f;
     private void NormalUpdate()
     {
         if (_Plant == null) return;
@@ -177,11 +178,13 @@ internal sealed class PlantNetworked : NetworkObject
         {
             if (!dead && !_Plant.mDead)
             {
-                if (lastSyncPlantHealth != _Plant.mPlantHealth)
+                if (_syncCooldown <= 0f && lastSyncPlantHealth != _Plant.mPlantHealth)
                 {
-                    lastSyncPlantHealth = _Plant.mPlantHealth;
                     MarkDirty();
+                    _syncCooldown = 1f;
+                    lastSyncPlantHealth = _Plant.mPlantHealth;
                 }
+                _syncCooldown -= Time.deltaTime;
             }
         }
         else
