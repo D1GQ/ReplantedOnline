@@ -2,7 +2,7 @@
 using MelonLoader;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Panels;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server.Packet;

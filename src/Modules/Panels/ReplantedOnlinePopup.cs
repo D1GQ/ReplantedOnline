@@ -4,17 +4,17 @@ using Il2CppTMPro;
 using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
-namespace ReplantedOnline.Modules;
+namespace ReplantedOnline.Modules.Panels;
 
 /// <summary>
 /// Provides a custom popup dialog system for Replanted Online mod.
 /// </summary>
 internal static class ReplantedOnlinePopup
 {
-    private static PanelView Panel;
-    private static TextMeshProUGUI Header;
-    private static TextMeshProUGUI SubText;
-    private static TextMeshProUGUI Label;
+    private static PanelView _panel;
+    private static TextMeshProUGUI _header;
+    private static TextMeshProUGUI _subText;
+    private static TextMeshProUGUI _label;
     private static bool _hasInit;
 
     /// <summary>
@@ -26,19 +26,29 @@ internal static class ReplantedOnlinePopup
         if (_hasInit) return;
         _hasInit = true;
 
-        Panel = UnityEngine.Object.Instantiate(globalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true), globalPanels.transform);
-        Panel.name = "P_PopUpReplantedOnline";
-        Panel.m_id = "rPopup";
-        Panel.gameObject.DestroyAllTextLocalizers();
-        Header = Panel.transform.Find("Canvas/Layout/Center/Window/HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
-        Header.gameObject.DestroyAllBinders();
-        SubText = Panel.transform.Find("Canvas/Layout/Center/Window/SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
-        SubText.gameObject.DestroyAllBinders();
-        var button = Panel.transform.Find("Canvas/Layout/Center/Window/Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
+        _panel = UnityEngine.Object.Instantiate(globalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true), globalPanels.transform);
+        _panel.name = "P_PopUpReplantedOnline";
+        _panel.m_id = "rPopup";
+        _panel.gameObject.DestroyAllTextLocalizers();
+
+        // Find and store reference to the header text component
+        _header = _panel.transform.Find("Canvas/Layout/Center/Window/HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
+        _header.gameObject.DestroyAllBinders();
+
+        // Find and store reference to the subheading text component
+        _subText = _panel.transform.Find("Canvas/Layout/Center/Window/SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
+        _subText.gameObject.DestroyAllBinders();
+
+        // Find the OK button in the panel hierarchy
+        var button = _panel.transform.Find("Canvas/Layout/Center/Window/Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
         button.gameObject.DestroyAllBinders();
         button.gameObject.SetActive(true);
-        Label = button.transform.Find("Label").GetComponentInChildren<TextMeshProUGUI>(true);
-        Label.SetText(string.Empty);
+
+        // Find and store reference to the button's label text
+        _label = button.transform.Find("Label").GetComponentInChildren<TextMeshProUGUI>(true);
+        _label.SetText(string.Empty);
+
+        // Set up new click handler for the button
         button.onClick = new();
         button.onClick.AddListener(() =>
         {
@@ -55,7 +65,7 @@ internal static class ReplantedOnlinePopup
     {
         if (!_hasInit) return;
 
-        Label?.SetText(label);
+        _label?.SetText(label);
     }
 
     /// <summary>
@@ -67,13 +77,13 @@ internal static class ReplantedOnlinePopup
     {
         if (!_hasInit) return;
 
-        if (Label?.text == string.Empty)
+        if (_label?.text == string.Empty)
         {
-            Label?.SetText("Ok");
+            _label?.SetText("Ok");
         }
-        Panel?.gameObject?.SetActive(true);
-        Header?.SetText(header);
-        SubText?.SetText(text);
+        _panel?.gameObject?.SetActive(true);
+        _header?.SetText(header);
+        _subText?.SetText(text);
     }
 
     /// <summary>
@@ -83,8 +93,8 @@ internal static class ReplantedOnlinePopup
     {
         if (!_hasInit) return;
 
-        Panel?.gameObject.SetActive(false);
-        Header?.SetText(string.Empty);
-        SubText?.SetText(string.Empty);
+        _panel?.gameObject.SetActive(false);
+        _header?.SetText(string.Empty);
+        _subText?.SetText(string.Empty);
     }
 }

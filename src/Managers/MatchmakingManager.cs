@@ -3,6 +3,7 @@ using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Panels;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Structs;
 using System.Net;

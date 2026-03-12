@@ -5,6 +5,7 @@ using ReplantedOnline.Enums.LAN;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Panels;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.LAN;

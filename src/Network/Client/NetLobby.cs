@@ -4,6 +4,7 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Panels;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Server.Transport;

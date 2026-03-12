@@ -6,12 +6,12 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Panels;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Patches;
 using ReplantedOnline.Patches.Client;
-using ReplantedOnline.Patches.Client.UI;
 using System.Reflection;
 using UnityEngine;
 
@@ -74,7 +74,7 @@ internal class ReplantedOnlineMod : MelonMod
     {
         if (!loaded) return;
 
-        JoinLobbyCodePanelPatch.ValidateText();
+        LobbyCodePanel.ValidateText();
     }
 
     // Delayed initialized for BootStrap sequence...
