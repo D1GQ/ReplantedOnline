@@ -28,10 +28,9 @@ internal sealed class RandomGamemode : IVersusGamemode
         if (VersusState.AmPlantSide)
         {
             var plantSeeds = Enum.GetValues<SeedType>().Where(seed =>
-                seed != SeedType.Sunflower &&
                 !Challenge.IsZombieSeedType(seed) &&
-                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
+                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
@@ -48,10 +47,9 @@ internal sealed class RandomGamemode : IVersusGamemode
         else if (VersusState.AmZombieSide)
         {
             var zombieSeeds = Enum.GetValues<SeedType>().Where(seed =>
-                seed != SeedType.ZombieGravestone &&
                 Challenge.IsZombieSeedType(seed) &&
-                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
+                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
