@@ -68,6 +68,23 @@ internal static class ZombiePatch
         return true;
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.EatZombie))]
+    [HarmonyPrefix]
+    private static bool Zombie_EatZombie_Prefix(Zombie theZombie)
+    {
+        if (NetLobby.AmInLobby())
+        {
+            // Prevent hypno affected zombies From eating target and gravestone zombies
+            // This is a issue with replanted itself 
+            if (theZombie.mZombieType.IsInvulnerableZombieType())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
     internal static Plant FindPlantTargetOriginal(this Zombie __instance, ZombieAttackType theAttackType)
