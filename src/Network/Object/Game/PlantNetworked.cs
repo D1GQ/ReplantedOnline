@@ -449,7 +449,7 @@ internal sealed class PlantNetworked : NetworkObject
             AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
         }
 
-        lastSyncPlantHealth = packetReader.ReadInt();
+        lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 5);
     }
 
     internal int? lastSyncPlantHealth;
