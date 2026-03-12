@@ -424,6 +424,8 @@ internal sealed class PlantNetworked : NetworkObject
         }
 
         packetWriter.WriteInt(_Plant.mPlantHealth);
+
+        ClearDirtyBits();
     }
 
     /// <summary>
