@@ -32,7 +32,7 @@ internal static class ModInfo
     /// <summary>
     /// The number of the release.
     /// </summary>
-    internal const string MOD_RELEASE_INFO = "7";
+    internal const string MOD_RELEASE_INFO = "8";
 
     /// <summary>
     /// The formatted version string of the mod using semantic versioning.
