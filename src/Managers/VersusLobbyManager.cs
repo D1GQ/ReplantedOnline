@@ -5,6 +5,7 @@ using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Server.Transport;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 using System.Collections;
@@ -30,7 +31,8 @@ internal static class VersusLobbyManager
     private static TextMeshProUGUI pickSides;
 
     private static EventTrigger lobbyCodeHeaderTrigger;
-    private static string DefaultHeaderText => $"Lobby Code: {NetLobby.LobbyData?.LobbyCode ?? "???"}";
+    private static string DefaultHeaderText => NetLobby.NetworkTransport is LanTransport ?
+        "LAN Mode" : $"Lobby Code: {NetLobby.LobbyData?.LobbyCode ?? "???"}";
     private static bool copyingLobbyCode = false;
 
     /// <summary>
@@ -209,6 +211,7 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void UpdateHeaderEvents()
     {
+        if (NetLobby.NetworkTransport is LanTransport) return;
         if (lobbyCodeHeaderTrigger == null) return;
 
         EventTrigger trigger = lobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
