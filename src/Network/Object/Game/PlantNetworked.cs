@@ -165,6 +165,35 @@ internal sealed class PlantNetworked : NetworkObject
                 MagnetShroomUpdate();
                 break;
         }
+
+        NormalUpdate();
+    }
+
+    private void NormalUpdate()
+    {
+        if (_Plant == null) return;
+
+        if (AmOwner)
+        {
+            if (!dead && !_Plant.mDead)
+            {
+                if (lastSyncPlantHealth != _Plant.mPlantHealth)
+                {
+                    lastSyncPlantHealth = _Plant.mPlantHealth;
+                    MarkDirty();
+                }
+            }
+        }
+        else
+        {
+            if (!dead && !_Plant.mDead)
+            {
+                if (lastSyncPlantHealth != null)
+                {
+                    _Plant.mPlantHealth = lastSyncPlantHealth.Value;
+                }
+            }
+        }
     }
 
     private void ChopperUpdate()
@@ -393,6 +422,8 @@ internal sealed class PlantNetworked : NetworkObject
             packetWriter.WriteInt((int)SeedType);
             packetWriter.WriteInt((int)ImitaterType);
         }
+
+        packetWriter.WriteInt(_Plant.mPlantHealth);
     }
 
     /// <summary>
@@ -415,5 +446,9 @@ internal sealed class PlantNetworked : NetworkObject
             _Plant.AddNetworkedLookup(this);
             AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
         }
+
+        lastSyncPlantHealth = packetReader.ReadInt();
     }
+
+    internal int? lastSyncPlantHealth;
 }
