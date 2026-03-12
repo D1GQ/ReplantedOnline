@@ -97,6 +97,7 @@ internal static class Transitions
     {
         color ??= Color.black;
         var fadePanel = Instances.GlobalPanels.transform.Find("FadePanel").GetComponent<FadePanel>();
+        fadePanel.mFadeIn = -1;
         fadePanel.SetColor(color.Value);
     }
 

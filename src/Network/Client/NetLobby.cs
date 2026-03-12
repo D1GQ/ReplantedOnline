@@ -162,6 +162,7 @@ internal static class NetLobby
         ReplantedOnlineMod.Logger.Msg($"[NetLobby] Leaving lobby {LobbyData.LobbyId}");
         var lobbyId = LobbyData.LobbyId;
         LobbyData.Dispose();
+        Transitions.SetLoading();
         Transitions.ToMainMenu(callback);
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
