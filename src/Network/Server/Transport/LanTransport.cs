@@ -24,27 +24,40 @@ namespace ReplantedOnline.Network.Server.Transport;
 /// </summary>
 internal sealed class LanTransport : INetworkTransport
 {
-    internal string PlayerName => IsHost ? "Client 1" : "Client 2";
-
+    // Constants
     private const int BROADCAST_PORT = 14242;
     private const int GAME_PORT_BASE = 14243;
     private const int BROADCAST_INTERVAL_MS = 2000;
     private const int HANDSHAKE_TIMEOUT_MS = 5000;
+    private const int DISCOVERY_DURATION_SECONDS = 3;
+    private const string LOCALHOST_IP = "127.0.0.1";
 
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
+    // Public properties
+    public ID LocalClientId => _localClientId;
+    internal string PlayerName => IsHost ? "Client 1" : "Client 2";
+
+    // Core components
     internal readonly UdpClient BroadcastListener;
     internal readonly UdpClient P2PListener;
     internal readonly CancellationTokenSource CTS = new();
-    internal readonly object _lock = new();
+    internal readonly object SyncLock = new();
     internal readonly Dictionary<PacketChannel, Queue<PendingPacket>> PacketQueue = [];
 
+    // Network identity
     private readonly ID _localClientId;
     internal readonly int GamePort;
     internal readonly int InstanceId;
     private readonly string _localIPAddress;
 
+    // Lobby state
     internal ID CurrentLobbyId = ID.Null;
     internal bool IsHost;
-    internal ServerLobby CurrentLobbyData = Structs.ServerLobby.Null;
+    internal ServerLobby CurrentLobbyData = ServerLobby.Null;
     internal bool IsJoining = false;
 
     // Client storage
@@ -61,15 +74,15 @@ internal sealed class LanTransport : INetworkTransport
         Disconnected,
         Connecting,
         Connected,
-        Handshaking
+        Handshaking,
+        Rejected
     }
     internal readonly Dictionary<ID, ConnectionState> ConnectionStates = [];
+    internal readonly Dictionary<ID, string> RejectionReasons = [];
 
     // Pending handshakes
     internal TaskCompletionSource<bool> HandshakeCompletionSource;
     internal readonly HashSet<ID> PendingRequests = [];
-
-    public ID LocalClientId => _localClientId;
 
     public LanTransport()
     {
@@ -83,11 +96,20 @@ internal sealed class LanTransport : INetworkTransport
         BroadcastListener = CreateBroadcastListener();
         P2PListener = CreateP2PListener();
 
+        InitializePacketQueues();
+        StartListeningTasks();
+    }
+
+    private void InitializePacketQueues()
+    {
         foreach (var channel in Enum.GetValues<PacketChannel>())
         {
             PacketQueue[channel] = [];
         }
+    }
 
+    private void StartListeningTasks()
+    {
         Task.Run(ListenForBroadcasts, CTS.Token);
         Task.Run(ListenForP2P, CTS.Token);
     }
@@ -96,17 +118,15 @@ internal sealed class LanTransport : INetworkTransport
     {
         try
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
+            return Dns.GetHostEntry(Dns.GetHostName())
+                .AddressList
+                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?
+                .ToString() ?? LOCALHOST_IP;
         }
-        catch { }
-        return "127.0.0.1";
+        catch
+        {
+            return LOCALHOST_IP;
+        }
     }
 
     private static int GenerateInstanceId()
@@ -165,8 +185,6 @@ internal sealed class LanTransport : INetworkTransport
 
     public void Tick(float deltaTime) { }
 
-    // ===== PUBLIC API =====
-
     public async Task JoinFirstLanLobby()
     {
         if (IsJoining) return;
@@ -178,7 +196,7 @@ internal sealed class LanTransport : INetworkTransport
             ReplantedOnlineMod.Logger.Msg("[LAN] Searching for lobbies...");
 
             var startTime = DateTime.UtcNow;
-            while ((DateTime.UtcNow - startTime).TotalSeconds < 3)
+            while ((DateTime.UtcNow - startTime).TotalSeconds < DISCOVERY_DURATION_SECONDS)
             {
                 if (DiscoveredLobbies.Count > 0)
                 {
@@ -193,10 +211,11 @@ internal sealed class LanTransport : INetworkTransport
                         Task.Delay(HANDSHAKE_TIMEOUT_MS)
                     );
 
-                    if (completedTask == HandshakeCompletionSource.Task &&
-                        await HandshakeCompletionSource.Task)
+                    if (completedTask == HandshakeCompletionSource.Task)
                     {
-                        if (CurrentLobbyId == lobby.LobbyId)
+                        var handshakeResult = await HandshakeCompletionSource.Task;
+
+                        if (handshakeResult && CurrentLobbyId == lobby.LobbyId)
                         {
                             ReplantedOnlineMod.Logger.Msg($"[LAN] Successfully joined lobby {lobby.ServerName}");
                             MainThreadDispatcher.Execute(() =>
@@ -205,6 +224,21 @@ internal sealed class LanTransport : INetworkTransport
                             });
                             IsJoining = false;
                             return;
+                        }
+
+                        if (!handshakeResult)
+                        {
+                            // Check if we were rejected
+                            string rejectionReason = GetRejectionReason(lobby.ServerId);
+                            if (!string.IsNullOrEmpty(rejectionReason))
+                            {
+                                ReplantedOnlineMod.Logger.Error($"[LAN] Rejected from lobby: {rejectionReason}");
+                                CurrentLobbyId = ID.Null;
+                                CurrentLobbyData = ServerLobby.Null;
+                                IsJoining = false;
+                                ShowDisconnectPopup($"Failed to join LAN lobby: {rejectionReason}");
+                                return;
+                            }
                         }
                     }
 
@@ -230,14 +264,21 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
+    private string GetRejectionReason(ID serverId)
+    {
+        lock (SyncLock)
+        {
+            return RejectionReasons.TryGetValue(serverId, out var reason) ? reason : string.Empty;
+        }
+    }
+
     public void CreateLobby(int maxPlayers)
     {
         if (!CurrentLobbyId.IsNull) return;
 
-        lock (_lock)
+        lock (SyncLock)
         {
             var lobbyId = ID.CreateRandomULong();
-
             string lobbyName = $"{PlayerName}'s Lobby";
 
             CurrentLobbyData = new ServerLobby(
@@ -277,7 +318,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public void JoinLobby(ID lobbyId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (!CurrentLobbyId.IsNull) return;
 
@@ -318,13 +359,13 @@ internal sealed class LanTransport : INetworkTransport
                 Name = PlayerName,
                 EndPoint = localEndPoint
             };
-            LanDispatcher.SendHandshake(lobby.ServerId, LanHandshakeType.Request, clientInfo);
+            LanDispatcher.SendHandshake(lobby.ServerId, LanHandshakeType.Request, clientInfo: clientInfo);
         }
     }
 
     public void LeaveLobby(ID lobbyId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (CurrentLobbyId != lobbyId) return;
 
@@ -341,7 +382,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public void StopHosting()
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (!IsHost || !CurrentLobbyId.HasValue) return;
 
@@ -364,10 +405,13 @@ internal sealed class LanTransport : INetworkTransport
         IsJoining = false;
         PendingRequests.Clear();
         ConnectionStates.Clear();
+        RejectionReasons.Clear();
+
         foreach (var channel in Enum.GetValues<PacketChannel>())
         {
             PacketQueue[channel].Clear();
         }
+
         var keepClients = Clients.Keys.Where(DiscoveredLobbies.ContainsKey).ToList();
         var toRemove = Clients.Keys.Except(keepClients).ToList();
         foreach (var id in toRemove)
@@ -392,8 +436,6 @@ internal sealed class LanTransport : INetworkTransport
             catch { }
         }
     }
-
-    // ===== EXTERNAL RPC PACKET METHODS =====
 
     public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
     {
@@ -465,8 +507,22 @@ internal sealed class LanTransport : INetworkTransport
         return false;
     }
 
-    // ===== LISTENERS =====
+    private void QueueLocalPacket(Il2CppStructArray<byte> data, int length, PacketChannel channel)
+    {
+        int actualLength = length == -1 ? data.Length : length;
+        var localData = new byte[actualLength];
+        Array.Copy(data, 0, localData, 0, actualLength);
 
+        lock (PacketQueue)
+        {
+            PacketQueue[channel].Enqueue(new PendingPacket
+            {
+                Data = localData,
+                SenderId = _localClientId,
+                Size = (uint)localData.Length
+            });
+        }
+    }
     private async Task BroadcastPresence()
     {
         var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, BROADCAST_PORT);
@@ -489,7 +545,7 @@ internal sealed class LanTransport : INetworkTransport
                     EndPoint = _localIPAddress
                 };
 
-                var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(presence));
+                var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(presence, _jsonOptions));
                 await BroadcastListener.SendAsync(data, data.Length, broadcastEndpoint);
                 await Task.Delay(BROADCAST_INTERVAL_MS, CTS.Token);
             }
@@ -517,7 +573,7 @@ internal sealed class LanTransport : INetworkTransport
                     continue;
 
                 var json = Encoding.UTF8.GetString(result.Buffer);
-                var presence = JsonSerializer.Deserialize<LanServerPresence>(json);
+                var presence = JsonSerializer.Deserialize<LanServerPresence>(json, _jsonOptions);
 
                 if (presence != null && presence.ServerId != _localClientId)
                 {
@@ -528,10 +584,9 @@ internal sealed class LanTransport : INetworkTransport
                         continue;
                     }
 
-                    lock (_lock)
+                    lock (SyncLock)
                     {
                         DiscoveredLobbies[presence.LobbyId] = presence;
-                        // Don't automatically add as connected client - just discovered
                     }
                 }
             }
@@ -542,7 +597,6 @@ internal sealed class LanTransport : INetworkTransport
             catch (Exception ex)
             {
                 if (ex.Message.StartsWith("The I/O operation has been aborted")) return;
-
                 ReplantedOnlineMod.Logger.Error($"[LAN] Broadcast listen error: {ex.Message}");
                 await Task.Delay(1000, CTS.Token);
             }
@@ -561,7 +615,6 @@ internal sealed class LanTransport : INetworkTransport
             catch (Exception ex)
             {
                 if (ex.Message.StartsWith("The I/O operation has been aborted")) return;
-
                 ReplantedOnlineMod.Logger.Error($"[LAN] P2P listen error: {ex.Message}");
                 await Task.Delay(100, CTS.Token);
             }
@@ -608,11 +661,9 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
-    // ===== SESSION MANAGEMENT =====
-
     public bool AcceptP2PSessionWithUser(ID clientId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (!PendingRequests.Contains(clientId))
             {
@@ -636,9 +687,33 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
+    public bool RejectP2PSessionWithUser(ID clientId, string reason = "Connection rejected by host")
+    {
+        lock (SyncLock)
+        {
+            if (!PendingRequests.Contains(clientId))
+            {
+                ReplantedOnlineMod.Logger.Warning($"[LAN] No pending request from {clientId}");
+                return false;
+            }
+
+            ReplantedOnlineMod.Logger.Msg($"[LAN] Rejecting connection from {clientId}: {reason}");
+
+            ConnectionStates[clientId] = ConnectionState.Rejected;
+            LanDispatcher.SendHandshake(clientId, LanHandshakeType.Reject, reason);
+            PendingRequests.Remove(clientId);
+
+            // Clean up any partial data
+            Clients.Remove(clientId);
+            ConnectionStates.Remove(clientId);
+
+            return true;
+        }
+    }
+
     public bool CloseP2PSessionWithUser(ID clientId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (ConnectionStates.TryGetValue(clientId, out var state) && state == ConnectionState.Connected)
             {
@@ -649,11 +724,9 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
-    // ===== LOBBY DATA =====
-
     public string GetLobbyData(ID lobbyId, string key)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             return LobbyData.TryGetValue(lobbyId, out var data) &&
                    data.TryGetValue(key, out var value) ? value : string.Empty;
@@ -662,7 +735,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public bool SetLobbyData(ID lobbyId, string key, string value)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (!IsHost || CurrentLobbyId != lobbyId) return false;
 
@@ -694,11 +767,9 @@ internal sealed class LanTransport : INetworkTransport
     public bool DeleteLobbyData(ID lobbyId, string key) => false;
     public bool RequestLobbyData(ID lobbyId) => true;
 
-    // ===== MEMBER DATA =====
-
     public string GetLobbyMemberData(ID lobbyId, ID clientId, string key)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             return MemberData.TryGetValue(lobbyId, out var lobby) &&
                    lobby.TryGetValue(clientId, out var data) &&
@@ -708,7 +779,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public void SetLobbyMemberData(ID lobbyId, string key, string value)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (CurrentLobbyId != lobbyId) return;
 
@@ -743,11 +814,9 @@ internal sealed class LanTransport : INetworkTransport
         }
     }
 
-    // ===== MEMBER MANAGEMENT =====
-
     public int GetNumLobbyMembers(ID lobbyId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             return MemberData.TryGetValue(lobbyId, out var data) ? data.Count : 0;
         }
@@ -755,7 +824,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public ID GetLobbyMemberByIndex(ID lobbyId, int index)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (!MemberData.TryGetValue(lobbyId, out var data))
                 return ID.Null;
@@ -770,7 +839,7 @@ internal sealed class LanTransport : INetworkTransport
         if (clientId == _localClientId)
             return PlayerName;
 
-        lock (_lock)
+        lock (SyncLock)
         {
             return Clients.TryGetValue(clientId, out var client) ? client.Name : "Unknown";
         }
@@ -786,7 +855,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public ID GetLobbyOwner(ID lobbyId)
     {
-        lock (_lock)
+        lock (SyncLock)
         {
             if (CurrentLobbyId == lobbyId)
             {
@@ -797,8 +866,6 @@ internal sealed class LanTransport : INetworkTransport
                    presence.ServerId : ID.Null;
         }
     }
-
-    // ===== HELPERS =====
 
     internal void AddClient(ID clientId, IPEndPoint endpoint, string name)
     {
@@ -848,6 +915,8 @@ internal sealed class LanTransport : INetworkTransport
     {
         Clients.Remove(clientId);
         ConnectionStates.Remove(clientId);
+        RejectionReasons.Remove(clientId);
+
         if (CurrentLobbyId.HasValue && MemberData.TryGetValue(CurrentLobbyId, out var lobby))
         {
             lobby.Remove(clientId);
@@ -874,23 +943,6 @@ internal sealed class LanTransport : INetworkTransport
         }
 
         return false;
-    }
-
-    private void QueueLocalPacket(Il2CppStructArray<byte> data, int length, PacketChannel channel)
-    {
-        int actualLength = length == -1 ? data.Length : length;
-        var localData = new byte[actualLength];
-        Array.Copy(data, 0, localData, 0, actualLength);
-
-        lock (PacketQueue)
-        {
-            PacketQueue[channel].Enqueue(new PendingPacket
-            {
-                Data = localData,
-                SenderId = _localClientId,
-                Size = (uint)localData.Length
-            });
-        }
     }
 
     private static void ShowDisconnectPopup(string message)
