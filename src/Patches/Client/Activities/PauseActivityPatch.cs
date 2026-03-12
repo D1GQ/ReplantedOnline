@@ -4,10 +4,10 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.TreeStateActivities;
 using ReplantedOnline.Network.Client;
 
-namespace ReplantedOnline.Patches.Client;
+namespace ReplantedOnline.Patches.Client.Activities;
 
 [HarmonyPatch]
-internal static class PausePatch
+internal static class PauseActivityPatch
 {
     [HarmonyPatch(typeof(PauseGameActivity), nameof(PauseGameActivity.ActiveStarted))]
     [HarmonyPatch(typeof(PauseMusicActivity), nameof(PauseMusicActivity.ActiveStarted))]

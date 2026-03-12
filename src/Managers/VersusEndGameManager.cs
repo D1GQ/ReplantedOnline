@@ -273,6 +273,7 @@ internal static class VersusEndGameManager
             PlantAvatar = null;
             ZombieAvatar = null;
             PlantTrophy = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

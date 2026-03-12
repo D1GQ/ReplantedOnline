@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Network.Server.ClientRPC;
+﻿using ReplantedOnline.Interfaces;
+using ReplantedOnline.Network.Server.ClientRPC;
 using ReplantedOnline.Network.Server.PacketHandler;
 using System.Reflection;
 
@@ -39,12 +40,12 @@ internal abstract class InstanceAttribute : Attribute
 }
 
 /// <summary>
-/// Generic attribute for automatically registering static instances of a specified base type.
+/// Generic attribute for automatically registering static instances of a specified base type or interface.
 /// Provides a type-safe way to collect and access all implementations of a particular interface or base class.
 /// </summary>
 /// <typeparam name="T">The base type or interface that attributed classes must implement.</typeparam>
 [AttributeUsage(AttributeTargets.Class)]
-internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T : class
+internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 {
     private static readonly List<T> _instances = [];
 
@@ -60,10 +61,10 @@ internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T :
     /// <returns>The instance of type J if found, otherwise null.</returns>
     /// <example>
     /// <code>
-    /// var specificHandler = StaticInstanceAttribute&lt;RPCHandler&gt;.GetClassInstance&lt;MySpecificHandler&gt;();
+    /// var specificHandler = StaticInstanceAttribute&lt;IRPCHandler&gt;.GetClassInstance&lt;MySpecificHandler&gt;();
     /// </code>
     /// </example>
-    internal static J GetClassInstance<J>() where J : class => _instances.FirstOrDefault(instance => instance.GetType() == typeof(J)) as J;
+    internal static J GetInstance<J>() where J : class => _instances.FirstOrDefault(instance => instance.GetType() == typeof(J)) as J;
 
     /// <summary>
     /// Scans the assembly for classes marked with this attribute type and registers instances of them.
@@ -74,28 +75,54 @@ internal abstract class StaticInstanceAttribute<T> : InstanceAttribute where T :
         var assembly = Assembly.GetExecutingAssembly();
 
         var attributedTypes = assembly.GetTypes()
-            .Where(t => t.GetCustomAttributes(GetType(), false).Any());
+            .Where(t => t.GetCustomAttributes(GetType(), false).Any())
+            .Where(t => !t.IsAbstract && !t.IsInterface); // Only instantiable types
 
         foreach (var type in attributedTypes)
         {
+            // Check if the type implements the interface or inherits from the base class
             if (typeof(T).IsAssignableFrom(type))
             {
+                // Try to get any parameterless constructor (public, private, or internal)
                 var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
-                if (constructor != null && constructor.Invoke(null) is T instance)
+
+                if (constructor != null)
                 {
-                    _instances.Add(instance);
+                    if (constructor.Invoke(null) is T instance)
+                    {
+                        _instances.Add(instance);
+                    }
+                }
+                else
+                {
+                    // Optional: Log warning that type has no parameterless constructor
+                    // Console.WriteLine($"Warning: {type.Name} has no parameterless constructor and cannot be auto-registered");
                 }
             }
         }
     }
 }
 
-/// <inheritdoc/>
-internal sealed class RegisterClientRPC : StaticInstanceAttribute<BaseClientRPC>
+/// <summary>
+/// Registers classes that implement BaseClientRPC.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterClientRPC : InstanceAttribute<BaseClientRPC>
 {
 }
 
-/// <inheritdoc/>
-internal sealed class RegisterPacketHandler : StaticInstanceAttribute<BasePacketHandler>
+/// <summary>
+/// Registers classes that implement BasePacketHandler.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterPacketHandler : InstanceAttribute<BasePacketHandler>
+{
+}
+
+/// <summary>
+/// Registers classes that implement IVersusGamemode.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterVersusGameMode : InstanceAttribute<IVersusGamemode>
 {
 }

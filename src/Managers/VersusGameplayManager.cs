@@ -1,6 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Versus.Gamemodes;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
@@ -13,6 +16,22 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal class VersusGameplayManager
 {
+    /// <summary>
+    /// Gets the current game mode.
+    /// </summary>
+    internal static IVersusGamemode VersusGamemode { get; private set; }
+
+    internal static IVersusGamemode SetGamemode(SelectionSet selectionSet)
+    {
+        return VersusGamemode = selectionSet switch
+        {
+            SelectionSet.QuickPlay => RegisterVersusGameMode.GetInstance<QuickplayGamemode>(),
+            SelectionSet.Random => RegisterVersusGameMode.GetInstance<RandomGamemode>(),
+            SelectionSet.CustomAll => RegisterVersusGameMode.GetInstance<CustomGamemode>(),
+            _ => null,
+        };
+    }
+
     internal static void OnStart()
     {
         Transitions.SetFade();
@@ -70,6 +89,8 @@ internal class VersusGameplayManager
 
     internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
     {
+        VersusGamemode.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
+
         if (focus == null)
         {
             ReplantedOnlineMod.Logger.Error("Can not end game, Focus gameobject is null!");

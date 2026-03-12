@@ -4,7 +4,6 @@ using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 
@@ -16,79 +15,17 @@ internal static class VersusModePatch
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
-
-        if (__instance.SelectionSet == SelectionSet.QuickPlay)
-        {
-            if (VersusState.AmPlantSide)
-            {
-                foreach (var seedType in __instance.m_quickPlayPlants)
-                {
-                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-                }
-
-                foreach (var seedType in __instance.m_quickPlayZombies)
-                {
-                    __instance.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-                }
-            }
-            else if (VersusState.AmZombieSide)
-            {
-                foreach (var seedType in __instance.m_quickPlayZombies)
-                {
-                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-                }
-
-                foreach (var seedType in __instance.m_quickPlayPlants)
-                {
-                    __instance.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-                }
-            }
-        }
-        else if (__instance.SelectionSet == SelectionSet.Random)
-        {
-            if (VersusState.AmPlantSide)
-            {
-                var plantSeeds = Enum.GetValues<SeedType>().Where(seed =>
-                    seed != SeedType.Sunflower &&
-                    !Challenge.IsZombieSeedType(seed) &&
-                    !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
-                    Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
-                );
-
-                var shuffledSeeds = plantSeeds.OrderBy(x => Guid.NewGuid()).ToList();
-
-                __instance.m_board.SeedBanks.LocalItem().AddSeed(SeedType.Sunflower, true);
-
-                for (int i = 0; i < 5 && i < shuffledSeeds.Count; i++)
-                {
-                    var seedType = shuffledSeeds[i];
-                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-                }
-            }
-            else if (VersusState.AmZombieSide)
-            {
-                var zombieSeeds = Enum.GetValues<SeedType>().Where(seed =>
-                    seed != SeedType.ZombieGravestone &&
-                    Challenge.IsZombieSeedType(seed) &&
-                    !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
-                    Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
-                );
-
-                var shuffledSeeds = zombieSeeds.OrderBy(x => Guid.NewGuid()).ToList();
-
-                __instance.m_board.SeedBanks.LocalItem().AddSeed(SeedType.ZombieGravestone, true);
-
-                for (int i = 0; i < 5 && i < shuffledSeeds.Count; i++)
-                {
-                    var seedType = shuffledSeeds[i];
-                    __instance.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-                }
-            }
-        }
-
+        VersusGameplayManager.VersusGamemode.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
 
         throw new SilentPatchException(); // For some reason needed to prevent original method to run ???
+    }
+
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
+    [HarmonyPostfix]
+    private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
+    {
+        VersusGameplayManager.VersusGamemode.UpdateGameplay(__instance);
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]

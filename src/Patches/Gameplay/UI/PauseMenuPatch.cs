@@ -6,7 +6,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using UnityEngine.UI;
 
-namespace ReplantedOnline.Patches.Client.UI;
+namespace ReplantedOnline.Patches.Gameplay.UI;
 
 [HarmonyPatch]
 internal static class PauseMenuPatch

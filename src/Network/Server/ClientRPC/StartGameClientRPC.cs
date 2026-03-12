@@ -1,16 +1,10 @@
-﻿using Il2Cpp;
-using Il2CppReloaded.Gameplay;
-using Il2CppSource.Binders;
-using Il2CppSource.Utils;
+﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Patches.Gameplay.UI;
-using ReplantedOnline.Utilities;
-using System.Collections;
 
 namespace ReplantedOnline.Network.Server.ClientRPC;
 
@@ -42,95 +36,12 @@ internal sealed class StartGameClientRPC : BaseClientRPC
 
             // Configure the game with the host's selected game mode
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
-
-            switch (selectionSet)
-            {
-                case SelectionSet.CustomAll:
-                    NetClient.LocalClient?.Ready = false;
-                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChooseZombiePacket;
-                    Transitions.ToChooseSeeds();
-                    Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap().WrapToIl2cpp());
-                    break;
-                case SelectionSet.Random:
-                case SelectionSet.QuickPlay:
-                    VersusLobbyPatch.VsSideChooser?.gameObject?.SetActive(false);
-                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.Gameplay;
-                    StateTransitionUtils.Transition("InGame");
-                    break;
-            }
+            var gamemode = VersusGameplayManager.SetGamemode(selectionSet);
+            gamemode.OnGameModeStart(Instances.GameplayActivity.VersusMode);
         }
         else
         {
             ReplantedOnlineMod.Logger.Warning($"[RPCHandler] Rejected StartGame RPC from non-host: {sender.Name}");
-        }
-    }
-
-    // Make Zombie have first pick in Custom
-    private static IEnumerator CoWaitSeedChooserVSSwap()
-    {
-        while (UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>() == null)
-        {
-            if (!NetLobby.AmInLobby())
-            {
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        NetClient.LocalClient?.Ready = true;
-
-        if (ModInfo.DEBUG)
-        {
-            if (NetLobby.GetLobbyMemberCount() == 1)
-            {
-                if (VersusState.AmPlantSide)
-                {
-                    foreach (var seedType in Instances.GameplayActivity.VersusMode.m_quickPlayZombies.Skip(1))
-                    {
-                        Instances.GameplayActivity.Board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-                    }
-
-                    var seedChooserVSSwapDebug = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
-                    seedChooserVSSwapDebug.playerTurn = 1;
-                    seedChooserVSSwapDebug.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
-                    DisableSeedPackets();
-                    Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChoosePlantPacket;
-
-                    yield break;
-                }
-                else if (VersusState.AmZombieSide)
-                {
-                    foreach (var seedType in Instances.GameplayActivity.VersusMode.m_quickPlayPlants.Skip(1))
-                    {
-                        Instances.GameplayActivity.Board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-                    }
-                }
-            }
-        }
-
-        var seedChooserVSSwap = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
-        seedChooserVSSwap.swapCanvasOrder();
-        seedChooserVSSwap.m_vsSeedChooserAnimator.Play(-160334332, 0, 1f);
-        seedChooserVSSwap.playerTurn = 1;
-        seedChooserVSSwap.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
-        DisableSeedPackets();
-    }
-
-    // Hide disabled seed packets 
-    private static void DisableSeedPackets()
-    {
-        List<ChosenSeed> chosenSeeds = [
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
-        ];
-
-        foreach (var seedPacket in chosenSeeds)
-        {
-            if (SeedPacketDefinitions.DisabledSeedTypes.Contains(seedPacket.mSeedType))
-            {
-                seedPacket.mIsImitater = true;
-            }
         }
     }
 }
