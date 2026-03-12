@@ -4,15 +4,15 @@ using ReplantedOnline.Structs;
 namespace ReplantedOnline.Network.Client;
 
 /// <summary>
-/// Represents a networked client in ReplantedOnline, managing Steam ID, client information,
-/// and network state for players connected via Steamworks P2P.
+/// Represents a networked client in ReplantedOnline, managing ID, client information,
+/// and network state for players connected via P2P.
 /// </summary>
 internal sealed class NetClient
 {
     /// <summary>
-    /// Initializes a new instance of the SteamNetClient class.
+    /// Initializes a new instance of the NetClient class.
     /// </summary>
-    /// <param name="id">The Steam ID of the client.</param>
+    /// <param name="id">The ID of the client.</param>
     internal NetClient(ID id)
     {
         ClientId = id;
@@ -26,7 +26,7 @@ internal sealed class NetClient
         {
             OpponentClient = this;
         }
-        ReplantedOnlineMod.Logger.Msg($"[SteamNetClient] P2P connections initialized with {Name} ({id})");
+        ReplantedOnlineMod.Logger.Msg($"[NetClient] P2P connections initialized with {Name} ({id})");
     }
 
     /// <summary>
@@ -48,22 +48,22 @@ internal sealed class NetClient
     }
 
     /// <summary>
-    /// Get the local SteamNetClient
+    /// Get the local NetClient
     /// </summary>
     internal static NetClient LocalClient { get; private set; }
 
     /// <summary>
-    /// Get the opponent SteamNetClient
+    /// Get the opponent NetClient
     /// </summary>
     internal static NetClient OpponentClient { get; private set; }
 
     /// <summary>
-    /// The Steam ID of this client.
+    /// The ID of this client.
     /// </summary>
     internal readonly ID ClientId;
 
     /// <summary>
-    /// The display name of this client from Steam friends.
+    /// The display name of this client.
     /// </summary>
     internal readonly string Name = "Player";
 
@@ -83,7 +83,7 @@ internal sealed class NetClient
     internal PlayerTeam Team;
 
     /// <summary>
-    /// Gets the plants SteamNetClient
+    /// Gets the plants NetClient
     /// </summary>
     internal static NetClient GetPlantClient()
     {
@@ -99,7 +99,7 @@ internal sealed class NetClient
     }
 
     /// <summary>
-    /// Gets the zombies SteamNetClient
+    /// Gets the zombies NetClient
     /// </summary>
     internal static NetClient GetZombieClient()
     {

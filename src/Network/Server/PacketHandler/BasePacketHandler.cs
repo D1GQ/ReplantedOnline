@@ -24,8 +24,7 @@ internal abstract class BasePacketHandler
     /// <summary>
     /// Processes an incoming network packet from a connected client.
     /// </summary>
-    /// <param name="sender">The client that sent the packet. Contains Steam ID,
-    /// connection state, and other client-specific information.</param>
+    /// <param name="sender">The client that sent the packet.</param>
     /// <param name="packetReader">The packet reader containing the raw packet data
     /// to be deserialized and processed by the handler.</param>
     /// <remarks>
