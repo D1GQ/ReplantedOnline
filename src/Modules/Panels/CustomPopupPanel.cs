@@ -9,7 +9,7 @@ namespace ReplantedOnline.Modules.Panels;
 /// <summary>
 /// Provides a custom popup dialog system for Replanted Online mod.
 /// </summary>
-internal static class ReplantedOnlinePopup
+internal static class CustomPopupPanel
 {
     private static PanelView _panel;
     private static TextMeshProUGUI _header;

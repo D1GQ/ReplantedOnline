@@ -950,7 +950,7 @@ internal sealed class LanTransport : INetworkTransport
     {
         Transitions.ToMainMenu(() =>
         {
-            ReplantedOnlinePopup.Show("Disconnected", message);
+            CustomPopupPanel.Show("Disconnected", message);
         });
     }
 

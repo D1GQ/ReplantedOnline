@@ -56,7 +56,7 @@ internal static class VersusLobbyPatch
 
                 VsSideChooser.SetVSButton("Custom", () =>
                 {
-                    ReplantedOnlinePopup.Show("Under Construction", "This game mode will be coming soon!");
+                    CustomPopupPanel.Show("Under Construction", "This game mode will be coming soon!");
                 });
                 VsSideChooser.SetVsButtonTitle("Custom", "Speed\nBattle");
 

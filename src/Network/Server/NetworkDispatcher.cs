@@ -257,7 +257,7 @@ internal static class NetworkDispatcher
                 ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Exception in CoListening: {ex}");
                 NetLobby.LeaveLobby(() =>
                 {
-                    ReplantedOnlinePopup.Show("Error", "An error occurred while processing network packets.");
+                    CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
                 });
                 listeningToken = null;
                 yield break;
@@ -331,7 +331,7 @@ internal static class NetworkDispatcher
                         BanReasons reason = (BanReasons)packetReader.ReadByte();
                         NetLobby.LeaveLobby(() =>
                         {
-                            ReplantedOnlinePopup.Show("Disconnected", "You have been disconnected by the Host!");
+                            CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");
                         });
                         ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] P2P closed by host");
                     }

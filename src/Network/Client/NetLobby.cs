@@ -221,7 +221,7 @@ internal static class NetLobby
         {
             LeaveLobby(() =>
             {
-                ReplantedOnlinePopup.Show("Disconnected", "Host has left the game!");
+                CustomPopupPanel.Show("Disconnected", "Host has left the game!");
             });
             ReplantedOnlineMod.Logger.Warning("[NetLobby] Lobby host left the game");
         }
@@ -256,7 +256,7 @@ internal static class NetLobby
         {
             ResetLobby(() =>
             {
-                ReplantedOnlinePopup.Show("Lobby Restarted", "The other player has left the game!");
+                CustomPopupPanel.Show("Lobby Restarted", "The other player has left the game!");
             });
         }
 

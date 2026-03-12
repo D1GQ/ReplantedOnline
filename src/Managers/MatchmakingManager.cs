@@ -52,7 +52,7 @@ internal static class MatchmakingManager
                     ReplantedOnlineMod.Logger.Error($"[NetLobby] Lobby search failed: {task.Exception}");
                     Transitions.ToMainMenu(() =>
                     {
-                        ReplantedOnlinePopup.Show("Disconnected", $"An critical error occurred!");
+                        CustomPopupPanel.Show("Disconnected", $"An critical error occurred!");
                     });
                     return;
                 }
@@ -64,7 +64,7 @@ internal static class MatchmakingManager
                     ReplantedOnlineMod.Logger.Msg("[NetLobby] No lobbies found");
                     Transitions.ToMainMenu(() =>
                     {
-                        ReplantedOnlinePopup.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
+                        CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
                     });
                     return;
                 }
@@ -88,7 +88,7 @@ internal static class MatchmakingManager
                             ReplantedOnlineMod.Logger.Warning($"[NetLobby] Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
-                                ReplantedOnlinePopup.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
+                                CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
                             });
                             return;
                         }
@@ -101,7 +101,7 @@ internal static class MatchmakingManager
                         ReplantedOnlineMod.Logger.Warning($"[NetLobby] Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
                         Transitions.ToMainMenu(() =>
                         {
-                            ReplantedOnlinePopup.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
+                            CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
                         });
                     }
                 }

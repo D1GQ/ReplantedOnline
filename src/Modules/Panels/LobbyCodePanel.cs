@@ -74,7 +74,7 @@ internal static class LobbyCodePanel
                 }
                 else
                 {
-                    ReplantedOnlinePopup.Show("Error", $"Lobby code must contain {MatchmakingManager.CODE_LENGTH} characters!");
+                    CustomPopupPanel.Show("Error", $"Lobby code must contain {MatchmakingManager.CODE_LENGTH} characters!");
                 }
             });
         }
