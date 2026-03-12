@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Client;
 /// Represents the network data and state for a ReplantedOnline lobby.
 /// Manages client information, lobby membership, and game state synchronization.
 /// </summary>
-internal sealed class NetLobbyData
+internal sealed class NetLobbyData : IDisposable
 {
     /// <summary>
     /// Initializes a new instance of the NetLobbyData class with specified IDs.
@@ -311,5 +311,19 @@ internal sealed class NetLobbyData
 
             VersusLobbyManager.UpdateSideVisuals();
         }
+    }
+
+    /// <summary>
+    /// Dispose of the lobby data.
+    /// </summary>
+    public void Dispose()
+    {
+        LocalDespawnAll();
+        AllClients?.Clear();
+        NetworkObjectsSpawned?.Clear();
+        LobbyCode = null;
+        NetworkIdPoolHost?.Dispose();
+        NetworkIdPoolNonHost?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

@@ -4,7 +4,7 @@
 /// Provides a pool of network IDs for allocation and reuse.
 /// Manages a range of unsigned integer IDs from a specified start to end value.
 /// </summary>
-internal sealed class NetworkIdPool
+internal sealed class NetworkIdPool : IDisposable
 {
     private readonly Queue<uint> _availableIds = [];
     private readonly HashSet<uint> _allocatedIds = [];
@@ -48,4 +48,14 @@ internal sealed class NetworkIdPool
     /// Gets the number of available IDs in the pool.
     /// </summary>
     internal int AvailableCount => _availableIds.Count;
+
+    /// <summary>
+    /// Dispose of the pool ids.
+    /// </summary>
+    public void Dispose()
+    {
+        _availableIds.Clear();
+        _allocatedIds.Clear();
+        GC.SuppressFinalize(this);
+    }
 }

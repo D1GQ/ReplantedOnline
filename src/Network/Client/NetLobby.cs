@@ -160,9 +160,9 @@ internal static class NetLobby
         }
 
         ReplantedOnlineMod.Logger.Msg($"[NetLobby] Leaving lobby {LobbyData.LobbyId}");
-        LobbyData.LocalDespawnAll();
-        Transitions.ToMainMenu(callback);
         var lobbyId = LobbyData.LobbyId;
+        LobbyData.Dispose();
+        Transitions.ToMainMenu(callback);
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
         ReplantedOnlineMod.Logger.Msg("[NetLobby] Successfully left lobby");
@@ -172,6 +172,7 @@ internal static class NetLobby
     {
         if (result == Result.OK)
         {
+            LobbyData?.Dispose();
             LobbyData = new(lobby.Id, lobby.OwnerId);
             LobbyData.InitializeData();
             ReplantedOnlineMod.Logger.Msg($"[NetLobby] Lobby created successfully: {LobbyData.LobbyId}");
@@ -186,7 +187,8 @@ internal static class NetLobby
 
     internal static void OnLobbyEnteredCompleted(ServerLobby lobby)
     {
-        LobbyData ??= new(lobby.Id, lobby.OwnerId);
+        LobbyData?.Dispose();
+        LobbyData = new(lobby.Id, lobby.OwnerId);
         LobbyData.LobbyCode = NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
         Transitions.ToVersus(() =>
         {
