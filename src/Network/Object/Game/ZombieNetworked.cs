@@ -156,6 +156,9 @@ internal sealed class ZombieNetworked : NetworkObject
             case ZombieType.Ladder:
                 LadderUpdate();
                 break;
+            case ZombieType.Catapult:
+                CatapultUpdate();
+                break;
         }
 
         NormalUpdate();
@@ -323,6 +326,20 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
+    private void CatapultUpdate()
+    {
+        if (_Zombie == null) return;
+
+        if (AmOwner)
+        {
+            var target = _Zombie.FindCatapultTarget();
+            if (_Target != target)
+            {
+                SendSetPlantTargetRpc(target);
+            }
+        }
+    }
+
     [HideFromIl2Cpp]
     internal void CheckDeath(Action callback)
     {
@@ -468,7 +485,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             _Target = target;
             var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetNetworked());
+            writer.WriteNetworkObject(target?.GetNetworked());
             SendNetworkClassRpc((byte)ZombieRpcs.SetPlantTarget, writer);
             writer.Recycle();
         }
@@ -617,7 +634,7 @@ internal sealed class ZombieNetworked : NetworkObject
             case ZombieRpcs.SetPlantTarget:
                 {
                     var target = packetReader.ReadNetworkObject<PlantNetworked>();
-                    HandleSetPlantTargetRpc(target._Plant);
+                    HandleSetPlantTargetRpc(target?._Plant);
                 }
                 break;
             case ZombieRpcs.EnteringHouse:

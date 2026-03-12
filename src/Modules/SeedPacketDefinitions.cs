@@ -21,11 +21,6 @@ internal static class SeedPacketDefinitions
         SeedType.Tanglekelp,
         SeedType.Seashroom,
         SeedType.Blover,
-
-        // Zombies
-        // Needs to be fixed
-        SeedType.Zomboni,
-        SeedType.ZombieCatapult,
     ];
 
     internal static SeedType[] IgnoreInitialCooldown = [

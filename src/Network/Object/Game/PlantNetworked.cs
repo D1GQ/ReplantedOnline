@@ -335,7 +335,7 @@ internal sealed class PlantNetworked : NetworkObject
     internal void SendSetZombieTargetRpc(Zombie target)
     {
         var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(target.GetNetworked());
+        writer.WriteNetworkObject(target?.GetNetworked());
         SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
         writer.Recycle();
     }
@@ -389,7 +389,7 @@ internal sealed class PlantNetworked : NetworkObject
             case PlantRpcs.SetZombieTarget:
                 {
                     var target = packetReader.ReadNetworkObject<ZombieNetworked>();
-                    HandleSetZombieTargetRpc(target._Zombie);
+                    HandleSetZombieTargetRpc(target?._Zombie);
                 }
                 break;
             case PlantRpcs.SquishPlant:

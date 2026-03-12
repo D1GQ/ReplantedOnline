@@ -5,7 +5,7 @@ namespace ReplantedOnline.Interfaces;
 
 /// <summary>
 /// Defines the contract for versus game mode implementations.
-/// Provides lifecycle methods that are called during different phases of a versus mode.
+/// Provides lifecycle methods that are called during different phases of versus mode.
 /// </summary>
 internal interface IVersusGamemode
 {
