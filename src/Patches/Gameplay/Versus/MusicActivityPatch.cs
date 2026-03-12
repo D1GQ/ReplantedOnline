@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client;
 using static ReplantedOnline.Managers.BloomEngineManager;
 
@@ -11,8 +13,13 @@ internal static class MusicActivityPatch
 {
     [HarmonyPatch(typeof(MusicActivity), nameof(MusicActivity.TriggerAudio))]
     [HarmonyPrefix]
-    private static void MusicActivity_TriggerAudio_Prefix(MusicActivity __instance, ref MusicTune? __state)
+    private static bool MusicActivity_TriggerAudio_Prefix(MusicActivity __instance, ref MusicTune? __state)
     {
+        // Do not play before game starts
+        if (Instances.GameplayActivity?.VersusMode != null &&
+            VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath &&
+            Instances.GameplayActivity.VersusMode.m_versusTime < 3f) return false;
+
         // Initialize state variable
         __state = null;
 
@@ -29,6 +36,8 @@ internal static class MusicActivityPatch
                 __instance.m_musicTune = MusicTune.MinigameLoonboon;
             }
         }
+
+        return true;
     }
 
     [HarmonyPatch(typeof(MusicActivity), nameof(MusicActivity.TriggerAudio))]
