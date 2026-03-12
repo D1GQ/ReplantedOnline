@@ -22,12 +22,17 @@ internal enum ClientRpcType
     ChooseSeed,
 
     /// <summary>
-    /// Sync starting a mower
+    /// Sync starting a mower.
     /// </summary>
     StartMower,
 
     /// <summary>
-    /// Sync adding a ladder to a plant
+    /// Sync adding a ladder to a plant.
     /// </summary>
-    AddLadder
+    AddLadder,
+
+    /// <summary>
+    /// Syncs seed packet cooldown.
+    /// </summary>
+    SyncSeedPacket
 }
