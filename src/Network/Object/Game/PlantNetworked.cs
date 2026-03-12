@@ -32,14 +32,14 @@ internal sealed class PlantNetworked : NetworkObject
     /// Gets the current target zombie.
     /// </summary>
     [HideFromIl2Cpp]
-    internal Zombie _Target { get; set; }
+    internal Zombie Target { get; set; }
 
     internal static bool DoNotSyncDeath(Plant plant, int doSpecialCountdown)
     {
         switch (plant.mSeedType)
         {
             case SeedType.Potatomine:
-                return plant?.GetNetworked()?._Target != null;
+                return plant?.GetNetworked()?.Target != null;
             case SeedType.Doomshroom:
             case SeedType.Iceshroom:
             case SeedType.Cherrybomb:
@@ -202,15 +202,15 @@ internal sealed class PlantNetworked : NetworkObject
         {
             string plantStateStr = _Plant.mState.ToString();
 
-            if (_State?.ToString() != plantStateStr)
+            if (State?.ToString() != plantStateStr)
             {
-                _State = plantStateStr;
+                State = plantStateStr;
                 SendSetStateRpc(plantStateStr);
             }
         }
         else
         {
-            if (_State is string stateStr)
+            if (State is string stateStr)
             {
                 if (Enum.TryParse(stateStr, out PlantState state))
                 {
@@ -219,7 +219,7 @@ internal sealed class PlantNetworked : NetworkObject
                         if (state == PlantState.ChomperBiting)
                         {
                             _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30f, ReanimLoopType.PlayOnce);
-                            _State = PlantState.ChomperBitingMissed.ToString();
+                            State = PlantState.ChomperBitingMissed.ToString();
                         }
                         else if (state == PlantState.ChomperDigesting)
                         {
@@ -251,10 +251,10 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!AmOwner)
         {
-            if (_Target != null)
+            if (Target != null)
             {
-                _Plant.MagnetShroomAttactItemOriginal(_Target);
-                _Target = null;
+                _Plant.MagnetShroomAttactItemOriginal(Target);
+                Target = null;
             }
         }
     }
@@ -283,9 +283,9 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (SeedType != SeedType.Squash) return;
 
-        if (_State is not PlantState.DoingSpecial)
+        if (State is not PlantState.DoingSpecial)
         {
-            _State = PlantState.DoingSpecial;
+            State = PlantState.DoingSpecial;
             var writer = PacketWriter.Get();
             writer.WriteNetworkObject(target.GetNetworked());
             SendNetworkClassRpc((byte)PlantRpcs.SquashTarget, writer);
@@ -297,9 +297,9 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (SeedType != SeedType.Squash) return;
 
-        if (_State is not PlantState.DoingSpecial)
+        if (State is not PlantState.DoingSpecial)
         {
-            _State = PlantState.DoingSpecial;
+            State = PlantState.DoingSpecial;
             _Plant.mTargetZombieID = target.DataID;
             _Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
             _Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
@@ -342,7 +342,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void HandleSetZombieTargetRpc(Zombie target)
     {
-        _Target = target;
+        Target = target;
     }
 
     internal void SendSetStateRpc(string state)
@@ -355,7 +355,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void HandleSetStateRpc(string state)
     {
-        _State = state;
+        State = state;
     }
 
     [HideFromIl2Cpp]

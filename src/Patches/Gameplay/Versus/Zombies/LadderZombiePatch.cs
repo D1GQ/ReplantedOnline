@@ -26,9 +26,9 @@ internal static class LadderZombiePatch
                     if (__instance.mZombiePhase == ZombiePhase.LadderCarrying)
                     {
                         // Wait for plant side to find target to place ladder
-                        if (netZombie._Target != null)
+                        if (netZombie.Target != null)
                         {
-                            __result = netZombie._Target;
+                            __result = netZombie.Target;
                         }
                         else
                         {

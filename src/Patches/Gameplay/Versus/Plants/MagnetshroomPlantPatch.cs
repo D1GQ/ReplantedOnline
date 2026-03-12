@@ -27,9 +27,9 @@ internal static class MagnetshroomPlantPatch
                     if (theZombie != null)
                     {
                         // Send network message to tell other players about the magnet shroom target
-                        if (netPlant._Target != theZombie)
+                        if (netPlant.Target != theZombie)
                         {
-                            netPlant._Target = theZombie;
+                            netPlant.Target = theZombie;
                             netPlant.SendSetZombieTargetRpc(theZombie);
                         }
                     }

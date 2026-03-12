@@ -21,7 +21,7 @@ internal static class CatapultZombiePatchPatch
                 var netZombie = __instance.GetNetworked();
                 if (netZombie != null)
                 {
-                    __result = netZombie._Target;
+                    __result = netZombie.Target;
                 }
             }
         }

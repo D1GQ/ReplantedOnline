@@ -40,7 +40,7 @@ internal sealed class ZombieNetworked : NetworkObject
     /// Gets the current target zombie.
     /// </summary>
     [HideFromIl2Cpp]
-    internal Plant _Target { get; set; }
+    internal Plant Target { get; set; }
 
     /// <summary>
     /// Represents the networked animation controller used to synchronize animation states across multiple clients.
@@ -106,7 +106,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (ZombieType == ZombieType.Bungee || _State is NetStates.MIND_CONTROLLED_STATE)
+            if (ZombieType == ZombieType.Bungee || State is NetStates.MIND_CONTROLLED_STATE)
             {
                 if (_Zombie == null)
                 {
@@ -202,9 +202,9 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && _State is not NetStates.UPDATE_STATE)
+            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && State is not NetStates.UPDATE_STATE)
             {
-                _State = NetStates.UPDATE_STATE;
+                State = NetStates.UPDATE_STATE;
                 SendSetStateRpc(NetStates.UPDATE_STATE);
             }
         }
@@ -212,7 +212,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
             {
-                if (_State is not NetStates.UPDATE_STATE)
+                if (State is not NetStates.UPDATE_STATE)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -230,10 +230,10 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && _State is not NetStates.UPDATE_STATE)
+            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && State is not NetStates.UPDATE_STATE)
             {
                 Dead = true;
-                _State = NetStates.UPDATE_STATE;
+                State = NetStates.UPDATE_STATE;
                 SendSetStateRpc(NetStates.UPDATE_STATE);
                 StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
                 {
@@ -245,7 +245,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
-                if (_State is not NetStates.UPDATE_STATE)
+                if (State is not NetStates.UPDATE_STATE)
                 {
                     _Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -266,7 +266,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && _Target == null)
+            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && Target == null)
             {
                 // Send target to vault
                 Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Vault);
@@ -278,7 +278,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
         {
-            _Target = null;
+            Target = null;
         }
     }
 
@@ -290,7 +290,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && _Target == null)
+            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && Target == null)
             {
                 // Send target to place ladder
                 Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Ladder);
@@ -298,9 +298,9 @@ internal sealed class ZombieNetworked : NetworkObject
             }
             else if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
             {
-                if (_State is not NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                if (State is not NetStates.LADDER_ZOMBIE_PLACED_LADDER)
                 {
-                    _State = NetStates.LADDER_ZOMBIE_PLACED_LADDER;
+                    State = NetStates.LADDER_ZOMBIE_PLACED_LADDER;
                     SendSetStateRpc(NetStates.LADDER_ZOMBIE_PLACED_LADDER);
                 }
             }
@@ -309,11 +309,11 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && _Zombie.mPhaseCounter == 0)
             {
-                if (_State is NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                if (State is NetStates.LADDER_ZOMBIE_PLACED_LADDER)
                 {
                     _Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
                     _Zombie.DetachShield();
-                    _State = null;
+                    State = null;
                 }
             }
 
@@ -322,7 +322,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
         {
-            _Target = null;
+            Target = null;
         }
     }
 
@@ -333,7 +333,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (AmOwner)
         {
             var target = _Zombie.FindCatapultTarget();
-            if (_Target != target)
+            if (Target != target)
             {
                 SendSetPlantTargetRpc(target);
             }
@@ -481,9 +481,9 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendSetPlantTargetRpc(Plant target)
     {
-        if (_Target != target)
+        if (Target != target)
         {
-            _Target = target;
+            Target = target;
             var writer = PacketWriter.Get();
             writer.WriteNetworkObject(target?.GetNetworked());
             SendNetworkClassRpc((byte)ZombieRpcs.SetPlantTarget, writer);
@@ -493,7 +493,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleSetPlantTargetRpc(Plant target)
     {
-        _Target = target;
+        Target = target;
     }
 
     internal void SendEnteringHouseRpc(float xPos)
@@ -515,13 +515,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendMindControlledRpc()
     {
-        _State = NetStates.MIND_CONTROLLED_STATE;
+        State = NetStates.MIND_CONTROLLED_STATE;
         SendNetworkClassRpc((byte)ZombieRpcs.MindControlled);
     }
 
     private void HandleMindControlledRpc()
     {
-        _State = NetStates.MIND_CONTROLLED_STATE;
+        State = NetStates.MIND_CONTROLLED_STATE;
         _Zombie.StartMindControlledOriginal();
     }
 
@@ -594,7 +594,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleSetStateRpc(string state)
     {
-        _State = state;
+        State = state;
     }
 
     [HideFromIl2Cpp]

@@ -49,7 +49,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// This property can hold any type of object to represent various states.
     /// </summary>
     [HideFromIl2Cpp]
-    internal object _State { get; set; }
+    internal object State { get; set; }
 
     /// <summary>
     /// Creates a new runtime prefab of the specified type.

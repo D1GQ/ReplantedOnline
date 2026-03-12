@@ -51,9 +51,9 @@ internal static class PotatominePlantPatch
                     if (__result != null)
                     {
                         // Send network message to tell other players about the potato mine target
-                        if (netPlant._Target != __result)
+                        if (netPlant.Target != __result)
                         {
-                            netPlant._Target = __result;
+                            netPlant.Target = __result;
                             netPlant.SendSetZombieTargetRpc(__result);
                         }
                     }
@@ -61,11 +61,11 @@ internal static class PotatominePlantPatch
                 else
                 {
                     // For other players, get the target from network state instead of local AI
-                    if (netPlant._Target != null)
+                    if (netPlant.Target != null)
                     {
                         // Override the result with the networked zombie target
-                        __result = netPlant._Target;
-                        netPlant._Target = null;
+                        __result = netPlant.Target;
+                        netPlant.Target = null;
                         __instance.mController.StartCoroutine(CoWaitAndDie(__instance).WrapToIl2cpp());
                     }
                 }
