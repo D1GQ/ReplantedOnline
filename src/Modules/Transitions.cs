@@ -1,4 +1,5 @@
-﻿using Il2CppSource.Utils;
+﻿using Il2Cpp;
+using Il2CppSource.Utils;
 using Il2CppTekly.TreeState;
 using MelonLoader;
 using ReplantedOnline.Utilities;
@@ -80,7 +81,32 @@ internal static class Transitions
     /// </summary>
     internal static void SetLoading()
     {
-        Instances.GlobalPanels.GetPanel("loadingScrim")?.gameObject?.SetActive(true);
+        Instances.GlobalPanels.GetPanel("loadingScrim").gameObject.SetActive(true);
+        SetFade();
+        MelonCoroutines.Start(CoroutineUtils.WaitForCondition(() =>
+        {
+            return !Instances.GlobalPanels.GetPanel("loadingScrim").gameObject.activeInHierarchy;
+        }, FadeIn));
+    }
+
+    /// <summary>
+    /// Sets the FadePanel active and color.
+    /// </summary>
+    /// <param name="color">The color to use, Black by default.</param>
+    internal static void SetFade(Color? color = null)
+    {
+        color ??= Color.black;
+        var fadePanel = Instances.GlobalPanels.transform.Find("FadePanel").GetComponent<FadePanel>();
+        fadePanel.SetColor(color.Value);
+    }
+
+    /// <summary>
+    /// Starts FadePanel fading.
+    /// </summary>
+    internal static void FadeIn()
+    {
+        var fadePanel = Instances.GlobalPanels.transform.Find("FadePanel").GetComponent<FadePanel>();
+        fadePanel.FadeInIfOut();
     }
 
     private static IEnumerator CoWaitForTransition(Action callback, string transitionName, float timeout = 10f)
