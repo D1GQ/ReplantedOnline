@@ -94,11 +94,11 @@ internal static class PvZRUtils
     }
 
     /// <summary>
-    /// Checks if the zombie type is invulnerable to insta kills.
+    /// Checks if the zombie type is a target zombie or gravestone.
     /// </summary>
     /// <param name="zombieType">The zombie type.</param>
     /// <returns></returns>
-    internal static bool IsInvulnerableZombieType(this ZombieType zombieType)
+    internal static bool IsGravestoneOrTarget(this ZombieType zombieType)
     {
         return zombieType is ZombieType.Target or ZombieType.Gravestone;
     }

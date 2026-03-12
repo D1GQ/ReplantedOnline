@@ -6,6 +6,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
+using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 
@@ -76,13 +77,39 @@ internal static class ZombiePatch
         {
             // Prevent hypno affected zombies From eating target and gravestone zombies
             // This is a issue with replanted itself 
-            if (theZombie.mZombieType.IsInvulnerableZombieType())
+            if (theZombie.mZombieType.IsGravestoneOrTarget())
             {
                 return false;
             }
         }
 
         return true;
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetZombieRect))]
+    [HarmonyPostfix]
+    private static void Zombie_GetZombieRect_Postfix(Zombie __instance, ref Rect __result)
+    {
+        if (!__instance.mZombieType.IsGravestoneOrTarget()) return;
+
+        // Check if we're in an online multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            // Make Target Zombies and Gravestones invulnerable when behind another gravestone
+            // This is a direct fix to Fumeshroom OP piercing logic
+            foreach (var gravestone in __instance.mBoard.m_vsGravestones)
+            {
+                // Check if Gravestone is in the same row of zombie 
+                if (gravestone.mRow != __instance.mRow) continue;
+
+                // Check if Gravestone is in front of zombie
+                if (gravestone.mPosX < __instance.mPosX)
+                {
+                    __result = Rect.zero;
+                    break;
+                }
+            }
+        }
     }
 
     [HarmonyReversePatch]

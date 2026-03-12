@@ -57,7 +57,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         if (zombie != null)
         {
             if (zombie.mDead) return;
-            if (zombieNetworked.ZombieType.IsInvulnerableZombieType()) return;
+            if (zombieNetworked.ZombieType.IsGravestoneOrTarget()) return;
 
             _cachedControllerPosition = zombie.mController.transform.position;
             _cachedWPos = GetWorldPos(_cachedControllerPosition);
