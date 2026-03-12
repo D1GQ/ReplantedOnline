@@ -126,7 +126,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Gets or sets the Steam ID of the client who owns this network object.
     /// The owner has authority over the object's state and behavior.
     /// </summary>
-    public ID OwnerId { get; set; } = default;
+    public ID OwnerId { get; set; } = ID.Null;
 
     /// <summary>
     /// Gets or sets whether this network object has been successfully spawned across the network.

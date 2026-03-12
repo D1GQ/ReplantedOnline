@@ -55,7 +55,7 @@ internal sealed class PacketWriter
         if (id.IsSteamId && id.TryGetSteamId(out SteamId steamId))
         {
             WriteByte(1); // SteamId type
-            WriteULong(steamId.AccountId);
+            WriteULong(steamId);
         }
         else if (id.IsULong && id.TryGetULong(out ulong ulongValue))
         {

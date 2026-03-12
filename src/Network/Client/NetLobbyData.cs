@@ -139,7 +139,7 @@ internal sealed class NetLobbyData : IDisposable
         NetLobby.LobbyData.NetworkObjectsSpawned.Remove(networkObj.NetworkId);
         networkObj.IsOnNetwork = false;
         networkObj.OnDespawn();
-        networkObj.OwnerId = default;
+        networkObj.OwnerId = ID.Null;
         networkObj.NetworkId = 0;
 
         if (!networkObj.AmChild)

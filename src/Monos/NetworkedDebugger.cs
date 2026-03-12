@@ -76,10 +76,11 @@ internal sealed class NetworkedDebugger : MonoBehaviour
             Vector2 boxSize = new Vector2(100f, 150f) * ScreenScale.y;
             Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (75f * ScreenScale.y));
 
+            Color color = zombieNetworked.AmOwner ? Color.cyan : Color.white;
             DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
-                1f, 1f, _cachedTexts, Color.white,
+                1f, 1f, _cachedTexts, color,
                 new Vector2(0f, 15f * ScreenScale.y));
-            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
+            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, color);
 
             if (zombieNetworked.lastSyncPosX != null)
             {
@@ -140,10 +141,11 @@ internal sealed class NetworkedDebugger : MonoBehaviour
             Vector2 boxSize = new Vector2(100f, 100f) * ScreenScale.y;
             Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (25f * ScreenScale.y));
 
+            Color color = plantNetworked.AmOwner ? Color.cyan : Color.white;
             DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
-                1f, 1f, _cachedTexts, Color.white,
+                1f, 1f, _cachedTexts, color,
                 new Vector2(0f, 15f * ScreenScale.y));
-            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.white);
+            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, color);
         }
         else
         {
