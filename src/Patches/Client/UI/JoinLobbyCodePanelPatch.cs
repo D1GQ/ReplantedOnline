@@ -29,12 +29,15 @@ internal static class JoinLobbyCodePanelPatch
             var usersRenamePanel = __instance.m_panels.FirstOrDefault(p => p.Id == "usersRename");
             if (usersRenamePanel != null)
             {
-                // Create a copy of the rename panel for our lobby code input
-                _lobbyCodePanel = UnityEngine.Object.Instantiate(usersRenamePanel, __instance.transform);
-                _lobbyCodePanel.m_id = "joinLobbyCode";
-                _lobbyCodePanel.name = "P_Join_LobbyCode";
-                // Customize the panel for lobby code input
-                SetUplobbyCodePanel(_lobbyCodePanel);
+                if (_lobbyCodePanel == null)
+                {
+                    // Create a copy of the rename panel for our lobby code input
+                    _lobbyCodePanel = UnityEngine.Object.Instantiate(usersRenamePanel, __instance.transform);
+                    _lobbyCodePanel.m_id = "joinLobbyCode";
+                    _lobbyCodePanel.name = "P_Join_LobbyCode";
+                    // Customize the panel for lobby code input
+                    SetUplobbyCodePanel(_lobbyCodePanel);
+                }
             }
         }
     }
