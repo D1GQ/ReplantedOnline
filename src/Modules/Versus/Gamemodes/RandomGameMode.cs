@@ -31,6 +31,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 seed != SeedType.Sunflower &&
                 !Challenge.IsZombieSeedType(seed) &&
                 !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
+                !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
@@ -50,6 +51,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 seed != SeedType.ZombieGravestone &&
                 Challenge.IsZombieSeedType(seed) &&
                 !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
+                !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 

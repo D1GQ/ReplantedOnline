@@ -42,6 +42,13 @@ internal static class SeedPacketDefinitions
         SeedType.ZombieTrashCan
     ];
 
+    internal static SeedType[] ExcludeFromRandom = [
+        // Plants
+        SeedType.Flowerpot,
+        SeedType.Marigold,
+        SeedType.Plantern,
+    ];
+
     /// <summary>
     /// Initializes plant definitions and applies custom modifications.
     /// </summary>
