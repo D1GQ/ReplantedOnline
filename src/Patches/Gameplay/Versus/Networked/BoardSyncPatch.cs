@@ -11,7 +11,7 @@ internal static class BoardSyncPatch
 {
     [HarmonyPatch(typeof(Board), nameof(Board.AddALadder))]
     [HarmonyPrefix]
-    private static bool Board_AddALadder_Prefix(Board __instance, int theGridX, int theGridY)
+    private static bool Board_AddALadder_Prefix(int theGridX, int theGridY)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())

@@ -36,10 +36,12 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal static bool DoNotSyncDeath(Plant plant, int doSpecialCountdown)
     {
+        if (plant == null) return false;
+
         switch (plant.mSeedType)
         {
             case SeedType.Potatomine:
-                return plant?.GetNetworked()?.Target != null;
+                return plant.GetNetworked()?.Target != null;
             case SeedType.Doomshroom:
             case SeedType.Iceshroom:
             case SeedType.Cherrybomb:
@@ -47,7 +49,7 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     if (doSpecialCountdown == 0)
                     {
-                        plant?.GetNetworked()?.dead = true;
+                        plant.GetNetworked().dead = true;
                         return true;
                     }
                     else

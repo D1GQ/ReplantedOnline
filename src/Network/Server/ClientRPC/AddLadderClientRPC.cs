@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Attributes;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
@@ -29,7 +30,11 @@ internal sealed class AddLadderClientRPC : BaseClientRPC
         {
             int gridX = packetReader.ReadInt();
             int gridY = packetReader.ReadInt();
-            Instances.GameplayActivity.Board.AddALadderOriginal(gridX, gridY);
+            if (Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any) != null &&
+                Instances.GameplayActivity.Board.GetLadderAt(gridX, gridY) == null)
+            {
+                Instances.GameplayActivity.Board.AddALadderOriginal(gridX, gridY);
+            }
         }
     }
 }
