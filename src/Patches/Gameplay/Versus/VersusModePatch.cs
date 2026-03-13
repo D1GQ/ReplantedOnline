@@ -30,7 +30,7 @@ internal static class VersusModePatch
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]
     [HarmonyPrefix]
-    private static bool VersusMode_UpdateBobsledSpawning_Prefix(VersusMode __instance)
+    private static bool VersusMode_UpdateBobsledSpawning_Prefix()
     {
         // Only apply these changes when in an online lobby
         if (NetLobby.AmInLobby())

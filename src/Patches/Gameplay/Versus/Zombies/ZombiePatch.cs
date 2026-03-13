@@ -35,7 +35,10 @@ internal static class ZombiePatch
             if (theZombieType is ZombieType.Imp) throw new SilentPatchException();
 
             // Spawn zombie at column 9 (right side of board) with network synchronization
-            __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
+            __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Bobsled, true);
+
+            // Prevent VersusMode from handling Bobsled, this is done in BobsledZombiePatch.cs
+            if (theZombieType == ZombieType.Bobsled) throw new SilentPatchException();
 
             // Skip original method since we handled spawning with network sync
             return false;
