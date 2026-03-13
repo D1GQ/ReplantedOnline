@@ -77,7 +77,7 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Determines if a seed can be placed at the specified grid coordinates.
-    /// Checks board placement rules, versus game phase, and special zombie placement restrictions.
+    /// This is a extension of Board.CanPlantAt()
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -85,12 +85,17 @@ internal static class SeedPacketDefinitions
     /// <returns>True if the seed can be placed at the specified location, false otherwise.</returns>
     internal static bool CanPlace(SeedType seedType, int gridX, int gridY)
     {
-        // Check if placing a Dancer zombie - they cannot be placed in top or bottom rows (0 and 4)
-        var checkDancerGrid = seedType != SeedType.ZombieDancer || gridY != 0 && gridY != 4;
+        if (VersusState.VersusPhase is not (VersusPhase.Gameplay or VersusPhase.SuddenDeath))
+        {
+            return false;
+        }
 
-        return Instances.GameplayActivity.Board.CanPlantAt(gridX, gridY, seedType) == PlantingReason.Ok
-            && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath
-            && checkDancerGrid;
+        if (seedType == SeedType.ZombieDancer)
+        {
+            return gridY != 0 && gridY != 4;
+        }
+
+        return true;
     }
 
     /// <summary>

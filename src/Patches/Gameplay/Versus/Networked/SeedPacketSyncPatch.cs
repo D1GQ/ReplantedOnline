@@ -32,7 +32,7 @@ internal static class SeedPacketSyncPatch
                 var gridY = __instance.m_cursor.m_gridY;
 
                 // Check if planting at this position is valid
-                if (SeedPacketDefinitions.CanPlace(seedType, gridX, gridY))
+                if (__instance.Board.CanPlantAt(gridX, gridY, seedType) == PlantingReason.Ok)
                 {
                     // Find the seed packet from the seed bank that matches the seed type
                     var seedPacket = __instance.GetFirstSelectedSeedPack();
@@ -92,7 +92,7 @@ internal static class SeedPacketSyncPatch
                 var gridY = Instances.GameplayActivity.Board.PixelToGridYKeepOnBoard(pos.x, pos.y);
 
                 // Check if planting at this position is valid
-                if (SeedPacketDefinitions.CanPlace(seedType, gridX, gridY))
+                if (__instance.Board.CanPlantAt(gridX, gridY, seedType) == PlantingReason.Ok)
                 {
                     // Find the seed packet from the seed bank that matches the seed type
                     var seedPacket = __instance.Board.SeedBanks.LocalItem().SeedPackets.FirstOrDefault(packet => packet.mPacketType == seedType);

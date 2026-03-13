@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 
@@ -72,6 +73,20 @@ internal static class VersusModePatch
         }
 
         return true;
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.CanPlantAt))]
+    [HarmonyPostfix]
+    private static void Board_CanPlantAt_Postfix(int theGridX, int theGridY, SeedType theType, ref PlantingReason __result)
+    {
+        if (NetLobby.AmInLobby())
+        {
+            // Custom place conditions 
+            if (!SeedPacketDefinitions.CanPlace(theType, theGridX, theGridY))
+            {
+                __result = PlantingReason.NotHere;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.Update))]
