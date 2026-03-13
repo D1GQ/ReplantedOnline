@@ -53,8 +53,6 @@ internal class VersusGameplayManager
 
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
-
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Normal, 8, 0, false, true);
         }
 
         List<SeedPacket> allSeedPackets =
