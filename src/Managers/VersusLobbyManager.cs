@@ -243,7 +243,7 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerClick = new() { eventID = EventTriggerType.PointerClick };
             pointerClick.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode) Instances.GameplayActivity.StartCoroutine(CoCopyLobbyCode().WrapToIl2cpp());
+                if (!copyingLobbyCode) Instances.GameplayActivity.StartCoroutine(CoCopyLobbyCode());
             }));
             trigger.triggers.Add(pointerClick);
         }

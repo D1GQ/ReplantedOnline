@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Logging;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
@@ -34,7 +35,7 @@ internal static class ZombiePatch
             if (theZombieType is ZombieType.Imp) throw new SilentPatchException();
 
             // Spawn zombie at column 9 (right side of board) with network synchronization
-            __result = Utils.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
+            __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 9, theRow, theZombieType is not ZombieType.Imp, true);
 
             // Skip original method since we handled spawning with network sync
             return false;

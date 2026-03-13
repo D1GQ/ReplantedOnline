@@ -3,11 +3,9 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Logging;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server.ClientRPC;
 using ReplantedOnline.Utilities;
 using static Il2CppReloaded.Constants;
@@ -34,7 +32,7 @@ internal static class SeedPacketSyncPatch
                 var gridY = __instance.m_cursor.m_gridY;
 
                 // Check if planting at this position is valid
-                if (CanPlace(seedType, gridX, gridY))
+                if (SeedPacketDefinitions.CanPlace(seedType, gridX, gridY))
                 {
                     // Find the seed packet from the seed bank that matches the seed type
                     var seedPacket = __instance.GetFirstSelectedSeedPack();
@@ -47,7 +45,7 @@ internal static class SeedPacketSyncPatch
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
-                        PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
+                        SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
                         SyncSeedPacketClientRPC.Send(seedType);
                     }
                     else
@@ -94,7 +92,7 @@ internal static class SeedPacketSyncPatch
                 var gridY = Instances.GameplayActivity.Board.PixelToGridYKeepOnBoard(pos.x, pos.y);
 
                 // Check if planting at this position is valid
-                if (CanPlace(seedType, gridX, gridY))
+                if (SeedPacketDefinitions.CanPlace(seedType, gridX, gridY))
                 {
                     // Find the seed packet from the seed bank that matches the seed type
                     var seedPacket = __instance.Board.SeedBanks.LocalItem().SeedPackets.FirstOrDefault(packet => packet.mPacketType == seedType);
@@ -107,7 +105,7 @@ internal static class SeedPacketSyncPatch
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
-                        PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
+                        SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
                         SyncSeedPacketClientRPC.Send(seedType);
                     }
                     else
@@ -127,165 +125,5 @@ internal static class SeedPacketSyncPatch
 
         // Return true to execute original method (no plant in cursor, normal behavior)
         return true;
-    }
-
-    private static bool CanPlace(SeedType seedType, int gridX, int gridY)
-    {
-        // Check if placing a Dancer zombie - they cannot be placed in top or bottom rows (0 and 4)
-        var checkDancerGrid = seedType != SeedType.ZombieDancer || gridY != 0 && gridY != 4;
-
-        return Instances.GameplayActivity.Board.CanPlantAt(gridX, gridY, seedType) == PlantingReason.Ok
-            && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath
-            && checkDancerGrid;
-    }
-
-    internal static ReloadedObject PlaceSeed(SeedType seedType, SeedType imitaterType, int gridX, int gridY, bool spawnOnNetwork)
-    {
-        // Check if this is a zombie seed (from I, Zombie mode)
-        // Zombie seeds have special handling since they spawn zombies instead of plants
-        if (Challenge.IsZombieSeedType(seedType))
-        {
-            // Convert seed type to actual zombie type
-            // Example: SeedType.SEED_ZOMBIE_NORMAL -> ZombieType.ZOMBIE_NORMAL
-            var type = Challenge.IZombieSeedTypeToZombieType(seedType);
-
-            // Delegate to zombie spawning logic
-            return SpawnZombie(type, gridX, gridY, false, spawnOnNetwork);
-        }
-        else
-        {
-            // This is a regular plant seed - delegate to plant spawning logic
-            return SpawnPlant(seedType, imitaterType, gridX, gridY, spawnOnNetwork);
-        }
-    }
-
-    internal static Plant SpawnPlant(SeedType seedType, SeedType imitaterType, int gridX, int gridY, bool spawnOnNetwork)
-    {
-        // Create the actual plant object in the game world using the original game method
-        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, imitaterType);
-
-        // Only create network controller if network synchronization is requested
-        // This prevents creating network objects in single-player mode
-        if (spawnOnNetwork)
-        {
-            // Spawn a networked controller that will sync this plant across all clients
-            SpawnPlantOnNetwork(plant, gridX, gridY);
-        }
-
-        Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
-
-        return plant;
-    }
-
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY)
-    {
-        var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
-        {
-            net._Plant = plant;
-            net.SeedType = plant.mSeedType;
-            net.ImitaterType = plant.mImitaterType;
-            net.GridX = gridX;
-            net.GridY = gridY;
-        }, VersusState.PlantClientId);
-        plant.AddNetworkedLookup(networkObj);
-        networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
-        return networkObj;
-    }
-
-    internal static Il2CppReloaded.Gameplay.Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool shakeBush, bool spawnOnNetwork)
-    {
-        if (zombieType is ZombieType.Bobsled) return null;
-
-        // Determine if this zombie type rises from the ground (like grave zombies)
-        // Bungee zombies are excluded from rising behavior even if they normally would
-        var rise = VersusMode.ZombieRisesFromGround(zombieType) && zombieType is not (ZombieType.Bungee or ZombieType.Target or ZombieType.Imp);
-
-        // Some zombies have forced spawn positions on the right side
-        var forceXPos = !VersusMode.ZombieRisesFromGround(zombieType);
-
-        // Add zombie to the board at the specified position
-        // Use forced X position (9) for certain zombies, otherwise use the provided gridX
-        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, forceXPos ? 9 : gridX, gridY);
-
-        // If this zombie rises from ground, trigger the rising animation
-        // This makes the zombie emerge from the ground rather than just appearing
-        if (rise && !shakeBush)
-        {
-            zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
-            zombie.mPhaseCounter = 150;
-            Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_DIRT_RISE);
-            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-            var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
-            switch (zombieType)
-            {
-                case ZombieType.Gravestone:
-                    Instances.GameplayActivity.AddTodParticle(theX + 25, theY + 75, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
-                    zombie.mPosX = theX - 25;
-                    break;
-                case ZombieType.BackupDancer:
-                    Instances.GameplayActivity.AddTodParticle(gridX + 55, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
-                    zombie.mPosX = gridX;
-                    break;
-                default:
-                    Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
-                    zombie.mPosX = theX - 25;
-                    break;
-            }
-        }
-        else if (shakeBush)
-        {
-            Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
-        }
-
-        // Set Gravestone grid pos
-        if (zombieType == ZombieType.Gravestone)
-        {
-            Instances.GameplayActivity.Board.m_vsGravestones.Add(zombie);
-            zombie.mGraveX = gridX;
-            zombie.mGraveY = gridY;
-        }
-
-        // Set Bungee grid target
-        if (zombieType == ZombieType.Bungee)
-        {
-            zombie.mTargetCol = gridX;
-            zombie.mTargetRow = gridY;
-        }
-
-        // Only create network controller if network synchronization is requested
-        if (spawnOnNetwork)
-        {
-            // Spawn a networked controller that will sync this zombie across all clients
-            SpawnZombieOnNetwork(zombie, gridX, gridY, shakeBush);
-        }
-
-        // Fix rendering issues
-        if (zombieType is ZombieType.Gravestone)
-        {
-            zombie.RenderOrder -= 100 + 5 * (gridY + 1);
-        }
-        else if (zombieType is ZombieType.Target)
-        {
-            zombie.RenderOrder -= 200 + 10 * (gridY + 1);
-        }
-
-        Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
-
-        return zombie;
-    }
-
-    internal static ZombieNetworked SpawnZombieOnNetwork(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY, bool shakeBush)
-    {
-        var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
-        {
-            net._Zombie = zombie;
-            net.ZombieType = zombie.mZombieType;
-            net.ShakeBush = shakeBush;
-            net.GridX = gridX;
-            net.GridY = gridY;
-        }, VersusState.PlantClientId);
-        zombie.AddNetworkedLookup(networkObj);
-        networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
-        return networkObj;
     }
 }

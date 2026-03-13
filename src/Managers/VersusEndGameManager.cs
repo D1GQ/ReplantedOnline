@@ -46,7 +46,7 @@ internal static class VersusEndGameManager
             }
         }
 
-        Instances.GameplayActivity.StartCoroutine(CoEndGame(winningTeam).WrapToIl2cpp());
+        Instances.GameplayActivity.StartCoroutine(CoEndGame(winningTeam));
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ internal static class VersusEndGameManager
         winner.Dispose();
         loser.Dispose();
 
-        Instances.GameplayActivity.StartCoroutine(CoWinScreen().WrapToIl2cpp());
+        Instances.GameplayActivity.StartCoroutine(CoWinScreen());
     }
 
     /// <summary>

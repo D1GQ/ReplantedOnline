@@ -137,6 +137,12 @@ internal sealed class ZombieNetworked : NetworkObject
                     NormalUpdate();
                 }
                 return;
+            case ZombieType.Bobsled:
+                if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
+                {
+                    NormalUpdate();
+                }
+                return;
             case ZombieType.Imp:
                 if (_Zombie.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
                 {
@@ -235,10 +241,10 @@ internal sealed class ZombieNetworked : NetworkObject
                 Dead = true;
                 State = NetStates.UPDATE_STATE;
                 SendSetStateRpc(NetStates.UPDATE_STATE);
-                StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
+                this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
                 {
                     DespawnAndDestroy();
-                }).WrapToIl2cpp());
+                }));
             }
         }
         else
@@ -527,7 +533,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendSetFrozenRpc(bool frozen)
     {
-        StartCoroutine(CoroutineUtils.WaitForCondition(() => !frozen || _Zombie.mChilledCounter > 0, () =>
+        this.StartCoroutine(CoroutineUtils.WaitForCondition(() => !frozen || _Zombie.mChilledCounter > 0, () =>
         {
             var writer = PacketWriter.Get();
             writer.WriteBool(frozen);
@@ -541,7 +547,7 @@ internal sealed class ZombieNetworked : NetworkObject
             }
             SendNetworkClassRpc((byte)ZombieRpcs.SetFrozen, writer);
             writer.Recycle();
-        }).WrapToIl2cpp());
+        }));
     }
 
     private void HandleSetFrozenRpc(bool frozen, int counter)
@@ -683,6 +689,11 @@ internal sealed class ZombieNetworked : NetworkObject
                 GargantuarZombiePatch.ImpSerialize(_Zombie, packetWriter);
             }
 
+            if (ZombieType == ZombieType.Bobsled)
+            {
+                BobsledZombiePatch.BobsledSerialize(_Zombie, packetWriter);
+            }
+
             return;
         }
 
@@ -704,13 +715,18 @@ internal sealed class ZombieNetworked : NetworkObject
             ShakeBush = packetReader.ReadBool();
             ZombieType = (ZombieType)packetReader.ReadInt();
 
-            _Zombie = Utils.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
+            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
             _Zombie.AddNetworkedLookup(this);
             AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
 
             if (ZombieType == ZombieType.Imp)
             {
                 GargantuarZombiePatch.ImpDeserialize(_Zombie, packetReader);
+            }
+
+            if (ZombieType == ZombieType.Bobsled)
+            {
+                BobsledZombiePatch.BobsledDeserialize(_Zombie, packetReader);
             }
 
             return;
@@ -752,7 +768,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (distance < 100f && _Zombie.mZombieType != ZombieType.Pogo)
             {
-                larpCoroutine = StartCoroutine(CoLarpPos(posX).WrapToIl2cpp());
+                larpCoroutine = this.StartCoroutine(CoLarpPos(posX));
             }
             else
             {

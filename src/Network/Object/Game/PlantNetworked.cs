@@ -449,7 +449,7 @@ internal sealed class PlantNetworked : NetworkObject
             SeedType = (SeedType)packetReader.ReadInt();
             ImitaterType = (SeedType)packetReader.ReadInt();
 
-            _Plant = Utils.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
+            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
             _Plant.AddNetworkedLookup(this);
             AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
         }

@@ -66,7 +66,7 @@ internal static class PotatominePlantPatch
                         // Override the result with the networked zombie target
                         __result = netPlant.Target;
                         netPlant.Target = null;
-                        __instance.mController.StartCoroutine(CoWaitAndDie(__instance).WrapToIl2cpp());
+                        __instance.mController.StartCoroutine(CoWaitAndDie(__instance));
                     }
                 }
             }

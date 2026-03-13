@@ -94,8 +94,6 @@ internal static class ZombieSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             __instance.GetNetworked()?.SendTakeDamageRpc(theDamage, theDamageFlags);
-
-            return true;
         }
 
         return true;

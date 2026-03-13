@@ -42,17 +42,19 @@ internal class VersusGameplayManager
 
         if (NetLobby.AmLobbyHost())
         {
-            Utils.SpawnZombie(ZombieType.Target, 8, 0, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 1, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 2, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 3, false, true);
-            Utils.SpawnZombie(ZombieType.Target, 8, 4, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, false, true);
 
-            Utils.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 1, true);
-            Utils.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 3, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 1, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 3, true);
 
-            Utils.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
-            Utils.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
+
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 0, 2, false, true);
         }
 
         List<SeedPacket> allSeedPackets =
@@ -85,7 +87,7 @@ internal class VersusGameplayManager
                     .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
                     .Player.ActivateInput();
             }
-        ).WrapToIl2cpp());
+        ));
     }
 
     internal static void EndGame(GameObject focus, PlayerTeam winningTeam)

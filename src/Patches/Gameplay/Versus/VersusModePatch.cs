@@ -28,6 +28,22 @@ internal static class VersusModePatch
         VersusGameplayManager.VersusGamemode.UpdateGameplay(__instance);
     }
 
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]
+    [HarmonyPrefix]
+    private static bool VersusMode_UpdateBobsledSpawning_Prefix(VersusMode __instance)
+    {
+        // Only apply these changes when in an online lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]
     [HarmonyPrefix]
     private static bool Board_BoardAddCoin_Prefix(CoinType theCoinType)

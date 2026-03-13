@@ -11,6 +11,17 @@ namespace ReplantedOnline.Utilities;
 internal static class CoroutineUtils
 {
     /// <summary>
+    /// Starts a coroutine from a managed IEnumerator, automatically wrapping it for Il2Cpp compatibility.
+    /// </summary>
+    /// <param name="mono">The MonoBehaviour that will start the coroutine.</param>
+    /// <param name="enumerator">The managed IEnumerator to run as a coroutine.</param>
+    /// <returns>A Coroutine object that can be used to control the coroutine execution.</returns>
+    internal static Coroutine StartCoroutine(this MonoBehaviour mono, IEnumerator enumerator)
+    {
+        return mono.StartCoroutine(enumerator.WrapToIl2cpp());
+    }
+
+    /// <summary>
     /// Converts a managed IEnumerator to an Il2Cpp IEnumerator using the wrapper.
     /// </summary>
     /// <param name="enumerator">The managed enumerator to convert.</param>

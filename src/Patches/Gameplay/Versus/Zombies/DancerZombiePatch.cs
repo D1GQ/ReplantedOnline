@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Logging;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 
@@ -45,7 +45,7 @@ internal static class DancerZombiePatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            var backupDancer = SeedPacketSyncPatch.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
+            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false, true);
             __instance.AddNextId(backupDancer);
 
             throw new SilentPatchException();

@@ -23,7 +23,7 @@ internal sealed class CustomGamemode : IVersusGamemode
         NetClient.LocalClient?.Ready = false;
         versusMode.Phase = VersusPhase.ChooseZombiePacket;
         Transitions.ToChooseSeeds();
-        Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap().WrapToIl2cpp());
+        Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap());
     }
 
     /// <inheritdoc/>

@@ -7,7 +7,6 @@ using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
 using System.Collections;
 
@@ -166,7 +165,7 @@ internal static class GargantuarZombiePatch
         imp.mRelatedZombieID = gargantuar.DataID;
 
         SetupImp(gargantuar, imp);
-        SeedPacketSyncPatch.SpawnZombieOnNetwork(imp, 20, 0, false); // spawn imp on network off screen for plant side to sync the throw
+        SeedPacketDefinitions.SpawnZombieOnNetwork(imp, 20, 0, false); // spawn imp on network off screen for plant side to sync the throw
     }
 
     private static void SetupImp(Zombie gargantuar, Zombie imp)
@@ -211,7 +210,7 @@ internal static class GargantuarZombiePatch
 
             // Play imp sound
             Instances.GameplayActivity?.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_IMP);
-        }).WrapToIl2cpp());
+        }));
     }
 
     private static void ConfigureImpArc(Zombie gargantuar, Zombie imp)
