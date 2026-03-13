@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Object.Game;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -16,7 +17,7 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
+            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDeathRpc(theDamageFlags);
@@ -46,9 +47,9 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (NetLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
+            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
-            __instance.GetNetworked()?.SendDieWithLootRpc();
+            __instance.GetNetworked()?.SendDieLootRpc(true);
         }
 
         return true;
@@ -57,6 +58,28 @@ internal static class ZombieSyncPatch
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.DieWithLoot))]
     internal static void DieWithLootOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DieNoLoot))]
+    [HarmonyPrefix]
+    private static bool Zombie_DieNoLoot_Prefix(Zombie __instance)
+    {
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (NetLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
+
+            __instance.GetNetworked()?.SendDieLootRpc(false);
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DieNoLoot))]
+    internal static void DieNoLootOriginal(this Zombie __instance)
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }

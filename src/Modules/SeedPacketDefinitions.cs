@@ -26,7 +26,6 @@ internal static class SeedPacketDefinitions
         SeedType.None,
 
         // Plants
-        SeedType.Gravebuster,
         SeedType.Lilypad,
         SeedType.Tanglekelp,
         SeedType.Seashroom,

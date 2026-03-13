@@ -26,7 +26,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         TakeDamage,
         Death,
-        DieWithLoot,
+        DieLoot,
         MowDown,
         SetPlantTarget,
         EnteringHouse,
@@ -41,6 +41,19 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     [HideFromIl2Cpp]
     internal Plant Target { get; set; }
+
+    internal static bool DoNotSyncDeath(Zombie zombie)
+    {
+        if (zombie == null) return false;
+
+        switch (zombie.mZombieType)
+        {
+            case ZombieType.JackInTheBox:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /// <summary>
     /// Represents the networked animation controller used to synchronize animation states across multiple clients.
@@ -437,6 +450,8 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleDeathRpc(DamageFlags damageFlags)
     {
+        if (DoNotSyncDeath(_Zombie)) return;
+
         if (!Dead)
         {
             Dead = true;
@@ -447,22 +462,34 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendDieWithLootRpc()
+    internal void SendDieLootRpc(bool withLoot)
     {
         if (!Dead)
         {
             Dead = true;
-            SendNetworkClassRpc((byte)ZombieRpcs.DieWithLoot);
+            var writer = PacketWriter.Get();
+            writer.WriteBool(withLoot);
+            SendNetworkClassRpc((byte)ZombieRpcs.DieLoot, writer);
+            writer.Recycle();
             DespawnAndDestroy();
         }
     }
 
-    private void HandleDieWithLootRpc()
+    private void HandleDieLoot(bool withLoot)
     {
+        if (DoNotSyncDeath(_Zombie)) return;
+
         if (!Dead)
         {
             Dead = true;
-            _Zombie.DieWithLootOriginal();
+            if (withLoot)
+            {
+                _Zombie.DieWithLootOriginal();
+            }
+            else
+            {
+                _Zombie.DieNoLootOriginal();
+            }
         }
     }
 
@@ -624,9 +651,10 @@ internal sealed class ZombieNetworked : NetworkObject
                     HandleDeathRpc(damageFlags);
                 }
                 break;
-            case ZombieRpcs.DieWithLoot:
+            case ZombieRpcs.DieLoot:
                 {
-                    HandleDieWithLootRpc();
+                    var withLoot = packetReader.ReadBool();
+                    HandleDieLoot(withLoot);
                 }
                 break;
             case ZombieRpcs.MowDown:

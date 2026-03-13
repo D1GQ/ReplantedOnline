@@ -51,6 +51,11 @@ internal static class VersusModePatch
         // Only apply these changes when in an online lobby
         if (NetLobby.AmInLobby())
         {
+            if (theCoinType is CoinType.Silver or CoinType.Gold or CoinType.Diamond)
+            {
+                return false;
+            }
+
             if (theCoinType is CoinType.VersusTrophyPlant or CoinType.VersusTrophyZombie)
             {
                 return false;
