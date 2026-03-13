@@ -79,6 +79,7 @@ internal static class ZombiePatch
     {
         if (NetLobby.AmInLobby())
         {
+            // From Versus Mode Console:
             // Prevent hypno affected zombies From eating target and gravestone zombies
             // This is a issue with replanted itself 
             if (theZombie.mZombieType.IsGravestoneOrTarget())
@@ -99,6 +100,7 @@ internal static class ZombiePatch
         // Check if we're in an online multiplayer lobby
         if (NetLobby.AmInLobby())
         {
+            // From Versus Mode Console:
             // Make Target Zombies and Gravestones invulnerable when behind another gravestone
             // This is a direct fix to Fumeshroom OP piercing logic
             foreach (var gravestone in __instance.mBoard.m_vsGravestones)
