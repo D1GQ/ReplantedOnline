@@ -71,7 +71,10 @@ internal static class ZombieSyncPatch
             if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
 
-            __instance.GetNetworked()?.SendMowDownRpc();
+            if (!__instance.mDead)
+            {
+                __instance.GetNetworked()?.SendMowDownRpc();
+            }
         }
 
         return true;
