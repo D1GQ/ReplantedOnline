@@ -46,6 +46,12 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         if (zombie == null) return false;
 
+        // If called DieLoot then allow normal death on non plant side
+        if (zombie.GetNetworked()?.Dead == true)
+        {
+            return true;
+        }
+
         switch (zombie.mZombieType)
         {
             case ZombieType.JackInTheBox:
