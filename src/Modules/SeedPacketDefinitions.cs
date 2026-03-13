@@ -72,7 +72,25 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal static void Initialize()
     {
-        Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.ZombieFlag).m_versusCost = 275;
+        // From Versus Mode Console:
+        // Buff versus body health
+        foreach (var zombieType in Enum.GetValues<ZombieType>())
+        {
+            if (zombieType is ZombieType.Invalid or ZombieType.NumZombieTypes or
+                ZombieType.ZombieCachedPolevaulterWithPole or ZombieType.NumCachedZombieTypes)
+            {
+                continue;
+            }
+
+            var definition = Instances.DataServiceActivity.Service.GetZombieDefinition(zombieType);
+            if (definition != null)
+            {
+                if (definition.m_versusBodyHealth == 200)
+                {
+                    definition.m_versusBodyHealth = 270;
+                }
+            }
+        }
     }
 
     /// <summary>
