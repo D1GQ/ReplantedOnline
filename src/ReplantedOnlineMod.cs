@@ -84,6 +84,12 @@ internal class ReplantedOnlineMod : MelonMod
     {
         if (sceneName == "Frontend")
         {
+            // If the game some how goes to main menu while in the lobby leave it
+            if (NetLobby.AmInLobby())
+            {
+                NetLobby.LeaveLobby();
+            }
+
             if (loaded) return;
             loaded = true;
             OnInitializeMainMenu();
