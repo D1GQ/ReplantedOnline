@@ -75,4 +75,24 @@ internal static class ObjectUtils
             UnityEngine.Object.Destroy(comp);
         }
     }
+
+    /// <summary>
+    /// Destroys a specified component on a game object 
+    /// </summary>
+    /// <typeparam name="T">The Type of the Component to destroy</typeparam>
+    internal static void RemoveComponent<T>(this GameObject obj, bool immediately = false) where T : Component
+    {
+        var comp = obj.GetComponent<T>();
+        if (comp != null)
+        {
+            if (immediately)
+            {
+                UnityEngine.Object.DestroyImmediate(comp);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(comp);
+            }
+        }
+    }
 }

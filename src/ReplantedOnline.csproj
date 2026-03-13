@@ -106,6 +106,9 @@
 		<Reference Include="UnityEngine.AnimationModule">
 			<HintPath>References\UnityEngine\UnityEngine.AnimationModule.dll</HintPath>
 		</Reference>
+		<Reference Include="Unity.ResourceManager">
+			<HintPath>References\UnityEngine\Unity.ResourceManager.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">
