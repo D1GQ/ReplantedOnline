@@ -106,8 +106,11 @@ internal static class ZombiePatch
                 // Check if Gravestone is in front of zombie
                 if (gravestone.mPosX < __instance.mPosX)
                 {
-                    __result = Rect.zero;
-                    break;
+                    if (gravestone.mZombiePhase == ZombiePhase.ZombieNormal)
+                    {
+                        __result = Rect.zero;
+                        break;
+                    }
                 }
             }
         }
