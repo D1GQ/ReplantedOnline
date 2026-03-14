@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
@@ -34,7 +35,15 @@ internal static class MusicActivityPatch
                 __state = __instance.m_musicTune;
 
                 // Replace with custom multiplayer music
-                __instance.m_musicTune = MusicTune.MinigameLoonboon;
+                switch (NetLobby.LobbyData.Arena)
+                {
+                    case ArenaTypes.Night:
+                        __instance.m_musicTune = MusicTune.PuzzleCerebrawl;
+                        break;
+                    default:
+                        __instance.m_musicTune = MusicTune.MinigameLoonboon;
+                        break;
+                }
             }
         }
 

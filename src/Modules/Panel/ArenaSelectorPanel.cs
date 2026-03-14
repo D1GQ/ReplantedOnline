@@ -1,5 +1,7 @@
 ﻿using Il2CppReloaded.Data;
+using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
+using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
@@ -49,7 +51,80 @@ internal static class ArenaSelectorPanel
         _preview.transform.localPosition = new Vector3(-14f, 5f, 0f);
         _preview.transform.localScale = new Vector3(3.3f, 2f, 2f);
 
+        if (NetLobby.AmLobbyHost())
+        {
+            var forward = CreateButton(VsSideChooser, "-->", () =>
+            {
+                NetLobby.LobbyData.Arena = NetLobby.LobbyData.Arena.Next();
+            });
+            forward.transform.localPosition = new Vector3(110f, -390f, 0f);
+            forward.transform.localScale = Vector3.one * 0.8f;
+
+            var back = CreateButton(VsSideChooser, "<--", () =>
+            {
+                NetLobby.LobbyData.Arena = NetLobby.LobbyData.Arena.Previous();
+            });
+            back.transform.localPosition = new Vector3(-640f, -390f, 0f);
+            back.transform.localScale = Vector3.one * 0.8f;
+
+            SetupNavigation(VsSideChooser, forward, back);
+        }
+
         SetPreview(NetLobby.LobbyData.Arena);
+    }
+
+    private static Button CreateButton(PanelView VsSideChooser, string name, Action action)
+    {
+        var prefab = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/QuickPlay");
+        var button = UnityEngine.Object.Instantiate(prefab, _panel.transform)?.GetComponent<Button>();
+        if (button != null)
+        {
+            var text = button.transform.Find("ButtonText")?.GetComponent<TextMeshProUGUI>();
+            if (text != null)
+            {
+                text.fontSizeMax = 150;
+                text.SetText(name);
+            }
+            button.gameObject.name = "Button";
+            button.gameObject.RemoveComponent<ButtonTransition>();
+            button.onClick = new();
+            button.onClick.AddListener(action);
+        }
+        return button;
+    }
+
+    private static void SetupNavigation(PanelView VsSideChooser, Button forward, Button back)
+    {
+        Button[] others = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets").GetComponentsInChildren<Button>();
+
+        if (others.Length < 4) return;
+
+        Navigation forwardNav = forward.navigation;
+        forwardNav.selectOnLeft = back;
+        forwardNav.selectOnDown = others[2];
+        forward.navigation = forwardNav;
+
+        Navigation backNav = back.navigation;
+        backNav.selectOnRight = forward;
+        backNav.selectOnDown = others[1];
+        back.navigation = backNav;
+
+        for (int i = 0; i < others.Length; i++)
+        {
+            Button button = others[i];
+            Navigation buttonNav = button.navigation;
+
+            if (i < 2)
+            {
+                buttonNav.selectOnUp = back;
+            }
+            else
+            {
+                buttonNav.selectOnUp = forward;
+            }
+
+            button.navigation = buttonNav;
+        }
     }
 
     /// <summary>
