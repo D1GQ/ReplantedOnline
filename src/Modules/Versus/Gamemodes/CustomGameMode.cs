@@ -5,7 +5,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Interfaces;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;

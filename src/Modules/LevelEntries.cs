@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Interfaces;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Utilities;

@@ -1,5 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using ReplantedOnline.Interfaces;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Server;

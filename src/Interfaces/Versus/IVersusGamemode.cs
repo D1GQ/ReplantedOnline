@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
 
-namespace ReplantedOnline.Interfaces;
+namespace ReplantedOnline.Interfaces.Versus;
 
 /// <summary>
 /// Defines the contract for versus game mode implementations.

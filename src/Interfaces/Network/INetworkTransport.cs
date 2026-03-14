@@ -4,10 +4,10 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 
-namespace ReplantedOnline.Interfaces;
+namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
-/// Network transport interface using the unified ID wrapper.
+/// Defines the contract for a Network Transport using the unified ID wrapper.
 /// </summary>
 internal interface INetworkTransport : IDisposable
 {

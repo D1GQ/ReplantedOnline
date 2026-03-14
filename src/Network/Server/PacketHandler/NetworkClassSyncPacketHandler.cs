@@ -1,6 +1,7 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using System.Collections;
@@ -8,13 +9,13 @@ using System.Collections;
 namespace ReplantedOnline.Network.Server.PacketHandler;
 
 [RegisterPacketHandler]
-internal sealed class NetworkClassSyncPacketHandler : BasePacketHandler
+internal sealed class NetworkClassSyncPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    internal sealed override PacketTag Tag => PacketTag.NetworkClassSync;
+    public PacketTag Tag => PacketTag.NetworkClassSync;
 
     /// <inheritdoc/>
-    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
+    public void Handle(NetClient sender, PacketReader packetReader)
     {
         MelonCoroutines.Start(CoWaitForNetworkClassSync(sender, packetReader));
     }

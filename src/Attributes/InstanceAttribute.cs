@@ -1,6 +1,5 @@
-﻿using ReplantedOnline.Interfaces;
-using ReplantedOnline.Network.Server.ClientRPC;
-using ReplantedOnline.Network.Server.PacketHandler;
+﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Interfaces.Versus;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes;
@@ -107,13 +106,13 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 /// Registers classes that implement BaseClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterClientRPC : InstanceAttribute<BaseClientRPC> { }
+internal sealed class RegisterClientRPC : InstanceAttribute<IClientRPC> { }
 
 /// <summary>
 /// Registers classes that implement BasePacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler : InstanceAttribute<BasePacketHandler> { }
+internal sealed class RegisterPacketHandler : InstanceAttribute<IPacketHandler> { }
 
 /// <summary>
 /// Registers classes that implement IVersusGamemode.

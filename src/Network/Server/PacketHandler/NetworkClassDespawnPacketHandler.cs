@@ -1,18 +1,19 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 
 namespace ReplantedOnline.Network.Server.PacketHandler;
 
 [RegisterPacketHandler]
-internal sealed class NetworkClassDespawnPacketHandler : BasePacketHandler
+internal sealed class NetworkClassDespawnPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    internal sealed override PacketTag Tag => PacketTag.NetworkClassDespawn;
+    public PacketTag Tag => PacketTag.NetworkClassDespawn;
 
     /// <inheritdoc/>
-    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
+    public void Handle(NetClient sender, PacketReader packetReader)
     {
         var networkDespawnPacket = NetworkDespawnPacket.DeserializePacket(packetReader);
 

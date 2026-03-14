@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
@@ -10,10 +11,10 @@ using ReplantedOnline.Network.Server.Packet;
 namespace ReplantedOnline.Network.Server.ClientRPC;
 
 [RegisterClientRPC]
-internal sealed class StartGameClientRPC : BaseClientRPC
+internal sealed class StartGameClientRPC : IClientRPC
 {
     /// <inheritdoc/>
-    internal sealed override ClientRpcType Rpc => ClientRpcType.StartGame;
+    public ClientRpcType Rpc => ClientRpcType.StartGame;
 
     internal static void Send(SelectionSet selectionSet)
     {
@@ -26,7 +27,7 @@ internal sealed class StartGameClientRPC : BaseClientRPC
     }
 
     /// <inheritdoc/>
-    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
+    public void Handle(NetClient sender, PacketReader packetReader)
     {
         // Only process StartGame RPCs from the actual lobby host
         if (sender.AmHost)

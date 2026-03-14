@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server.Packet;
@@ -7,13 +8,13 @@ using ReplantedOnline.Network.Server.Packet;
 namespace ReplantedOnline.Network.Server.PacketHandler;
 
 [RegisterPacketHandler]
-internal sealed class NetworkClassSpawnPacketHandler : BasePacketHandler
+internal sealed class NetworkClassSpawnPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    internal sealed override PacketTag Tag => PacketTag.NetworkClassSpawn;
+    public PacketTag Tag => PacketTag.NetworkClassSpawn;
 
     /// <inheritdoc/>
-    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
+    public void Handle(NetClient sender, PacketReader packetReader)
     {
         var spawnPacket = NetworkSpawnPacket.DeserializePacket(packetReader);
 

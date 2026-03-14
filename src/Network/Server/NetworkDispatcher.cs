@@ -1,12 +1,11 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Interfaces;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server.Packet;
-using ReplantedOnline.Network.Server.PacketHandler;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities;
 using System.Collections;
@@ -343,7 +342,7 @@ internal static class NetworkDispatcher
                     }
                     break;
                 default:
-                    if (!BasePacketHandler.HandlePacket(tag, sender, packetReader))
+                    if (!IPacketHandler.HandlePacket(tag, sender, packetReader))
                     {
                         ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
                     }

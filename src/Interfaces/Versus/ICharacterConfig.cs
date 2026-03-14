@@ -6,7 +6,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 
-namespace ReplantedOnline.Interfaces;
+namespace ReplantedOnline.Interfaces.Versus;
 
 /// <summary>
 /// Base marker interface for all character configuration types.

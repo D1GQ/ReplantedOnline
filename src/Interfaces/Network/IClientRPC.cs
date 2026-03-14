@@ -3,26 +3,26 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 
-namespace ReplantedOnline.Network.Server.ClientRPC;
+namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
-/// Abstract base class for handling Remote Procedure Calls (RPCs) in ReplantedOnline.
+/// Defines the contract for handling Remote Procedure Calls (RPCs) in ReplantedOnline.
 /// Provides a structured framework for processing network commands between clients.
 /// </summary>
-internal abstract class BaseClientRPC
+internal interface IClientRPC
 {
     /// <summary>
     /// Gets the RPC type that this handler is responsible for processing.
     /// </summary>
     /// <value>The <see cref="ClientRpcType"/> that this handler will respond to.</value>
-    internal abstract ClientRpcType Rpc { get; }
+    ClientRpcType Rpc { get; }
 
     /// <summary>
     /// Processes an incoming RPC packet from a network client.
     /// </summary>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data to process.</param>
-    internal abstract void Handle(NetClient sender, PacketReader packetReader);
+    void Handle(NetClient sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming RPC to the appropriate handler based on the RPC type.

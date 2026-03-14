@@ -3,14 +3,14 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 
-namespace ReplantedOnline.Network.Server.PacketHandler;
+namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
-/// Abstract base class for handling network packets in ReplantedOnline.
+/// Defines the contract for handling network packets in ReplantedOnline.
 /// Implements the handler pattern for processing different types of network packets
 /// received from connected clients.
 /// </summary>
-internal abstract class BasePacketHandler
+internal interface IPacketHandler
 {
     /// <summary>
     /// Gets the packet tag that this handler is responsible for processing.
@@ -19,7 +19,7 @@ internal abstract class BasePacketHandler
     /// The <see cref="PacketTag"/> enumeration value that uniquely identifies
     /// the packet type this handler will process.
     /// </value>
-    internal abstract PacketTag Tag { get; }
+    PacketTag Tag { get; }
 
     /// <summary>
     /// Processes an incoming network packet from a connected client.
@@ -31,7 +31,7 @@ internal abstract class BasePacketHandler
     /// Implementations should handle deserialization, validation, and any necessary
     /// game state modifications based on the packet contents.
     /// </remarks>
-    internal abstract void Handle(NetClient sender, PacketReader packetReader);
+    void Handle(NetClient sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming packet to the appropriate registered handler based on its tag.

@@ -2,7 +2,7 @@
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 
-namespace ReplantedOnline.Interfaces;
+namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
 /// Defines the contract for network-synchronized classes in ReplantedOnline.

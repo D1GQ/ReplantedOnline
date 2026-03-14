@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
@@ -9,10 +10,10 @@ using ReplantedOnline.Utilities;
 namespace ReplantedOnline.Network.Server.ClientRPC;
 
 [RegisterClientRPC]
-internal sealed class SyncSeedPacketClientRPC : BaseClientRPC
+internal sealed class SyncSeedPacketClientRPC : IClientRPC
 {
     /// <inheritdoc/>
-    internal sealed override ClientRpcType Rpc => ClientRpcType.SyncSeedPacket;
+    public ClientRpcType Rpc => ClientRpcType.SyncSeedPacket;
 
     internal static void Send(SeedType seedType)
     {
@@ -23,7 +24,7 @@ internal sealed class SyncSeedPacketClientRPC : BaseClientRPC
     }
 
     /// <inheritdoc/>
-    internal sealed override void Handle(NetClient sender, PacketReader packetReader)
+    public void Handle(NetClient sender, PacketReader packetReader)
     {
         // Read the seed type from the packet
         var seedType = (SeedType)packetReader.ReadInt();
