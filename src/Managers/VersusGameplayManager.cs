@@ -3,7 +3,6 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 using UnityEngine;
@@ -20,20 +19,7 @@ internal class VersusGameplayManager
         VersusHudPatch.SetHuds();
         VersusLobbyPatch.OnGameStart();
 
-        if (NetLobby.AmLobbyHost())
-        {
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, false, true);
-
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 1, true);
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 3, true);
-
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
-        }
+        IArena.GetCurrentArena()?.SetupArena(Instances.GameplayActivity.VersusMode);
 
         List<SeedPacket> allSeedPackets =
         [
