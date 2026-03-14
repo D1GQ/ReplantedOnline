@@ -6,7 +6,6 @@ using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
-/// <inheritdoc/>
 [RegisterArena]
 internal class NightArena : IArena
 {

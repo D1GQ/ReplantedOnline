@@ -6,7 +6,6 @@ using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Versus.Configs.Zombie;
 
-/// <inheritdoc/>
 [RegisterCharacterConfig]
 internal sealed class TargetZombieConfig : IZombieConfig
 {
