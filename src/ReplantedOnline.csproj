@@ -156,4 +156,7 @@
 			<HintPath>References\Il2Cpp\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Modules\Configs\Plant\" />
+	</ItemGroup>
 </Project>

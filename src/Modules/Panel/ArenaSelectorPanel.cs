@@ -4,6 +4,7 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using UnityEngine;
@@ -70,7 +71,7 @@ internal static class ArenaSelectorPanel
             SetupNavigation(VsSideChooser, forward, back);
         }
 
-        SetPreview(NetLobby.LobbyData.Arena);
+        SetPreview(VersusState.Arena);
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ internal static class MusicActivityPatch
                 __state = __instance.m_musicTune;
 
                 // Replace with custom multiplayer music
-                switch (NetLobby.LobbyData.Arena)
+                switch (VersusState.Arena)
                 {
                     case ArenaTypes.Night:
                         __instance.m_musicTune = MusicTune.PuzzleCerebrawl;

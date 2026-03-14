@@ -107,22 +107,22 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 /// Registers classes that implement BaseClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterClientRPC : InstanceAttribute<BaseClientRPC>
-{
-}
+internal sealed class RegisterClientRPC : InstanceAttribute<BaseClientRPC> { }
 
 /// <summary>
 /// Registers classes that implement BasePacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler : InstanceAttribute<BasePacketHandler>
-{
-}
+internal sealed class RegisterPacketHandler : InstanceAttribute<BasePacketHandler> { }
 
 /// <summary>
 /// Registers classes that implement IVersusGamemode.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterVersusGameMode : InstanceAttribute<IVersusGamemode>
-{
-}
+internal sealed class RegisterVersusGameMode : InstanceAttribute<IVersusGamemode> { }
+
+/// <summary>
+/// Registers classes that implement ICharacterConfig.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterCharacterConfig : InstanceAttribute<ICharacterConfig> { }

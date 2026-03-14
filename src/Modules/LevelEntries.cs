@@ -2,8 +2,9 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Modules;
@@ -49,8 +50,11 @@ internal static class LevelEntries
     /// </summary>
     internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
     {
+        var arena = VersusState.Arena;
+        ICharacterConfig.SetArenaDefinitions(arena);
+
         var level = GetLevel("Level-Versus");
-        switch (NetLobby.LobbyData.Arena)
+        switch (arena)
         {
             case ArenaTypes.Day:
                 level.m_gameArea = GameArea.Day;

@@ -4,7 +4,7 @@ using HarmonyLib;
 using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
-using ReplantedOnline.Logging;
+using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;

@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Logging;
+using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;

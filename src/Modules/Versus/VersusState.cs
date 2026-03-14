@@ -46,4 +46,9 @@ internal static class VersusState
     /// Gets the Steam ID of the player currently assigned to the zombie team.
     /// </summary>
     internal static ID ZombieClientId => NetClient.GetZombieClient()?.ClientId ?? 0;
+
+    /// <summary>
+    /// Gets the current arena type.
+    /// </summary>
+    internal static ArenaTypes Arena => NetLobby.LobbyData?.Arena ?? ArenaTypes.Day;
 }

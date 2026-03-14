@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object;
@@ -108,9 +109,9 @@ internal static class SeedPacketDefinitions
             return false;
         }
 
-        if (seedType == SeedType.ZombieDancer)
+        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.Arena, gridX, gridY))
         {
-            return gridY != 0 && gridY != 4;
+            return false;
         }
 
         return true;
@@ -170,6 +171,8 @@ internal static class SeedPacketDefinitions
         }
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
+
+        ICharacterConfig.OnPlantPlanted(plant, gridX, gridY);
 
         return plant;
     }
@@ -272,17 +275,9 @@ internal static class SeedPacketDefinitions
             SpawnZombieOnNetwork(zombie, gridX, gridY, shakeBush);
         }
 
-        // Fix rendering issues
-        if (zombieType is ZombieType.Gravestone)
-        {
-            zombie.RenderOrder -= 100 + 5 * (gridY + 1);
-        }
-        else if (zombieType is ZombieType.Target)
-        {
-            zombie.RenderOrder -= 200 + 10 * (gridY + 1);
-        }
-
         Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
+
+        ICharacterConfig.OnZombiePlanted(zombie, gridX, gridY);
 
         return zombie;
     }

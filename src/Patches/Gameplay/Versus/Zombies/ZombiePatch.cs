@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Logging;
+using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
