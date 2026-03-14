@@ -49,4 +49,7 @@ internal sealed class NightArena : IArena, ISetupSeedbank
 
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode) { }
+
+    /// <inheritdoc/>
+    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;
 }

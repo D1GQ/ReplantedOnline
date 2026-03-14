@@ -16,10 +16,7 @@ internal sealed class GravestoneZombieConfig : IZombieConfig
     public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY)
-    {
-        return true;
-    }
+    public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY) => true;
 
     /// <inheritdoc/>
     public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY)

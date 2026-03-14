@@ -68,53 +68,30 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
+    /// A lookup of the original seed packet cost.
+    /// </summary>
+    internal static readonly Dictionary<SeedType, int> BaseSeedVersusCost = [];
+
+    /// <summary>
     /// Initializes plant definitions and applies custom modifications.
     /// Currently sets custom versus mode costs for specific seeds.
     /// </summary>
     internal static void Initialize()
     {
-        // From Versus Mode Console:
-        // Buff versus body health
-        foreach (var zombieType in Enum.GetValues<ZombieType>())
+        foreach (var seedDefinition in Instances.DataServiceActivity.Service.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
-            if (zombieType is ZombieType.Invalid or ZombieType.NumZombieTypes or
-                ZombieType.ZombieCachedPolevaulterWithPole or ZombieType.NumCachedZombieTypes)
-            {
-                continue;
-            }
+            BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
+        }
 
-            var definition = Instances.DataServiceActivity.Service.GetZombieDefinition(zombieType);
-            if (definition != null)
+        foreach (var zombieDefinition in Instances.DataServiceActivity.Service.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            // From Versus Mode Console:
+            // Buff versus body health
+            if (zombieDefinition.m_versusBodyHealth == 200)
             {
-                if (definition.m_versusBodyHealth == 200)
-                {
-                    definition.m_versusBodyHealth = 270;
-                }
+                zombieDefinition.m_versusBodyHealth = 270;
             }
         }
-    }
-
-    /// <summary>
-    /// Determines if a seed can be placed at the specified grid coordinates.
-    /// This is a extension of Board.CanPlantAt()
-    /// </summary>
-    /// <param name="seedType">The type of seed to place.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <returns>True if the seed can be placed at the specified location, false otherwise.</returns>
-    internal static bool CanPlace(SeedType seedType, int gridX, int gridY)
-    {
-        if (VersusState.VersusPhase is not (VersusPhase.Gameplay or VersusPhase.SuddenDeath))
-        {
-            return false;
-        }
-
-        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.Arena, gridX, gridY))
-        {
-            return false;
-        }
-
-        return true;
     }
 
     /// <summary>
@@ -304,6 +281,34 @@ internal static class SeedPacketDefinitions
         zombie.AddNetworkedLookup(networkObj);
         networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
         return networkObj;
+    }
+
+    /// <summary>
+    /// Determines if a seed can be placed at the specified grid coordinates.
+    /// This is a extension of Board.CanPlantAt()
+    /// </summary>
+    /// <param name="seedType">The type of seed to place.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <returns>True if the seed can be placed at the specified location, false otherwise.</returns>
+    internal static bool CanPlace(SeedType seedType, int gridX, int gridY)
+    {
+        if (VersusState.VersusPhase is not (VersusPhase.Gameplay or VersusPhase.SuddenDeath))
+        {
+            return false;
+        }
+
+        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.Arena, gridX, gridY))
+        {
+            return false;
+        }
+
+        if (IArena.GetCurrentArena()?.CanBePlacedAt(seedType, gridX, gridY) == false)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

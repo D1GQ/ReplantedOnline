@@ -29,6 +29,15 @@ internal interface IArena
     void UpdateArena(VersusMode versusMode);
 
     /// <summary>
+    /// Determines whether the seed type can be placed at the specified grid coordinates in the given arena.
+    /// </summary>
+    /// <param name="seedType">The seed type being attempted to be placed</param>
+    /// <param name="gridX">The X grid coordinate (column)</param>
+    /// <param name="gridY">The Y grid coordinate (row)</param>
+    /// <returns>True if the seed type can be placed at the specified location; otherwise, false</returns>
+    bool CanBePlacedAt(SeedType seedType, int gridX, int gridY);
+
+    /// <summary>
     /// Retrieves the current active arena instance.
     /// </summary>
     /// <returns>The currently active IArena implementation, or null if no matching arena is found</returns>
