@@ -73,6 +73,13 @@ internal static class ArenaSelectorPanel
         SetPreview(NetLobby.LobbyData.Arena);
     }
 
+    /// <summary>
+    /// Creates a navigation button with specified text and click action.
+    /// </summary>
+    /// <param name="VsSideChooser">The PanelView component used as a reference for button prefab.</param>
+    /// <param name="name">The text to display on the button (typically arrow symbols like "-->" or "&lt;--").</param>
+    /// <param name="action">The action to execute when the button is clicked.</param>
+    /// <returns>The created Button component, or null if creation failed.</returns>
     private static Button CreateButton(PanelView VsSideChooser, string name, Action action)
     {
         var prefab = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/QuickPlay");
@@ -93,6 +100,12 @@ internal static class ArenaSelectorPanel
         return button;
     }
 
+    /// <summary>
+    /// Configures keyboard/controller navigation between the arena selection buttons and existing UI buttons.
+    /// </summary>
+    /// <param name="VsSideChooser">The PanelView component containing the selection sets.</param>
+    /// <param name="forward">The forward navigation button (typically "-->" arrow).</param>
+    /// <param name="back">The back navigation button (typically "&lt;--" arrow).</param>
     private static void SetupNavigation(PanelView VsSideChooser, Button forward, Button back)
     {
         Button[] others = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets").GetComponentsInChildren<Button>();
