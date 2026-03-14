@@ -17,7 +17,6 @@ internal class VersusGameplayManager
     internal static void OnStart()
     {
         VersusHudPatch.SetHuds();
-        VersusLobbyPatch.OnGameStart();
 
         List<SeedPacket> allSeedPackets =
         [

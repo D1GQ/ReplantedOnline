@@ -8,6 +8,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Patches.Gameplay.UI;
 
 namespace ReplantedOnline.Network.Server.ClientRPC;
 
@@ -41,6 +42,7 @@ internal sealed class StartGameClientRPC : IClientRPC
             LevelEntries.SetupVersusArenaForGameplay(selectionSet);
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
             IVersusGamemode.GetCurrentGamemode()?.OnGameModeStart(Instances.GameplayActivity.VersusMode);
+            VersusLobbyPatch.HideLobbyBackground();
         }
         else
         {

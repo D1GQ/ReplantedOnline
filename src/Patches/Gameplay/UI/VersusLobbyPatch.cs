@@ -114,9 +114,8 @@ internal static class VersusLobbyPatch
         }
     }
 
-    internal static void OnGameStart()
+    internal static void HideLobbyBackground()
     {
-        Instances.GameplayActivity.BackgroundController.gameObject.SetActive(true);
         LobbyBackground?.SetActive(false);
     }
 
