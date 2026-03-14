@@ -19,8 +19,6 @@ internal class VersusGameplayManager
         VersusHudPatch.SetHuds();
         VersusLobbyPatch.OnGameStart();
 
-        IArena.GetCurrentArena()?.SetupArena(Instances.GameplayActivity.VersusMode);
-
         List<SeedPacket> allSeedPackets =
         [
             .. Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets,
@@ -56,7 +54,6 @@ internal class VersusGameplayManager
 
     internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
     {
-        IArena.GetCurrentArena()?.OnGameplayStart(Instances.GameplayActivity.VersusMode);
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
 
         if (focus == null)

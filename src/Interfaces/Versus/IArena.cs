@@ -17,35 +17,16 @@ internal interface IArena
     ArenaTypes Type { get; }
 
     /// <summary>
-    /// Configures the initial state and properties of the arena before gameplay begins.
-    /// </summary>
-    /// <param name="versusMode">The instance of VersusMode used to configure arena settings</param>
-    void SetupArena(VersusMode versusMode);
-
-    /// <summary>
-    /// Called when the versus game mode starts.
-    /// </summary>
-    /// <param name="versusMode">The instance of VersusMode.</param>
-    void OnStart(VersusMode versusMode);
-
-    /// <summary>
     /// Called when the versus gameplay starts.
     /// </summary>
     /// <param name="versusMode">The instance of VersusMode.</param>
-    void OnGameplayStart(VersusMode versusMode);
+    void InitializeArena(VersusMode versusMode);
 
     /// <summary>
     /// Called every frame during the versus game mode's active state.
     /// </summary>
     /// <param name="versusMode">The instance of VersusMode.</param>
-    void UpdateGameplay(VersusMode versusMode);
-
-    /// <summary>
-    /// Called when the versus game mode ends.
-    /// </summary>
-    /// <param name="versusMode">The instance of VersusMode.</param>
-    /// <param name="winningTeam">The team that won the match.</param>
-    void OnGameplayEnd(VersusMode versusMode, PlayerTeam winningTeam);
+    void UpdateArena(VersusMode versusMode);
 
     /// <summary>
     /// Retrieves the current active arena instance.

@@ -3,17 +3,18 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Client;
+using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class NightArena : IArena
+internal sealed class NightArena : IArena, ISetupSeedbank
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Night;
 
     /// <inheritdoc/>
-    public void SetupArena(VersusMode versusMode)
+    public void InitializeArena(VersusMode versusMode)
     {
         if (NetLobby.AmLobbyHost())
         {
@@ -32,14 +33,20 @@ internal sealed class NightArena : IArena
     }
 
     /// <inheritdoc/>
-    public void OnStart(VersusMode versusMode) { }
+    public void SetupSeedbank(SeedBank seedBank, SeedBankInfo seedBankInfo, PlayerTeam team)
+    {
+        if (team == PlayerTeam.Plants)
+        {
+            seedBankInfo.mSeedsInBank = 1;
+            seedBank.AddSeed(SeedType.Sunflower, true);
+        }
+        else
+        {
+            seedBankInfo.mSeedsInBank = 1;
+            seedBank.AddSeed(SeedType.ZombieGravestone, true);
+        }
+    }
 
     /// <inheritdoc/>
-    public void OnGameplayStart(VersusMode versusMode) { }
-
-    /// <inheritdoc/>
-    public void UpdateGameplay(VersusMode versusMode) { }
-
-    /// <inheritdoc/>
-    public void OnGameplayEnd(VersusMode versusMode, PlayerTeam winningTeam) { }
+    public void UpdateArena(VersusMode versusMode) { }
 }

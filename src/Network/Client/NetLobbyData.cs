@@ -319,7 +319,7 @@ internal sealed class NetLobbyData : IDisposable
         }
         else
         {
-            var otherTeam = Utils.GetOppositeTeam(hostTeam);
+            var otherTeam = hostTeam.GetOppositeTeam();
             if (NetLobby.AmLobbyHost())
             {
                 NetClient.LocalClient.Team = hostTeam;

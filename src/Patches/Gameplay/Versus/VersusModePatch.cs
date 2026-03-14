@@ -17,7 +17,7 @@ internal static class VersusModePatch
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
-        IArena.GetCurrentArena()?.OnGameplayStart(__instance);
+        IArena.GetCurrentArena()?.InitializeArena(__instance);
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
 
@@ -28,7 +28,7 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
     {
-        IArena.GetCurrentArena()?.UpdateGameplay(__instance);
+        IArena.GetCurrentArena()?.UpdateArena(__instance);
         IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
     }
 

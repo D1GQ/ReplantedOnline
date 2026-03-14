@@ -95,7 +95,7 @@ internal static class VersusEndGameManager
                 }
                 else
                 {
-                    loser.SetPortrait(Utils.GetOppositeTeam(winningTeam));
+                    loser.SetPortrait(winningTeam.GetOppositeTeam());
                     loser.SetName(netClient.Name);
                 }
             }

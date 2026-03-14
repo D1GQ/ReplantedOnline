@@ -4,6 +4,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 
@@ -26,6 +27,13 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
+        // Add custom initial seeds
+        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
+        {
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], NetClient.LocalClient.Team);
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], NetClient.LocalClient.Team.GetOppositeTeam());
+        }
+
         if (VersusState.AmPlantSide)
         {
             var plantSeeds = Enum.GetValues<SeedType>().Where(seed =>
@@ -37,9 +45,8 @@ internal sealed class RandomGamemode : IVersusGamemode
 
             var shuffledSeeds = plantSeeds.OrderBy(x => Guid.NewGuid()).ToList();
 
-            versusMode.m_board.SeedBanks.LocalItem().AddSeed(SeedType.Sunflower, true);
-
-            for (int i = 0; i < 5 && i < shuffledSeeds.Count; i++)
+            int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
+            for (int i = 0; i < numSeedsToAdd && i < shuffledSeeds.Count; i++)
             {
                 var seedType = shuffledSeeds[i];
                 versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
@@ -56,9 +63,8 @@ internal sealed class RandomGamemode : IVersusGamemode
 
             var shuffledSeeds = zombieSeeds.OrderBy(x => Guid.NewGuid()).ToList();
 
-            versusMode.m_board.SeedBanks.LocalItem().AddSeed(SeedType.ZombieGravestone, true);
-
-            for (int i = 0; i < 5 && i < shuffledSeeds.Count; i++)
+            int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
+            for (int i = 0; i < numSeedsToAdd && i < shuffledSeeds.Count; i++)
             {
                 var seedType = shuffledSeeds[i];
                 versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);

@@ -50,12 +50,30 @@ internal sealed class CustomGamemode : IVersusGamemode
             yield return null;
         }
 
+        // Remove initial seeds from vanilla
+        foreach (var seedBack in Instances.GameplayActivity.Board.SeedBanks.m_values)
+        {
+            seedBack.RemoveSeed(0);
+        }
+        foreach (var seedBankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos)
+        {
+            seedBankInfo.mSeedsInBank = 0;
+        }
+
+        // Add custom initial seeds
+        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
+        {
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], NetClient.LocalClient.Team);
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], NetClient.LocalClient.Team.GetOppositeTeam());
+        }
+
         NetClient.LocalClient?.Ready = true;
 
         if (ModInfo.DEBUG)
         {
             if (NetLobby.GetLobbyMemberCount() == 1)
             {
+                // Set up opponent seed bank for debugging
                 if (VersusState.AmPlantSide)
                 {
                     foreach (var seedType in Instances.GameplayActivity.VersusMode.m_quickPlayZombies.Skip(1))
@@ -81,6 +99,7 @@ internal sealed class CustomGamemode : IVersusGamemode
             }
         }
 
+        // Set fisst turn to Zombie by default
         var seedChooserVSSwap = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
         seedChooserVSSwap.swapCanvasOrder();
         seedChooserVSSwap.m_vsSeedChooserAnimator.Play(-160334332, 0, 1f);

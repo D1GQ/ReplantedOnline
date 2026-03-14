@@ -1,4 +1,6 @@
-﻿namespace ReplantedOnline.Utilities;
+﻿using ReplantedOnline.Enums;
+
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides utility methods for working with enumerations.
@@ -33,5 +35,30 @@ internal static class EnumUtils
         int currentIndex = Array.IndexOf(values, current);
         int prevIndex = (currentIndex - 1 + values.Length) % values.Length;
         return values[prevIndex];
+    }
+
+    /// <summary>
+    /// Gets the opposite team for a given player team.
+    /// </summary>
+    /// <param name="team">The player team to get the opposite of.</param>
+    /// <returns>
+    /// The opposite team:
+    /// <list type="bullet">
+    /// <item><description>Plants → Zombies</description></item>
+    /// <item><description>Zombies → Plants</description></item>
+    /// <item><description>Any other value → None</description></item>
+    /// </list>
+    /// </returns>
+    internal static PlayerTeam GetOppositeTeam(this PlayerTeam team)
+    {
+        switch (team)
+        {
+            case PlayerTeam.Plants:
+                return PlayerTeam.Zombies;
+            case PlayerTeam.Zombies:
+                return PlayerTeam.Plants;
+            default:
+                return PlayerTeam.None;
+        }
     }
 }
