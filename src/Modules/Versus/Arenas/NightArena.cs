@@ -7,7 +7,7 @@ using ReplantedOnline.Network.Client;
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal class NightArena : IArena
+internal sealed class NightArena : IArena
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Night;
