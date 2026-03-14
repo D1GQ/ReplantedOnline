@@ -1,5 +1,5 @@
 ﻿using MelonLoader;
-using ReplantedOnline.Logging;
+using ReplantedOnline.Exceptions;
 using System.Reflection;
 
 namespace ReplantedOnline.Patches;

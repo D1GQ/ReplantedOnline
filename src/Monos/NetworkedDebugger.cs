@@ -1,6 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using ReplantedOnline.Network.Object;
-using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Network.Client.Object;
+using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
 using UnityEngine;
 

@@ -1,12 +1,11 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Characters;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
 
-namespace ReplantedOnline.Network.Object.Game;
+namespace ReplantedOnline.Network.Client.Object.Replanted;
 
 /// <summary>
 /// Represents a networked animation controller for synchronizing character animations across the network.

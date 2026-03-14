@@ -4,7 +4,7 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Network.Server.PacketHandler;
 using ReplantedOnline.Structs;

@@ -1,6 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
 using System.Net;
 using System.Text;

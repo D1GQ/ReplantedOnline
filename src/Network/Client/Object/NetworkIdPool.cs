@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Network.Object;
+﻿namespace ReplantedOnline.Network.Client.Object;
 
 /// <summary>
 /// Provides a pool of network IDs for allocation and reuse.

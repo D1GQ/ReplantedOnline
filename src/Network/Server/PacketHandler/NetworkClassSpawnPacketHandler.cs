@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server.Packet;
 
 namespace ReplantedOnline.Network.Server.PacketHandler;

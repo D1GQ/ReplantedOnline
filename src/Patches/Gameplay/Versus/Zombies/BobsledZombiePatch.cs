@@ -3,7 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Utilities;
 

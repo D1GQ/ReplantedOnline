@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Network.Object;
+﻿namespace ReplantedOnline.Network.Client.Object;
 
 /// <summary>
 /// Manages synchronization state for network objects using bit flags.

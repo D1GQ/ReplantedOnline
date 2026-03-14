@@ -3,14 +3,13 @@ using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using ReplantedOnline.Utilities;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Object.Game;
+namespace ReplantedOnline.Network.Client.Object.Replanted;
 
 /// <summary>
 /// Represents a networked plant on the board, handling synchronization of plant state

@@ -5,7 +5,6 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Zombies;
@@ -14,7 +13,7 @@ using System.Collections;
 using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
-namespace ReplantedOnline.Network.Object.Game;
+namespace ReplantedOnline.Network.Client.Object.Replanted;
 
 /// <summary>
 /// Represents a networked zombie on the board, handling synchronization of zombie state

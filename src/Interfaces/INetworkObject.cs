@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Network.Object;
+﻿using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 

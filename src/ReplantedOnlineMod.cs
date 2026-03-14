@@ -9,7 +9,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Patches;
 using ReplantedOnline.Patches.Client;
 using System.Reflection;

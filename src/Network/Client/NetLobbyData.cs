@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Panel;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities;

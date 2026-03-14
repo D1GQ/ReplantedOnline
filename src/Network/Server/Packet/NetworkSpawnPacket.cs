@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Server.Packet;

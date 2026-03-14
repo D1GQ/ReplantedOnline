@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Logging;
+﻿namespace ReplantedOnline.Exceptions;
 
 /// <summary>
 /// An intentional exception used for code flow control during patching.

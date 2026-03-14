@@ -1,14 +1,13 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Object.Game;
+using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Object;
+namespace ReplantedOnline.Network.Client.Object;
 
 /// <summary>
 /// Abstract Base class for all network-synchronized objects in ReplantedOnline.
@@ -238,7 +237,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     [HideFromIl2Cpp]
     public void SendNetworkClassRpc(byte rpcId, PacketWriter packetWriter = null)
     {
-        NetworkDispatcher.SendRpc(this, rpcId, packetWriter);
+        this.SendRpc(rpcId, packetWriter);
     }
 
     /// <summary>
@@ -355,7 +354,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// </summary>
     private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkObject
     {
-        var networkObject = RuntimePrefab.CreatePrefab<T>($"{typeof(T)}:{prefabId}");
+        var networkObject = CreatePrefab<T>($"{typeof(T)}:{prefabId}");
         callback?.Invoke(networkObject);
         networkObject.PrefabId = prefabId;
         NetworkPrefabs[prefabId] = networkObject;
