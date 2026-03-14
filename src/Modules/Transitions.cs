@@ -33,6 +33,7 @@ internal static class Transitions
     {
         var level = LevelEntries.GetLevel("Level-Versus");
         level.GetGameplayService().SetCurrentLevelData(level);
+        LevelEntries.ResetVersusArena();
         StateTransitionUtils.Transition("Gameplay");
         StateTransitionUtils.Transition("Versus");
         if (callback != null)

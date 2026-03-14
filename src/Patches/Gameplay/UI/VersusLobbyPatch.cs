@@ -86,7 +86,7 @@ internal static class VersusLobbyPatch
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
             }
 
-            StageSelectorPanel.Create(VsSideChooser);
+            ArenaSelectorPanel.Create(VsSideChooser);
             VersusLobbyManager.SetTextComps(VsSideChooser);
             VersusLobbyManager.UpdateSideVisuals();
         }

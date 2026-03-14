@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Object;
 using ReplantedOnline.Network.Server;
 using ReplantedOnline.Structs;
@@ -248,6 +249,28 @@ internal sealed class NetLobbyData : IDisposable
         }
     }
 
+    internal ArenaTypes Arena
+    {
+        get
+        {
+            var data = NetLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Arena));
+            if (int.TryParse(data, out var @int))
+            {
+                return (ArenaTypes)@int;
+            }
+
+            return ArenaTypes.Day;
+        }
+        set
+        {
+            if (NetLobby.AmLobbyHost())
+            {
+                NetLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Arena), ((int)value).ToString());
+                UpdateLobbyStates();
+            }
+        }
+    }
+
     /// <summary>
     /// Initializes lobby data to default.
     /// </summary>
@@ -257,6 +280,7 @@ internal sealed class NetLobbyData : IDisposable
         PickingSides = false;
         HasStarted = false;
         HostTeam = PlayerTeam.None;
+        Arena = ArenaTypes.Day;
 
         if (NetLobby.AmLobbyHost())
         {
@@ -311,6 +335,8 @@ internal sealed class NetLobbyData : IDisposable
 
             VersusLobbyManager.UpdateSideVisuals();
         }
+
+        ArenaSelectorPanel.SetPreview(Arena);
     }
 
     /// <summary>

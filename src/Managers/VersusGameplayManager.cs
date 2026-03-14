@@ -35,8 +35,6 @@ internal class VersusGameplayManager
 
     internal static void OnStart()
     {
-        Transitions.SetFade();
-        Transitions.FadeIn();
         VersusHudPatch.SetHuds();
         VersusLobbyPatch.OnGameStart();
 

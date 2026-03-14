@@ -89,6 +89,19 @@ internal static class VersusModePatch
         }
     }
 
+    [HarmonyPatch(typeof(Board), nameof(Board.AddGraveStones))]
+    [HarmonyPrefix]
+    private static bool Board_CanAddGraveStoneAt_Prefix()
+    {
+        if (NetLobby.AmInLobby())
+        {
+            // Don't spawn gravestones in Night Arena
+            return false;
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Plant), nameof(Plant.Update))]
     [HarmonyPrefix]
     private static void Plant_Update_Prefix(Plant __instance)

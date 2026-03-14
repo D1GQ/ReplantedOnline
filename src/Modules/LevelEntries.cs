@@ -1,5 +1,9 @@
 ﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
+using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Modules;
@@ -38,5 +42,61 @@ internal static class LevelEntries
             return levelData;
         }
         return default;
+    }
+
+    /// <summary>
+    /// Configures the versus arena level based on the current lobby arena type.
+    /// </summary>
+    internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
+    {
+        var level = GetLevel("Level-Versus");
+        switch (NetLobby.LobbyData.Arena)
+        {
+            case ArenaTypes.Day:
+                level.m_gameArea = GameArea.Day;
+                level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1").BackgroundPrefab;
+                break;
+            case ArenaTypes.Night:
+                level.m_gameArea = GameArea.Night;
+                level.m_backgroundPrefab = GetLevel("Level-AdventureArea2Level1").BackgroundPrefab;
+                break;
+        }
+
+        // Hide arena changing
+        if (selectionSet != SelectionSet.CustomAll)
+        {
+            Transitions.SetFade();
+            Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.5f, Transitions.FadeIn));
+        }
+        else
+        {
+            Transitions.SetFade();
+            Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.2f, Transitions.FadeIn));
+        }
+
+        // Set background to new arena
+        UnityEngine.Object.Destroy(Instances.GameplayActivity.BackgroundController.gameObject);
+        Instances.GameplayActivity.ChangeLevelBackground(level, true);
+        Instances.GameplayActivity.BackgroundController.Init(Instances.GameplayActivity.Board);
+        Instances.GameplayActivity.m_boardOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
+        Instances.GameplayActivity.m_gameplayPooler.m_gridOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
+        Instances.GameplayActivity.Board.InitLevel();
+        Instances.GameplayActivity.InitInput();
+
+        // Play selecting seeds music
+        if (selectionSet == SelectionSet.CustomAll)
+        {
+            Instances.GameplayActivity.Music.PlayMusic(MusicTune.ZenGarden, 0, 0);
+        }
+    }
+
+    /// <summary>
+    /// Resets the versus arena level back to its default Day configuration.
+    /// </summary>
+    internal static void ResetVersusArena()
+    {
+        var level = GetLevel("Level-Versus");
+        level.m_gameArea = GameArea.Day;
+        level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1").BackgroundPrefab;
     }
 }
