@@ -35,7 +35,7 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// Unity Update method called once per frame.
     /// Processes all queued actions on the main thread.
     /// </summary>
-    private void Update()
+    public void Update()
     {
         while (_executionQueue.Count > 0)
         {
@@ -65,7 +65,7 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// <summary>
     /// Cleans up the dispatcher when the object is destroyed.
     /// </summary>
-    private void OnDestroy()
+    public void OnDestroy()
     {
         _executionQueue.Clear();
         Instance = null;

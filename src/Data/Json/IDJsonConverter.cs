@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Enums;
 using ReplantedOnline.Structs;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -22,6 +23,7 @@ internal class IDJsonConverter : JsonConverter<ID>
             throw new JsonException("Expected start of object");
 
         ulong? ulongValue = null;
+        string stringValue = null;
         string type = null;
 
         while (reader.Read())
@@ -47,24 +49,38 @@ internal class IDJsonConverter : JsonConverter<ID>
                         }
                         else if (reader.TokenType == JsonTokenType.String)
                         {
-                            // For IPEndPoint format "address:port"
-                            string value = reader.GetString();
-                            var parts = value.Split(':');
-                            if (parts.Length == 2 && ulong.TryParse(parts[1], out ulong port))
-                            {
-                                // Handle IPEndPoint case in the type check below
-                            }
+                            stringValue = reader.GetString();
+                        }
+                        else if (reader.TokenType == JsonTokenType.Null)
+                        {
                         }
                         break;
                 }
             }
         }
 
+        // Handle based on type
         if (type == "ULong" && ulongValue.HasValue)
             return new ID(ulongValue.Value, IdType.ULong);
 
         if (type == "SteamId" && ulongValue.HasValue)
             return new ID(ulongValue.Value, IdType.SteamId);
+
+        if (type == "IPEndPoint" && !string.IsNullOrEmpty(stringValue))
+        {
+            try
+            {
+                var parts = stringValue.Split(':');
+                if (parts.Length == 2 && IPAddress.TryParse(parts[0], out IPAddress address) &&
+                    int.TryParse(parts[1], out int port))
+                {
+                    return new ID(new IPEndPoint(address, port), IdType.IPEndPoint);
+                }
+            }
+            catch
+            {
+            }
+        }
 
         return ID.Null;
     }

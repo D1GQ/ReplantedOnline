@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿#pragma warning disable CS0162
+
+using HarmonyLib;
 using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;

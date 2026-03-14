@@ -1,4 +1,6 @@
-﻿using Il2CppSteamworks;
+﻿#pragma warning disable CS0162
+
+using Il2CppSteamworks;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using System.Text;

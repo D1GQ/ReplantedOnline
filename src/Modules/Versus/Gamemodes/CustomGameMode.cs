@@ -1,4 +1,6 @@
-﻿using Il2Cpp;
+﻿#pragma warning disable CS0162
+
+using Il2Cpp;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Binders;
 using ReplantedOnline.Attributes;
@@ -36,7 +38,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     public void OnGameplayEnd(VersusMode versusMode, PlayerTeam winningTeam) { }
 
     // Make Zombie have first pick in Custom
-    private IEnumerator CoWaitSeedChooserVSSwap()
+    private static IEnumerator CoWaitSeedChooserVSSwap()
     {
         while (UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>() == null)
         {

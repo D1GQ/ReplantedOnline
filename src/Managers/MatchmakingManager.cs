@@ -197,7 +197,7 @@ internal static class MatchmakingManager
     internal static string GenerateGameCode(ID lobbyId)
     {
         // Extract a numeric seed from the ID
-        ulong seed = 0;
+        ulong seed;
 
         if (lobbyId.TryGetSteamId(out SteamId steamId))
         {
