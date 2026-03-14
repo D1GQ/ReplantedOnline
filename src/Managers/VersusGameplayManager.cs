@@ -1,10 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Modules.Versus.Gamemodes;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
@@ -17,22 +15,6 @@ namespace ReplantedOnline.Managers;
 /// </summary>
 internal class VersusGameplayManager
 {
-    /// <summary>
-    /// Gets the current game mode.
-    /// </summary>
-    internal static IVersusGamemode VersusGamemode { get; private set; }
-
-    internal static IVersusGamemode SetGamemode(SelectionSet selectionSet)
-    {
-        return VersusGamemode = selectionSet switch
-        {
-            SelectionSet.QuickPlay => RegisterVersusGameMode.GetInstance<QuickplayGamemode>(),
-            SelectionSet.Random => RegisterVersusGameMode.GetInstance<RandomGamemode>(),
-            SelectionSet.CustomAll => RegisterVersusGameMode.GetInstance<CustomGamemode>(),
-            _ => null,
-        };
-    }
-
     internal static void OnStart()
     {
         VersusHudPatch.SetHuds();
@@ -88,7 +70,8 @@ internal class VersusGameplayManager
 
     internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
     {
-        VersusGamemode.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
+        IArena.GetCurrentArena()?.OnGameplayStart(Instances.GameplayActivity.VersusMode);
+        IVersusGamemode.GetCurrentGamemode()?.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
 
         if (focus == null)
         {

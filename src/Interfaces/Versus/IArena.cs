@@ -2,21 +2,31 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Modules.Versus;
-using ReplantedOnline.Modules.Versus.Gamemodes;
 
 namespace ReplantedOnline.Interfaces.Versus;
 
 /// <summary>
-/// Defines the contract for versus game mode implementations.
-/// Provides lifecycle methods that are called during different phases of versus mode.
+/// Defines the contract for arena-specific behavior in versus gamemode.
+/// Implementations provide custom logic for different arena types.
 /// </summary>
-internal interface IVersusGamemode
+internal interface IArena
 {
+    /// <summary>
+    /// Gets the type identifier for this arena.
+    /// </summary>
+    ArenaTypes Type { get; }
+
+    /// <summary>
+    /// Configures the initial state and properties of the arena before gameplay begins.
+    /// </summary>
+    /// <param name="versusMode">The instance of VersusMode used to configure arena settings</param>
+    void SetupArena(VersusMode versusMode);
+
     /// <summary>
     /// Called when the versus game mode starts.
     /// </summary>
     /// <param name="versusMode">The instance of VersusMode.</param>
-    void OnGameModeStart(VersusMode versusMode);
+    void OnStart(VersusMode versusMode);
 
     /// <summary>
     /// Called when the versus gameplay starts.
@@ -38,20 +48,19 @@ internal interface IVersusGamemode
     void OnGameplayEnd(VersusMode versusMode, PlayerTeam winningTeam);
 
     /// <summary>
-    /// Retrieves the current versus gamemode.
+    /// Retrieves the current active arena instance.
     /// </summary>
-    /// <returns>
-    /// The appropriate IVersusGamemode implementation for the current selection:
-    /// Returns null if the SelectionSet doesn't match any known gamemode.
-    /// </returns>
-    internal static IVersusGamemode GetCurrentGamemode()
+    /// <returns>The currently active IArena implementation, or null if no matching arena is found</returns>
+    internal static IArena GetCurrentArena()
     {
-        return VersusState.SelectionSet switch
+        foreach (var arena in RegisterArena.Instances)
         {
-            SelectionSet.QuickPlay => RegisterVersusGameMode.GetInstance<QuickplayGamemode>(),
-            SelectionSet.Random => RegisterVersusGameMode.GetInstance<RandomGamemode>(),
-            SelectionSet.CustomAll => RegisterVersusGameMode.GetInstance<CustomGamemode>(),
-            _ => null,
-        };
+            if (arena.Type == VersusState.Arena)
+            {
+                return arena;
+            }
+        }
+
+        return null;
     }
 }

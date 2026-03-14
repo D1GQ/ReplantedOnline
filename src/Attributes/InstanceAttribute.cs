@@ -115,6 +115,12 @@ internal sealed class RegisterClientRPC : InstanceAttribute<IClientRPC> { }
 internal sealed class RegisterPacketHandler : InstanceAttribute<IPacketHandler> { }
 
 /// <summary>
+/// Registers classes that implement IArena.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterArena : InstanceAttribute<IArena> { }
+
+/// <summary>
 /// Registers classes that implement IVersusGamemode.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]

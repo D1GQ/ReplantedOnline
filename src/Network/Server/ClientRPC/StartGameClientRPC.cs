@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
@@ -39,8 +40,8 @@ internal sealed class StartGameClientRPC : IClientRPC
             // Configure the game with the host's selected game mode
             LevelEntries.SetupVersusArenaForGameplay(selectionSet);
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
-            var gamemode = VersusGameplayManager.SetGamemode(selectionSet);
-            gamemode.OnGameModeStart(Instances.GameplayActivity.VersusMode);
+            IArena.GetCurrentArena()?.OnStart(Instances.GameplayActivity.VersusMode);
+            IVersusGamemode.GetCurrentGamemode()?.OnGameModeStart(Instances.GameplayActivity.VersusMode);
         }
         else
         {

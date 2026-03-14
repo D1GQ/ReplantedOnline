@@ -51,6 +51,7 @@ internal static class LevelEntries
     internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
     {
         var arena = VersusState.Arena;
+        IArena.GetCurrentArena()?.SetupArena(Instances.GameplayActivity.VersusMode);
         ICharacterConfig.SetArenaDefinitions(arena);
 
         var level = GetLevel("Level-Versus");

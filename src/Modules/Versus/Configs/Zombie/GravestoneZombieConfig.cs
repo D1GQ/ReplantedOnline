@@ -4,7 +4,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 
-namespace ReplantedOnline.Modules.Configs.Zombie;
+namespace ReplantedOnline.Modules.Versus.Configs.Zombie;
 
 /// <inheritdoc/>
 [RegisterCharacterConfig]
@@ -14,9 +14,7 @@ internal sealed class GravestoneZombieConfig : IZombieConfig
     public ZombieType Type => ZombieType.Gravestone;
 
     /// <inheritdoc/>
-    public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena)
-    {
-    }
+    public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY)

@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Exceptions;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
@@ -16,7 +17,8 @@ internal static class VersusModePatch
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
-        VersusGameplayManager.VersusGamemode.OnGameplayStart(__instance);
+        IArena.GetCurrentArena()?.OnGameplayStart(__instance);
+        IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
 
         throw new SilentPatchException(); // For some reason needed to prevent original method to run ???
@@ -26,7 +28,8 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
     {
-        VersusGameplayManager.VersusGamemode.UpdateGameplay(__instance);
+        IArena.GetCurrentArena()?.UpdateGameplay(__instance);
+        IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]
