@@ -49,7 +49,7 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     if (doSpecialCountdown == 0)
                     {
-                        plant.GetNetworked().dead = true;
+                        plant.GetNetworked()?.dead = true;
                         return true;
                     }
                     else
