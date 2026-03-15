@@ -24,7 +24,7 @@ if exist "ReplantedOnline.csproj" (
 
 REM Define dependencies
 REM Format: URL|FILENAME|TARGET_PATH
-set "DEP_0=https://github.com/PalmForest0/BloomEngine/releases/download/v0.1.0-alpha/BloomEngine.dll|BloomEngine.dll|%ROOT%References\Dependencies\"
+set "DEP_0=https://github.com/PalmForest0/BloomEngine/releases/download/v0.3.2-beta/BloomEngine.dll|BloomEngine.dll|%ROOT%References\Dependencies\"
 
 REM counting method
 set DEP_COUNT=0
