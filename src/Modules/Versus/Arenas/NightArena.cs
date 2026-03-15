@@ -30,6 +30,13 @@ internal sealed class NightArena : IArena, ISetupSeedbank
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
         }
+
+        versusMode.m_board.AddAGraveStone(5, 0);
+        versusMode.m_board.AddAGraveStone(5, 1);
+        versusMode.m_board.AddAGraveStone(5, 2);
+        versusMode.m_board.AddAGraveStone(5, 3);
+        versusMode.m_board.AddAGraveStone(5, 4);
+        versusMode.m_board.mEnableGraveStones = true;
     }
 
     /// <inheritdoc/>
