@@ -15,9 +15,9 @@ namespace ReplantedOnline.Network.Server.LAN;
 internal static class LanDispatcher
 {
     /// <summary>
-    /// Broadcasts an internal LAN packet to all connected clients except specified exclusions.
+    /// Broadcasts an LAN packet to all connected clients except specified exclusions.
     /// </summary>
-    internal static void BroadcastInternalPacket(LanPacketType type, Action<PacketWriter> writeContent, bool excludeSelf, ID excludeClient)
+    internal static void BroadcastPacket(LanPacketType type, Action<PacketWriter> writeContent, bool excludeSelf, ID excludeClient)
     {
         if (NetLobby.NetworkTransport is LanTransport transport)
         {
@@ -536,7 +536,7 @@ internal static class LanDispatcher
         // If host, broadcast to others
         if (transport.IsHost)
         {
-            BroadcastInternalPacket(LanPacketType.MemberData,
+            BroadcastPacket(LanPacketType.MemberData,
                 writer =>
                 {
                     writer.WriteID(targetId);

@@ -60,7 +60,7 @@ internal sealed class NetClient
     /// <summary>
     /// The ID of this client.
     /// </summary>
-    internal readonly ID ClientId;
+    internal ID ClientId { get; }
 
     /// <summary>
     /// The display name of this client.
@@ -89,7 +89,7 @@ internal sealed class NetClient
     {
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {
-            if (client.Team is PlayerTeam.Plants)
+            if (client.Team == PlayerTeam.Plants)
             {
                 return client;
             }
@@ -105,7 +105,7 @@ internal sealed class NetClient
     {
         foreach (var client in NetLobby.LobbyData.AllClients.Values)
         {
-            if (client.Team is PlayerTeam.Zombies)
+            if (client.Team == PlayerTeam.Zombies)
             {
                 return client;
             }
