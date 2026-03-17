@@ -7,6 +7,7 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;

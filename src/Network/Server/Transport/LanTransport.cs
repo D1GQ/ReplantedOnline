@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
-using ReplantedOnline.Enums;
-using ReplantedOnline.Enums.LAN;
+using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Network.LAN;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;

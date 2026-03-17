@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Attributes;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;

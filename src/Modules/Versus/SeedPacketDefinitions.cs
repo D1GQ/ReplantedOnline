@@ -1,14 +1,13 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
-namespace ReplantedOnline.Modules;
+namespace ReplantedOnline.Modules.Versus;
 
 /// <summary>
 /// Handles seed packet definition modifications including versus costs and other properties.

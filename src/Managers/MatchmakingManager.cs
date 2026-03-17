@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;

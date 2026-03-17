@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppReloaded.TreeStateActivities;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;

@@ -1,5 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Versus;
 using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
 namespace ReplantedOnline.Interfaces.Versus;

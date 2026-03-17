@@ -1,5 +1,5 @@
-﻿using ReplantedOnline.Enums;
-using ReplantedOnline.Enums.LAN;
+﻿using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Network.LAN;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Server.Packet;

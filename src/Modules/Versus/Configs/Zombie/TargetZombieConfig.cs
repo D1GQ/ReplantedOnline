@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Versus.Configs.Zombie;

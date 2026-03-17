@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Client;
 using static Il2CppReloaded.Gameplay.SeedChooserScreen;

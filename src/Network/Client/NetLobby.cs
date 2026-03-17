@@ -1,6 +1,7 @@
 ﻿using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;

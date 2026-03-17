@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;

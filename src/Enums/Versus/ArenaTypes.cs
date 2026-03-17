@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Enums;
+﻿namespace ReplantedOnline.Enums.Versus;
 
 /// <summary>
 /// Specifies the different visual and gameplay variations for an arena.

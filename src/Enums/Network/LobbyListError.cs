@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Enums;
+﻿namespace ReplantedOnline.Enums.Network;
 
 /// <summary>
 /// Represents error states that can occur during lobby list operations.

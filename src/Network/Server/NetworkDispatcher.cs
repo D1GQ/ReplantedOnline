@@ -1,6 +1,7 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;

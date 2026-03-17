@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Enums.LAN;
+﻿namespace ReplantedOnline.Enums.Network.LAN;
 
 /// <summary>
 /// Defines the types of internal LAN packets used for network communication.

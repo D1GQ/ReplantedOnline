@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;

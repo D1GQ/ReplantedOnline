@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Enums;
+﻿using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Client;

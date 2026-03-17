@@ -3,7 +3,6 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 

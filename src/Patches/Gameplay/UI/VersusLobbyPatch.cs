@@ -8,7 +8,7 @@ using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
-using ReplantedOnline.Enums;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Panel;

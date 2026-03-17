@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Enums;
+﻿using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client.Object;

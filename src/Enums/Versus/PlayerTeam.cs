@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Enums;
+﻿namespace ReplantedOnline.Enums.Versus;
 
 /// <summary>
 /// Represents the team affiliation of a player in the game.

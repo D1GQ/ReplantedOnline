@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Enums;
+﻿namespace ReplantedOnline.Enums.Network;
 
 /// <summary>
 /// Defines the communication channels used for packet transmission in the networking system.
