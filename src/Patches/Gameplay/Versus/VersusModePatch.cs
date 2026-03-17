@@ -17,11 +17,13 @@ internal static class VersusModePatch
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
+        __instance.ClearBoard();
         IArena.GetCurrentArena()?.InitializeArena(__instance);
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
 
-        throw new SilentPatchException(); // For some reason needed to prevent original method to run ???
+        // Prevent initial plants and zombies from being placed
+        throw new SilentPatchException();
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]

@@ -21,7 +21,7 @@ internal static class ZombiePatch
     private static bool Board_AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
     {
         // Only intercept during active gameplay in multiplayer
-        if (NetLobby.AmInLobby() && VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath)
+        if (NetLobby.AmInLobby() && VersusState.IsInGameplay)
         {
             // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
             if (theZombieType is ZombieType.Target) return true;

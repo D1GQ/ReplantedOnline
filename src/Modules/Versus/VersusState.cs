@@ -7,8 +7,7 @@ using ReplantedOnline.Structs;
 namespace ReplantedOnline.Modules.Versus;
 
 /// <summary>
-/// Provides centralized access to versus (PvP) multiplayer state information.
-/// This static class aggregates gameplay state, team assignments, and player identifiers for easy access throughout the mod.
+/// Provides centralized access to versus mode multiplayer state information.
 /// </summary>
 internal static class VersusState
 {
@@ -51,4 +50,10 @@ internal static class VersusState
     /// Gets the current arena type.
     /// </summary>
     internal static ArenaTypes Arena => NetLobby.LobbyData?.Arena ?? ArenaTypes.Day;
+
+    /// <summary>
+    /// Gets when Versus Mode is in its gameplay state.
+    /// </summary>
+    internal static bool IsInGameplay => Instances.GameplayActivity.VersusMode?.m_versusTime > 3.2f
+        && VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath;
 }

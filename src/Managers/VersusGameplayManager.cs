@@ -3,6 +3,7 @@ using ReplantedOnline.Enums;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 using UnityEngine;
@@ -41,7 +42,7 @@ internal class VersusGameplayManager
 
         Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() =>
             {
-                return Instances.GameplayActivity.VersusMode.m_versusTime > 3.5f;
+                return VersusState.IsInGameplay;
             }, () =>
             {
                 Instances.GameplayActivity.InputService

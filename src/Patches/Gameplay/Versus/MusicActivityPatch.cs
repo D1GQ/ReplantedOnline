@@ -20,7 +20,7 @@ internal static class MusicActivityPatch
         // Do not play before game starts
         if (Instances.GameplayActivity?.VersusMode != null &&
             VersusState.VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath &&
-            Instances.GameplayActivity.VersusMode.m_versusTime < 3f) return false;
+            !VersusState.IsInGameplay) return false;
 
         // Initialize state variable
         __state = null;
