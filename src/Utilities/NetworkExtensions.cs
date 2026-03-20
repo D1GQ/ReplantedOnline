@@ -58,6 +58,11 @@ internal static class NetworkExtensions
     /// <returns>The associated NetworkObject instance, or null if not found.</returns>
     internal static T GetNetworked<T>(this object child) where T : NetworkObject
     {
+        if (child == null)
+        {
+            throw new ArgumentNullException(nameof(child));
+        }
+
         if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
         {
             if (lookup.TryGetValue(child, out var networkObj))

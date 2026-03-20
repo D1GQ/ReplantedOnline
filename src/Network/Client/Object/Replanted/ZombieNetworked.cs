@@ -132,7 +132,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (AmOwner)
         {
-            if (ZombieType == ZombieType.Bungee || State is NetStates.MIND_CONTROLLED_STATE)
+            if (ZombieType == ZombieType.Bungee || State is NetStates.ZOMBIE_MIND_CONTROLLED_STATE)
             {
                 if (_Zombie == null)
                 {
@@ -314,6 +314,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
+    private bool hasPlacedLadder;
     private void LadderUpdate()
     {
         if (_Zombie == null) return;
@@ -330,9 +331,9 @@ internal sealed class ZombieNetworked : NetworkObject
             }
             else if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
             {
-                if (State is not NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                if (!hasPlacedLadder)
                 {
-                    State = NetStates.LADDER_ZOMBIE_PLACED_LADDER;
+                    hasPlacedLadder = true;
                     SendSetStateRpc(NetStates.LADDER_ZOMBIE_PLACED_LADDER);
                 }
             }
@@ -561,13 +562,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendMindControlledRpc()
     {
-        State = NetStates.MIND_CONTROLLED_STATE;
+        State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
         SendNetworkClassRpc((byte)ZombieRpcs.MindControlled);
     }
 
     private void HandleMindControlledRpc()
     {
-        State = NetStates.MIND_CONTROLLED_STATE;
+        State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
         _Zombie.StartMindControlledOriginal();
     }
 
@@ -640,6 +641,12 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void HandleSetStateRpc(string state)
     {
+        if (state == NetStates.NULL_STATE)
+        {
+            State = null;
+            return;
+        }
+
         State = state;
     }
 

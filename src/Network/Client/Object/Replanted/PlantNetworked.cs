@@ -360,6 +360,12 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void HandleSetStateRpc(string state)
     {
+        if (state == NetStates.NULL_STATE)
+        {
+            State = null;
+            return;
+        }
+
         State = state;
     }
 

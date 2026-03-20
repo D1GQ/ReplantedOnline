@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
@@ -72,6 +73,59 @@ internal static class ZombiePatch
         return true;
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
+    [HarmonyPostfix]
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant __result)
+    {
+        if (theAttackType != ZombieAttackType.Chew) return;
+
+        if (NetLobby.AmInLobby())
+        {
+            var netZombie = __instance.GetNetworked();
+            if (netZombie == null) return;
+
+            if (VersusState.AmPlantSide)
+            {
+                if (__result != null)
+                {
+                    if (netZombie.State is not NetStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    {
+                        netZombie.State = NetStates.ZOMBIE_CHEWING_PLANT_STATE;
+                        netZombie.SendSetStateRpc(NetStates.ZOMBIE_CHEWING_PLANT_STATE);
+                    }
+                }
+                else
+                {
+                    if (netZombie.State is NetStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    {
+                        netZombie.State = null;
+                        netZombie.SendSetStateRpc(NetStates.NULL_STATE);
+                    }
+                }
+            }
+            else
+            {
+                if (__result != null)
+                {
+                    // Push back until plant side starts eating plant
+                    if (netZombie.State is not NetStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    {
+                        __result = null;
+                        __instance.mPosX++;
+                    }
+                }
+                else
+                {
+                    // Move zombie forward to get first target to start eating on
+                    if (netZombie.State is NetStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    {
+                        __instance.mPosX--;
+                    }
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.EatZombie))]
     [HarmonyPrefix]
     private static bool Zombie_EatZombie_Prefix(Zombie theZombie)
@@ -118,12 +172,5 @@ internal static class ZombiePatch
                 }
             }
         }
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
-    internal static Plant FindPlantTargetOriginal(this Zombie __instance, ZombieAttackType theAttackType)
-    {
-        throw new NotImplementedException("Reverse Patch Stub");
     }
 }

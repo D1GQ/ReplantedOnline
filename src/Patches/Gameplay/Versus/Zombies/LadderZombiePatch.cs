@@ -12,9 +12,10 @@ internal static class LadderZombiePatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
     [HarmonyPostfix]
-    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant __result)
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant __result)
     {
         if (__instance.mZombieType != ZombieType.Ladder) return;
+        if (theAttackType != ZombieAttackType.Ladder) return;
 
         if (NetLobby.AmInLobby())
         {
@@ -32,11 +33,10 @@ internal static class LadderZombiePatch
                         }
                         else
                         {
-                            __result = null;
-
                             // Push back until plant side has placed ladder
-                            if (__instance.FindPlantTargetOriginal(ZombieAttackType.Vault) != null)
+                            if (__result != null)
                             {
+                                __result = null;
                                 __instance.mPosX++;
                             }
                         }
