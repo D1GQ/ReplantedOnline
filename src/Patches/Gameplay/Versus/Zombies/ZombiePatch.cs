@@ -111,7 +111,7 @@ internal static class ZombiePatch
                     if (netZombie.State is not NetStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         __result = null;
-                        __instance.mPosX++;
+                        __instance.mPosX -= __instance.GetZombieMoveDirection();
                     }
                 }
                 else
@@ -119,7 +119,7 @@ internal static class ZombiePatch
                     // Move zombie forward to get first target to start eating on
                     if (netZombie.State is NetStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
-                        __instance.mPosX--;
+                        __instance.mPosX += __instance.GetZombieMoveDirection();
                     }
                 }
             }

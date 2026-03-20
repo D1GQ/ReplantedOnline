@@ -37,7 +37,7 @@ internal static class PolevaulterZombiePatch
                             if (__result != null)
                             {
                                 __result = null;
-                                __instance.mPosX++;
+                                __instance.mPosX -= __instance.GetZombieMoveDirection();
                             }
                         }
                     }

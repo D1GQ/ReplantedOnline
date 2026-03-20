@@ -94,6 +94,30 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Gets the movement direction of the zombie based on its current state.
+    /// </summary>
+    /// <param name="zombie">The zombie instance to get the move direction for.</param>
+    /// <returns>
+    /// The movement direction value
+    /// </returns>
+    internal static float GetZombieMoveDirection(this Zombie zombie)
+    {
+        float speed = zombie.mVelX + 0.5f;
+
+        if (zombie.mMindControlled)
+        {
+            return speed;
+        }
+
+        if (zombie.mZombieType == ZombieType.Digger && zombie.mZombiePhase == ZombiePhase.DiggerWalking)
+        {
+            return speed;
+        }
+
+        return -speed;
+    }
+
+    /// <summary>
     /// Checks if the zombie type is a target zombie or gravestone.
     /// </summary>
     /// <param name="zombieType">The zombie type.</param>

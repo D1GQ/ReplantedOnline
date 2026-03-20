@@ -51,7 +51,7 @@ internal static class GargantuarZombiePatch
                             // If the gargantuar is in synced smashing state, move it forward to find a target
                             if (__result == null)
                             {
-                                __instance.mPosX--;
+                                __instance.mPosX += __instance.GetZombieMoveDirection();
                             }
                             else
                             {
@@ -64,7 +64,7 @@ internal static class GargantuarZombiePatch
                             if (__result != null)
                             {
                                 __result = null;
-                                __instance.mPosX++;
+                                __instance.mPosX -= __instance.GetZombieMoveDirection();
                             }
                         }
                     }
@@ -242,7 +242,7 @@ internal static class GargantuarZombiePatch
 
     internal static void ImpDeserialize(Zombie imp, PacketReader packetReader)
     {
-        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()._Zombie;
+        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?._Zombie;
 
         // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
         gargantuar?.mRelatedZombieID = imp.DataID;
