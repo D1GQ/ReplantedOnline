@@ -374,32 +374,23 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    internal void CheckDeath(Action callback)
+    internal void CheckDeath()
     {
         if (_Zombie.mZombieType == ZombieType.Gravestone)
         {
             Instances.GameplayActivity.Board.m_vsGravestones.Remove(_Zombie);
             _Zombie.mGraveX = 0;
             _Zombie.mGraveY = 0;
-            callback();
         }
         else if (_Zombie.mZombieType == ZombieType.Target)
         {
             Instances.GameplayActivity.VersusMode.ZombieLife--;
 
-            if (Instances.GameplayActivity.VersusMode.ZombieLife > 0)
+            if (Instances.GameplayActivity.VersusMode.ZombieLife == 0)
             {
-                callback();
+                if (_Zombie?.mController == null) return;
+                VersusGameplayManager.EndGame(_Zombie.mController.transform.position, PlayerTeam.Plants);
             }
-            else
-            {
-                VersusGameplayManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Plants);
-                callback();
-            }
-        }
-        else
-        {
-            callback();
         }
     }
 
@@ -469,10 +460,8 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            CheckDeath(() =>
-            {
-                _Zombie.PlayDeathAnimOriginal(damageFlags);
-            });
+            CheckDeath();
+            _Zombie.PlayDeathAnimOriginal(damageFlags);
         }
     }
 
@@ -496,6 +485,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
+            CheckDeath();
             if (withLoot)
             {
                 _Zombie.DieWithLootOriginal();
@@ -557,7 +547,7 @@ internal sealed class ZombieNetworked : NetworkObject
         EnteringHouse = true;
         StopLarpPos();
         _Zombie?.mPosX = xPos;
-        VersusGameplayManager.EndGame(_Zombie?.mController?.gameObject, PlayerTeam.Zombies);
+        VersusGameplayManager.EndGame(_Zombie.mController.transform.position, PlayerTeam.Zombies);
     }
 
     internal void SendMindControlledRpc()

@@ -4,6 +4,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Patches.Gameplay.Versus;
 using ReplantedOnline.Utilities;
 using UnityEngine;
 
@@ -51,15 +52,9 @@ internal class VersusGameplayManager
         ));
     }
 
-    internal static void EndGame(GameObject focus, PlayerTeam winningTeam)
+    internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)
     {
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
-
-        if (focus == null)
-        {
-            ReplantedOnlineMod.Logger.Error("Can not end game, Focus gameobject is null!");
-            return;
-        }
 
         if (winningTeam is PlayerTeam.Plants)
         {
@@ -70,7 +65,10 @@ internal class VersusGameplayManager
             Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ZombiesWin;
         }
 
-        Instances.GameplayActivity.VersusMode.SetFocus(focus, Vector3.zero);
+        GameObject trueFocus = new("FocusObject");
+        trueFocus.transform.position = focusPos;
+
+        Instances.GameplayActivity.VersusMode.SetFocusOriginal(trueFocus, Vector3.zero);
         Instances.GameplayActivity.m_audioService.StopAllMusic();
         Instances.GameplayActivity.Board.Pause(true);
         VersusEndGameManager.EndGame(winningTeam);

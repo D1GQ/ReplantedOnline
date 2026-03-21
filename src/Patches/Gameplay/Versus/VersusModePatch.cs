@@ -5,6 +5,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
+using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 
@@ -31,6 +32,25 @@ internal static class VersusModePatch
     {
         IArena.GetCurrentArena()?.UpdateArena(__instance);
         IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+    }
+
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.SetFocus))]
+    [HarmonyPrefix]
+    private static bool VersusMode_SetFocus_Prefix()
+    {
+        if (NetLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.SetFocus))]
+    internal static void SetFocusOriginal(this VersusMode __instance, GameObject focusTarget, Vector3 focusOffset)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]

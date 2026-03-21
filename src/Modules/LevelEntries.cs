@@ -86,6 +86,7 @@ internal static class LevelEntries
         Instances.GameplayActivity.m_gameplayPooler.m_gridOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
         Instances.GameplayActivity.Board.InitLevel();
         Instances.GameplayActivity.InitInput();
+        Instances.GameplayActivity.VersusMode.m_focusCircleController = Instances.GameplayActivity.CreateFocusCircleController();
 
         // Play selecting seeds music
         if (selectionSet == SelectionSet.CustomAll)

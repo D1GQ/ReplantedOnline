@@ -64,7 +64,7 @@ internal static class ZombiePatch
             {
                 var netZombie = __instance.GetNetworked();
                 netZombie?.SendEnteringHouseRpc(__instance.mPosX);
-                VersusGameplayManager.EndGame(__instance.mController?.gameObject, PlayerTeam.Zombies);
+                VersusGameplayManager.EndGame(__instance.mController.transform.position, PlayerTeam.Zombies);
             }
 
             return false;
@@ -172,5 +172,17 @@ internal static class ZombiePatch
                 }
             }
         }
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.TrySpawnLevelAward))]
+    [HarmonyPrefix]
+    private static bool Zombie_TrySpawnLevelAward_Prefix()
+    {
+        if (NetLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
     }
 }

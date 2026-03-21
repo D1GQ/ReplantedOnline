@@ -21,13 +21,7 @@ internal static class ZombieSyncPatch
 
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDeathRpc(theDamageFlags);
-
-            netZombie?.CheckDeath(() =>
-            {
-                __instance.PlayDeathAnimOriginal(theDamageFlags);
-            });
-
-            return false;
+            netZombie?.CheckDeath();
         }
 
         return true;
@@ -49,7 +43,9 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
-            __instance.GetNetworked()?.SendDieLootRpc(true);
+            var netZombie = __instance.GetNetworked();
+            netZombie?.SendDieLootRpc(true);
+            netZombie?.CheckDeath();
         }
 
         return true;
@@ -71,7 +67,9 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
-            __instance.GetNetworked()?.SendDieLootRpc(false);
+            var netZombie = __instance.GetNetworked();
+            netZombie?.SendDieLootRpc(false);
+            netZombie?.CheckDeath();
         }
 
         return true;
