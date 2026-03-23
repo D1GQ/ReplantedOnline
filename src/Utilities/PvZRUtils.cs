@@ -102,19 +102,16 @@ internal static class PvZRUtils
     /// </returns>
     internal static float GetZombieMoveDirection(this Zombie zombie)
     {
-        float speed = zombie.mVelX + 0.5f;
+        float speed = zombie.mVelX + 0.30f;
 
-        if (zombie.mMindControlled)
+        if (!zombie.IsWalkingBackwards())
+        {
+            return -speed;
+        }
+        else
         {
             return speed;
         }
-
-        if (zombie.mZombieType == ZombieType.Digger && zombie.mZombiePhase == ZombiePhase.DiggerWalking)
-        {
-            return speed;
-        }
-
-        return -speed;
     }
 
     /// <summary>
