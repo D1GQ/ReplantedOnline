@@ -172,6 +172,11 @@ internal static class ArenaSelectorPanel
             case ArenaTypes.Night:
                 arenaName = "Level-AdventureArea2Level2";
                 break;
+#if DEBUG
+            case ArenaTypes.Debug:
+                arenaName = "Level-Minigame-Beghouled";
+                break;
+#endif
         }
 
         return LevelEntries.GetLevel(arenaName);

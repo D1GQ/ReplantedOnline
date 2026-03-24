@@ -13,5 +13,9 @@ internal enum ArenaTypes
     /// <summary>
     /// Arena is set during nighttime.
     /// </summary>
-    Night
+    Night,
+
+#if DEBUG
+    Debug
+#endif
 }

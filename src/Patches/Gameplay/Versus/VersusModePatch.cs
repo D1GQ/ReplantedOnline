@@ -16,6 +16,7 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
+        updateInterval = 0;
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
         __instance.ClearBoard();
         IArena.GetCurrentArena()?.InitializeArena(__instance);
@@ -26,12 +27,17 @@ internal static class VersusModePatch
         throw new SilentPatchException();
     }
 
+    private static uint updateInterval;
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
     {
-        IArena.GetCurrentArena()?.UpdateArena(__instance);
-        IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+        updateInterval++;
+        if (updateInterval % 2 != 0)
+        {
+            IArena.GetCurrentArena()?.UpdateArena(__instance);
+            IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+        }
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.SetFocus))]

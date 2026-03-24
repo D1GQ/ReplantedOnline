@@ -64,6 +64,12 @@ internal static class LevelEntries
                 level.m_gameArea = GameArea.Night;
                 level.m_backgroundPrefab = GetLevel("Level-AdventureArea2Level1").BackgroundPrefab;
                 break;
+#if DEBUG
+            case ArenaTypes.Debug:
+                level.m_gameArea = GameArea.Day;
+                level.m_backgroundPrefab = GetLevel("Level-AdventureArea2Level1").BackgroundPrefab;
+                break;
+#endif
         }
 
         // Hide arena changing
