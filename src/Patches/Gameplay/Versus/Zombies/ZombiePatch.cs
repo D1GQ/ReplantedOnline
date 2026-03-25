@@ -78,6 +78,7 @@ internal static class ZombiePatch
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant __result)
     {
         if (theAttackType != ZombieAttackType.Chew) return;
+        if (__instance.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar) return;
 
         if (NetLobby.AmInLobby())
         {
