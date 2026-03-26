@@ -103,16 +103,22 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 }
 
 /// <summary>
-/// Registers classes that implement BaseClientRPC.
+/// Registers classes that implement IClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterClientRPC : InstanceAttribute<IClientRPC> { }
 
 /// <summary>
-/// Registers classes that implement BasePacketHandler.
+/// Registers classes that implement IPacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterPacketHandler : InstanceAttribute<IPacketHandler> { }
+
+/// <summary>
+/// Registers classes that implement IFastPacketResolver.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterFastPacketResolver : InstanceAttribute<IFastPacketResolver> { }
 
 /// <summary>
 /// Registers classes that implement IArena.
