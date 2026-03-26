@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
 using System.Net;
@@ -12,18 +13,12 @@ namespace ReplantedOnline.Network.Server.Packet;
 /// Provides a pooled packet writer for efficient network packet construction.
 /// Handles writing various data types to a byte buffer with object pooling to reduce GC pressure.
 /// </summary>
-internal sealed class PacketWriter
+internal sealed class PacketWriter : IPacket
 {
-    private readonly List<byte> _data = [];
+    private List<byte> _data = [];
     private static readonly Queue<PacketWriter> _pool = [];
     private const int MAX_POOL_SIZE = 10;
     internal static int AmountInUse;
-
-    /// <summary>
-    /// Gets the current packet data as a byte array.
-    /// </summary>
-    /// <returns>A byte array containing the packet data.</returns>
-    internal byte[] GetBytes() => _data.ToArray();
 
     /// <summary>
     /// Gets the current length of the packet data in bytes.
@@ -38,6 +33,19 @@ internal sealed class PacketWriter
     {
         AmountInUse++;
         return _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
+    }
+
+    /// <summary>
+    /// Retrieves a PacketWriter instance from the pool or creates a new one, initialized with the provided data.
+    /// </summary>
+    /// <param name="data">The byte array containing initial packet data to write from.</param>
+    /// <returns>A PacketWriter instance initialized with the specified data.</returns>
+    internal static PacketWriter Get(byte[] data)
+    {
+        AmountInUse++;
+        var writer = _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
+        writer._data = [.. data];
+        return writer;
     }
 
     /// <summary>
@@ -92,10 +100,10 @@ internal sealed class PacketWriter
     /// <summary>
     /// Writes another packet's contents into this packet writer.
     /// </summary>
-    /// <param name="packetWriter">The packet writer whose contents will be written.</param>
-    internal void WritePacket(PacketWriter packetWriter)
+    /// <param name="packet">The packet whose contents will be written.</param>
+    internal void WritePacket(IPacket packet)
     {
-        _data.AddRange(packetWriter.GetBytes());
+        _data.AddRange(packet.GetByteBuffer());
     }
 
     /// <summary>
@@ -229,5 +237,16 @@ internal sealed class PacketWriter
     internal void Clear()
     {
         _data.Clear();
+    }
+
+    /// <summary>
+    /// Gets the complete packet data that has been written to the packet writer.
+    /// </summary>
+    /// <returns>
+    /// A byte array containing all data written to the packet writer.
+    /// </returns>
+    public byte[] GetByteBuffer()
+    {
+        return [.. _data];
     }
 }

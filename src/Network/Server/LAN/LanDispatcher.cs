@@ -60,7 +60,7 @@ internal static class LanDispatcher
 
                 writeContent?.Invoke(writer);
 
-                var packetData = writer.GetBytes();
+                var packetData = writer.GetByteBuffer();
                 transport.P2PListener.Send(packetData, packetData.Length, endpoint);
             }
             finally

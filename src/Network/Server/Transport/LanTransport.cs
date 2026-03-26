@@ -459,7 +459,7 @@ internal sealed class LanTransport : INetworkTransport
             writer.WriteID(_localClientId);
             writer.WriteInt((int)channel);
             writer.WriteBytes(data);
-            var packetData = writer.GetBytes();
+            var packetData = writer.GetByteBuffer();
 
             P2PListener.Send(packetData, packetData.Length, endpoint);
             return true;

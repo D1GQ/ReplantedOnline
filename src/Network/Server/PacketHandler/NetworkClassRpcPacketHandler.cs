@@ -23,7 +23,7 @@ internal class NetworkClassRpcPacketHandler : IPacketHandler
 
     private static IEnumerator CoWaitForNetworkClass(NetClient sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader);
+        var packet = PacketReader.Get(packetReader.GetByteBuffer());
         byte rpcId = packet.ReadByte();
         uint networkId = packet.ReadUInt();
         float timeOut = 0f;

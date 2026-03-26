@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
@@ -14,7 +15,7 @@ namespace ReplantedOnline.Network.Server.Packet;
 /// Provides a pooled packet reader for efficient network packet parsing.
 /// Handles reading various data types from a byte buffer with object pooling to reduce GC pressure.
 /// </summary>
-internal sealed class PacketReader
+internal sealed class PacketReader : IPacket
 {
     private byte[] _data = [];
     private int _position = 0;
@@ -37,20 +38,6 @@ internal sealed class PacketReader
         AmountInUse++;
         var reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
         reader._data = data;
-        reader._position = 0;
-        return reader;
-    }
-
-    /// <summary>
-    /// Retrieves a PacketReader instance from the pool or creates a new one, initialized with the remaining data from another packet reader.
-    /// </summary>
-    /// <param name="packet">The packet reader whose remaining data will be used.</param>
-    /// <returns>A PacketReader instance ready for reading the remaining data.</returns>
-    internal static PacketReader Get(PacketReader packet)
-    {
-        AmountInUse++;
-        var reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
-        reader._data = packet._data.Skip(packet._position).ToArray();
         reader._position = 0;
         return reader;
     }
@@ -308,5 +295,17 @@ internal sealed class PacketReader
 
         if (_pool.Count < MAX_POOL_SIZE)
             _pool.Enqueue(this);
+    }
+
+    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the remaining unread data from the packet reader starting at the current position.
+    /// </summary>
+    /// <returns>
+    /// A byte array containing all bytes from the current read position to the end of the packet.
+    /// </returns>
+    public byte[] GetByteBuffer()
+    {
+        return _data[_position..];
     }
 }

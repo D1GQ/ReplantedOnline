@@ -141,7 +141,7 @@ internal static class NetworkDispatcher
         if (NetLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            NetLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetBytes(), packet.Length, packetChannel, sendType);
+            NetLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
         }
 
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -172,14 +172,14 @@ internal static class NetworkDispatcher
             if (NetLobby.IsPlayerInOurLobby(client.ClientId))
             {
                 var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-                bool sent = NetLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetBytes(), packet.Length, packetChannel, sendType);
+                bool sent = NetLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
                 if (sent) sentCount++;
             }
         }
 
         if (receiveLocally)
         {
-            var rePacket = PacketReader.Get(packet.GetBytes());
+            var rePacket = PacketReader.Get(packet.GetByteBuffer());
             Streamline(NetClient.LocalClient, rePacket);
         }
 

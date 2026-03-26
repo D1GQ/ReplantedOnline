@@ -22,7 +22,7 @@ internal sealed class NetworkClassSyncPacketHandler : IPacketHandler
 
     private static IEnumerator CoWaitForNetworkClassSync(NetClient sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader);
+        var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var networkSyncPacket = NetworkSyncPacket.DeserializePacket(packet);
 
         try
