@@ -35,7 +35,7 @@ internal class NetworkClassRpcPacketHandler : IPacketHandler
                 if (NetLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
                 {
                     ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                    networkObj.HandleRpc(sender, rpcId, packet);
+                    RpcHandlerAttribute.HandleNetworkObjectRpc(networkObj, sender, rpcId, packet);
                     break;
                 }
 

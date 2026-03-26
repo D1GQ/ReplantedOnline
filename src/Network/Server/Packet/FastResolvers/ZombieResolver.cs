@@ -15,14 +15,28 @@ internal class ZombieResolver : IFastPacketResolver<Zombie>
     /// <inheritdoc/>
     public void Serialize(PacketWriter packetWriter, Zombie value)
     {
-        var netZombie = value.GetNetworked();
-        packetWriter.WriteNetworkObject(netZombie);
+        if (value != null)
+        {
+            var netZombie = value.GetNetworked();
+            packetWriter.WriteNetworkObject(netZombie);
+        }
+        else
+        {
+            packetWriter.WriteNetworkObject(null);
+        }
     }
 
     /// <inheritdoc/>
     public Zombie Deserialize(PacketReader packetReader, Type type)
     {
         var netZombie = packetReader.ReadNetworkObject<ZombieNetworked>();
-        return netZombie._Zombie;
+        if (netZombie != null)
+        {
+            return netZombie._Zombie;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

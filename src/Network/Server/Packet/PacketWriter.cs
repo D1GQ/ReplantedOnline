@@ -117,6 +117,16 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Writes an enum value to the packet as an integer.
+    /// </summary>
+    /// <typeparam name="T">The enum type to write</typeparam>
+    /// <param name="value">The enum value to write</param>
+    internal void WriteEnum<T>(T value) where T : Enum
+    {
+        WriteInt(Convert.ToInt32(value));
+    }
+
+    /// <summary>
     /// Writes a string to the packet with UTF-8 encoding, prefixed by its length.
     /// </summary>
     /// <param name="value">The string value to write.</param>

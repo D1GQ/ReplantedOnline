@@ -10,15 +10,8 @@ internal class EnumResolver : IFastPacketResolver
     public bool CanResolve(Type type) => type != null && type.IsEnum;
 
     /// <inheritdoc/>
-    public void UnsafeSerialize(PacketWriter packetWriter, object value)
-    {
-        packetWriter.WriteInt(Convert.ToInt32(value));
-    }
+    public void UnsafeSerialize(PacketWriter packetWriter, object value) => packetWriter.WriteEnum(value as Enum);
 
     /// <inheritdoc/>
-    public object UnsafeDeserialize(PacketReader packetReader, Type type)
-    {
-        int enumValue = packetReader.ReadInt();
-        return Enum.ToObject(type, enumValue);
-    }
+    public object UnsafeDeserialize(PacketReader packetReader, Type type) => packetReader.ReadEnum(type);
 }

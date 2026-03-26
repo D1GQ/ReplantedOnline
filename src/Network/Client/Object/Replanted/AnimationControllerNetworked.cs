@@ -1,7 +1,6 @@
-﻿using Il2CppInterop.Runtime.Attributes;
-using Il2CppReloaded.Characters;
+﻿using Il2CppReloaded.Characters;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
 
@@ -46,37 +45,12 @@ internal sealed class AnimationControllerNetworked : NetworkObject
 
     internal void SendPlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
     {
-        var packetWriter = PacketWriter.Get();
-        packetWriter.WriteString(animationName);
-        packetWriter.WriteInt((int)track);
-        packetWriter.WriteFloat(fps);
-        packetWriter.WriteByte((byte)loopType);
-        SendNetworkClassRpc((byte)AnimationRpcs.PlayAnimation, packetWriter);
-        packetWriter.Recycle();
+        SendNetworkClassRpc(AnimationRpcs.PlayAnimation, animationName, track, fps, loopType);
     }
 
-    private void HandlePlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
+    [RpcHandler(AnimationRpcs.PlayAnimation)]
+    internal void HandlePlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
     {
         _AnimationController?.PlayAnimationOriginal(animationName, track, fps, loopType);
-    }
-
-    [HideFromIl2Cpp]
-    public override void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader)
-    {
-        if (sender.ClientId != OwnerId) return;
-
-        var rpc = (AnimationRpcs)rpcId;
-        switch (rpc)
-        {
-            case AnimationRpcs.PlayAnimation:
-                {
-                    var animationName = packetReader.ReadString();
-                    var track = (CharacterTracks)packetReader.ReadInt();
-                    var fps = packetReader.ReadFloat();
-                    var loopType = (AnimLoopType)packetReader.ReadByte();
-                    HandlePlayAnimationRpc(animationName, track, fps, loopType);
-                }
-                break;
-        }
     }
 }

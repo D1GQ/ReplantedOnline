@@ -34,6 +34,7 @@ internal class ReplantedOnlineMod : MelonMod
         RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();
         NetworkObject.SetupPrefabs();
+        RpcHandlerAttribute.Initialize();
         BloomEngineManager.InitializeBloom(this);
         InfoDisplay.Initialize();
         AudioManager.Initialize();

@@ -15,14 +15,28 @@ internal class CharacterAnimationControllerResolver : IFastPacketResolver<Charac
     /// <inheritdoc/>
     public void Serialize(PacketWriter packetWriter, CharacterAnimationController value)
     {
-        var netAnimationController = value.GetNetworked<AnimationControllerNetworked>();
-        packetWriter.WriteNetworkObject(netAnimationController);
+        if (value != null)
+        {
+            var netAnimationController = value.GetNetworked<AnimationControllerNetworked>();
+            packetWriter.WriteNetworkObject(netAnimationController);
+        }
+        else
+        {
+            packetWriter.WriteNetworkObject(null);
+        }
     }
 
     /// <inheritdoc/>
     public CharacterAnimationController Deserialize(PacketReader packetReader, Type type)
     {
         var netAnimationController = packetReader.ReadNetworkObject<AnimationControllerNetworked>();
-        return netAnimationController._AnimationController;
+        if (netAnimationController != null)
+        {
+            return netAnimationController._AnimationController;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

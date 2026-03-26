@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
@@ -275,14 +276,13 @@ internal sealed class PlantNetworked : NetworkObject
         if (!dead)
         {
             dead = true;
-            var writer = PacketWriter.Get();
-            writer.WriteInt(_Plant.mDoSpecialCountdown);
-            SendNetworkClassRpc((byte)PlantRpcs.Die, writer);
+            SendNetworkClassRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
             DespawnAndDestroy();
         }
     }
 
-    private void HandleDieRpc(int doSpecialCountdown)
+    [RpcHandler(PlantRpcs.Die)]
+    internal void HandleDieRpc(int doSpecialCountdown)
     {
         if (DoNotSyncDeath(_Plant, doSpecialCountdown)) return;
 
@@ -297,14 +297,12 @@ internal sealed class PlantNetworked : NetworkObject
         if (State is not PlantState.DoingSpecial)
         {
             State = PlantState.DoingSpecial;
-            var writer = PacketWriter.Get();
-            writer.WriteNetworkObject(target.GetNetworked());
-            SendNetworkClassRpc((byte)PlantRpcs.SquashTarget, writer);
-            writer.Recycle();
+            SendNetworkClassRpc(PlantRpcs.SquashTarget, target);
         }
     }
 
-    private void HandleSquashTargetRpc(Zombie target)
+    [RpcHandler(PlantRpcs.SquashTarget)]
+    internal void HandleSquashTargetRpc(Zombie target)
     {
         if (SeedType != SeedType.Squash) return;
 
@@ -320,51 +318,44 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashPlantRpc()
     {
-        SendNetworkClassRpc((byte)PlantRpcs.SquishPlant);
+        SendNetworkClassRpc(PlantRpcs.SquishPlant);
     }
 
-    private void HandleSquashPlantRpc()
+    [RpcHandler(PlantRpcs.SquishPlant)]
+    internal void HandleSquashPlantRpc()
     {
         _Plant.SquishOriginal();
     }
 
     internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
     {
-        var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(theTargetZombie.GetNetworked());
-        writer.WriteInt(theRow);
-        writer.WriteInt((int)thePlantWeapon);
-        SendNetworkClassRpc((byte)PlantRpcs.Fire, writer);
-        writer.Recycle();
+        SendNetworkClassRpc(PlantRpcs.Fire, theTargetZombie, theRow, thePlantWeapon);
     }
 
-    private void HandleFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    [RpcHandler(PlantRpcs.Fire)]
+    internal void HandleFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
     {
         _Plant.FireOriginal(theTargetZombie, theRow, thePlantWeapon);
     }
 
     internal void SendSetZombieTargetRpc(Zombie target)
     {
-        var writer = PacketWriter.Get();
-        writer.WriteNetworkObject(target?.GetNetworked());
-        SendNetworkClassRpc((byte)PlantRpcs.SetZombieTarget, writer);
-        writer.Recycle();
+        SendNetworkClassRpc(PlantRpcs.SetZombieTarget, target);
     }
 
-    private void HandleSetZombieTargetRpc(Zombie target)
+    [RpcHandler(PlantRpcs.SetZombieTarget)]
+    internal void HandleSetZombieTargetRpc(Zombie target)
     {
         Target = target;
     }
 
     internal void SendSetStateRpc(string state)
     {
-        var writer = PacketWriter.Get();
-        writer.WriteString(state);
-        SendNetworkClassRpc((byte)PlantRpcs.SetState, writer);
-        writer.Recycle();
+        SendNetworkClassRpc(PlantRpcs.SetState, state);
     }
 
-    private void HandleSetStateRpc(string state)
+    [RpcHandler(PlantRpcs.SetState)]
+    internal void HandleSetStateRpc(string state)
     {
         if (state == NetStates.NULL_STATE)
         {
@@ -373,54 +364,6 @@ internal sealed class PlantNetworked : NetworkObject
         }
 
         State = state;
-    }
-
-    [HideFromIl2Cpp]
-    public override void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader)
-    {
-        if (sender.ClientId != OwnerId) return;
-
-        var rpc = (PlantRpcs)rpcId;
-        switch (rpc)
-        {
-            case PlantRpcs.Die:
-                {
-                    var doSpecialCountdown = packetReader.ReadInt();
-                    HandleDieRpc(doSpecialCountdown);
-                }
-                break;
-            case PlantRpcs.SquashTarget:
-                {
-                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
-                    HandleSquashTargetRpc(target._Zombie);
-                }
-                break;
-            case PlantRpcs.Fire:
-                {
-                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
-                    var row = packetReader.ReadInt();
-                    var plantWeapon = (PlantWeapon)packetReader.ReadInt();
-                    HandleFireRpc(target._Zombie, row, plantWeapon);
-                }
-                break;
-            case PlantRpcs.SetZombieTarget:
-                {
-                    var target = packetReader.ReadNetworkObject<ZombieNetworked>();
-                    HandleSetZombieTargetRpc(target?._Zombie);
-                }
-                break;
-            case PlantRpcs.SquishPlant:
-                {
-                    HandleSquashPlantRpc();
-                }
-                break;
-            case PlantRpcs.SetState:
-                {
-                    var state = packetReader.ReadString();
-                    HandleSetStateRpc(state);
-                }
-                break;
-        }
     }
 
     /// <summary>

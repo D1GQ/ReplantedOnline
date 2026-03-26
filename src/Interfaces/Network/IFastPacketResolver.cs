@@ -37,8 +37,8 @@ internal interface IFastPacketResolver
     private readonly static Dictionary<Type, IFastPacketResolver> _resolverLookup = [];
 
     /// <summary>
+    /// Generic version of WriteFast for compile-time type safety.
     /// Automatically writes any supported type to the packet without adding type information.
-    /// Uses a cached lookup for performance and automatically discovers the appropriate resolver.
     /// </summary>
     /// <typeparam name="T">The type of value to write. Must be a supported type.</typeparam>
     /// <param name="packetWriter">The packet writer to write to.</param>
@@ -46,7 +46,18 @@ internal interface IFastPacketResolver
     /// <exception cref="NotSupportedException">Thrown when the type T is not supported by any registered resolver.</exception>
     internal static void WriteFast<T>(PacketWriter packetWriter, T value)
     {
-        Type type = typeof(T);
+        WriteFast(packetWriter, value, typeof(T));
+    }
+
+    /// <summary>
+    /// Automatically writes any supported type to the packet without adding type information.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer to write to.</param>
+    /// <param name="value">The value to write. Can be null for reference types.</param>
+    /// <param name="type">The type of the value to write.</param>
+    /// <exception cref="NotSupportedException">Thrown when the type T is not supported by any registered resolver.</exception>
+    internal static void WriteFast(PacketWriter packetWriter, object value, Type type)
+    {
         if (!_resolverLookup.TryGetValue(type, out var resolver))
         {
             foreach (var fastResolver in RegisterFastPacketResolver.Instances)

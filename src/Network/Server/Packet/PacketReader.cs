@@ -135,6 +135,26 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
+    /// Reads an enum value from the packet as an integer and converts it to the specified enum type.
+    /// </summary>
+    /// <typeparam name="T">The enum type to read</typeparam>
+    /// <returns>The enum value read from the packet</returns>
+    internal T ReadEnum<T>() where T : Enum
+    {
+        return (T)ReadEnum(typeof(T));
+    }
+
+    /// <summary>
+    /// Reads an enum value from the packet as an integer and converts it to the specified enum type.
+    /// </summary>
+    /// <param name="type">The enum type to read</param>
+    /// <returns>The enum value read from the packet</returns>
+    internal Enum ReadEnum(Type type)
+    {
+        return (Enum)Enum.ToObject(type, ReadInt());
+    }
+
+    /// <summary>
     /// Reads a string from the packet, expecting length-prefixed UTF-8 encoding.
     /// </summary>
     /// <returns>The decoded string value.</returns>

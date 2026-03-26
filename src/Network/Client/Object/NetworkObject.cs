@@ -235,20 +235,20 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Sends an RPC (Remote Procedure Call) for this network object.
     /// </summary>
     [HideFromIl2Cpp]
-    public void SendNetworkClassRpc(byte rpcId, PacketWriter packetWriter = null)
+    public void SendNetworkClassRpc<T>(T rpcId, params object[] args) where T : Enum
     {
-        NetworkDispatcher.SendRpc(this, rpcId, packetWriter);
+        PacketWriter packetWriter = null;
+        if (args.Length > 0)
+        {
+            packetWriter = PacketWriter.Get();
+            foreach (var arg in args)
+            {
+                IFastPacketResolver.WriteFast(packetWriter, arg, arg.GetType());
+            }
+        }
+        NetworkDispatcher.SendRpc(this, Convert.ToByte(rpcId), packetWriter);
+        packetWriter?.Recycle();
     }
-
-    /// <summary>
-    /// Handles incoming Remote Procedure Calls for this network object.
-    /// Override this method to implement custom RPC handling.
-    /// </summary>
-    /// <param name="sender">The client that sent the RPC.</param>
-    /// <param name="rpcId">The identifier of the RPC method.</param>
-    /// <param name="packetReader">The packet reader containing RPC data.</param>
-    [HideFromIl2Cpp]
-    public virtual void HandleRpc(NetClient sender, byte rpcId, PacketReader packetReader) { }
 
     /// <summary>
     /// Serializes the object's state for network transmission.

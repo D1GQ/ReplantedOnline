@@ -15,14 +15,28 @@ internal class PlantResolver : IFastPacketResolver<Plant>
     /// <inheritdoc/>
     public void Serialize(PacketWriter packetWriter, Plant value)
     {
-        var netPlant = value.GetNetworked();
-        packetWriter.WriteNetworkObject(netPlant);
+        if (value != null)
+        {
+            var netPlant = value.GetNetworked();
+            packetWriter.WriteNetworkObject(netPlant);
+        }
+        else
+        {
+            packetWriter.WriteNetworkObject(null);
+        }
     }
 
     /// <inheritdoc/>
     public Plant Deserialize(PacketReader packetReader, Type type)
     {
         var netPlant = packetReader.ReadNetworkObject<PlantNetworked>();
-        return netPlant._Plant;
+        if (netPlant != null)
+        {
+            return netPlant._Plant;
+        }
+        else
+        {
+            return null;
+        }
     }
 }
