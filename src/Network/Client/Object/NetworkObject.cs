@@ -59,12 +59,12 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     }
 
     /// <summary>
-    /// Base container GameObject for all network objects
+    /// Base container GameObject for network objects to keep when moving to a scene
     /// </summary>
     private static GameObject _networkObjectsMoveToScene;
 
     /// <summary>
-    /// Container GameObject for all network objects
+    /// Container GameObject for network objects to keep when moving to a scene
     /// </summary>
     internal static GameObject NetworkObjectsMoveToScene
     {
@@ -237,7 +237,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     [HideFromIl2Cpp]
     public void SendNetworkClassRpc(byte rpcId, PacketWriter packetWriter = null)
     {
-        this.SendRpc(rpcId, packetWriter);
+        NetworkDispatcher.SendRpc(this, rpcId, packetWriter);
     }
 
     /// <summary>

@@ -171,8 +171,6 @@ internal static class SeedPacketDefinitions
             net.GridX = gridX;
             net.GridY = gridY;
         }, VersusState.PlantClientId);
-        plant.AddNetworkedLookup(networkObj);
-        networkObj.AnimationControllerNetworked.Init(plant.mController.AnimationController);
         return networkObj;
     }
 
@@ -277,8 +275,6 @@ internal static class SeedPacketDefinitions
             net.GridX = gridX;
             net.GridY = gridY;
         }, VersusState.PlantClientId);
-        zombie.AddNetworkedLookup(networkObj);
-        networkObj.AnimationControllerNetworked.Init(zombie.mController.AnimationController);
         return networkObj;
     }
 

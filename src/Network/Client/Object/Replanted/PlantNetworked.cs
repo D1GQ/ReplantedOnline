@@ -92,6 +92,11 @@ internal sealed class PlantNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    public override string GetObjectName()
+    {
+        return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
+    }
+
     [HideFromIl2Cpp]
     protected override void OnClone(RuntimePrefab prefab)
     {
@@ -102,9 +107,10 @@ internal sealed class PlantNetworked : NetworkObject
         networkedDebugger.Initialize(this);
     }
 
-    public override string GetObjectName()
+    public override void OnSpawn()
     {
-        return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
+        _Plant.AddNetworkedLookup(this);
+        AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
     }
 
     public void OnDestroy()
@@ -456,8 +462,6 @@ internal sealed class PlantNetworked : NetworkObject
             ImitaterType = (SeedType)packetReader.ReadInt();
 
             _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
-            _Plant.AddNetworkedLookup(this);
-            AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
         }
 
         lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 5);

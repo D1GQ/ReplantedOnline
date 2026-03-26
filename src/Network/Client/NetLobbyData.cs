@@ -118,13 +118,13 @@ internal sealed class NetLobbyData : IDisposable
     /// <param name="networkObj">The network object to spawn.</param>
     internal void OnNetworkObjectSpawn(NetworkObject networkObj)
     {
+        NetworkObjectsSpawned[networkObj.NetworkId] = networkObj;
+        networkObj.IsOnNetwork = true;
+        networkObj.OnSpawn();
         if (!networkObj.AmChild)
         {
             networkObj.gameObject.name = networkObj.GetObjectName();
         }
-        NetworkObjectsSpawned[networkObj.NetworkId] = networkObj;
-        networkObj.IsOnNetwork = true;
-        networkObj.OnSpawn();
     }
 
     /// <summary>
