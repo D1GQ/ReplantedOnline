@@ -11,8 +11,8 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 internal static class FlagZombiePatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.ZombieInitialize))]
-    [HarmonyPostfix]
-    private static void Zombie_ZombieInitialize_Postfix(ZombieType theType)
+    [HarmonyPrefix]
+    private static void Zombie_ZombieInitialize_Prefix(ZombieType theType)
     {
         if (theType != ZombieType.Flag) return;
 
