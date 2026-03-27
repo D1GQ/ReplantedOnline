@@ -80,6 +80,10 @@ internal static class ZombiePatch
         if (theAttackType != ZombieAttackType.Chew) return;
         if (__instance.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar) return;
 
+        // Allow ladder climbing
+        var gridX = __instance.mBoard.PixelToGridXKeepOnBoard(__instance.mPosX, __instance.mPosY);
+        if (__instance.mBoard.GetLadderAt(gridX, __instance.mRow) != null) return;
+
         if (NetLobby.AmInLobby())
         {
             var netZombie = __instance.GetNetworked();
