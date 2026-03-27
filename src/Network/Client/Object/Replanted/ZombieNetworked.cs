@@ -152,6 +152,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie.mDead)
         {
+            CheckDeath();
             _Zombie.RemoveNetworkedLookup();
             _Zombie = null;
             return;
