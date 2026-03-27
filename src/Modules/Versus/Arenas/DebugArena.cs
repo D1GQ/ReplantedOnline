@@ -31,6 +31,7 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)
     {
+        Mode = DebugModes.Default;
         SetMode();
     }
 
