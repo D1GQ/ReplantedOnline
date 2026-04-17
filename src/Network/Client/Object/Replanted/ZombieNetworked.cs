@@ -116,7 +116,7 @@ internal sealed class ZombieNetworked : NetworkObject
         networkedDebugger.Initialize(this);
     }
 
-    public override void OnSpawn()
+    public override void OnInit()
     {
         _Zombie.AddNetworkedLookup(this);
         AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
@@ -679,6 +679,8 @@ internal sealed class ZombieNetworked : NetworkObject
             ZombieType = (ZombieType)packetReader.ReadInt();
 
             _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
+
+            OnInit();
 
             if (ZombieType == ZombieType.Imp)
             {

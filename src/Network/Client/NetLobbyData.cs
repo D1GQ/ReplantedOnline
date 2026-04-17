@@ -120,11 +120,6 @@ internal sealed class NetLobbyData : IDisposable
     {
         NetworkObjectsSpawned[networkObj.NetworkId] = networkObj;
         networkObj.IsOnNetwork = true;
-        networkObj.OnSpawn();
-        if (!networkObj.AmChild)
-        {
-            networkObj.gameObject.name = networkObj.GetObjectName();
-        }
     }
 
     /// <summary>

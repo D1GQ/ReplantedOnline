@@ -102,6 +102,9 @@ internal sealed class PacketReader : IPacket
         {
             return networkObj;
         }
+
+        ReplantedOnlineMod.Logger.Warning($"ReadNetworkObject has unexpectedly returned NULL! NetworkId:{netId} not found");
+
         return null;
     }
 

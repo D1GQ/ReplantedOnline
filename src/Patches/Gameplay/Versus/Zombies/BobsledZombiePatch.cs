@@ -6,6 +6,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Utilities;
+using System.Collections;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 
@@ -104,21 +105,7 @@ internal static class BobsledZombiePatch
         {
             // Setup Bobsled leader
             leader = bobsled;
-            Zombie[] passengers = new Zombie[3];
-            for (int i = 0; i < passengers.Length; i++)
-            {
-                var passenger = passengers[i] = SeedPacketDefinitions.SpawnZombie(ZombieType.Bobsled, 9, leader.mRow, false, false);
-                passenger.mRelatedZombieID = leader.DataID;
-
-                // Wait until leader is on the network to spawn passenger
-                Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() =>
-                {
-                    return leader.GetNetworked() != null;
-                }, () =>
-                {
-                    SeedPacketDefinitions.SpawnZombieOnNetwork(passenger, 9, leader.mRow, false);
-                }));
-            }
+            Instances.GameplayActivity.StartCoroutine(CoSpawnPassengers(leader));
 
             // The leader does not have related zombie
             packetWriter.WriteNetworkObject(null);
@@ -130,6 +117,24 @@ internal static class BobsledZombiePatch
             packetWriter.WriteNetworkObject(netLeader);
 
             SetupPassenger(bobsled, leader);
+        }
+    }
+
+    private static IEnumerator CoSpawnPassengers(Zombie leader)
+    {
+        while (!leader.HasNetworked())
+        {
+            yield return null;
+        }
+
+        yield return null;
+
+        Zombie[] passengers = new Zombie[3];
+        for (int i = 0; i < passengers.Length; i++)
+        {
+            var passenger = passengers[i] = SeedPacketDefinitions.SpawnZombie(ZombieType.Bobsled, 9, leader.mRow, false, false);
+            passenger.mRelatedZombieID = leader.DataID;
+            SeedPacketDefinitions.SpawnZombieOnNetwork(passenger, 9, leader.mRow, false);
         }
     }
 

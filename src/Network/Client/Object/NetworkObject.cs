@@ -214,7 +214,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Called when the network object is first initialized on the client side.
     /// Override this method to implement client-side initialization logic.
     /// </summary>
-    public virtual void OnSpawn() { }
+    public virtual void OnInit() { }
 
     /// <summary>
     /// Called when the network object is being despawned/removed on the client side.
@@ -299,6 +299,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
                 T networkObj = prefab.Clone<T>();
                 networkObj.transform.SetParent(NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
+                networkObj.OnInit();
                 NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
                 return networkObj;

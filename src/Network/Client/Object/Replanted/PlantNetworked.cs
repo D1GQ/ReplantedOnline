@@ -108,7 +108,7 @@ internal sealed class PlantNetworked : NetworkObject
         networkedDebugger.Initialize(this);
     }
 
-    public override void OnSpawn()
+    public override void OnInit()
     {
         _Plant.AddNetworkedLookup(this);
         AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
@@ -405,6 +405,8 @@ internal sealed class PlantNetworked : NetworkObject
             ImitaterType = (SeedType)packetReader.ReadInt();
 
             _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
+
+            OnInit();
         }
 
         lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 5);

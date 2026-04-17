@@ -53,7 +53,6 @@ internal static class NetworkDispatcher
     {
         networkObj.OwnerId = owner;
         networkObj.NetworkId = NetLobby.LobbyData.GetNextNetworkId();
-        NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         var packet = PacketWriter.Get();
         NetworkSpawnPacket.SerializePacket(networkObj, packet);
         SendPacket(packet, false, PacketTag.NetworkClassSpawn, PacketChannel.Main);

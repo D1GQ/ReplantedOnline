@@ -37,6 +37,8 @@ internal sealed class NetworkSpawnPacket
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     internal static void SerializePacket(NetworkObject networkObj, PacketWriter packetWriter)
     {
+        networkObj.gameObject.name = networkObj.GetObjectName();
+
         packetWriter.WriteID(networkObj.OwnerId);
         packetWriter.WriteUInt(networkObj.NetworkId);
         if (RuntimePrefab.Prefabs.TryGetValue(networkObj.GUID, out var prefab) && prefab is NetworkObject netprefab)
@@ -47,6 +49,8 @@ internal sealed class NetworkSpawnPacket
         {
             throw new Exception($"[NetworkSpawnPacket] Unable to find prefab by GUID: {networkObj.GUID}");
         }
+
+        NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         networkObj.Serialize(packetWriter, true);
 
         var count = Math.Min(networkObj.ChildNetworkObjects.Count, ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN - 1);
@@ -59,8 +63,8 @@ internal sealed class NetworkSpawnPacket
                 var child = networkObj.ChildNetworkObjects[i];
                 child.OwnerId = networkObj.OwnerId;
                 child.NetworkId = networkObj.NetworkId + nextId;
-                child.Serialize(packetWriter, true);
                 NetLobby.LobbyData.OnNetworkObjectSpawn(child);
+                child.Serialize(packetWriter, true);
                 nextId++;
             }
         }
@@ -90,7 +94,10 @@ internal sealed class NetworkSpawnPacket
     /// </summary>
     internal static void DeserializeNetworkObject(NetworkObject networkObj, PacketReader packetReader)
     {
+        NetLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         networkObj.Deserialize(packetReader, true);
+        networkObj.gameObject.name = networkObj.GetObjectName();
+
         int childCount = packetReader.ReadInt();
         if (childCount > 0)
         {
@@ -102,8 +109,8 @@ internal sealed class NetworkSpawnPacket
                 var child = networkObj.ChildNetworkObjects[i];
                 child.OwnerId = networkObj.OwnerId;
                 child.NetworkId = networkObj.NetworkId + nextId;
-                child.Deserialize(packetReader, true);
                 NetLobby.LobbyData.OnNetworkObjectSpawn(child);
+                child.Deserialize(packetReader, true);
                 nextId++;
             }
         }

@@ -95,6 +95,34 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
+    /// Attempts to retrieve the network object associated with the specified object instance.
+    /// </summary>
+    /// <typeparam name="T">The type of NetworkObject to retrieve. Must derive from NetworkObject.</typeparam>
+    /// <param name="child">The object instance to look up.</param>
+    /// <param name="networkObject">When this method returns, contains the associated NetworkObject instance if found; otherwise, null.</param>
+    /// <returns>true if a network object was successfully retrieved for the specified object; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="child"/> is null.</exception>
+    internal static bool TryGetNetworked<T>(this object child, out T networkObject) where T : NetworkObject
+    {
+        if (child == null)
+        {
+            throw new ArgumentNullException(nameof(child));
+        }
+
+        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        {
+            if (lookup.TryGetValue(child, out var networkObj))
+            {
+                networkObject = (T)networkObj;
+                return true;
+            }
+        }
+
+        networkObject = null;
+        return false;
+    }
+
+    /// <summary>
     /// Checks if the object has a network look up.
     /// </summary>
     /// <param name="child">The object instance to look up.</param>
