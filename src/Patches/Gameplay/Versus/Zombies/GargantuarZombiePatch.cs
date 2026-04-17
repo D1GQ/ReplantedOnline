@@ -215,10 +215,16 @@ internal static class GargantuarZombiePatch
 
     private static void ConfigureImpArc(Zombie gargantuar, Zombie imp)
     {
+        float randomArc = 0f;
+        var impNetworked = imp.GetNetworked();
+        if (impNetworked != null)
+        {
+            randomArc = impNetworked.ImpRandomArc;
+        }
+
         float baseArc = gargantuar.mPosX - 360f;
 
         // Add random variation (0-100)
-        float randomArc = UnityEngine.Random.Range(0f, 100f);
         float finalArc = baseArc - randomArc;
 
         // Convert to vertical velocity (formula: (finalArc / 3.0) * 0.5 * 0.05)
@@ -226,9 +232,9 @@ internal static class GargantuarZombiePatch
     }
 
     // Serialization and deserialization for the imp to sync the throw across the network
-    internal static void ImpSerialize(Zombie imp, PacketWriter packetWriter)
+    internal static void ImpSerialize(ZombieNetworked impNetworked, PacketWriter packetWriter)
     {
-        Zombie gargantuar = imp.mBoard.ZombieGet(imp.mRelatedZombieID);
+        Zombie gargantuar = impNetworked._Zombie.mBoard.ZombieGet(impNetworked._Zombie.mRelatedZombieID);
 
         if (gargantuar != null)
         {
@@ -238,14 +244,18 @@ internal static class GargantuarZombiePatch
         {
             packetWriter.WriteNetworkObject(null);
         }
+
+        impNetworked.ImpRandomArc = UnityEngine.Random.Range(0f, 100f);
+        packetWriter.WriteFloat(impNetworked.ImpRandomArc);
     }
 
-    internal static void ImpDeserialize(Zombie imp, PacketReader packetReader)
+    internal static void ImpDeserialize(ZombieNetworked impNetworked, PacketReader packetReader)
     {
         Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?._Zombie;
+        impNetworked.ImpRandomArc = packetReader.ReadFloat();
 
         // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
-        gargantuar?.mRelatedZombieID = imp.DataID;
+        gargantuar?.mRelatedZombieID = impNetworked._Zombie.DataID;
     }
 
     // Waits for the Gargantuar's throw animation to reach the point where the imp is thrown before executing the callback

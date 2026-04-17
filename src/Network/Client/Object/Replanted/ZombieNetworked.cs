@@ -43,6 +43,8 @@ internal sealed class ZombieNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Plant Target { get; set; }
 
+    internal float ImpRandomArc;
+
     internal static bool DoNotSyncDeath(Zombie zombie)
     {
         if (zombie == null) return false;
@@ -647,7 +649,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (ZombieType == ZombieType.Imp)
             {
-                GargantuarZombiePatch.ImpSerialize(_Zombie, packetWriter);
+                GargantuarZombiePatch.ImpSerialize(this, packetWriter);
             }
 
             if (ZombieType == ZombieType.Bobsled)
@@ -680,7 +682,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (ZombieType == ZombieType.Imp)
             {
-                GargantuarZombiePatch.ImpDeserialize(_Zombie, packetReader);
+                GargantuarZombiePatch.ImpDeserialize(this, packetReader);
             }
 
             if (ZombieType == ZombieType.Bobsled)
