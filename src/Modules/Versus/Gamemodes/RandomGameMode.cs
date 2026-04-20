@@ -30,8 +30,8 @@ internal sealed class RandomGamemode : IVersusGamemode
         // Add custom initial seeds
         if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
         {
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], NetClient.LocalClient.Team);
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], NetClient.LocalClient.Team.GetOppositeTeam());
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], ReplantedClientData.LocalClient.Team);
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
 
         if (VersusState.AmPlantSide)

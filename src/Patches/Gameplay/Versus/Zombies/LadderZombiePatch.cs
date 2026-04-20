@@ -17,7 +17,7 @@ internal static class LadderZombiePatch
         if (__instance.mZombieType != ZombieType.Ladder) return;
         if (theAttackType != ZombieAttackType.Ladder) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide)
             {

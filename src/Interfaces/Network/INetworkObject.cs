@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Interfaces.Network;

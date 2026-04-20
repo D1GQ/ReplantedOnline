@@ -16,7 +16,7 @@ internal static class DancerZombiePatch
     [HarmonyPostfix]
     private static void Zombie_NeedsMoreBackupDancers_Postfix(Zombie __instance, ref bool __result)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {
@@ -40,7 +40,7 @@ internal static class DancerZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_SummonBackupDancer_Prefix(Zombie __instance, int theRow, int thePosX, ref ZombieID __result)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 

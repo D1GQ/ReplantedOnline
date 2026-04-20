@@ -19,7 +19,7 @@ internal static class PlantSyncPatch
     private static bool Plant_Die_Prefix(Plant __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return PlantNetworked.DoNotSyncDeath(__instance, __instance.mDoSpecialCountdown);
 
@@ -41,7 +41,7 @@ internal static class PlantSyncPatch
     private static bool Plant_Squish_Prefix(Plant __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 

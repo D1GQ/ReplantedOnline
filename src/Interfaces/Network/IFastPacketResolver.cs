@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Attributes;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 
 namespace ReplantedOnline.Interfaces.Network;
 

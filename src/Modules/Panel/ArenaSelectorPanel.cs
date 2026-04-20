@@ -52,18 +52,18 @@ internal static class ArenaSelectorPanel
         _preview.transform.localPosition = new Vector3(-14f, 5f, 0f);
         _preview.transform.localScale = new Vector3(3.3f, 2f, 2f);
 
-        if (NetLobby.AmLobbyHost())
+        if (ReplantedLobby.AmLobbyHost())
         {
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                NetLobby.LobbyData.Arena = NetLobby.LobbyData.Arena.Next();
+                ReplantedLobby.LobbyData.Arena = ReplantedLobby.LobbyData.Arena.Next();
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                NetLobby.LobbyData.Arena = NetLobby.LobbyData.Arena.Previous();
+                ReplantedLobby.LobbyData.Arena = ReplantedLobby.LobbyData.Arena.Previous();
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;

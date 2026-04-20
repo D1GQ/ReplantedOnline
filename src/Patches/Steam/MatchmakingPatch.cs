@@ -13,9 +13,9 @@ internal static class MatchmakingPatch
     /// </summary>
     internal static void Ban(this ID clientId)
     {
-        if (NetLobby.AmInLobby() && NetLobby.AmLobbyHost())
+        if (ReplantedLobby.AmInLobby() && ReplantedLobby.AmLobbyHost())
         {
-            NetLobby.NetworkTransport.SetLobbyData(NetLobby.LobbyData.LobbyId, $"ban:{clientId}", bool.TrueString);
+            ReplantedLobby.NetworkTransport.SetLobbyData(ReplantedLobby.LobbyData.LobbyId, $"ban:{clientId}", bool.TrueString);
         }
     }
 
@@ -25,9 +25,9 @@ internal static class MatchmakingPatch
     /// <returns>true if the player is banned in the current lobby; otherwise, false.</returns>
     internal static bool IsBanned(this ID clientId)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
-            return NetLobby.NetworkTransport.GetLobbyData(NetLobby.LobbyData.LobbyId, $"ban:{clientId}") == bool.TrueString;
+            return ReplantedLobby.NetworkTransport.GetLobbyData(ReplantedLobby.LobbyData.LobbyId, $"ban:{clientId}") == bool.TrueString;
         }
 
         return false;
@@ -54,7 +54,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static bool GetNumLobbyMembers_Prefix(SteamId steamIDLobby, ref int __result)
     {
-        if (!NetLobby.AmInLobby() || NetLobby.LobbyData.LobbyId != steamIDLobby) return true;
+        if (!ReplantedLobby.AmInLobby() || ReplantedLobby.LobbyData.LobbyId != steamIDLobby) return true;
 
         var filtered = GetFilteredMembers(steamIDLobby);
         __result = filtered.Count;
@@ -73,7 +73,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static bool GetLobbyMemberByIndex_Prefix(SteamId steamIDLobby, int iMember, ref SteamId __result)
     {
-        if (!NetLobby.AmInLobby() || NetLobby.LobbyData.LobbyId != steamIDLobby) return true;
+        if (!ReplantedLobby.AmInLobby() || ReplantedLobby.LobbyData.LobbyId != steamIDLobby) return true;
 
         var filtered = GetFilteredMembers(steamIDLobby);
 
@@ -98,7 +98,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static void SetLobbyMemberLimit_Prefix(SteamId steamIDLobby, ref int cMaxMembers)
     {
-        if (!NetLobby.AmInLobby() || NetLobby.LobbyData.LobbyId != steamIDLobby) return;
+        if (!ReplantedLobby.AmInLobby() || ReplantedLobby.LobbyData.LobbyId != steamIDLobby) return;
 
         int realTotalMembers = SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(steamIDLobby);
         int visibleMembers = GetFilteredMembers(steamIDLobby).Count;

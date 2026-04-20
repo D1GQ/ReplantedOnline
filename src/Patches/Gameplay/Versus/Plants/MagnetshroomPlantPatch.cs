@@ -16,7 +16,7 @@ internal static class MagnetshroomPlantPatch
         if (__instance.mSeedType != SeedType.Magnetshroom) return true;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             var netPlant = __instance.GetNetworked();
 

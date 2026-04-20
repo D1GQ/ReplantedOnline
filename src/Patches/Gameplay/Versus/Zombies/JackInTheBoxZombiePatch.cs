@@ -15,7 +15,7 @@ internal static class JackInTheBoxZombiePatch
     {
         if (__instance.mZombieType != ZombieType.JackInTheBox) return true;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {

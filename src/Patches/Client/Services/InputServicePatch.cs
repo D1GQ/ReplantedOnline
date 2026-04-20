@@ -11,7 +11,7 @@ internal static class InputServicePatch
     [HarmonyPrefix]
     private static bool InputService_BeginListeningForGuestInputDevice_Prefix()
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Prevent second local player from being detected
             return false;

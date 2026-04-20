@@ -1,0 +1,42 @@
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes;
+using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+
+namespace ReplantedOnline.Network.Client.RPC;
+
+[RegisterRPC]
+internal sealed class StartMowerRPC : IRPC
+{
+    /// <inheritdoc/>
+    public RpcType Type => RpcType.StartMower;
+
+    internal static void Send(LawnMower lawnMower)
+    {
+        var packetWriter = PacketWriter.Get();
+        packetWriter.WriteInt(lawnMower.DataID);
+        NetworkDispatcher.SendRpc(RpcType.StartMower, packetWriter);
+        packetWriter.Recycle();
+    }
+
+    /// <inheritdoc/>
+    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    {
+        if (sender.Team == PlayerTeam.Plants)
+        {
+            var id = packetReader.ReadInt();
+            var lawnMower = Instances.GameplayActivity.Board.m_lawnMowers.DataArrayGet(id);
+
+            try
+            {
+                // Only want to start the mower so give a null ref
+                lawnMower?.MowZombieOriginal(null);
+            }
+            catch { }
+        }
+    }
+}

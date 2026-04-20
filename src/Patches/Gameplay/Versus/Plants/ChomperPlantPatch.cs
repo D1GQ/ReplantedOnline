@@ -15,7 +15,7 @@ internal static class ChomperPlantPatch
         if (__instance.mSeedType != SeedType.Chomper) return true;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If player is NOT on the plant side
             if (!VersusState.AmPlantSide)

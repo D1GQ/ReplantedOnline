@@ -2,7 +2,7 @@
 using ReplantedOnline.Enums.Network.LAN;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Server.Transport;
 using ReplantedOnline.Structs;
 
@@ -19,7 +19,7 @@ internal static class LanDispatcher
     /// </summary>
     internal static void BroadcastPacket(LanPacketType type, Action<PacketWriter> writeContent, bool excludeSelf, ID excludeClient)
     {
-        if (NetLobby.NetworkTransport is LanTransport transport)
+        if (ReplantedLobby.NetworkTransport is LanTransport transport)
         {
             foreach (var client in transport.Clients.Values)
             {
@@ -42,7 +42,7 @@ internal static class LanDispatcher
     /// </summary>
     internal static void SendInternalPacket(ID targetId, LanPacketType type, Action<PacketWriter> writeContent)
     {
-        if (NetLobby.NetworkTransport is LanTransport transport)
+        if (ReplantedLobby.NetworkTransport is LanTransport transport)
         {
             var endpoint = transport.GetClientEndpoint(targetId);
             if (endpoint == null)
@@ -54,8 +54,8 @@ internal static class LanDispatcher
             var writer = PacketWriter.Get();
             try
             {
-                writer.AddTag(PacketTag.LAN);
-                writer.WriteID(NetLobby.NetworkTransport.LocalClientId);
+                writer.AddTag(PacketHandlerType.LAN);
+                writer.WriteID(ReplantedLobby.NetworkTransport.LocalClientId);
                 writer.WriteByte((byte)type);
 
                 writeContent?.Invoke(writer);
@@ -99,7 +99,7 @@ internal static class LanDispatcher
     /// </summary>
     internal static void SendClientInfo(ID targetId)
     {
-        if (NetLobby.NetworkTransport is LanTransport transport)
+        if (ReplantedLobby.NetworkTransport is LanTransport transport)
         {
             SendInternalPacket(targetId, LanPacketType.ClientInfo, writer =>
             {
@@ -359,7 +359,7 @@ internal static class LanDispatcher
         // Notify game of new member
         MainThreadDispatcher.Execute(() =>
         {
-            NetLobby.OnLobbyMemberJoined(transport.CurrentLobbyData, clientInfo.ClientId);
+            ReplantedLobby.OnLobbyMemberJoined(transport.CurrentLobbyData, clientInfo.ClientId);
         });
     }
 
@@ -371,7 +371,7 @@ internal static class LanDispatcher
 
         MainThreadDispatcher.Execute(() =>
         {
-            NetLobby.OnP2PSessionRequest(senderId);
+            ReplantedLobby.OnP2PSessionRequest(senderId);
         });
     }
 
@@ -460,7 +460,7 @@ internal static class LanDispatcher
                         // Notify game of new member
                         MainThreadDispatcher.Execute(() =>
                         {
-                            NetLobby.OnLobbyMemberJoined(transport.CurrentLobbyData, clientInfo.ClientId);
+                            ReplantedLobby.OnLobbyMemberJoined(transport.CurrentLobbyData, clientInfo.ClientId);
                         });
                     }
                 }
@@ -506,7 +506,7 @@ internal static class LanDispatcher
             {
                 MainThreadDispatcher.Execute(() =>
                 {
-                    NetLobby.OnLobbyDataChanged(transport.CurrentLobbyData);
+                    ReplantedLobby.OnLobbyDataChanged(transport.CurrentLobbyData);
                 });
             }
         }

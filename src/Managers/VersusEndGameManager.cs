@@ -31,7 +31,7 @@ internal static class VersusEndGameManager
         Instances.GameplayActivity.Player2VersusWinData = new();
 
         // Play winning or losing sound 
-        foreach (var netClient in NetLobby.LobbyData.AllClients.Values)
+        foreach (var netClient in ReplantedLobby.LobbyData.AllClients.Values)
         {
             if (netClient.AmLocal && netClient.Team is not PlayerTeam.Spectators)
             {
@@ -57,7 +57,7 @@ internal static class VersusEndGameManager
     {
         yield return new WaitForSeconds(3f);
 
-        if (!NetLobby.AmInLobby())
+        if (!ReplantedLobby.AmInLobby())
         {
             yield break;
         }
@@ -83,7 +83,7 @@ internal static class VersusEndGameManager
         winner.Init();
         loser.Init();
 
-        foreach (var netClient in NetLobby.LobbyData.AllClients.Values)
+        foreach (var netClient in ReplantedLobby.LobbyData.AllClients.Values)
         {
             if (netClient.Team is not PlayerTeam.Spectators)
             {
@@ -116,14 +116,14 @@ internal static class VersusEndGameManager
     {
         yield return new WaitForSeconds(5f);
 
-        if (!NetLobby.AmInLobby())
+        if (!ReplantedLobby.AmInLobby())
         {
             yield break;
         }
 
-        if (NetLobby.AmLobbyHost())
+        if (ReplantedLobby.AmLobbyHost())
         {
-            NetLobby.LobbyData?.ResetLobby();
+            ReplantedLobby.LobbyData?.ResetLobby();
         }
     }
 

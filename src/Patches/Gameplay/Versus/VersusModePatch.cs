@@ -44,7 +44,7 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     private static bool VersusMode_SetFocus_Prefix()
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             return false;
         }
@@ -64,7 +64,7 @@ internal static class VersusModePatch
     private static bool VersusMode_UpdateBobsledSpawning_Prefix()
     {
         // Only apply these changes when in an online lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide)
             {
@@ -80,7 +80,7 @@ internal static class VersusModePatch
     private static bool Board_BoardAddCoin_Prefix(CoinType theCoinType)
     {
         // Only apply these changes when in an online lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (theCoinType is CoinType.Silver or CoinType.Gold or CoinType.Diamond)
             {
@@ -109,7 +109,7 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void Board_CanPlantAt_Postfix(int theGridX, int theGridY, SeedType theType, ref PlantingReason __result)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Custom place conditions 
             if (!SeedPacketDefinitions.CanPlace(theType, theGridX, theGridY))
@@ -123,7 +123,7 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     private static bool Board_CanAddGraveStoneAt_Prefix()
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Don't spawn gravestones in Night Arena
             return false;
@@ -136,7 +136,7 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     private static void Plant_Update_Prefix(Plant __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If player is NOT on plant team (zombie or spectator)
             if (!VersusState.AmPlantSide)
@@ -157,7 +157,7 @@ internal static class VersusModePatch
     {
         __state = false; // Initialize state to track if we should apply nerf
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If player IS on zombie team
             if (VersusState.AmZombieSide)
@@ -180,7 +180,7 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void Zombie_UpdateGravestone_Postfix(Zombie __instance, bool __state)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If we marked this zombie for nerf in the prefix
             if (__state)
@@ -197,7 +197,7 @@ internal static class VersusModePatch
     {
         __state = false; // Initialize state
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If player IS on zombie team
             if (VersusState.AmZombieSide)
@@ -215,7 +215,7 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void Board_UpdateSunSpawning_Postfix(Board __instance, bool __state)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If we marked for nerf in the prefix
             if (__state)

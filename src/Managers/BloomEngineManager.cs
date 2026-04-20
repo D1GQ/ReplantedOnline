@@ -65,11 +65,11 @@ internal static class BloomEngineManager
             {
                 if (@bool)
                 {
-                    NetLobby.SetTransportMode(1);
+                    ReplantedLobby.SetTransportMode(1);
                 }
                 else
                 {
-                    NetLobby.SetTransportMode(0);
+                    ReplantedLobby.SetTransportMode(0);
                 }
             };
         }

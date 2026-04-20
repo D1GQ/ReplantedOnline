@@ -6,7 +6,7 @@ using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Client.RPC;
 using ReplantedOnline.Utilities;
 using static Il2CppReloaded.Constants;
 
@@ -19,7 +19,7 @@ internal static class SeedPacketSyncPatch
     [HarmonyPrefix]
     private static bool GamepadCursorController_OnCursorConfirmed_Prefix(GamepadCursorController __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Get the type of seed being planted
             var seedType = __instance.Board.GetSeedTypeInCursor(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
@@ -46,7 +46,7 @@ internal static class SeedPacketSyncPatch
                         seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
-                        SyncSeedPacketClientRPC.Send(seedType);
+                        SyncSeedPacketRPC.Send(seedType);
                     }
                     else
                     {
@@ -78,7 +78,7 @@ internal static class SeedPacketSyncPatch
     [HarmonyPrefix]
     private static bool GameplayActivity_OnMouseDownBG_Prefix(GameplayActivity __instance, int mouseButton, int playerIndex)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Get the type of seed being planted
             var seedType = __instance.Board.GetSeedTypeInCursor(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
@@ -106,7 +106,7 @@ internal static class SeedPacketSyncPatch
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
-                        SyncSeedPacketClientRPC.Send(seedType);
+                        SyncSeedPacketRPC.Send(seedType);
                     }
                     else
                     {

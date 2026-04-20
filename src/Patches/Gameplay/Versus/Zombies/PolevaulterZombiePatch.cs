@@ -17,7 +17,7 @@ internal static class PolevaulterZombiePatch
         if (__instance.mZombieType != ZombieType.Polevaulter) return;
         if (theAttackType != ZombieAttackType.Vault) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide)
             {

@@ -71,12 +71,12 @@ internal static class StartMultiplayerButtonPatch
         if (__instance.gameObject.name != "CoopVS_VS_Button")
         {
             // Host button clicked - create a new lobby
-            NetLobby.CreateLobby();
+            ReplantedLobby.CreateLobby();
         }
         else
         {
             // Join button clicked - show the lobby code input panel
-            if (NetLobby.NetworkTransport is LanTransport lanTransport)
+            if (ReplantedLobby.NetworkTransport is LanTransport lanTransport)
             {
                 Transitions.SetLoading();
                 _ = lanTransport.JoinFirstLanLobby();

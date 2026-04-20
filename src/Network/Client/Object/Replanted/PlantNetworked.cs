@@ -5,7 +5,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using ReplantedOnline.Utilities;

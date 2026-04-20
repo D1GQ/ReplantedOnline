@@ -22,7 +22,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameModeStart(VersusMode versusMode)
     {
-        NetClient.LocalClient?.Ready = false;
+        ReplantedClientData.LocalClient?.Ready = false;
         versusMode.Phase = VersusPhase.ChooseZombiePacket;
         Transitions.ToChooseSeeds();
         Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap());
@@ -42,7 +42,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     {
         while (UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>() == null)
         {
-            if (!NetLobby.AmInLobby())
+            if (!ReplantedLobby.AmInLobby())
             {
                 yield break;
             }
@@ -63,15 +63,15 @@ internal sealed class CustomGamemode : IVersusGamemode
         // Add custom initial seeds
         if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
         {
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], NetClient.LocalClient.Team);
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], NetClient.LocalClient.Team.GetOppositeTeam());
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], ReplantedClientData.LocalClient.Team);
+            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
 
-        NetClient.LocalClient?.Ready = true;
+        ReplantedClientData.LocalClient?.Ready = true;
 
         if (ModInfo.DEBUG)
         {
-            if (NetLobby.GetLobbyMemberCount() == 1)
+            if (ReplantedLobby.GetLobbyMemberCount() == 1)
             {
                 // Set up opponent seed bank for debugging
                 if (VersusState.AmPlantSide)

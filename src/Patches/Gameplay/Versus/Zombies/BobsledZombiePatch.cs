@@ -4,7 +4,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Utilities;
 using System.Collections;
 
@@ -19,7 +19,7 @@ internal static class BobsledZombiePatch
     {
         if (__instance.mZombieType != ZombieType.Bobsled) return true;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Do not update and hide bobsled team until everything is spawned and ready
             if (__instance.mZombiePhase is ZombiePhase.BobsledBoarding)

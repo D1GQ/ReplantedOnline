@@ -16,15 +16,15 @@ internal static class PauseMenuPatch
     private static void GameplayOptionsMenu_OnEnable_Postfix(GameplayOptionsMenu __instance)
     {
         // Only modify the menu if we're in an online lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             var restartLevelButton = __instance.transform.Find("P_OptionsPanel_Canvas/Layout/Center/Panel/Bottom/Buttons/Hlayout/P_BasicButton_RestartLevel")?.GetComponentInChildren<Button>(true);
-            if (restartLevelButton != null && NetLobby.AmLobbyHost())
+            if (restartLevelButton != null && ReplantedLobby.AmLobbyHost())
             {
                 restartLevelButton.onClick = new();
                 restartLevelButton.onClick.AddListener(() =>
                 {
-                    NetLobby.LobbyData?.ResetLobby();
+                    ReplantedLobby.LobbyData?.ResetLobby();
                 });
                 restartLevelButton.gameObject.DestroyAllTextLocalizers();
                 restartLevelButton.GetComponentInChildren<TextMeshProUGUI>(true)?.SetText("Restart Lobby");
@@ -39,7 +39,7 @@ internal static class PauseMenuPatch
             if (mainMneuButton != null)
             {
                 mainMneuButton.onClick = new();
-                mainMneuButton.onClick.AddListener(() => NetLobby.LeaveLobby());
+                mainMneuButton.onClick.AddListener(() => ReplantedLobby.LeaveLobby());
             }
 
             // Remove almanac button

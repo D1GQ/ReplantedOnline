@@ -1,0 +1,53 @@
+﻿namespace ReplantedOnline.Enums.Network;
+
+/// <summary>
+/// Identifies the type of network packet for proper routing and handling.
+/// Used to distinguish between different packet categories in the networking system.
+/// </summary>
+internal enum PacketHandlerType
+{
+    /// <summary>
+    /// No specific tag or unhandled packet type.
+    /// </summary>
+    None,
+
+    /// <summary>
+    /// LAN packet used for local network discovery and communication between clients on the same network.
+    /// </summary>
+    LAN,
+
+    /// <summary>
+    /// Packet used removing a client from the game.
+    /// </summary>
+    RemoveClient,
+
+    /// <summary>
+    /// Packet used resetting lobby
+    /// </summary>
+    ResetLobby,
+
+    /// <summary>
+    /// Remote Procedure Call packet for executing methods on remote clients.
+    /// </summary>
+    Rpc,
+
+    /// <summary>
+    /// Packet used for spawning a network object.
+    /// </summary>
+    NetworkObjectSpawn,
+
+    /// <summary>
+    /// Packet used for despawning a network object.
+    /// </summary>
+    NetworkObjectDespawn,
+
+    /// <summary>
+    /// Packet used for syncing a network object.
+    /// </summary>
+    NetworkObjectSync,
+
+    /// <summary>
+    /// Packet used for P2P session establishment and maintenance on a network object.
+    /// </summary>
+    NetworkObjectRpc,
+}

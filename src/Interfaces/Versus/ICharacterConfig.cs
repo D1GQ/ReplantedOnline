@@ -22,7 +22,7 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnPlantPlanted(Plant plant, int gridX, int gridY)
     {
-        if (!NetLobby.AmInLobby()) return;
+        if (!ReplantedLobby.AmInLobby()) return;
 
         foreach (var config in RegisterCharacterConfig.Instances)
         {
@@ -44,7 +44,7 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnZombiePlanted(Zombie zombie, int gridX, int gridY)
     {
-        if (!NetLobby.AmInLobby()) return;
+        if (!ReplantedLobby.AmInLobby()) return;
 
         foreach (var config in RegisterCharacterConfig.Instances)
         {

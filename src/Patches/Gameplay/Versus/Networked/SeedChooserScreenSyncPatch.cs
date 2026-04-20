@@ -8,7 +8,7 @@ using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Client.RPC;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -19,16 +19,16 @@ internal static class SeedChooserScreenSyncPatch
     [HarmonyPrefix]
     private static bool SeedChooserScreen_AddChosenSeedToBank_Prefix(SeedChooserScreen __instance, ChosenSeed theChosenSeed, int playerIndex)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
-            if (!NetLobby.LobbyData.AllClientsReady()) return false;
+            if (!ReplantedLobby.LobbyData.AllClientsReady()) return false;
 
-            ChooseSeedClientRPC.Send(theChosenSeed);
+            ChooseSeedRPC.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);
 
             if (ModInfo.DEBUG)
             {
-                if (NetLobby.GetLobbyMemberCount() == 1)
+                if (ReplantedLobby.GetLobbyMemberCount() == 1)
                 {
                     var seedChooserVSSwap = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
                     seedChooserVSSwap.playerTurn = 0;

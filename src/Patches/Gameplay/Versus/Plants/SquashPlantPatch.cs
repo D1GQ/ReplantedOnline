@@ -16,7 +16,7 @@ internal static class SquashPlantPatch
         if (__instance.mSeedType != SeedType.Squash) return true;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // If player is NOT on plant side
             if (!VersusState.AmPlantSide)
@@ -35,7 +35,7 @@ internal static class SquashPlantPatch
         if (__instance.mSeedType != SeedType.Squash) return;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Only plant-side players need to send network updates
             if (VersusState.AmPlantSide)

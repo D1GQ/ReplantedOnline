@@ -13,7 +13,7 @@ internal static class CatapultZombiePatchPatch
     [HarmonyPostfix]
     private static void Zombie_FindCatapultTarget_Postfix(Zombie __instance, ref Plant __result)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Catapult phases are handled by ZombieNetworked.cs for non plant client
             if (!VersusState.AmPlantSide)

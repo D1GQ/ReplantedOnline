@@ -13,7 +13,7 @@ internal static class AnimationControllerSyncPatch
     [HarmonyPrefix]
     private static bool CharacterAnimationController_PlayAnimation_Prefix(CharacterAnimationController __instance, string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             var netAnimationController = __instance.GetNetworked<AnimationControllerNetworked>();
             if (netAnimationController != null && netAnimationController.DoSendAnimate())

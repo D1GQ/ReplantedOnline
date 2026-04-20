@@ -16,7 +16,7 @@ internal sealed class NightArena : IArena, ISetupSeedbank
     /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)
     {
-        if (NetLobby.AmLobbyHost())
+        if (ReplantedLobby.AmLobbyHost())
         {
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, false, true);

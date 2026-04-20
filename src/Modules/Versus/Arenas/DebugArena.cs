@@ -80,7 +80,7 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     {
         if (!VersusState.AmPlantSide) return;
 
-        foreach (var networkobject in NetLobby.LobbyData.NetworkObjectsSpawned.Values)
+        foreach (var networkobject in ReplantedLobby.LobbyData.NetworkObjectsSpawned.Values)
         {
             networkobject.DespawnAndDestroy();
         }

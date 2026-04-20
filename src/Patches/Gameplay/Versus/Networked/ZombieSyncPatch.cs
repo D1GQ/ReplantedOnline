@@ -15,7 +15,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_PlayDeathAnim_Prefix(Zombie __instance, DamageFlags theDamageFlags)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
@@ -39,7 +39,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_DieWithLoot_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
@@ -63,7 +63,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_DieNoLoot_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
 
@@ -87,7 +87,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_MowDown_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
@@ -113,7 +113,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_TakeDamage_Prefix(Zombie __instance, int theDamage, DamageFlags theDamageFlags)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 
@@ -138,7 +138,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_HitIceTrap_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 
@@ -165,7 +165,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_RemoveIceTrap_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 
@@ -192,7 +192,7 @@ internal static class ZombieSyncPatch
     private static bool Zombie_ApplyBurn_Prefix(Zombie __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
@@ -214,7 +214,7 @@ internal static class ZombieSyncPatch
     [HarmonyPrefix]
     private static bool Zombie_StartMindControlled_Prefix(Zombie __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {

@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Client.RPC;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -14,14 +14,14 @@ internal static class LawnMowerSyncPatch
     private static bool LawnMower_MowZombie_Prefix(LawnMower __instance)
     {
         // Only handle network synchronization if we're in a multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide) return false;
 
             // Send network message to sync starting Mower
             if (__instance.mMowerState == LawnMowerState.Ready)
             {
-                StartMowerClientRPC.Send(__instance);
+                StartMowerRPC.Send(__instance);
             }
 
             return true;

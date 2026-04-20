@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes;
@@ -83,7 +83,7 @@ internal sealed class RpcHandlerAttribute : Attribute
         /// <summary>
         /// Gets the client that sent this RPC.
         /// </summary>
-        internal NetClient Sender { get; set; }
+        internal ReplantedClientData Sender { get; set; }
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// <param name="sender">The client that sent the RPC</param>
     /// <param name="rpcId">The ID of the RPC to route</param>
     /// <param name="packetReader">The packet reader containing the RPC data</param>
-    internal static void HandleNetworkObjectRpc(NetworkObject networkObject, NetClient sender, byte rpcId, PacketReader packetReader)
+    internal static void HandleNetworkObjectRpc(NetworkObject networkObject, ReplantedClientData sender, byte rpcId, PacketReader packetReader)
     {
         var type = networkObject.GetType();
 

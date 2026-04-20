@@ -16,7 +16,7 @@ internal static class FlagZombiePatch
     {
         if (theType != ZombieType.Flag) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             Instances.GameplayActivity.PlaySample(Sound.SOUND_HUGE_WAVE);
         }

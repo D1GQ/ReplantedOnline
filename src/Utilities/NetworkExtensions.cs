@@ -141,9 +141,9 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="clientId">The Client ID to search for.</param>
     /// <returns>The NetClient instance if found in the current lobby, otherwise null.</returns>
-    internal static NetClient GetNetClient(this ID clientId)
+    internal static ReplantedClientData GetNetClient(this ID clientId)
     {
-        if (NetLobby.LobbyData?.AllClients.TryGetValue(clientId, out var client) == true)
+        if (ReplantedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var client) == true)
         {
             return client;
         }

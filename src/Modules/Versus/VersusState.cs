@@ -24,32 +24,32 @@ internal static class VersusState
     /// <summary>
     /// Determines if the local player is currently on the zombie team.
     /// </summary>
-    internal static bool AmZombieSide => NetClient.LocalClient?.Team == PlayerTeam.Zombies;
+    internal static bool AmZombieSide => ReplantedClientData.LocalClient?.Team == PlayerTeam.Zombies;
 
     /// <summary>
     /// Determines if the local player is currently on the plant team.
     /// </summary>
-    internal static bool AmPlantSide => NetClient.LocalClient?.Team == PlayerTeam.Plants;
+    internal static bool AmPlantSide => ReplantedClientData.LocalClient?.Team == PlayerTeam.Plants;
 
     /// <summary>
     /// Determines if the local player is currently spectating..
     /// </summary>
-    internal static bool AmSpectator => NetClient.LocalClient?.Team == PlayerTeam.Spectators;
+    internal static bool AmSpectator => ReplantedClientData.LocalClient?.Team == PlayerTeam.Spectators;
 
     /// <summary>
     /// Gets the Steam ID of the player currently assigned to the plant team.
     /// </summary>
-    internal static ID PlantClientId => NetClient.GetPlantClient()?.ClientId ?? 0;
+    internal static ID PlantClientId => ReplantedClientData.GetPlantClient()?.ClientId ?? 0;
 
     /// <summary>
     /// Gets the Steam ID of the player currently assigned to the zombie team.
     /// </summary>
-    internal static ID ZombieClientId => NetClient.GetZombieClient()?.ClientId ?? 0;
+    internal static ID ZombieClientId => ReplantedClientData.GetZombieClient()?.ClientId ?? 0;
 
     /// <summary>
     /// Gets the current arena type.
     /// </summary>
-    internal static ArenaTypes Arena => NetLobby.LobbyData?.Arena ?? ArenaTypes.Day;
+    internal static ArenaTypes Arena => ReplantedLobby.LobbyData?.Arena ?? ArenaTypes.Day;
 
     /// <summary>
     /// Gets when Versus Mode is in its gameplay state.

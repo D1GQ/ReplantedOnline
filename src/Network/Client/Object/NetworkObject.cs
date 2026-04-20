@@ -2,8 +2,7 @@
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Network.Server;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Structs;
 using UnityEngine;
 
@@ -119,7 +118,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Gets whether the local client is the owner of this network object.
     /// Determines if this client has authority to modify the object's state.
     /// </summary>
-    internal bool AmOwner => NetLobby.NetworkTransport.LocalClientId == OwnerId;
+    internal bool AmOwner => ReplantedLobby.NetworkTransport.LocalClientId == OwnerId;
 
     /// <summary>
     /// Gets or sets the Steam ID of the client who owns this network object.

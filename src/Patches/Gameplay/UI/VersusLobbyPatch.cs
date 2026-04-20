@@ -13,7 +13,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Server.ClientRPC;
+using ReplantedOnline.Network.Client.RPC;
 using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
@@ -34,7 +34,7 @@ internal static class VersusLobbyPatch
     private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
         // Only modify UI if we're in an online lobby
-        if (!NetLobby.AmInLobby()) return;
+        if (!ReplantedLobby.AmInLobby()) return;
 
         // Find the VS side chooser panel
         VsSideChooser = __instance.m_panels.FirstOrDefault(pan => pan.gameObject.name == "P_VsSideChooser");
@@ -45,12 +45,12 @@ internal static class VersusLobbyPatch
             InteractableBlocker = VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/DisableInteraction")?.gameObject ?? null;
             InteractableGamePad = VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/SelectionSets_SidesChosenNavLayer")?.gameObject ?? null;
 
-            if (NetLobby.AmLobbyHost())
+            if (ReplantedLobby.AmLobbyHost())
             {
                 // Host gets all game mode options
                 VsSideChooser.SetVSButton("QuickPlay", () =>
                 {
-                    StartGameClientRPC.Send(SelectionSet.QuickPlay);
+                    StartGameRPC.Send(SelectionSet.QuickPlay);
                 });
                 VsSideChooser.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
 
@@ -63,14 +63,14 @@ internal static class VersusLobbyPatch
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
-                    StartGameClientRPC.Send(SelectionSet.CustomAll);
+                    StartGameRPC.Send(SelectionSet.CustomAll);
                 });
                 VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
 
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("Random", () =>
                 {
-                    StartGameClientRPC.Send(SelectionSet.Random);
+                    StartGameRPC.Send(SelectionSet.Random);
                 });
 
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
@@ -96,7 +96,7 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void PanelViewContainer_Awake_Postfix(BackgroundController __instance)
     {
-        if (!NetLobby.AmInLobby()) return;
+        if (!ReplantedLobby.AmInLobby()) return;
 
         // Use Rip clouds as lobby background 
         if (LobbyBackground == null)
@@ -179,11 +179,11 @@ internal static class VersusLobbyPatch
     private static bool Confirm_Prefix(VersusPlayerModel __instance, ref bool __state)
     {
         __state = false;
-        if (!NetLobby.AmLobbyHost()) return false;
+        if (!ReplantedLobby.AmLobbyHost()) return false;
 
         if (!ModInfo.DEBUG)
         {
-            if (!NetLobby.LobbyData.AllClientsReady() || NetLobby.GetLobbyMemberCount() < 2)
+            if (!ReplantedLobby.LobbyData.AllClientsReady() || ReplantedLobby.GetLobbyMemberCount() < 2)
             {
                 return false;
             }
@@ -201,11 +201,11 @@ internal static class VersusLobbyPatch
 
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == 0)
         {
-            NetLobby.LobbyData.HostTeam = PlayerTeam.Plants;
+            ReplantedLobby.LobbyData.HostTeam = PlayerTeam.Plants;
         }
         else
         {
-            NetLobby.LobbyData.HostTeam = PlayerTeam.Zombies;
+            ReplantedLobby.LobbyData.HostTeam = PlayerTeam.Zombies;
         }
     }
 
@@ -214,7 +214,7 @@ internal static class VersusLobbyPatch
     private static bool Cancel_Prefix(VersusPlayerModel __instance, ref bool __state)
     {
         __state = false;
-        if (!NetLobby.AmLobbyHost()) return false;
+        if (!ReplantedLobby.AmLobbyHost()) return false;
 
         __state = true;
         return true;
@@ -226,6 +226,6 @@ internal static class VersusLobbyPatch
     {
         if (!__state) return;
 
-        NetLobby.LobbyData.HostTeam = PlayerTeam.None;
+        ReplantedLobby.LobbyData.HostTeam = PlayerTeam.None;
     }
 }

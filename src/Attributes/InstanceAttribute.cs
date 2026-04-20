@@ -106,7 +106,7 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 /// Registers classes that implement IClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterClientRPC : InstanceAttribute<IClientRPC> { }
+internal sealed class RegisterRPC : InstanceAttribute<IRPC> { }
 
 /// <summary>
 /// Registers classes that implement IPacketHandler.

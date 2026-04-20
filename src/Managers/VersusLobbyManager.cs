@@ -31,8 +31,8 @@ internal static class VersusLobbyManager
     private static TextMeshProUGUI pickSides;
 
     private static EventTrigger lobbyCodeHeaderTrigger;
-    private static string DefaultHeaderText => NetLobby.NetworkTransport is LanTransport ?
-        "LAN Mode" : $"Lobby Code: {NetLobby.LobbyData?.LobbyCode ?? "???"}";
+    private static string DefaultHeaderText => ReplantedLobby.NetworkTransport is LanTransport ?
+        "LAN Mode" : $"Lobby Code: {ReplantedLobby.LobbyData?.LobbyCode ?? "???"}";
     private static bool copyingLobbyCode = false;
 
     /// <summary>
@@ -105,7 +105,7 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void SetNamesFromTeams()
     {
-        foreach (var client in NetLobby.LobbyData.AllClients.Values)
+        foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
         {
             if (client.Team is PlayerTeam.Plants)
             {
@@ -133,7 +133,7 @@ internal static class VersusLobbyManager
 
         // Player list
         playerList?.SetText(string.Empty);
-        var notPlaying = NetLobby.LobbyData.AllClients.Values.Where(client => client.Team is PlayerTeam.None or PlayerTeam.Spectators);
+        var notPlaying = ReplantedLobby.LobbyData.AllClients.Values.Where(client => client.Team is PlayerTeam.None or PlayerTeam.Spectators);
         if (!notPlaying.Any()) return;
 
         const int MAX_NAME_LENGTH = 10;
@@ -158,7 +158,7 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void UpdateButtonInteractability()
     {
-        if (!NetLobby.AmLobbyHost())
+        if (!ReplantedLobby.AmLobbyHost())
             return;
 
         if (ModInfo.DEBUG)
@@ -167,9 +167,9 @@ internal static class VersusLobbyManager
             return;
         }
 
-        bool shouldEnableButtons = !NetLobby.LobbyData.PickingSides
-            && NetLobby.GetLobbyMemberCount() > 1
-            && NetLobby.LobbyData.AllClientsReady();
+        bool shouldEnableButtons = !ReplantedLobby.LobbyData.PickingSides
+            && ReplantedLobby.GetLobbyMemberCount() > 1
+            && ReplantedLobby.LobbyData.AllClientsReady();
 
         VersusLobbyPatch.SetButtonsInteractable(shouldEnableButtons);
     }
@@ -211,7 +211,7 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void UpdateHeaderEvents()
     {
-        if (NetLobby.NetworkTransport is LanTransport) return;
+        if (ReplantedLobby.NetworkTransport is LanTransport) return;
         if (lobbyCodeHeaderTrigger == null) return;
 
         EventTrigger trigger = lobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
@@ -252,7 +252,7 @@ internal static class VersusLobbyManager
     private static IEnumerator CoCopyLobbyCode()
     {
         copyingLobbyCode = true;
-        GUIUtility.systemCopyBuffer = NetLobby.LobbyData.LobbyCode;
+        GUIUtility.systemCopyBuffer = ReplantedLobby.LobbyData.LobbyCode;
         Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
         pickSides?.SetText($"Copied to Clipboard!");
 

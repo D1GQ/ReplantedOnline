@@ -14,7 +14,7 @@ internal static class ProjectilePatch
     {
         if (__instance.mProjectileType != ProjectileType.Melon) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Prevent target zombies and gravestones from taking Melonpult splash damage
             // Don't have to worry about target zombies and gravestones taking damage from behind due to ZombiePatch.Zombie_GetZombieRect_Postfix

@@ -8,8 +8,8 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Server.LAN;
-using ReplantedOnline.Network.Server.Packet;
 using ReplantedOnline.Structs;
 using System.Net;
 using System.Net.Sockets;
@@ -221,7 +221,7 @@ internal sealed class LanTransport : INetworkTransport
                             ReplantedOnlineMod.Logger.Msg($"[LAN] Successfully joined lobby {lobby.ServerName}");
                             MainThreadDispatcher.Execute(() =>
                             {
-                                NetLobby.OnLobbyEnteredCompleted(CurrentLobbyData);
+                                ReplantedLobby.OnLobbyEnteredCompleted(CurrentLobbyData);
                             });
                             IsJoining = false;
                             return;
@@ -309,8 +309,8 @@ internal sealed class LanTransport : INetworkTransport
 
             MainThreadDispatcher.Execute(() =>
             {
-                NetLobby.OnLobbyCreatedCompleted(Result.OK, CurrentLobbyData);
-                NetLobby.OnLobbyEnteredCompleted(CurrentLobbyData);
+                ReplantedLobby.OnLobbyCreatedCompleted(Result.OK, CurrentLobbyData);
+                ReplantedLobby.OnLobbyEnteredCompleted(CurrentLobbyData);
             });
 
             Task.Run(BroadcastPresence, CTS.Token);
@@ -455,7 +455,7 @@ internal sealed class LanTransport : INetworkTransport
         var writer = PacketWriter.Get();
         try
         {
-            writer.AddTag(PacketTag.Rpc);
+            writer.AddTag(PacketHandlerType.Rpc);
             writer.WriteID(_localClientId);
             writer.WriteInt((int)channel);
             writer.WriteBytes(data);
@@ -636,11 +636,11 @@ internal sealed class LanTransport : INetworkTransport
 
             switch (tag)
             {
-                case PacketTag.LAN:
+                case PacketHandlerType.LAN:
                     LanDispatcher.HandleLanPacket(senderId, reader, this);
                     break;
 
-                case PacketTag.Rpc:
+                case PacketHandlerType.Rpc:
                     if (ConnectionStates.TryGetValue(senderId, out var state) && state == ConnectionState.Connected)
                     {
                         LanDispatcher.HandleRPCPacket(senderId, reader, this);
@@ -758,7 +758,7 @@ internal sealed class LanTransport : INetworkTransport
             if (!skip)
                 MainThreadDispatcher.Execute(() =>
                 {
-                    NetLobby.OnLobbyDataChanged(CurrentLobbyData);
+                    ReplantedLobby.OnLobbyDataChanged(CurrentLobbyData);
                 });
 
             return true;
@@ -923,7 +923,7 @@ internal sealed class LanTransport : INetworkTransport
             lobby.Remove(clientId);
             MainThreadDispatcher.Execute(() =>
             {
-                NetLobby.OnLobbyMemberLeave(CurrentLobbyData, clientId);
+                ReplantedLobby.OnLobbyMemberLeave(CurrentLobbyData, clientId);
             });
         }
     }

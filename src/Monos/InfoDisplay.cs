@@ -148,11 +148,11 @@ internal sealed class InfoDisplay : MonoBehaviour
         sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
         sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             sb.AppendLine("Lobby Info >");
-            sb.AppendLine($" Network Classes: {NetLobby.LobbyData.NetworkObjectsSpawned.Count}");
-            if (!NetLobby.LobbyData.HasStarted)
+            sb.AppendLine($" Network Classes: {ReplantedLobby.LobbyData.NetworkObjectsSpawned.Count}");
+            if (!ReplantedLobby.LobbyData.HasStarted)
             {
                 sb.AppendLine(" Versus Phase: Lobby");
             }
@@ -160,9 +160,9 @@ internal sealed class InfoDisplay : MonoBehaviour
             {
                 sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
             }
-            sb.AppendLine($" Clients: {NetLobby.LobbyData.AllClients.Count}");
+            sb.AppendLine($" Clients: {ReplantedLobby.LobbyData.AllClients.Count}");
 
-            foreach (var client in NetLobby.LobbyData.AllClients.Values)
+            foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
             {
                 sb.AppendLine($"{client.Name} Client Info >");
                 sb.AppendLine($" ID: {client.ClientId}");

@@ -6,7 +6,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Network.Server.Packet;
+using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Utilities;
 using System.Collections;
 
@@ -21,7 +21,7 @@ internal static class GargantuarZombiePatch
     {
         if (theType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // Stop gargantuar from going into throwing phase
             if (!VersusState.AmPlantSide)
@@ -37,7 +37,7 @@ internal static class GargantuarZombiePatch
     {
         if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (!VersusState.AmPlantSide)
             {
@@ -85,7 +85,7 @@ internal static class GargantuarZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_UpdateZombieGargantuar_Prefix(Zombie __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {
@@ -263,7 +263,7 @@ internal static class GargantuarZombiePatch
     {
         while (true)
         {
-            if (!NetLobby.AmInLobby())
+            if (!ReplantedLobby.AmInLobby())
             {
                 yield break;
             }

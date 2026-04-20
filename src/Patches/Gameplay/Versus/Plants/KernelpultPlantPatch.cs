@@ -16,7 +16,7 @@ internal static class KernelpultPlantPatch
         if (__instance.mSeedType != SeedType.Kernelpult) return true;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {

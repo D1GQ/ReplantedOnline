@@ -20,7 +20,7 @@ internal static class VersusHudPatch
     [HarmonyPostfix]
     private static void ContentSizeFitter_OnEnable_Postfix(ContentSizeFitter __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (__instance.name == "TopLeftLayout")
             {

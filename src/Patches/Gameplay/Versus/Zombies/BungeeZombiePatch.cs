@@ -15,7 +15,7 @@ internal static class BungeeZombiePatch
     {
         // Disable random Bungee Zombie target selection in multiplayer
         // Target selection should be handled through network synchronization instead
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             return false; // Skip the original method
         }

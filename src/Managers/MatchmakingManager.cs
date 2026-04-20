@@ -94,7 +94,7 @@ internal static class MatchmakingManager
                         }
 
                         ReplantedOnlineMod.Logger.Msg($"[NetLobby] Found matching lobby: {lobby.Id} with code {gameCode}");
-                        NetLobby.JoinLobby(lobby.Id);
+                        ReplantedLobby.JoinLobby(lobby.Id);
                     }
                     else
                     {
@@ -168,12 +168,12 @@ internal static class MatchmakingManager
     /// Sets the lobby data including version information and game code.
     /// </summary>
     /// <param name="data">The network lobby data containing the lobby ID.</param>
-    internal static void SetLobbyData(NetLobbyData data)
+    internal static void SetLobbyData(ReplantedLobbyData data)
     {
-        NetLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
+        ReplantedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
-        NetLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
-        NetLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
+        ReplantedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY, gameCode);
+        ReplantedLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
     }
 
     /// <summary>
@@ -181,14 +181,14 @@ internal static class MatchmakingManager
     /// </summary>
     internal static void UpdateLobbyJoinable(bool? @override = null)
     {
-        if (!NetLobby.AmInLobby()) return;
+        if (!ReplantedLobby.AmInLobby()) return;
 
         if (@override != null)
         {
-            NetLobby.NetworkTransport.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, @override.Value);
+            ReplantedLobby.NetworkTransport.SetLobbyJoinable(ReplantedLobby.LobbyData.LobbyId, @override.Value);
         }
 
-        NetLobby.NetworkTransport.SetLobbyJoinable(NetLobby.LobbyData.LobbyId, !NetLobby.LobbyData.HasStarted);
+        ReplantedLobby.NetworkTransport.SetLobbyJoinable(ReplantedLobby.LobbyData.LobbyId, !ReplantedLobby.LobbyData.HasStarted);
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ internal static class InstanceWrapperPatch
             GameplayDataProvider dataProvider = __instance.m_providers.First().Cast<GameplayDataProvider>();
             if (dataProvider != null)
             {
-                if (NetLobby.AmInLobby())
+                if (ReplantedLobby.AmInLobby())
                 {
                     dataProvider.m_gameplayDataModel.m_player2DataModel.m_isEnabled.m_value = true;
                 }

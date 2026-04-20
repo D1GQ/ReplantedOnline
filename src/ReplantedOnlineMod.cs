@@ -49,7 +49,7 @@ internal class ReplantedOnlineMod : MelonMod
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
         MainThreadDispatcher.Initialize();
-        NetLobby.InitializeSteam();
+        ReplantedLobby.InitializeSteam();
     }
 
     public override void OnPreSupportModule()
@@ -87,9 +87,9 @@ internal class ReplantedOnlineMod : MelonMod
         if (sceneName == "Frontend")
         {
             // If the game some how goes to main menu while in the lobby leave it
-            if (NetLobby.AmInLobby())
+            if (ReplantedLobby.AmInLobby())
             {
-                NetLobby.LeaveLobby();
+                ReplantedLobby.LeaveLobby();
             }
 
             if (loaded) return;

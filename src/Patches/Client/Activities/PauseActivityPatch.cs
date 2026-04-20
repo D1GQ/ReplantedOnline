@@ -17,7 +17,7 @@ internal static class PauseActivityPatch
     [HarmonyPrefix]
     private static bool Bulk_Pause_Prefix()
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // This prevents the game from being paused in multiplayer contexts
             return false;

@@ -21,7 +21,7 @@ internal static class ZombiePatch
     private static bool Board_AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
     {
         // Only intercept during active gameplay in multiplayer
-        if (NetLobby.AmInLobby() && VersusState.IsInGameplay)
+        if (ReplantedLobby.AmInLobby() && VersusState.IsInGameplay)
         {
             // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
             if (theZombieType is ZombieType.Target) return true;
@@ -58,7 +58,7 @@ internal static class ZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_WalkIntoHouse_Prefix(Zombie __instance)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             if (VersusState.AmPlantSide)
             {
@@ -84,7 +84,7 @@ internal static class ZombiePatch
         var gridX = __instance.mBoard.PixelToGridXKeepOnBoard(__instance.mPosX, __instance.mPosY);
         if (__instance.mBoard.GetLadderAt(gridX, __instance.mRow) != null) return;
 
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             var netZombie = __instance.GetNetworked();
             if (netZombie == null) return;
@@ -135,7 +135,7 @@ internal static class ZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_EatZombie_Prefix(Zombie theZombie)
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // From Versus Mode Console:
             // Prevent hypno affected zombies From eating target and gravestone zombies
@@ -156,7 +156,7 @@ internal static class ZombiePatch
         if (!__instance.mZombieType.IsGravestoneOrTarget()) return;
 
         // Check if we're in an online multiplayer lobby
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             // From Versus Mode Console:
             // Make Target Zombies and Gravestones invulnerable when behind another gravestone
@@ -183,7 +183,7 @@ internal static class ZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_TrySpawnLevelAward_Prefix()
     {
-        if (NetLobby.AmInLobby())
+        if (ReplantedLobby.AmInLobby())
         {
             return false;
         }
