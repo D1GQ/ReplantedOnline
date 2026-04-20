@@ -15,7 +15,7 @@ namespace ReplantedOnline.Network.Client;
 internal sealed class ReplantedLobbyData : IDisposable
 {
     /// <summary>
-    /// Initializes a new instance of the NetLobbyData class with specified IDs.
+    /// Initializes a new instance of the ReplantedLobbyData class with specified IDs.
     /// </summary>
     /// <param name="lobbyId">The Lobby ID of the lobby.</param>
     /// <param name="hostId">The Client ID of the lobby host.</param>

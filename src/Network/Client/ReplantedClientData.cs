@@ -26,7 +26,7 @@ internal sealed class ReplantedClientData
         {
             OpponentClient = this;
         }
-        ReplantedOnlineMod.Logger.Msg($"[NetClient] P2P connections initialized with {Name} ({id})");
+        ReplantedOnlineMod.Logger.Msg($"[ReplantedClientData] P2P connections initialized with {Name} ({id})");
     }
 
     /// <summary>
