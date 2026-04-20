@@ -1,11 +1,12 @@
-﻿using ReplantedOnline.Network.Client.Object;
+﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Network.Client.Object;
 
 namespace ReplantedOnline.Network.Packet.Messages;
 
 /// <summary>
 /// Represents a message used to synchronize the state of a networked object across clients, including its network
 /// </summary>
-internal sealed class NetworkSyncMessage
+internal sealed class NetworkSyncMessage : IMessage<NetworkSyncMessage, NetworkObject, bool>
 {
     /// <summary>
     /// Gets a value indicating whether the initialization process.
@@ -29,7 +30,7 @@ internal sealed class NetworkSyncMessage
     /// <param name="init">A value indicating whether the packet represents an initialization state. If <see langword="true"/>, the packet
     /// will include initialization data.</param>
     /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
-    internal static void Serialize(NetworkObject networkObj, bool init, PacketWriter packetWriter)
+    public void Serialize(NetworkObject networkObj, bool init, PacketWriter packetWriter)
     {
         packetWriter.WriteUInt(networkObj.NetworkId);
         packetWriter.WriteUInt(networkObj.DirtyBits);
@@ -43,7 +44,7 @@ internal sealed class NetworkSyncMessage
     /// <param name="packetReader">The packet reader from which to read the network synchronization packet data. Must be positioned at the start of
     /// a valid packet.</param>
     /// <returns>A <see cref="NetworkSyncMessage"/> instance containing the deserialized data from the packet reader.</returns>
-    internal static NetworkSyncMessage Deserialize(PacketReader packetReader)
+    public NetworkSyncMessage Deserialize(PacketReader packetReader)
     {
         NetworkSyncMessage networkSyncPacket = new()
         {

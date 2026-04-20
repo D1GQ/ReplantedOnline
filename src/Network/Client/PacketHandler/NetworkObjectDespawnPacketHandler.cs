@@ -15,7 +15,7 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        var networkDespawnMessage = NetworkDespawnMessage.Deserialize(packetReader);
+        var networkDespawnMessage = Message<NetworkDespawnMessage>.Instance.Deserialize(packetReader);
 
         if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkDespawnMessage.NetworkId, out var networkObj))
         {

@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Monos;
+﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
@@ -8,7 +9,7 @@ namespace ReplantedOnline.Network.Packet.Messages;
 /// <summary>
 /// Represents a message for spawning network objects across clients.
 /// </summary>
-internal sealed class NetworkSpawnMessage
+internal sealed class NetworkSpawnMessage : IMessage<NetworkSpawnMessage, NetworkObject>
 {
     /// <summary>
     /// Gets the ID of the client who owns the spawned network object.
@@ -30,7 +31,7 @@ internal sealed class NetworkSpawnMessage
     /// </summary>
     /// <param name="networkObj">The network object instance to serialize.</param>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
-    internal static void Serialize(NetworkObject networkObj, PacketWriter packetWriter)
+    public void Serialize(NetworkObject networkObj, PacketWriter packetWriter)
     {
         networkObj.gameObject.name = networkObj.GetObjectName();
 
@@ -70,7 +71,7 @@ internal sealed class NetworkSpawnMessage
     /// </summary>
     /// <param name="packetReader">The packet reader containing the spawn packet data.</param>
     /// <returns>A new NetworkSpawnPacket instance with deserialized data.</returns>
-    internal static NetworkSpawnMessage Deserialize(PacketReader packetReader)
+    public NetworkSpawnMessage Deserialize(PacketReader packetReader)
     {
         NetworkSpawnMessage networkSpawnPacket = new()
         {
@@ -85,7 +86,7 @@ internal sealed class NetworkSpawnMessage
     /// <summary>
     /// Deserializes a NetworkObject instance and its children from network packet data.
     /// </summary>
-    internal static void DeserializeNetworkObjects(NetworkObject networkObj, PacketReader packetReader)
+    public void DeserializeNetworkObject(NetworkObject networkObj, PacketReader packetReader)
     {
         ReplantedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         networkObj.Deserialize(packetReader, true);
