@@ -3,6 +3,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client.Object;
+using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities;
 

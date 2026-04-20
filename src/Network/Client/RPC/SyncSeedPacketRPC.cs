@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.RPC;

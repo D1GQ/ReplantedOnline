@@ -5,6 +5,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.RPC;

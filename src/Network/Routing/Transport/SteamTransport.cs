@@ -7,7 +7,7 @@ using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities;
 
-namespace ReplantedOnline.Network.Server.Transport;
+namespace ReplantedOnline.Network.Routing.Transport;
 
 /// <summary>
 /// Provides Steamworks-based network transport functionality

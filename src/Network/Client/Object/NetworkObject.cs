@@ -3,6 +3,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Structs;
 using UnityEngine;
 

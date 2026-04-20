@@ -3,7 +3,7 @@ using ReplantedOnline.Enums.Network.LAN;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.Server.Transport;
+using ReplantedOnline.Network.Routing.Transport;
 using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Server.LAN;

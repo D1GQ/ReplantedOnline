@@ -17,7 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace ReplantedOnline.Network.Server.Transport;
+namespace ReplantedOnline.Network.Routing.Transport;
 
 /// <summary>
 /// LAN-based network transport implementation using UDP for P2P communication.
@@ -138,7 +138,7 @@ internal sealed class LanTransport : INetworkTransport
         return Math.Abs(BitConverter.ToInt32(bytes, 0)) % 1000;
     }
 
-    private int CalculateGamePort() => GAME_PORT_BASE + (InstanceId % 100);
+    private int CalculateGamePort() => GAME_PORT_BASE + InstanceId % 100;
 
     private static UdpClient CreateBroadcastListener()
     {

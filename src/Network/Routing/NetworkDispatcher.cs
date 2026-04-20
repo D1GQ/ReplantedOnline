@@ -13,7 +13,7 @@ using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 
-namespace ReplantedOnline.Network;
+namespace ReplantedOnline.Network.Routing;
 
 /// <summary>
 /// Handles network packet dispatching and reception for ReplantedOnline.

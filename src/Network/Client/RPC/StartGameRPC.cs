@@ -7,6 +7,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.UI;
 
 namespace ReplantedOnline.Network.Client.RPC;
