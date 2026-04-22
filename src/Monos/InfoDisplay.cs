@@ -30,7 +30,7 @@ internal sealed class InfoDisplay : MonoBehaviour
 
     internal static GUIStyle Style;
 
-    public void Update()
+    private void Update()
     {
         if (ModInfo.DEBUG)
         {
@@ -51,7 +51,7 @@ internal sealed class InfoDisplay : MonoBehaviour
         }
     }
 
-    public void OnGUI()
+    private void OnGUI()
     {
         if (Style == null)
         {

@@ -49,7 +49,7 @@ internal class ReplantedOnlineMod : MelonMod
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
         MainThreadDispatcher.Initialize();
-        ReplantedLobby.InitializeSteam();
+        ReplantedLobby.Initialize();
     }
 
     public override void OnPreSupportModule()

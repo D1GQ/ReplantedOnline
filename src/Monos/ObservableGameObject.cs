@@ -15,7 +15,7 @@ internal sealed class ObservableGameObject : MonoBehaviour
     [HideFromIl2Cpp]
     internal event Action<GameObject> OnGameObjectDestroy;
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         OnGameObjectDestroy?.Invoke(gameObject);
     }

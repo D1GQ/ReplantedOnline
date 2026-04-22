@@ -34,7 +34,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private Vector3 _cachedWPos;
     private string[] _cachedTexts;
 
-    public void OnGUI()
+    private void OnGUI()
     {
         if (!InfoDisplay.DebugEnabled) return;
         if (_instance == null) return;

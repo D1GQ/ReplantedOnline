@@ -12,4 +12,10 @@ internal interface IPacket
     /// A byte array containing the packet data.
     /// </returns>
     byte[] GetByteBuffer();
+
+    /// <summary>
+    /// Sets the byte buffer representation of the packet.
+    /// </summary>
+    /// <param name="buffer">The buffer to set from</param>
+    void SetByteBuffer(byte[] buffer);
 }

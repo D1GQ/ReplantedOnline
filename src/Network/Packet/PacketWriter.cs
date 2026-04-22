@@ -101,7 +101,7 @@ internal sealed class PacketWriter : IPacket
     /// Writes another packet's contents into this packet writer.
     /// </summary>
     /// <param name="packet">The packet whose contents will be written.</param>
-    internal void WritePacket(IPacket packet)
+    internal void WritePacketToBuffer(IPacket packet)
     {
         _data.AddRange(packet.GetByteBuffer());
     }
@@ -202,6 +202,15 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Adds a byte array to the packet buffer.
+    /// </summary>
+    /// <param name="bytes">The byte array to add.</param>
+    internal void WriteBytesToBuffer(byte[] bytes)
+    {
+        _data.AddRange(bytes);
+    }
+
+    /// <summary>
     /// Writes an 8-byte signed integer to the packet.
     /// </summary>
     /// <param name="value">The long value to write.</param>
@@ -249,14 +258,15 @@ internal sealed class PacketWriter : IPacket
         _data.Clear();
     }
 
-    /// <summary>
-    /// Gets the complete packet data that has been written to the packet writer.
-    /// </summary>
-    /// <returns>
-    /// A byte array containing all data written to the packet writer.
-    /// </returns>
+    /// <inheritdoc/>
     public byte[] GetByteBuffer()
     {
         return [.. _data];
+    }
+
+    /// <inheritdoc/>
+    public void SetByteBuffer(byte[] buffer)
+    {
+        _data = [.. buffer];
     }
 }

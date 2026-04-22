@@ -1,5 +1,4 @@
 ﻿using Il2CppSteamworks.Data;
-using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Structs;
@@ -83,23 +82,5 @@ internal struct ServerLobby
         ModVersion = modVersion;
         GameCode = gameCode;
         Name = name;
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="ServerLobby"/> instance from a LAN server presence broadcast.
-    /// </summary>
-    /// <param name="presence">The LAN server presence data.</param>
-    /// <returns>A new lobby data instance populated from the presence information.</returns>
-    internal static ServerLobby CreateLobbyDataFromPresence(LanServerPresence presence)
-    {
-        return new ServerLobby(
-            lobbyId: presence.LobbyId,
-            ownerId: presence.ServerId,
-            isJoinable: presence.IsJoinable,
-            maxPlayers: presence.MaxPlayers,
-            modVersion: presence.ModVersion,
-            gameCode: presence.GameCode,
-            name: presence.ServerName
-        );
     }
 }

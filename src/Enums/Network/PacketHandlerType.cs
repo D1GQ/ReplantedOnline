@@ -14,7 +14,7 @@ internal enum PacketHandlerType
     /// <summary>
     /// LAN packet used for local network discovery and communication between clients on the same network.
     /// </summary>
-    LAN,
+    Server,
 
     /// <summary>
     /// Packet used removing a client from the game.

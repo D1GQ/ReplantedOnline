@@ -10,7 +10,7 @@ internal class PacketWriterResolver : IFastPacketResolver<IPacket>
     public bool CanResolve(Type type) => type.IsAssignableFrom(typeof(IPacket));
 
     /// <inheritdoc/>
-    public void Serialize(PacketWriter packetWriter, IPacket value) => packetWriter.WritePacket(value);
+    public void Serialize(PacketWriter packetWriter, IPacket value) => packetWriter.WritePacketToBuffer(value);
 
     /// <inheritdoc/>
     public IPacket Deserialize(PacketReader packetReader, Type type) => null;

@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Network.Routing.Transport;
+using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
 
@@ -43,6 +44,7 @@ internal static class ReplantedLobby
         if (lastTransportMode == mode) return;
 
         NetworkTransport?.Dispose();
+        LanServer.Server?.Dispose();
         NetworkTransport = null;
 
         switch (mode)
@@ -52,6 +54,7 @@ internal static class ReplantedLobby
                 ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to Steam");
                 break;
             case 1:
+                LanServer.Server = new();
                 NetworkTransport = new LanTransport();
                 ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to LAN");
                 break;
@@ -62,6 +65,18 @@ internal static class ReplantedLobby
         }
 
         lastTransportMode = mode;
+    }
+
+    /// <summary>
+    /// Initializes ReplantedLobby callbacks.
+    /// </summary>
+    internal static void Initialize()
+    {
+        InitializeSteam();
+        InitializeLan();
+
+        SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
+        ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] initialized");
     }
 
     /// <summary>
@@ -103,10 +118,22 @@ internal static class ReplantedLobby
         {
             Steam_OnP2PSessionConnectFail(steamId, error);
         });
+    }
 
-        SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
+    /// <summary>
+    /// Initializes all Lan callbacks for lobby and P2P networking events.
+    /// </summary>
+    internal static void InitializeLan()
+    {
+        LanServer.OnLobbyCreatedCompleted += OnLobbyCreatedCompleted;
 
-        ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Steamworks initialized");
+        LanServer.OnLobbyEnteredCompleted += OnLobbyEnteredCompleted;
+
+        LanServer.OnLobbyDataChanged += OnLobbyDataChanged;
+
+        LanServer.OnLobbyMemberJoined += OnLobbyMemberJoined;
+
+        LanServer.OnLobbyMemberLeave += OnLobbyMemberLeave;
     }
 
     /// <summary>
@@ -218,18 +245,7 @@ internal static class ReplantedLobby
     {
         if (!AmInLobby()) return;
 
-        if (lobby.OwnerId != LobbyData?.HostId)
-        {
-            LeaveLobby(() =>
-            {
-                CustomPopupPanel.Show("Disconnected", "Host has left the game!");
-            });
-            ReplantedOnlineMod.Logger.Warning("[ReplantedLobby] Lobby host left the game");
-        }
-        else
-        {
-            LobbyData.UpdateLobbyStates();
-        }
+        LobbyData.UpdateLobbyStates();
     }
 
     internal static void OnLobbyMemberJoined(ServerLobby lobby, ID clientId)
@@ -260,6 +276,16 @@ internal static class ReplantedLobby
                 CustomPopupPanel.Show("Lobby Restarted", "The other player has left the game!");
             });
         }
+        else
+        {
+            if (lobby.OwnerId == clientId)
+            {
+                LeaveLobby(() =>
+                {
+                    CustomPopupPanel.Show("Disconnected", "Host has left the game!");
+                });
+            }
+        }
 
         ProcessMemberList();
     }
@@ -283,6 +309,8 @@ internal static class ReplantedLobby
     /// </summary>
     internal static void ProcessMemberList()
     {
+        if (LobbyData == null) return;
+
         if (AmLobbyHost())
         {
             MatchmakingManager.UpdateLobbyJoinable(false);

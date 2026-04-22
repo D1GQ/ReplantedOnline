@@ -320,15 +320,24 @@ internal sealed class PacketReader : IPacket
             _pool.Enqueue(this);
     }
 
-    /// <inheritdoc/>
     /// <summary>
-    /// Gets the remaining unread data from the packet reader starting at the current position.
+    /// CLear all data in the PacketReader
     /// </summary>
-    /// <returns>
-    /// A byte array containing all bytes from the current read position to the end of the packet.
-    /// </returns>
+    internal void Clear()
+    {
+        _data = [];
+        _position = 0;
+    }
+
+    /// <inheritdoc/>
     public byte[] GetByteBuffer()
     {
         return _data[_position..];
+    }
+
+    /// <inheritdoc/>
+    public void SetByteBuffer(byte[] buffer)
+    {
+        _data = buffer;
     }
 }

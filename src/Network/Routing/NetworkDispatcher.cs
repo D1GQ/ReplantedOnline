@@ -90,7 +90,7 @@ internal static class NetworkDispatcher
         packet.WriteByte((byte)rpc);
         if (packetWriter != null)
         {
-            packet.WritePacket(packetWriter);
+            packet.WritePacketToBuffer(packetWriter);
         }
         SendPacket(packet, receiveLocally, PacketHandlerType.Rpc, PacketChannel.Rpc);
         packet.Recycle();
@@ -112,7 +112,7 @@ internal static class NetworkDispatcher
         packet.WriteUInt(networkObj.NetworkId);
         if (packetWriter != null)
         {
-            packet.WritePacket(packetWriter);
+            packet.WritePacketToBuffer(packetWriter);
         }
         SendPacket(packet, receiveLocally, PacketHandlerType.NetworkObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
@@ -135,7 +135,7 @@ internal static class NetworkDispatcher
         packet.AddTag(tag);
         if (packetWriter != null)
         {
-            packet.WritePacket(packetWriter);
+            packet.WritePacketToBuffer(packetWriter);
         }
 
         if (ReplantedLobby.IsPlayerInOurLobby(targetId))
@@ -161,7 +161,7 @@ internal static class NetworkDispatcher
         packet.AddTag(tag);
         if (packetWriter != null)
         {
-            packet.WritePacket(packetWriter);
+            packet.WritePacketToBuffer(packetWriter);
         }
 
         int sentCount = 0;
