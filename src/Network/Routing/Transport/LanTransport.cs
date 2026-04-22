@@ -11,6 +11,9 @@ using ReplantedOnline.Structs;
 
 namespace ReplantedOnline.Network.Routing.Transport;
 
+/// <summary>
+/// Provides LAN-based network transport functionality
+/// </summary>
 internal sealed class LanTransport : INetworkTransport
 {
     internal LanTransport()
@@ -68,6 +71,7 @@ internal sealed class LanTransport : INetworkTransport
         });
     }
 
+    // ===== P2P Packet Methods =====
     public bool IsP2PPacketAvailable(out uint msgSize, PacketChannel channel = PacketChannel.Main)
     {
         msgSize = 0;
@@ -84,6 +88,7 @@ internal sealed class LanTransport : INetworkTransport
         return LanServer.Server.ReadP2PPacket(buffer, channel);
     }
 
+    // ===== Lobby Data Methods =====
     public string GetLobbyData(ID lobbyId, string pchKey)
     {
         if (LanServer.Server.ServerData?.Data.TryGetValue(pchKey, out var value) == true)
@@ -113,6 +118,7 @@ internal sealed class LanTransport : INetworkTransport
         return true;
     }
 
+    // ===== Lobby Member Data Methods =====
     public string GetLobbyMemberData(ID lobbyId, ID clientId, string pchKey)
     {
         if (LanServer.Server.Clients.TryGetValue(clientId, out var client))
@@ -127,6 +133,7 @@ internal sealed class LanTransport : INetworkTransport
         LanServer.Server.SetMemberData(pchKey, pchValue);
     }
 
+    // ===== Lobby Member Management Methods =====
     public int GetNumLobbyMembers(ID lobbyId)
     {
         return LanServer.Server.Clients.Count;
@@ -157,6 +164,7 @@ internal sealed class LanTransport : INetworkTransport
         return true;
     }
 
+    // ===== P2P Session Management Methods =====
     public bool AcceptP2PSessionWithUser(ID clientId)
     {
         if (LanServer.Server.PendingRequests.Contains(clientId))
@@ -177,6 +185,7 @@ internal sealed class LanTransport : INetworkTransport
         return false;
     }
 
+    // ===== Lobby Lifecycle Methods =====
     public void CreateLobby(int maxPlayers)
     {
         LanServer.StartHost("Host", maxPlayers);
