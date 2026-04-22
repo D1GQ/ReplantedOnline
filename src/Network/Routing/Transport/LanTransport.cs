@@ -13,6 +13,11 @@ namespace ReplantedOnline.Network.Routing.Transport;
 
 internal sealed class LanTransport : INetworkTransport
 {
+    internal LanTransport()
+    {
+        LanServer.Server = new();
+    }
+
     private bool _isJoining;
     private bool _hasJoined;
 
@@ -216,5 +221,7 @@ internal sealed class LanTransport : INetworkTransport
         _hasJoined = false;
         _isJoining = false;
         LanServer.Leave();
+        LanServer.Server.Dispose();
+        LanServer.Server = null;
     }
 }

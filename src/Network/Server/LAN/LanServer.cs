@@ -262,9 +262,6 @@ internal sealed class LanServer : IDisposable
     {
         if (Server == null) return;
 
-        Server.ServerBroadcast.StopBroadcasting();
-        Server.P2PCTS.Cancel();
-
         bool shouldRun;
         lock (Server._stateLock)
         {
@@ -273,6 +270,9 @@ internal sealed class LanServer : IDisposable
         }
 
         if (!shouldRun) return;
+
+        Server.ServerBroadcast.StopBroadcasting();
+        Server.P2PCTS.Cancel();
 
         if (Server.IsHost)
         {
@@ -853,7 +853,6 @@ internal sealed class LanServer : IDisposable
         ServerBroadcast?.Dispose();
         P2PCTS?.Dispose();
         P2PClient?.Dispose();
-        Server = null;
     }
 
     /// <summary>

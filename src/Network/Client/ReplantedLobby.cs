@@ -44,7 +44,6 @@ internal static class ReplantedLobby
         if (lastTransportMode == mode) return;
 
         NetworkTransport?.Dispose();
-        LanServer.Server?.Dispose();
         NetworkTransport = null;
 
         switch (mode)
@@ -54,7 +53,6 @@ internal static class ReplantedLobby
                 ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to Steam");
                 break;
             case 1:
-                LanServer.Server = new();
                 NetworkTransport = new LanTransport();
                 ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to LAN");
                 break;
