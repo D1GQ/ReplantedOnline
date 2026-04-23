@@ -156,8 +156,4 @@
 			<HintPath>References\Il2Cpp\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Network\Client\Object\Replanted\Components\Zombies\" />
-	  <Folder Include="Network\Client\Object\Replanted\Components\Plants\" />
-	</ItemGroup>
 </Project>
