@@ -36,7 +36,7 @@ internal static class NetworkDispatcher
                 if (networkObj.IsOnNetwork && !networkObj.AmChild)
                 {
                     var packet = PacketWriter.Get();
-                    Message<NetworkSpawnMessage>.Instance.Serialize(networkObj, packet);
+                    Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
                     SendPacketTo(targetId, packet, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Buffered);
                     packet.Recycle();
                 }
@@ -55,7 +55,7 @@ internal static class NetworkDispatcher
         networkObj.OwnerId = owner;
         networkObj.NetworkId = ReplantedLobby.LobbyData.GetNextNetworkId();
         var packet = PacketWriter.Get();
-        Message<NetworkSpawnMessage>.Instance.Serialize(networkObj, packet);
+        Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
         SendPacket(packet, false, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main);
         packet.Recycle();
 
@@ -71,7 +71,7 @@ internal static class NetworkDispatcher
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawning Network Object with ID: {networkObj.NetworkId}");
 
         var packet = PacketWriter.Get();
-        Message<NetworkDespawnMessage>.Instance.Serialize(networkObj, packet);
+        Message<NetworkObjectDespawnMessage>.Instance.Serialize(networkObj, packet);
         SendPacket(packet, false, PacketHandlerType.NetworkObjectDespawn, PacketChannel.Main);
         packet.Recycle();
 
@@ -223,7 +223,7 @@ internal static class NetworkDispatcher
                 {
                     if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                     var packet = PacketWriter.Get();
-                    Message<NetworkSyncMessage>.Instance.Serialize(networkObj, false, packet);
+                    Message<NetworkObjectSyncMessage>.Instance.Serialize(networkObj, false, packet);
                     SendPacket(packet, false, PacketHandlerType.NetworkObjectSync, PacketChannel.Buffered);
                     packet.Recycle();
                 }

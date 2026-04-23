@@ -16,7 +16,7 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        var spawnMessage = Message<NetworkSpawnMessage>.Instance.Deserialize(packetReader);
+        var spawnMessage = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packetReader);
 
         if (spawnMessage.PrefabId == NetworkObject.NO_PREFAB_ID)
         {
@@ -30,7 +30,7 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
                 networkObj.OwnerId = spawnMessage.OwnerId;
                 networkObj.NetworkId = spawnMessage.NetworkId;
                 networkObj.transform.SetParent(NetworkObject.NetworkObjectsGo.transform);
-                Message<NetworkSpawnMessage>.Instance.DeserializeNetworkObject(networkObj, packetReader);
+                Message<NetworkObjectSpawnMessage>.Instance.DeserializeNetworkObject(networkObj, packetReader);
                 networkObj.gameObject.SetActive(true);
                 ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkObject from {sender.Name}: {spawnMessage.NetworkId}, Prefab: {spawnMessage.PrefabId}");
             }

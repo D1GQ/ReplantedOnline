@@ -6,7 +6,7 @@ namespace ReplantedOnline.Network.Packet.Messages;
 /// <summary>
 /// Represents a network message for despawning network objects across clients.
 /// </summary>
-internal sealed class NetworkDespawnMessage : IMessage<NetworkDespawnMessage, NetworkObject>
+internal sealed class NetworkObjectDespawnMessage : IMessage<NetworkObjectDespawnMessage, NetworkObject>
 {
     /// <summary>
     /// Gets the unique network identifier assigned to the spawned object.
@@ -28,9 +28,9 @@ internal sealed class NetworkDespawnMessage : IMessage<NetworkDespawnMessage, Ne
     /// </summary>
     /// <param name="packetReader">The packet reader containing the spawn packet data.</param>
     /// <returns>A new NetworkSpawnPacket instance with deserialized data.</returns>
-    public NetworkDespawnMessage Deserialize(PacketReader packetReader)
+    public NetworkObjectDespawnMessage Deserialize(PacketReader packetReader)
     {
-        NetworkDespawnMessage networkSpawnPacket = new()
+        NetworkObjectDespawnMessage networkSpawnPacket = new()
         {
             NetworkId = packetReader.ReadUInt(),
         };

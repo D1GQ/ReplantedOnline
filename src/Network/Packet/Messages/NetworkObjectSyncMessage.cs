@@ -6,7 +6,7 @@ namespace ReplantedOnline.Network.Packet.Messages;
 /// <summary>
 /// Represents a message used to synchronize the state of a networked object across clients, including its network
 /// </summary>
-internal sealed class NetworkSyncMessage : IMessage<NetworkSyncMessage, NetworkObject, bool>
+internal sealed class NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMessage, NetworkObject, bool>
 {
     /// <summary>
     /// Gets a value indicating whether the initialization process.
@@ -43,10 +43,10 @@ internal sealed class NetworkSyncMessage : IMessage<NetworkSyncMessage, NetworkO
     /// </summary>
     /// <param name="packetReader">The packet reader from which to read the network synchronization packet data. Must be positioned at the start of
     /// a valid packet.</param>
-    /// <returns>A <see cref="NetworkSyncMessage"/> instance containing the deserialized data from the packet reader.</returns>
-    public NetworkSyncMessage Deserialize(PacketReader packetReader)
+    /// <returns>A <see cref="NetworkObjectSyncMessage"/> instance containing the deserialized data from the packet reader.</returns>
+    public NetworkObjectSyncMessage Deserialize(PacketReader packetReader)
     {
-        NetworkSyncMessage networkSyncPacket = new()
+        NetworkObjectSyncMessage networkSyncPacket = new()
         {
             NetworkId = packetReader.ReadUInt(),
             DirtyBits = packetReader.ReadUInt(),

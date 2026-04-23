@@ -23,7 +23,7 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
     private static IEnumerator CoWaitForNetworkObjectSync(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        var networkSyncMessage = Message<NetworkSyncMessage>.Instance.Deserialize(packet);
+        var networkSyncMessage = Message<NetworkObjectSyncMessage>.Instance.Deserialize(packet);
 
         try
         {
