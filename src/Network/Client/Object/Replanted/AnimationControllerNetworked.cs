@@ -31,7 +31,7 @@ internal sealed class AnimationControllerNetworked : NetworkObject
         _AnimationController.RemoveNetworkedLookup();
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         _AnimationController.RemoveNetworkedLookup();
     }

@@ -122,7 +122,7 @@ internal sealed class ZombieNetworked : NetworkObject
         AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         if (_Zombie != null)
         {
@@ -135,7 +135,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    public void Update()
+    private void Update()
     {
         if (!IsOnNetwork) return;
 

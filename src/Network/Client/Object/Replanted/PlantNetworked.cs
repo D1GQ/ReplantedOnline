@@ -114,7 +114,7 @@ internal sealed class PlantNetworked : NetworkObject
         AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         if (_Plant != null)
         {
@@ -128,7 +128,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     private bool dead;
-    public void Update()
+    private void Update()
     {
         if (!IsOnNetwork) return;
 

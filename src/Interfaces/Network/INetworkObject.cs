@@ -40,7 +40,7 @@ internal interface INetworkObject
     /// </summary>
     /// <param name="packetWriter">The packet writer to serialize data into.</param>
     /// <param name="init">Whether this is initial serialization (true) or update serialization (false).</param>
-    public void Serialize(PacketWriter packetWriter, bool init);
+    void Serialize(PacketWriter packetWriter, bool init);
 
     /// <summary>
     /// Deserializes the network object state from a packet received over the network.
@@ -48,5 +48,5 @@ internal interface INetworkObject
     /// </summary>
     /// <param name="packetReader">The packet reader to deserialize data from.</param>
     /// <param name="init">Whether this is initial deserialization (true) or update deserialization (false).</param>
-    public void Deserialize(PacketReader packetReader, bool init);
+    void Deserialize(PacketReader packetReader, bool init);
 }
