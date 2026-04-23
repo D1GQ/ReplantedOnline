@@ -27,7 +27,7 @@ internal sealed class NetworkSpawnMessage : IMessage<NetworkSpawnMessage, Networ
     public byte PrefabId { get; private set; }
 
     /// <summary>
-    /// Serializes a NetworkClass instance into a spawn packet for network transmission.
+    /// Serializes a NetworkObject instance into a spawn packet for network transmission.
     /// </summary>
     /// <param name="networkObj">The network object instance to serialize.</param>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>

@@ -276,7 +276,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!dead)
         {
             dead = true;
-            SendNetworkClassRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
+            SendNetworkObjectRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
             DespawnAndDestroy();
         }
     }
@@ -297,7 +297,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (State is not PlantState.DoingSpecial)
         {
             State = PlantState.DoingSpecial;
-            SendNetworkClassRpc(PlantRpcs.SquashTarget, target);
+            SendNetworkObjectRpc(PlantRpcs.SquashTarget, target);
         }
     }
 
@@ -318,7 +318,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashPlantRpc()
     {
-        SendNetworkClassRpc(PlantRpcs.SquishPlant);
+        SendNetworkObjectRpc(PlantRpcs.SquishPlant);
     }
 
     [RpcHandler(PlantRpcs.SquishPlant)]
@@ -329,7 +329,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
     {
-        SendNetworkClassRpc(PlantRpcs.Fire, theTargetZombie, theRow, thePlantWeapon);
+        SendNetworkObjectRpc(PlantRpcs.Fire, theTargetZombie, theRow, thePlantWeapon);
     }
 
     [RpcHandler(PlantRpcs.Fire)]
@@ -340,7 +340,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSetZombieTargetRpc(Zombie target)
     {
-        SendNetworkClassRpc(PlantRpcs.SetZombieTarget, target);
+        SendNetworkObjectRpc(PlantRpcs.SetZombieTarget, target);
     }
 
     [RpcHandler(PlantRpcs.SetZombieTarget)]
@@ -351,7 +351,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSetStateRpc(string state)
     {
-        SendNetworkClassRpc(PlantRpcs.SetState, state);
+        SendNetworkObjectRpc(PlantRpcs.SetState, state);
     }
 
     [RpcHandler(PlantRpcs.SetState)]

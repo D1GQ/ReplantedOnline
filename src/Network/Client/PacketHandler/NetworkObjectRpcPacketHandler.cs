@@ -17,10 +17,10 @@ internal class NetworkObjectRpcPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        MelonCoroutines.Start(CoWaitForNetworkClass(sender, packetReader));
+        MelonCoroutines.Start(CoWaitForNetworkObject(sender, packetReader));
     }
 
-    private static IEnumerator CoWaitForNetworkClass(ReplantedClientData sender, PacketReader packetReader)
+    private static IEnumerator CoWaitForNetworkObject(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         byte rpcId = packet.ReadByte();
@@ -33,7 +33,7 @@ internal class NetworkObjectRpcPacketHandler : IPacketHandler
             {
                 if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
                 {
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkClass RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
                     RpcHandlerAttribute.HandleNetworkObjectRpc(networkObj, sender, rpcId, packet);
                     break;
                 }

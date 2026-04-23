@@ -25,7 +25,7 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
                 {
                     ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                     UnityEngine.Object.Destroy(networkObj.gameObject);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkClass from {sender.Name}: {networkDespawnMessage.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {networkDespawnMessage.NetworkId}");
                 }
                 else
                 {
@@ -35,7 +35,7 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
         }
         else
         {
-            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkClass: ID {networkDespawnMessage.NetworkId} not found");
+            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkObject: ID {networkDespawnMessage.NetworkId} not found");
         }
     }
 }

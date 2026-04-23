@@ -17,10 +17,10 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        MelonCoroutines.Start(CoWaitForNetworkClassSync(sender, packetReader));
+        MelonCoroutines.Start(CoWaitForNetworkObjectSync(sender, packetReader));
     }
 
-    private static IEnumerator CoWaitForNetworkClassSync(ReplantedClientData sender, PacketReader packetReader)
+    private static IEnumerator CoWaitForNetworkObjectSync(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var networkSyncMessage = Message<NetworkSyncMessage>.Instance.Deserialize(packet);
@@ -33,13 +33,13 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
                 {
                     if (networkObj.OwnerId != sender.ClientId)
                     {
-                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkClass {networkSyncMessage.NetworkId}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkObject {networkSyncMessage.NetworkId}");
                         break;
                     }
 
                     networkObj.SyncedBits.SyncedDirtyBits = networkSyncMessage.DirtyBits;
                     networkObj.Deserialize(packet, networkSyncMessage.Init);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkClass from {sender.Name}: {networkSyncMessage.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkObject from {sender.Name}: {networkSyncMessage.NetworkId}");
                     break;
                 }
 

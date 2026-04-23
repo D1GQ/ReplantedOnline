@@ -27,7 +27,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     internal NetworkObject ParentNetworkObject { get; private set; }
 
     /// <summary>
-    /// if this NetworkClass is a child of another NetworkClass
+    /// if this NetworkObject is a child of another NetworkObject
     /// </summary>
     internal bool AmChild { get; private set; }
 
@@ -51,7 +51,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
         {
             if (_networkObjectsGo == null)
             {
-                _networkObjectsGo = new GameObject("NetworkClasses");
+                _networkObjectsGo = new GameObject("NetworkObjects");
             }
 
             return _networkObjectsGo;
@@ -72,7 +72,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
         {
             if (_networkObjectsMoveToScene == null)
             {
-                _networkObjectsMoveToScene = new GameObject("NetworkClassesMoveToScene");
+                _networkObjectsMoveToScene = new GameObject("NetworkObjectsMoveToScene");
                 DontDestroyOnLoad(_networkObjectsMoveToScene);
             }
 
@@ -87,13 +87,13 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
 
     /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
-    /// Key is the prefab ID, value is the NetworkClass prefab reference.
+    /// Key is the prefab ID, value is the NetworkObject prefab reference.
     /// </summary>
     internal static readonly Dictionary<byte, NetworkObject> NetworkPrefabs = [];
 
     /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
-    /// Key is the prefab ID, value is the NetworkClass prefab reference.
+    /// Key is the prefab ID, value is the NetworkObject prefab reference.
     /// </summary>
     internal static readonly Dictionary<Type, byte> PrefabIdTypeLookup = [];
 
@@ -235,7 +235,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// Sends an RPC (Remote Procedure Call) for this network object.
     /// </summary>
     [HideFromIl2Cpp]
-    public void SendNetworkClassRpc<T>(T rpcId, params object[] args) where T : Enum
+    public void SendNetworkObjectRpc<T>(T rpcId, params object[] args) where T : Enum
     {
         PacketWriter packetWriter = null;
         if (args.Length > 0)
@@ -269,7 +269,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
-    /// Adds a child NetworkClass to this instance's collection of child network objects.
+    /// Adds a child NetworkObject to this instance's collection of child network objects.
     /// This operation is only permitted before the object has been spawned in the network.
     /// </summary>
     [HideFromIl2Cpp]
@@ -283,13 +283,13 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     }
 
     /// <summary>
-    /// Spawns a new instance of a NetworkClass-derived type across the network.
+    /// Spawns a new instance of a NetworkObject-derived type across the network.
     /// Creates the object locally and broadcasts spawn notification to all clients.
     /// </summary>
-    /// <typeparam name="T">The type of NetworkClass to spawn, must derive from NetworkClass.</typeparam>
+    /// <typeparam name="T">The type of NetworkObject to spawn, must derive from NetworkObject.</typeparam>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
-    /// <returns>The newly spawned NetworkClass instance.</returns>
+    /// <returns>The newly spawned NetworkObject instance.</returns>
     public static T SpawnNew<T>(Action<T> callback = default, ID owner = default) where T : NetworkObject
     {
         if (PrefabIdTypeLookup.TryGetValue(typeof(T), out var prefabId))

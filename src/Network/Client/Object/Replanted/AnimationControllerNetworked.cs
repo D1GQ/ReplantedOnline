@@ -45,7 +45,7 @@ internal sealed class AnimationControllerNetworked : NetworkObject
 
     internal void SendPlayAnimationRpc(string animationName, CharacterTracks track, float fps, AnimLoopType loopType)
     {
-        SendNetworkClassRpc(AnimationRpcs.PlayAnimation, animationName, track, fps, loopType);
+        SendNetworkObjectRpc(AnimationRpcs.PlayAnimation, animationName, track, fps, loopType);
     }
 
     [RpcHandler(AnimationRpcs.PlayAnimation)]

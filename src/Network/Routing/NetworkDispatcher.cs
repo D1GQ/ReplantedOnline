@@ -116,7 +116,7 @@ internal static class NetworkDispatcher
         }
         SendPacket(packet, receiveLocally, PacketHandlerType.NetworkObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkClass RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkObject RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
     }
 
     /// <summary>

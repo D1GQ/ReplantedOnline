@@ -83,7 +83,7 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
-    /// Writes an networkclass.
+    /// Writes an NetworkObject.
     /// </summary>
     internal void WriteNetworkObject(NetworkObject networkObj)
     {

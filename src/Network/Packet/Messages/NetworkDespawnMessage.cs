@@ -14,7 +14,7 @@ internal sealed class NetworkDespawnMessage : IMessage<NetworkDespawnMessage, Ne
     public uint NetworkId { get; private set; }
 
     /// <summary>
-    /// Serializes a NetworkClass instance into a despawn packet for network transmission.
+    /// Serializes a NetworkObject instance into a despawn packet for network transmission.
     /// </summary>
     /// <param name="networkObj">The network object instance to serialize.</param>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>

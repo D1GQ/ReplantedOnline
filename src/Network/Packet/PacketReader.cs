@@ -86,9 +86,9 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Reads a networkclass from the packet
+    /// Reads a NetworkObject from the packet
     /// </summary>
-    /// <returns>The decoded networkclass value.</returns>
+    /// <returns>The decoded NetworkObject value.</returns>
     internal NetworkObject ReadNetworkObject()
     {
         var netId = ReadUInt();
@@ -109,10 +109,10 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Reads a networkclass from the packet and attempts to cast it to the specified type T. If the cast fails, returns null.
+    /// Reads a NetworkObject from the packet and attempts to cast it to the specified type T. If the cast fails, returns null.
     /// </summary>
     /// <typeparam name="T">The type of network object to return. Must inherit from NetworkObject.</typeparam>
-    /// <returns>The decoded networkclass value.</returns>
+    /// <returns>The decoded NetworkObject value.</returns>
     internal T ReadNetworkObject<T>() where T : NetworkObject
     {
         var netObj = ReadNetworkObject();

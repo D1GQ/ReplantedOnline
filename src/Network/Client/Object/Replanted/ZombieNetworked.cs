@@ -411,7 +411,7 @@ internal sealed class ZombieNetworked : NetworkObject
         damageInterval++;
         if (damageInterval % 2 != 0)
         {
-            SendNetworkClassRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
+            SendNetworkObjectRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
         }
     }
 
@@ -452,7 +452,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            SendNetworkClassRpc(ZombieRpcs.Death, damageFlags);
+            SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
             DespawnAndDestroy();
         }
     }
@@ -475,7 +475,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            SendNetworkClassRpc(ZombieRpcs.DieLoot, withLoot);
+            SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
             DespawnAndDestroy();
         }
     }
@@ -505,7 +505,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            SendNetworkClassRpc(ZombieRpcs.MowDown);
+            SendNetworkObjectRpc(ZombieRpcs.MowDown);
             DespawnAndDestroy();
         }
     }
@@ -525,7 +525,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (Target != target)
         {
             Target = target;
-            SendNetworkClassRpc(ZombieRpcs.SetPlantTarget, target);
+            SendNetworkObjectRpc(ZombieRpcs.SetPlantTarget, target);
         }
     }
 
@@ -538,7 +538,7 @@ internal sealed class ZombieNetworked : NetworkObject
     internal void SendEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
-        SendNetworkClassRpc(ZombieRpcs.EnteringHouse, xPos);
+        SendNetworkObjectRpc(ZombieRpcs.EnteringHouse, xPos);
     }
 
     [RpcHandler(ZombieRpcs.EnteringHouse)]
@@ -553,7 +553,7 @@ internal sealed class ZombieNetworked : NetworkObject
     internal void SendMindControlledRpc()
     {
         State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
-        SendNetworkClassRpc(ZombieRpcs.MindControlled);
+        SendNetworkObjectRpc(ZombieRpcs.MindControlled);
     }
 
     [RpcHandler(ZombieRpcs.MindControlled)]
@@ -577,7 +577,7 @@ internal sealed class ZombieNetworked : NetworkObject
                 counter = _Zombie.mChilledCounter;
             }
 
-            SendNetworkClassRpc(ZombieRpcs.SetFrozen, frozen, counter);
+            SendNetworkObjectRpc(ZombieRpcs.SetFrozen, frozen, counter);
         }));
     }
 
@@ -601,7 +601,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         bool reallyDead = _Zombie.mBodyHealth <= 1800;
 
-        SendNetworkClassRpc(ZombieRpcs.ApplyBurn, reallyDead);
+        SendNetworkObjectRpc(ZombieRpcs.ApplyBurn, reallyDead);
 
         if (reallyDead && !Dead)
         {
@@ -621,7 +621,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendSetStateRpc(string state)
     {
-        SendNetworkClassRpc(ZombieRpcs.SetState, state);
+        SendNetworkObjectRpc(ZombieRpcs.SetState, state);
     }
 
     [RpcHandler(ZombieRpcs.SetState)]
