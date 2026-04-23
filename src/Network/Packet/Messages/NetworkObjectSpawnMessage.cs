@@ -9,22 +9,22 @@ namespace ReplantedOnline.Network.Packet.Messages;
 /// <summary>
 /// Represents a message for spawning network objects across clients.
 /// </summary>
-internal sealed class NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawnMessage, NetworkObject>
+internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawnMessage, NetworkObject>
 {
     /// <summary>
     /// Gets the ID of the client who owns the spawned network object.
     /// </summary>
-    public ID OwnerId { get; private set; }
+    public ID OwnerId { get; private init; }
 
     /// <summary>
     /// Gets the unique network identifier assigned to the spawned object.
     /// </summary>
-    public uint NetworkId { get; private set; }
+    public uint NetworkId { get; private init; }
 
     /// <summary>
     /// Gets the prefab identifier for the network object to spawn.
     /// </summary>
-    public byte PrefabId { get; private set; }
+    public byte PrefabId { get; private init; }
 
     /// <summary>
     /// Serializes a NetworkObject instance into a spawn packet for network transmission.
@@ -73,14 +73,14 @@ internal sealed class NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawnMes
     /// <returns>A new NetworkSpawnPacket instance with deserialized data.</returns>
     public NetworkObjectSpawnMessage Deserialize(PacketReader packetReader)
     {
-        NetworkObjectSpawnMessage networkSpawnPacket = new()
+        NetworkObjectSpawnMessage message = new()
         {
             OwnerId = packetReader.ReadID(),
             NetworkId = packetReader.ReadUInt(),
             PrefabId = packetReader.ReadByte(),
         };
 
-        return networkSpawnPacket;
+        return message;
     }
 
     /// <summary>

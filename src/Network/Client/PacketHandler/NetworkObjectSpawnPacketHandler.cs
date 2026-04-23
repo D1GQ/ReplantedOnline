@@ -16,27 +16,27 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        var spawnMessage = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packetReader);
+        var message = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packetReader);
 
-        if (spawnMessage.PrefabId == NetworkObject.NO_PREFAB_ID)
+        if (message.PrefabId == NetworkObject.NO_PREFAB_ID)
         {
             ReplantedOnlineMod.Logger.Error("Serialized network object had a unset prefab id!");
         }
         else
         {
-            if (NetworkObject.NetworkPrefabs.TryGetValue(spawnMessage.PrefabId, out var prefab))
+            if (NetworkObject.NetworkPrefabs.TryGetValue(message.PrefabId, out var prefab))
             {
                 var networkObj = prefab.Clone<NetworkObject>();
-                networkObj.OwnerId = spawnMessage.OwnerId;
-                networkObj.NetworkId = spawnMessage.NetworkId;
+                networkObj.OwnerId = message.OwnerId;
+                networkObj.NetworkId = message.NetworkId;
                 networkObj.transform.SetParent(NetworkObject.NetworkObjectsGo.transform);
                 Message<NetworkObjectSpawnMessage>.Instance.DeserializeNetworkObject(networkObj, packetReader);
                 networkObj.gameObject.SetActive(true);
-                ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkObject from {sender.Name}: {spawnMessage.NetworkId}, Prefab: {spawnMessage.PrefabId}");
+                ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkObject from {sender.Name}: {message.NetworkId}, Prefab: {message.PrefabId}");
             }
             else
             {
-                ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Failed to spawn NetworkObject: Prefab ID {spawnMessage.PrefabId} not found");
+                ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Failed to spawn NetworkObject: Prefab ID {message.PrefabId} not found");
             }
         }
     }

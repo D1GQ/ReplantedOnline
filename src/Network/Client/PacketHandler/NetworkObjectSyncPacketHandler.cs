@@ -23,23 +23,23 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
     private static IEnumerator CoWaitForNetworkObjectSync(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        var networkSyncMessage = Message<NetworkObjectSyncMessage>.Instance.Deserialize(packet);
+        var message = Message<NetworkObjectSyncMessage>.Instance.Deserialize(packet);
 
         try
         {
             while (ReplantedLobby.LobbyData != null)
             {
-                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkSyncMessage.NetworkId, out var networkObj))
+                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
                     if (networkObj.OwnerId != sender.ClientId)
                     {
-                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkObject {networkSyncMessage.NetworkId}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkObject {message.NetworkId}");
                         break;
                     }
 
-                    networkObj.SyncedBits.SyncedDirtyBits = networkSyncMessage.DirtyBits;
-                    networkObj.Deserialize(packet, networkSyncMessage.Init);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkObject from {sender.Name}: {networkSyncMessage.NetworkId}");
+                    networkObj.SyncedBits.SyncedDirtyBits = message.DirtyBits;
+                    networkObj.Deserialize(packet, message.Init);
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkObject from {sender.Name}: {message.NetworkId}");
                     break;
                 }
 

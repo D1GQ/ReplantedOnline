@@ -87,7 +87,7 @@ internal static class NetworkDispatcher
     internal static void SendRpc(RpcType rpc, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        packet.WriteByte((byte)rpc);
+        Message<RpcMessage>.Instance.Serialize(rpc, packet);
         if (packetWriter != null)
         {
             packet.WritePacketToBuffer(packetWriter);
@@ -108,8 +108,7 @@ internal static class NetworkDispatcher
     internal static void SendRpc(this INetworkObject networkObj, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        packet.WriteByte(rpcId);
-        packet.WriteUInt(networkObj.NetworkId);
+        Message<NetworkObjectRpcMessage>.Instance.Serialize(networkObj, rpcId, packetWriter);
         if (packetWriter != null)
         {
             packet.WritePacketToBuffer(packetWriter);

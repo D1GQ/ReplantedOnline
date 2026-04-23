@@ -15,9 +15,9 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        var networkDespawnMessage = Message<NetworkObjectDespawnMessage>.Instance.Deserialize(packetReader);
+        var message = Message<NetworkObjectDespawnMessage>.Instance.Deserialize(packetReader);
 
-        if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkDespawnMessage.NetworkId, out var networkObj))
+        if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
         {
             if (networkObj.OwnerId == sender.ClientId)
             {
@@ -25,17 +25,17 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
                 {
                     ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                     UnityEngine.Object.Destroy(networkObj.gameObject);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {networkDespawnMessage.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {message.NetworkId}");
                 }
                 else
                 {
-                    ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {networkDespawnMessage.NetworkId}, only the parent can be despawned!");
+                    ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {message.NetworkId}, only the parent can be despawned!");
                 }
             }
         }
         else
         {
-            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkObject: ID {networkDespawnMessage.NetworkId} not found");
+            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkObject: ID {message.NetworkId} not found");
         }
     }
 }

@@ -3,6 +3,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Packet.Messages;
 using System.Collections;
 using UnityEngine;
 
@@ -23,18 +24,17 @@ internal class NetworkObjectRpcPacketHandler : IPacketHandler
     private static IEnumerator CoWaitForNetworkObject(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        byte rpcId = packet.ReadByte();
-        uint networkId = packet.ReadUInt();
+        var message = Message<NetworkObjectRpcMessage>.Instance.Deserialize(packetReader);
         float timeOut = 0f;
 
         try
         {
             while (ReplantedLobby.LobbyData != null && timeOut < 10f)
             {
-                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(networkId, out var networkObj))
+                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {rpcId} for NetworkId: {networkId}");
-                    RpcHandlerAttribute.HandleNetworkObjectRpc(networkObj, sender, rpcId, packet);
+                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
+                    RpcHandlerAttribute.HandleNetworkObjectRpc(networkObj, sender, message.RpcId, packet);
                     break;
                 }
 
