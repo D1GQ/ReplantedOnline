@@ -23,7 +23,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted;
 /// </summary>
 internal sealed class ZombieNetworked : NetworkObject
 {
-    internal enum ZombieRpcs
+    private enum ZombieRpcs
     {
         TakeDamage,
         Death,

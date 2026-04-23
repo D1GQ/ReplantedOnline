@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted;
 /// </summary>
 internal sealed class AnimationControllerNetworked : NetworkObject
 {
-    internal enum AnimationRpcs
+    private enum AnimationRpcs
     {
         PlayAnimation
     }

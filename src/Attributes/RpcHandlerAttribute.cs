@@ -1,6 +1,5 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using System.Reflection;
 
@@ -8,7 +7,7 @@ namespace ReplantedOnline.Attributes;
 
 /// <summary>
 /// Marks a method as an RPC handler for a specific RPC ID.
-/// The method will be automatically called when a network message with that RPC ID is received.
+/// Automatically registers handlers during initialization for all IRpcReceiver types.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
 internal sealed class RpcHandlerAttribute : Attribute
@@ -17,7 +16,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// Initializes a new instance of the <see cref="RpcHandlerAttribute"/> class with the specified RPC ID.
     /// Owner check is enabled by default.
     /// </summary>
-    /// <param name="rpcId">The RPC ID as a byte value</param>
+    /// <param name="rpcId">The RPC ID as a byte value.</param>
     internal RpcHandlerAttribute(byte rpcId)
     {
         RpcId = rpcId;
@@ -28,7 +27,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// Initializes a new instance of the <see cref="RpcHandlerAttribute"/> class with the specified RPC ID.
     /// Owner check is enabled by default.
     /// </summary>
-    /// <param name="rpcId">The RPC ID (enum or convertible to byte)</param>
+    /// <param name="rpcId">The RPC ID (enum or convertible to byte).</param>
     internal RpcHandlerAttribute(object rpcId)
     {
         RpcId = Convert.ToByte(rpcId);
@@ -38,8 +37,8 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="RpcHandlerAttribute"/> class with the specified RPC ID and owner check setting.
     /// </summary>
-    /// <param name="rpcId">The RPC ID as a byte value</param>
-    /// <param name="ownerCheck">Whether to check that the sender is the object owner</param>
+    /// <param name="rpcId">The RPC ID as a byte value.</param>
+    /// <param name="ownerCheck">Whether to check that the sender is the object owner before executing the handler.</param>
     internal RpcHandlerAttribute(byte rpcId, bool ownerCheck)
     {
         RpcId = rpcId;
@@ -49,8 +48,8 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="RpcHandlerAttribute"/> class with the specified RPC ID and owner check setting.
     /// </summary>
-    /// <param name="rpcId">The RPC ID (enum or convertible to byte)</param>
-    /// <param name="ownerCheck">Whether to check that the sender is the object owner</param>
+    /// <param name="rpcId">The RPC ID (enum or convertible to byte).</param>
+    /// <param name="ownerCheck">Whether to check that the sender is the object owner before executing the handler.</param>
     internal RpcHandlerAttribute(object rpcId, bool ownerCheck)
     {
         RpcId = Convert.ToByte(rpcId);
@@ -64,37 +63,45 @@ internal sealed class RpcHandlerAttribute : Attribute
 
     /// <summary>
     /// Gets whether to check that the sender is the object owner before executing the handler.
+    /// When true, RPCs from non-owner clients will be rejected.
     /// </summary>
     internal bool OwnerCheck { get; }
 
     private static readonly Dictionary<Type, Dictionary<byte, RpcMethodInfo>> _handlers = [];
 
+    /// <summary>
+    /// Internal container for cached RPC method reflection information.
+    /// </summary>
     private class RpcMethodInfo
     {
+        /// <summary>Gets or sets the method info for the RPC handler.</summary>
         public MethodInfo Method { get; set; }
+
+        /// <summary>Gets or sets whether owner validation is required for this handler.</summary>
         public bool OwnerCheck { get; set; }
     }
 
     /// <summary>
-    /// Provides information about the RPC sender.
+    /// Provides contextual information about the RPC sender to handler methods.
+    /// Can be used as a parameter in RPC handler methods to access sender data.
     /// </summary>
     internal class RpcInfo
     {
         /// <summary>
-        /// Gets the client that sent this RPC.
+        /// Gets or sets the client data of the client that sent this RPC.
         /// </summary>
         internal ReplantedClientData Sender { get; set; }
     }
 
     /// <summary>
-    /// Initializes the RPC handler system by scanning all types for methods marked with [RpcHandler].
-    /// Call this once when your mod initializes.
+    /// Initializes the RPC handler system by scanning all assemblies for methods marked with [RpcHandler].
+    /// Must be called before any RPCs can be processed.
     /// </summary>
     internal static void Initialize()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        foreach (var type in assembly.GetTypes().Where(type => !type.IsAbstract && typeof(NetworkObject).IsAssignableFrom(type)))
+        foreach (var type in assembly.GetTypes().Where(type => !type.IsAbstract && typeof(IRpcReceiver).IsAssignableFrom(type)))
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
@@ -115,15 +122,16 @@ internal sealed class RpcHandlerAttribute : Attribute
     }
 
     /// <summary>
-    /// Routes an RPC to the appropriate handler method on the target object.
+    /// Routes an RPC to the appropriate handler method on the target IRpcReceiver.
+    /// Performs owner validation if required by the handler attribute.
     /// </summary>
-    /// <param name="networkObject">The network object to route the RPC to</param>
-    /// <param name="sender">The client that sent the RPC</param>
-    /// <param name="rpcId">The ID of the RPC to route</param>
-    /// <param name="packetReader">The packet reader containing the RPC data</param>
-    internal static void HandleNetworkObjectRpc(NetworkObject networkObject, ReplantedClientData sender, byte rpcId, PacketReader packetReader)
+    /// <param name="rpcReceiver">The IRpcReceiver instance to route the RPC to.</param>
+    /// <param name="sender">The client that sent the RPC.</param>
+    /// <param name="rpcId">The ID of the RPC to route.</param>
+    /// <param name="packetReader">The packet reader containing the RPC data payload.</param>
+    internal static void HandleRpcReceiver(IRpcReceiver rpcReceiver, ReplantedClientData sender, byte rpcId, PacketReader packetReader)
     {
-        var type = networkObject.GetType();
+        var type = rpcReceiver.GetType();
 
         if (!_handlers.TryGetValue(type, out var methods))
             return;
@@ -131,7 +139,8 @@ internal sealed class RpcHandlerAttribute : Attribute
         if (!methods.TryGetValue(rpcId, out var rpcMethodInfo))
             return;
 
-        if (rpcMethodInfo.OwnerCheck && networkObject.OwnerId != sender.ClientId)
+        // Validate ownership if required
+        if (rpcMethodInfo.OwnerCheck && rpcReceiver.OwnerId != sender.ClientId)
             return;
 
         var method = rpcMethodInfo.Method;
@@ -142,6 +151,7 @@ internal sealed class RpcHandlerAttribute : Attribute
         {
             var paramType = parameters[i].ParameterType;
 
+            // Special handling for RpcInfo parameter - inject sender context
             if (paramType == typeof(RpcInfo))
             {
                 args[i] = new RpcInfo
@@ -155,6 +165,6 @@ internal sealed class RpcHandlerAttribute : Attribute
             }
         }
 
-        method.Invoke(networkObject, args);
+        method.Invoke(rpcReceiver, args);
     }
 }

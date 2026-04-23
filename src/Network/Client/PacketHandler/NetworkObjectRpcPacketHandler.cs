@@ -33,8 +33,24 @@ internal class NetworkObjectRpcPacketHandler : IPacketHandler
             {
                 if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
-                    RpcHandlerAttribute.HandleNetworkObjectRpc(networkObj, sender, message.RpcId, packet);
+                    if (!message.IsComponent)
+                    {
+                        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
+                        RpcHandlerAttribute.HandleRpcReceiver(networkObj, sender, message.RpcId, packet);
+                    }
+                    else
+                    {
+                        var component = networkObj.NetworkComponents.ElementAtOrDefault(message.ComponentIndex);
+                        if (component == null)
+                        {
+                            ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Error processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex} not found!");
+                            break;
+                        }
+
+                        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex}");
+                        RpcHandlerAttribute.HandleRpcReceiver(component, sender, message.RpcId, packet);
+                    }
+
                     break;
                 }
 

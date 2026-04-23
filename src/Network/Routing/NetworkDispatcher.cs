@@ -98,29 +98,27 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Sends an RPC (Remote Procedure Call) to a specific network object instance across all clients.
-    /// Used for invoking targeted RPC methods on specific network objects.
+    /// Sends an RPC (Remote Procedure Call) to a specific IRpcReceiver instance across all clients.
     /// </summary>
-    /// <param name="networkObj">The target network object instance to receive the RPC.</param>
+    /// <param name="rpcReceiver">The targetIRpcReceiver instance to receive the RPC.</param>
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(this INetworkObject networkObj, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
+    internal static void SendRpc(this IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        Message<NetworkObjectRpcMessage>.Instance.Serialize(networkObj, rpcId, packetWriter);
+        Message<NetworkObjectRpcMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
         if (packetWriter != null)
         {
             packet.WritePacketToBuffer(packetWriter);
         }
         SendPacket(packet, receiveLocally, PacketHandlerType.NetworkObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkObject RPC: {rpcId} for NetworkId: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkObject RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
     }
 
     /// <summary>
     /// Sends a packet to a specific client in the lobby by their ID.
-    /// Automatically skips sending to the local client to prevent self-processing.
     /// </summary>
     /// <param name="targetId">The ID of the target client to receive the packet.</param>
     /// <param name="packetWriter">The packet writer containing the data to send.</param>

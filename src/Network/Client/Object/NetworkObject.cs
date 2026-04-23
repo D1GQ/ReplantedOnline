@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
@@ -13,7 +14,7 @@ namespace ReplantedOnline.Network.Client.Object;
 /// Abstract Base class for all network-synchronized objects in ReplantedOnline.
 /// Provides core functionality for ownership, synchronization, and remote procedure calls.
 /// </summary>
-internal abstract class NetworkObject : RuntimePrefab, INetworkObject
+internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcReceiver
 {
     /// <summary>
     /// Represents a null or uninitialized value.
@@ -36,6 +37,13 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
     /// </summary>
     [HideFromIl2Cpp]
     internal List<NetworkObject> ChildNetworkObjects { get; } = [];
+
+
+    /// <summary>
+    /// Contains the collection of network object components associated with this instance.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal List<NetworkComponent> NetworkComponents { get; } = [];
 
     /// <summary>
     /// Container GameObject for all network prefabs.
@@ -280,6 +288,22 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject
         child.AmChild = true;
         child.ParentNetworkObject = this;
         ChildNetworkObjects.Add(child);
+    }
+
+    /// <summary>
+    /// Adds a new network component to this instance's collection of network components.
+    /// This operation is only permitted before the object has been spawned in the network.
+    /// </summary>
+    [HideFromIl2Cpp]
+    internal T AddNetworkComponent<T>() where T : NetworkComponent
+    {
+        if (IsOnNetwork) return null;
+
+        T component = Activator.CreateInstance(typeof(T)) as T;
+        component.NetworkObject = this;
+        component.Index = NetworkComponents.Count;
+        NetworkComponents.Add(component);
+        return component;
     }
 
     /// <summary>

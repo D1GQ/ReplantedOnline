@@ -19,7 +19,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted;
 /// </summary>
 internal sealed class PlantNetworked : NetworkObject
 {
-    internal enum PlantRpcs
+    private enum PlantRpcs
     {
         Die,
         SquashTarget,
