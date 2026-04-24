@@ -1,5 +1,5 @@
-﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.Components;
 
@@ -11,6 +11,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         DoSpecial = 255
     }
 
+    private bool _isDoingSpecial;
     internal override void Update()
     {
         if (PlantNetworked.AmOwner)
@@ -18,7 +19,12 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
             if (!PlantNetworked._Plant.mIsAsleep &&
                 PlantNetworked._Plant.mDoSpecialCountdown < 5)
             {
-                SendDoSpecialRpc();
+                if (!_isDoingSpecial)
+                {
+                    SendDoSpecialRpc();
+                    PlantNetworked.Dead = true;
+                    PlantNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => PlantNetworked._Plant == null || PlantNetworked._Plant.mDead, PlantNetworked.DespawnAndDestroy));
+                }
             }
         }
         else
@@ -29,20 +35,19 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
 
     internal void SendDoSpecialRpc()
     {
-        if (PlantNetworked.State is not PlantState.DoingSpecial)
+        if (!_isDoingSpecial)
         {
-            PlantNetworked.State = PlantState.DoingSpecial;
+            _isDoingSpecial = true;
             SendNetworkComponentRpc(PlantSpecialRpcs.DoSpecial);
-            PlantNetworked.DespawnAndDestroy();
         }
     }
 
     [RpcHandler(PlantSpecialRpcs.DoSpecial)]
     internal void HandleDoSpecialRpc()
     {
-        if (PlantNetworked.State is not PlantState.DoingSpecial)
+        if (!_isDoingSpecial)
         {
-            PlantNetworked.State = PlantState.DoingSpecial;
+            _isDoingSpecial = true;
             DoSpecial();
         }
     }

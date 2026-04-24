@@ -25,7 +25,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
                 ZombieNetworked.Dead = true;
                 _isExploding = true;
                 SendExplodeRpc();
-                ZombieNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => ZombieNetworked._Zombie == null || ZombieNetworked._Zombie.mDead == true, ZombieNetworked.DespawnAndDestroy));
+                ZombieNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => ZombieNetworked._Zombie == null || ZombieNetworked._Zombie.mDead, ZombieNetworked.DespawnAndDestroy));
             }
         }
         else
