@@ -48,30 +48,30 @@ internal static class LanServerProtocol
     /// </summary>
     /// <param name="packetWriter">The packet writer to write to.</param>
     /// <param name="playerName">The name of the player requesting connection.</param>
-    /// <param name="clientId">The ID of the client requesting connection.</param>
-    internal static void SerializeHandshakeRequest(PacketWriter packetWriter, string playerName, ID clientId)
+    /// <param name="memberId">The ID of the member requesting connection.</param>
+    internal static void SerializeHandshakeRequest(PacketWriter packetWriter, string playerName, ID memberId)
     {
         packetWriter.WriteString(playerName);
-        packetWriter.WriteID(clientId);
+        packetWriter.WriteID(memberId);
     }
 
     /// <summary>
     /// Deserializes a handshake request packet.
     /// </summary>
     /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>A tuple containing the player name and client ID.</returns>
-    internal static (string playerName, ID clientId) DeserializeHandshakeRequest(PacketReader packetReader)
+    /// <returns>A tuple containing the player name and member ID.</returns>
+    internal static (string playerName, ID memberId) DeserializeHandshakeRequest(PacketReader packetReader)
     {
         var playerName = packetReader.ReadString();
-        var clientId = packetReader.ReadID();
-        return (playerName, clientId);
+        var memberId = packetReader.ReadID();
+        return (playerName, memberId);
     }
 
     /// <summary>
     /// Serializes a handshake acceptance packet.
     /// </summary>
     /// <param name="packetWriter">The packet writer to write to.</param>
-    /// <param name="lobbyId">The ID of the lobby the client is joining.</param>
+    /// <param name="lobbyId">The ID of the lobby the member is joining.</param>
     internal static void SerializeHandshakeAccept(PacketWriter packetWriter, ID lobbyId)
     {
         packetWriter.WriteID(lobbyId);
@@ -108,37 +108,37 @@ internal static class LanServerProtocol
     }
 
     /// <summary>
-    /// Serializes a client synchronization packet.
+    /// Serializes a member synchronization packet.
     /// </summary>
     /// <param name="packetWriter">The packet writer to write to.</param>
-    /// <param name="clients">Dictionary of all connected clients.</param>
-    internal static void SerializeSyncClients(PacketWriter packetWriter, Dictionary<ID, LanServerClientData> clients)
+    /// <param name="members">Dictionary of all connected members.</param>
+    internal static void SerializeSyncMembers(PacketWriter packetWriter, Dictionary<ID, LanMemberData> members)
     {
-        packetWriter.WriteInt(clients.Count);
-        foreach (var client in clients.Values)
+        packetWriter.WriteInt(members.Count);
+        foreach (var member in members.Values)
         {
-            client.Serialize(packetWriter, true);
+            member.Serialize(packetWriter, true);
         }
     }
 
     /// <summary>
-    /// Deserializes a client synchronization packet.
+    /// Deserializes a member synchronization packet.
     /// </summary>
     /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>A dictionary of all synchronized clients.</returns>
-    internal static Dictionary<ID, LanServerClientData> DeserializeSyncClients(PacketReader packetReader)
+    /// <returns>A dictionary of all synchronized members.</returns>
+    internal static Dictionary<ID, LanMemberData> DeserializeSyncMembers(PacketReader packetReader)
     {
-        int clientCount = packetReader.ReadInt();
-        var clients = new Dictionary<ID, LanServerClientData>();
+        int memberCount = packetReader.ReadInt();
+        var members = new Dictionary<ID, LanMemberData>();
 
-        for (int i = 0; i < clientCount; i++)
+        for (int i = 0; i < memberCount; i++)
         {
-            var client = new LanServerClientData();
-            client.Deserialize(packetReader, true);
-            clients[client.ClientId] = client;
+            var member = new LanMemberData();
+            member.Deserialize(packetReader, true);
+            members[member.MemberId] = member;
         }
 
-        return clients;
+        return members;
     }
 
     /// <summary>
@@ -166,10 +166,9 @@ internal static class LanServerProtocol
     }
 
     /// <summary>
-    /// Serializes member data for a client.
+    /// Serializes member data for a member.
     /// </summary>
     /// <param name="packetWriter">The packet writer to write to.</param>
-    /// <param name="memberId">The ID of the member.</param>
     /// <param name="key">The data key.</param>
     /// <param name="value">The data value.</param>
     internal static void SerializeMemberData(PacketWriter packetWriter, string key, string value)
@@ -179,7 +178,7 @@ internal static class LanServerProtocol
     }
 
     /// <summary>
-    /// Deserializes member data for a client.
+    /// Deserializes member data for a member.
     /// </summary>
     /// <param name="packetReader">The packet reader to read from.</param>
     /// <returns>A tuple containing the member ID, key, and value.</returns>

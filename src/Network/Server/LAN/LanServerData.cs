@@ -18,7 +18,7 @@ internal sealed class LanServerData : IDisposable
     internal const string GAME_CODE_KEY = "game_code";
 
     /// <summary>
-    /// Gets or sets the ID of the host client.
+    /// Gets or sets the ID of the host member.
     /// </summary>
     internal ID HostId { get; set; } = ID.Null;
 

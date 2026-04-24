@@ -24,7 +24,7 @@ internal sealed class LanTransport : INetworkTransport
     private bool _isJoining;
     private bool _hasJoined;
 
-    public ID LocalClientId => LanServer.Server.LocalClientId;
+    public ID LocalClientId => LanServer.Server.LocalMemberId;
 
     public void Tick(float deltaTime) { }
 
@@ -121,7 +121,7 @@ internal sealed class LanTransport : INetworkTransport
     // ===== Lobby Member Data Methods =====
     public string GetLobbyMemberData(ID lobbyId, ID clientId, string pchKey)
     {
-        if (LanServer.Server.Clients.TryGetValue(clientId, out var client))
+        if (LanServer.Server.Members.TryGetValue(clientId, out var client))
         {
             return client.Data.TryGetValue(pchKey, out var value) ? value : string.Empty;
         }
@@ -136,20 +136,20 @@ internal sealed class LanTransport : INetworkTransport
     // ===== Lobby Member Management Methods =====
     public int GetNumLobbyMembers(ID lobbyId)
     {
-        return LanServer.Server.Clients.Count;
+        return LanServer.Server.Members.Count;
     }
 
     public ID GetLobbyMemberByIndex(ID lobbyId, int memberIndex)
     {
-        var clients = LanServer.Server.Clients.Values.ToList();
+        var clients = LanServer.Server.Members.Values.ToList();
         return memberIndex >= 0 && memberIndex < clients.Count
-            ? clients[memberIndex].ClientId
+            ? clients[memberIndex].MemberId
             : ID.Null;
     }
 
     public string GetMemberName(ID clientId)
     {
-        if (LanServer.Server.Clients.TryGetValue(clientId, out var client))
+        if (LanServer.Server.Members.TryGetValue(clientId, out var client))
         {
             return client.PlayerName;
         }
@@ -177,9 +177,9 @@ internal sealed class LanTransport : INetworkTransport
 
     public bool CloseP2PSessionWithUser(ID clientId)
     {
-        if (LanServer.Server.Clients.TryGetValue(clientId, out var client))
+        if (LanServer.Server.Members.TryGetValue(clientId, out var client))
         {
-            LanServer.Server.RemoveClient(client);
+            LanServer.Server.RemoveMember(client);
             return true;
         }
         return false;
