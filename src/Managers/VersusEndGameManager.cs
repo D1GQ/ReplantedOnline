@@ -101,7 +101,6 @@ internal static class VersusEndGameManager
             }
         }
 
-        winner.DidWin();
         winner.Dispose();
         loser.Dispose();
 
@@ -204,6 +203,7 @@ internal static class VersusEndGameManager
             ZombieAvatar = player.transform.Find("PlayerAvatar/ZombieAvatar").gameObject;
 
             Trophy = player.transform.Find("TrophyCount/Winner/Animator").gameObject;
+            Trophy.SetActive(false);
             PlantTrophy = Trophy.transform.Find("Trophy/PlantTrophy").gameObject;
             ZombieTrophy = Trophy.transform.Find("Trophy/ZombieTrophy").gameObject;
             var count = player.transform.Find("TrophyCount/TrophesCount").gameObject;
@@ -274,7 +274,6 @@ internal static class VersusEndGameManager
             PlantAvatar = null;
             ZombieAvatar = null;
             PlantTrophy = null;
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -56,6 +56,5 @@ internal sealed class NetworkIdPool : IDisposable
     {
         _availableIds.Clear();
         _allocatedIds.Clear();
-        GC.SuppressFinalize(this);
     }
 }

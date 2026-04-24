@@ -346,6 +346,5 @@ internal sealed class ReplantedLobbyData : IDisposable
         LobbyCode = null;
         NetworkIdPoolHost?.Dispose();
         NetworkIdPoolNonHost?.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

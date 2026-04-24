@@ -3,6 +3,8 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Managers;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using UnityEngine.InputSystem;
@@ -53,6 +55,22 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
+        if (ReplantedLobby.AmLobbyHost())
+        {
+            if (!Instances.GameplayActivity.Board.mPaused)
+            {
+                if (Keyboard.current.minusKey.wasPressedThisFrame)
+                {
+                    VersusGameplayManager.EndGame(Instances.GameplayActivity.m_boardOffset.position, PlayerTeam.Plants);
+                }
+
+                if (Keyboard.current.equalsKey.wasPressedThisFrame)
+                {
+                    VersusGameplayManager.EndGame(Instances.GameplayActivity.m_boardOffset.position, PlayerTeam.Zombies);
+                }
+            }
+        }
+
         if (!VersusState.AmPlantSide) return;
 
         if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
