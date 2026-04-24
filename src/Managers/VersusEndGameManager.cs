@@ -191,24 +191,35 @@ internal static class VersusEndGameManager
         private GameObject ZombieTrophy;
 
         /// <summary>
+        /// Plant trophy count GameObject.
+        /// </summary>
+        private GameObject PlantTrophyCount;
+
+        /// <summary>
+        /// Zombie trophy count GameObject.
+        /// </summary>
+        private GameObject ZombieTrophyCount;
+
+        /// <summary>
         /// Initializes the nameplate by finding and caching all relevant GameObjects.
         /// </summary>
         internal void Init()
         {
-            var player = GameObject.Find(path);
-            NameDisplay = player.transform.Find("HeaderLabel").GetComponentInChildren<TextMeshProUGUI>();
-            PlantFrame = player.transform.Find("PlantFrame").gameObject;
-            ZombieFrame = player.transform.Find("ZombieFrame").gameObject;
-            PlantAvatar = player.transform.Find("PlayerAvatar/PlantAvatar").gameObject;
-            ZombieAvatar = player.transform.Find("PlayerAvatar/ZombieAvatar").gameObject;
+            var playerNamePlate = GameObject.Find(path);
+            NameDisplay = playerNamePlate.transform.Find("HeaderLabel").GetComponentInChildren<TextMeshProUGUI>();
+            PlantFrame = playerNamePlate.transform.Find("PlantFrame").gameObject;
+            ZombieFrame = playerNamePlate.transform.Find("ZombieFrame").gameObject;
+            PlantAvatar = playerNamePlate.transform.Find("PlayerAvatar/PlantAvatar").gameObject;
+            ZombieAvatar = playerNamePlate.transform.Find("PlayerAvatar/ZombieAvatar").gameObject;
 
-            Trophy = player.transform.Find("TrophyCount/Winner/Animator").gameObject;
-            Trophy.SetActive(false);
+            Trophy = playerNamePlate.transform.Find("TrophyCount/Winner/Animator").gameObject;
             PlantTrophy = Trophy.transform.Find("Trophy/PlantTrophy").gameObject;
             ZombieTrophy = Trophy.transform.Find("Trophy/ZombieTrophy").gameObject;
-            var count = player.transform.Find("TrophyCount/TrophesCount").gameObject;
-            count.SetActive(false);
+            PlantTrophyCount = playerNamePlate.transform.Find("TrophyCount/TrophesCount/P_EntryWinCount_Plants").gameObject;
+            ZombieTrophyCount = playerNamePlate.transform.Find("TrophyCount/TrophesCount/P_EntryWinCount_Zombies").gameObject;
 
+            SetPortrait(PlayerTeam.None);
+            SetWinStreak(0);
             SetName("???");
         }
 
@@ -232,25 +243,31 @@ internal static class VersusEndGameManager
                     PlantFrame.SetActive(true);
                     PlantAvatar.SetActive(true);
                     PlantTrophy.SetActive(true);
+                    PlantTrophyCount.SetActive(true);
                     ZombieFrame.SetActive(false);
                     ZombieAvatar.SetActive(false);
                     ZombieTrophy.SetActive(false);
+                    ZombieTrophyCount.SetActive(false);
                     break;
                 case PlayerTeam.Zombies:
                     ZombieFrame.SetActive(true);
                     ZombieAvatar.SetActive(true);
                     ZombieTrophy.SetActive(true);
+                    ZombieTrophyCount.SetActive(true);
                     PlantFrame.SetActive(false);
                     PlantAvatar.SetActive(false);
                     PlantTrophy.SetActive(false);
+                    PlantTrophyCount.SetActive(false);
                     break;
                 default:
                     PlantFrame.SetActive(false);
                     PlantAvatar.SetActive(false);
                     PlantTrophy.SetActive(false);
+                    PlantTrophyCount.SetActive(false);
                     ZombieFrame.SetActive(false);
                     ZombieAvatar.SetActive(false);
                     ZombieTrophy.SetActive(false);
+                    ZombieTrophyCount.SetActive(false);
                     break;
             }
         }
@@ -264,6 +281,41 @@ internal static class VersusEndGameManager
         }
 
         /// <summary>
+        /// Sets the win streak count for both Plant and Zombie trophies.
+        /// </summary>
+        /// <param name="count">The number of consecutive wins to display.</param>
+        internal void SetWinStreak(int count)
+        {
+            SetTrophyCount(PlantTrophyCount, count);
+            SetTrophyCount(ZombieTrophyCount, count);
+        }
+
+        /// <summary>
+        /// Updates the trophy count display by recreating trophy child objects.
+        /// </summary>
+        /// <param name="trophyCountGo">The GameObject containing the trophy count display.</param>
+        /// <param name="count">The new number of trophies to display.</param>
+        private static void SetTrophyCount(GameObject trophyCountGo, int count)
+        {
+            GameObject countPrefab = trophyCountGo.transform.GetChild(0).gameObject;
+
+            while (trophyCountGo.transform.childCount > 1)
+            {
+                var countChild = trophyCountGo.transform.GetChild(1);
+                if (countChild != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(countChild.gameObject);
+                }
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                var countGo = UnityEngine.Object.Instantiate(countPrefab, countPrefab.transform.parent);
+                countGo.gameObject.SetActive(true);
+            }
+        }
+
+        /// <summary>
         /// Cleans up references to GameObjects.
         /// </summary>
         public void Dispose()
@@ -274,6 +326,8 @@ internal static class VersusEndGameManager
             PlantAvatar = null;
             ZombieAvatar = null;
             PlantTrophy = null;
+            ZombieTrophyCount = null;
+            PlantTrophyCount = null;
         }
     }
 }
