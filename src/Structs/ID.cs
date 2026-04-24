@@ -369,6 +369,33 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     }
 
     /// <summary>
+    /// Returns a string representation of the ID for display.
+    /// </summary>
+    internal string ToDisplayString()
+    {
+        if (_type == IdType.Null)
+            return "Null";
+
+        return _type switch
+        {
+            IdType.SteamId => $"Steam:{((SteamId)_id).Value}",
+            IdType.ULong => $"ULong:{_id}",
+            IdType.IPEndPoint => $"IPH:{GetIpHash((IPEndPoint)_id)}",
+            _ => "Unknown"
+        };
+    }
+
+    /// <summary>
+    /// Generates a stable uint hash from an IPEndPoint.
+    /// </summary>
+    private static uint GetIpHash(IPEndPoint endPoint)
+    {
+        uint ipHash = (uint)endPoint.Address.GetHashCode();
+        uint portHash = (uint)endPoint.Port;
+        return (ipHash * 397) ^ portHash;
+    }
+
+    /// <summary>
     /// Gets the underlying type of the stored ID.
     /// </summary>
     public Type UnderlyingType => _type switch

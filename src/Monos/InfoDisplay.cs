@@ -165,7 +165,7 @@ internal sealed class InfoDisplay : MonoBehaviour
             foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
             {
                 sb.AppendLine($"{client.Name} Client Info >");
-                sb.AppendLine($" ID: {client.ClientId}");
+                sb.AppendLine($" ID: {client.ClientId.ToDisplayString()}");
                 sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
                 sb.AppendLine($" AmLocal: {client.AmLocal}");
                 sb.AppendLine($" AmHost: {client.AmHost}");
