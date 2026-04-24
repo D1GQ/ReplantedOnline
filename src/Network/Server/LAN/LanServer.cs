@@ -772,9 +772,18 @@ internal sealed class LanServer : IDisposable
             if (PacketQueue.TryGetValue(channel, out var queue) && queue.Count > 0)
             {
                 var packet = queue.Dequeue();
+
+                if (packet.Data == null || packet.Data.Length != packet.Size || packet.Size == 0)
+                {
+                    packet.Dispose();
+                    return false;
+                }
+
                 buffer.Data = packet.Data;
                 buffer.Size = packet.Size;
                 buffer.ClientId = packet.SenderId;
+                packet.Dispose();
+
                 return true;
             }
         }
@@ -855,7 +864,7 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Represents a pending packet waiting to be processed.
     /// </summary>
-    internal sealed class PendingPacket
+    internal sealed class PendingPacket : IDisposable
     {
         /// <summary>
         /// The raw packet data.
@@ -871,5 +880,13 @@ internal sealed class LanServer : IDisposable
         /// The size of the packet in bytes.
         /// </summary>
         public uint Size { get; set; }
+
+        /// <summary>
+        /// Clear the data of the PendingPacket.
+        /// </summary>
+        public void Dispose()
+        {
+            Data = null;
+        }
     }
 }

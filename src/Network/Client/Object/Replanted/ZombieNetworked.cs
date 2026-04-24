@@ -95,6 +95,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (!Dead && !_Zombie.IsDeadOrDying())
             {
+                CheckDeath();
                 _Zombie.DieDeserialize();
             }
         }
