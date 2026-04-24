@@ -363,23 +363,6 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
         {
             IdType.SteamId => $"Steam:{((SteamId)_id).Value}",
             IdType.ULong => $"ULong:{_id}",
-            IdType.IPEndPoint => $"IP:{((IPEndPoint)_id).Address}:{((IPEndPoint)_id).Port}",
-            _ => "Unknown"
-        };
-    }
-
-    /// <summary>
-    /// Returns a string representation of the ID for display.
-    /// </summary>
-    internal string ToDisplayString()
-    {
-        if (_type == IdType.Null)
-            return "Null";
-
-        return _type switch
-        {
-            IdType.SteamId => $"Steam:{((SteamId)_id).Value}",
-            IdType.ULong => $"ULong:{_id}",
             IdType.IPEndPoint => $"IPH:{GetIpHash((IPEndPoint)_id)}",
             _ => "Unknown"
         };
