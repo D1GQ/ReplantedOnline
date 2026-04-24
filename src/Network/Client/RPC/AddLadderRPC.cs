@@ -8,20 +8,21 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.Client.RPC;
+namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRPC]
-internal sealed class AddLadderRPC : IRPC
+[RegisterRpc]
+internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
 {
     /// <inheritdoc/>
-    public RpcType Type => RpcType.AddLadder;
+    public RpcType Rpc => RpcType.AddLadder;
 
-    internal static void Send(int theGridX, int theGridY)
+    /// <inheritdoc/>
+    public void Send(int theGridX, int theGridY)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(theGridX);
         packetWriter.WriteInt(theGridY);
-        NetworkDispatcher.SendRpc(RpcType.AddLadder, packetWriter);
+        NetworkDispatcher.SendRpc(Rpc, packetWriter);
         packetWriter.Recycle();
     }
 

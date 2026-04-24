@@ -3,7 +3,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 
 /// <summary>
-/// Represents a network message that wraps an RPC call with its invocation type.
+/// Represents a network message for invoking Remote Procedure Calls (RPCs) on a global handler.
 /// </summary>
 internal readonly struct RpcMessage : IMessage<RpcMessage, RpcType>
 {

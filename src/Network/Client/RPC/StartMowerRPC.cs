@@ -8,19 +8,20 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.Client.RPC;
+namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRPC]
-internal sealed class StartMowerRPC : IRPC
+[RegisterRpc]
+internal sealed class StartMowerRpc : IRpcDispatcher<LawnMower>
 {
     /// <inheritdoc/>
-    public RpcType Type => RpcType.StartMower;
+    public RpcType Rpc => RpcType.StartMower;
 
-    internal static void Send(LawnMower lawnMower)
+    /// <inheritdoc/>
+    public void Send(LawnMower lawnMower)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(lawnMower.DataID);
-        NetworkDispatcher.SendRpc(RpcType.StartMower, packetWriter);
+        NetworkDispatcher.SendRpc(Rpc, packetWriter);
         packetWriter.Recycle();
     }
 

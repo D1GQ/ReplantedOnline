@@ -63,7 +63,7 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
     /// var specificHandler = StaticInstanceAttribute&lt;IRPCHandler&gt;.GetClassInstance&lt;MySpecificHandler&gt;();
     /// </code>
     /// </example>
-    internal static J GetInstance<J>() where J : class => _instances.FirstOrDefault(instance => instance.GetType() == typeof(J)) as J;
+    internal static J GetInstance<J>() where J : T => (J)_instances.FirstOrDefault(instance => instance.GetType() == typeof(J));
 
     /// <summary>
     /// Scans the assembly for classes marked with this attribute type and registers instances of them.
@@ -106,7 +106,7 @@ internal abstract class InstanceAttribute<T> : InstanceAttribute where T : class
 /// Registers classes that implement IClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterRPC : InstanceAttribute<IRPC> { }
+internal sealed class RegisterRpc : InstanceAttribute<IRpc> { }
 
 /// <summary>
 /// Registers classes that implement IPacketHandler.

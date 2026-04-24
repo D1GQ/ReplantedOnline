@@ -7,19 +7,20 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Utilities;
 
-namespace ReplantedOnline.Network.Client.RPC;
+namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRPC]
-internal sealed class SyncSeedPacketRPC : IRPC
+[RegisterRpc]
+internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
 {
     /// <inheritdoc/>
-    public RpcType Type => RpcType.SyncSeedPacket;
+    public RpcType Rpc => RpcType.SyncSeedPacket;
 
-    internal static void Send(SeedType seedType)
+    /// <inheritdoc/>
+    public void Send(SeedType seedType)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt((int)seedType);
-        NetworkDispatcher.SendRpc(RpcType.SyncSeedPacket, packetWriter);
+        NetworkDispatcher.SendRpc(Rpc, packetWriter);
         packetWriter.Recycle();
     }
 

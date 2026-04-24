@@ -10,19 +10,20 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.UI;
 
-namespace ReplantedOnline.Network.Client.RPC;
+namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRPC]
-internal sealed class StartGameRPC : IRPC
+[RegisterRpc]
+internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
 {
     /// <inheritdoc/>
-    public RpcType Type => RpcType.StartGame;
+    public RpcType Rpc => RpcType.StartGame;
 
-    internal static void Send(SelectionSet selectionSet)
+    /// <inheritdoc/>
+    public void Send(SelectionSet selectionSet)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteByte((byte)selectionSet);
-        NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
+        NetworkDispatcher.SendRpc(Rpc, packetWriter, true);
         packetWriter.Recycle();
         ReplantedLobby.LobbyData.HasStarted = true;
         MatchmakingManager.UpdateLobbyJoinable();

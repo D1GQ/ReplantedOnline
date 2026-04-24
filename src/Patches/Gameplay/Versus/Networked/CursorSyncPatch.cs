@@ -6,7 +6,7 @@ using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.RPC;
+using ReplantedOnline.Network.Client.Rpc;
 using ReplantedOnline.Utilities;
 using static Il2CppReloaded.Constants;
 
@@ -80,7 +80,7 @@ internal static class CursorSyncPatch
                         seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
-                        SyncSeedPacketRPC.Send(seedType);
+                        Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
                     }
                     else
                     {
@@ -140,7 +140,7 @@ internal static class CursorSyncPatch
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, seedPacket.mImitaterType, gridX, gridY, true);
-                        SyncSeedPacketRPC.Send(seedType);
+                        Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
                     }
                     else
                     {

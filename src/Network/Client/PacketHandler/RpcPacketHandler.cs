@@ -17,6 +17,6 @@ internal sealed class RpcPacketHandler : IPacketHandler
     {
         var message = Message<RpcMessage>.Instance.Deserialize(packetReader);
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing RPC from {sender.Name}: {message.RpcType}");
-        IRPC.HandleRpc(message.RpcType, sender, packetReader);
+        IRpc.HandleRpc(message.RpcType, sender, packetReader);
     }
 }

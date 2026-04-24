@@ -107,12 +107,12 @@ internal static class NetworkDispatcher
     internal static void SendRpcReceiver(IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        Message<RpcReceiverMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
+        Message<ObjectRpcMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
         if (packetWriter != null)
         {
             packet.WritePacketToBuffer(packetWriter);
         }
-        SendPacket(packet, receiveLocally, PacketHandlerType.RpcReceiver, PacketChannel.Rpc);
+        SendPacket(packet, receiveLocally, PacketHandlerType.ObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkObject RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
     }

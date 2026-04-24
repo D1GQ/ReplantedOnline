@@ -7,19 +7,20 @@ using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
-namespace ReplantedOnline.Network.Client.RPC;
+namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRPC]
-internal sealed class ChooseSeedRPC : IRPC
+[RegisterRpc]
+internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
 {
     /// <inheritdoc/>
-    public RpcType Type => RpcType.ChooseSeed;
+    public RpcType Rpc => RpcType.ChooseSeed;
 
-    internal static void Send(ChosenSeed theChosenSeed)
+    /// <inheritdoc/>
+    public void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt((int)theChosenSeed.mSeedType);
-        NetworkDispatcher.SendRpc(RpcType.ChooseSeed, packetWriter);
+        NetworkDispatcher.SendRpc(Rpc, packetWriter);
         packetWriter.Recycle();
     }
 

@@ -8,7 +8,7 @@ using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.RPC;
+using ReplantedOnline.Network.Client.Rpc;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -23,7 +23,7 @@ internal static class SeedChooserScreenSyncPatch
         {
             if (!ReplantedLobby.LobbyData.AllClientsReady()) return false;
 
-            ChooseSeedRPC.Send(theChosenSeed);
+            Rpc<ChooseSeedRpc>.Instance.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);
 
             if (ModInfo.DEBUG)

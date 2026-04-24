@@ -49,5 +49,5 @@ internal enum PacketHandlerType
     /// <summary>
     /// Packet used for P2P session establishment and maintenance on a rpc receiver object.
     /// </summary>
-    RpcReceiver,
+    ObjectRpc,
 }

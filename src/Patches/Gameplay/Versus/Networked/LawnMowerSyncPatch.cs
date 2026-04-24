@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.RPC;
+using ReplantedOnline.Network.Client.Rpc;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
@@ -21,7 +21,7 @@ internal static class LawnMowerSyncPatch
             // Send network message to sync starting Mower
             if (__instance.mMowerState == LawnMowerState.Ready)
             {
-                StartMowerRPC.Send(__instance);
+                Rpc<StartMowerRpc>.Instance.Send(__instance);
             }
 
             return true;
