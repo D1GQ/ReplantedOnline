@@ -9,28 +9,48 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 {
     private enum BungeeRpcs : byte
     {
-        DownOnPlant
+        Dive,
+        TakePlant
     }
 
-    private bool isDownOnPlant;
+    private bool _isDiving;
+    private bool _isTakingPlant;
     internal override void Update()
     {
         if (ZombieNetworked._Zombie == null) return;
 
         if (ZombieNetworked.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && ZombieNetworked._Zombie.mPhaseCounter < 10 && !isDownOnPlant)
+            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
             {
-                isDownOnPlant = true;
-                SendDownOnPlantRpc();
-                ZombieNetworked.DespawnAndDestroyWhenNull();
+                if (ZombieNetworked._Zombie.mPhaseCounter < 10 && !_isDiving)
+                {
+                    _isDiving = true;
+                    SendDiveRpc();
+                }
+            }
+            else if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            {
+                if (ZombieNetworked._Zombie.mPhaseCounter < 10 && !_isTakingPlant)
+                {
+                    _isTakingPlant = true;
+                    SendTakePlantRpc();
+                    ZombieNetworked.DespawnAndDestroyWhenNull();
+                }
             }
         }
         else
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
+            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
             {
-                if (!isDownOnPlant)
+                if (!_isDiving)
+                {
+                    ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
+                }
+            }
+            else if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            {
+                if (!_isTakingPlant)
                 {
                     ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
                 }
@@ -38,15 +58,27 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal void SendDownOnPlantRpc()
+    internal void SendDiveRpc()
     {
-        SendNetworkComponentRpc(BungeeRpcs.DownOnPlant);
+        SendNetworkComponentRpc(BungeeRpcs.Dive);
     }
 
-    [RpcHandler(BungeeRpcs.DownOnPlant)]
-    private void HandleDownOnPlantRpc()
+    [RpcHandler(BungeeRpcs.Dive)]
+    private void HandleDiveRpc()
     {
-        isDownOnPlant = true;
+        _isDiving = true;
+        ZombieNetworked._Zombie.mPhaseCounter = 0;
+    }
+
+    internal void SendTakePlantRpc()
+    {
+        SendNetworkComponentRpc(BungeeRpcs.TakePlant);
+    }
+
+    [RpcHandler(BungeeRpcs.TakePlant)]
+    private void HandleTakePlantRpc()
+    {
+        _isTakingPlant = true;
         ZombieNetworked._Zombie.mPhaseCounter = 0;
     }
 }
