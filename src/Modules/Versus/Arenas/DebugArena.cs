@@ -57,7 +57,7 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     {
         if (ReplantedLobby.AmLobbyHost())
         {
-            if (!Instances.GameplayActivity.Board.mPaused)
+            if (VersusState.IsInGameplay && !Instances.GameplayActivity.Board.mPaused)
             {
                 if (Keyboard.current.minusKey.wasPressedThisFrame)
                 {
