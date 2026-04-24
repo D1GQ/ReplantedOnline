@@ -62,11 +62,6 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     /// <summary>
-    /// Represents the networked animation controller used to synchronize animation states across multiple clients.
-    /// </summary>
-    internal AnimationControllerNetworked AnimationControllerNetworked;
-
-    /// <summary>
     /// The underlying plant instance that this networked object represents.
     /// </summary>
     internal Plant _Plant;
@@ -101,9 +96,6 @@ internal sealed class PlantNetworked : NetworkObject
     [HideFromIl2Cpp]
     protected override void OnClone(RuntimePrefab prefab)
     {
-        AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
-        AddChild(AnimationControllerNetworked);
-
         var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
         networkedDebugger.Initialize(this);
     }
@@ -112,7 +104,6 @@ internal sealed class PlantNetworked : NetworkObject
     {
         LogicComponent = PlantNetworkComponent.AddComponent(this, SeedType);
         _Plant.AddNetworkedLookup(this);
-        AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
     }
 
     private void OnDestroy()

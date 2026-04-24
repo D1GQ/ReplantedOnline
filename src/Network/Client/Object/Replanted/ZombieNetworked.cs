@@ -68,11 +68,6 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     /// <summary>
-    /// Represents the networked animation controller used to synchronize animation states across multiple clients.
-    /// </summary>
-    internal AnimationControllerNetworked AnimationControllerNetworked;
-
-    /// <summary>
     /// The underlying zombie instance that this networked object represents.
     /// </summary>
     internal Zombie _Zombie;
@@ -108,9 +103,6 @@ internal sealed class ZombieNetworked : NetworkObject
     [HideFromIl2Cpp]
     protected override void OnClone(RuntimePrefab prefab)
     {
-        AnimationControllerNetworked = gameObject.AddComponent<AnimationControllerNetworked>();
-        AddChild(AnimationControllerNetworked);
-
         var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
         networkedDebugger.Initialize(this);
     }
@@ -119,7 +111,6 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
         _Zombie.AddNetworkedLookup(this);
-        AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
     }
 
     private void OnDestroy()
