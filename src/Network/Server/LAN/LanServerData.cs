@@ -2,7 +2,7 @@
 using ReplantedOnline.Structs;
 using System.Net;
 
-namespace ReplantedOnline.Network.Server;
+namespace ReplantedOnline.Network.Server.LAN;
 
 /// <summary>
 /// Contains server metadata and lobby information for LAN games.
