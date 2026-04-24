@@ -104,15 +104,15 @@ internal static class NetworkDispatcher
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="packetWriter">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(this IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
+    internal static void SendRpcReceiver(IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        Message<NetworkObjectRpcMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
+        Message<RpcReceiverMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
         if (packetWriter != null)
         {
             packet.WritePacketToBuffer(packetWriter);
         }
-        SendPacket(packet, receiveLocally, PacketHandlerType.NetworkObjectRpc, PacketChannel.Rpc);
+        SendPacket(packet, receiveLocally, PacketHandlerType.RpcReceiver, PacketChannel.Rpc);
         packet.Recycle();
         ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent NetworkObject RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
     }

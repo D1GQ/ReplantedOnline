@@ -47,7 +47,7 @@ internal enum PacketHandlerType
     NetworkObjectSync,
 
     /// <summary>
-    /// Packet used for P2P session establishment and maintenance on a network object.
+    /// Packet used for P2P session establishment and maintenance on a rpc receiver object.
     /// </summary>
-    NetworkObjectRpc,
+    RpcReceiver,
 }

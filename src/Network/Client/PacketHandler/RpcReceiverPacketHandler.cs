@@ -10,10 +10,10 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
 [RegisterPacketHandler]
-internal class NetworkObjectRpcPacketHandler : IPacketHandler
+internal class RpcReceiverPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    public PacketHandlerType Type => PacketHandlerType.NetworkObjectRpc;
+    public PacketHandlerType Type => PacketHandlerType.RpcReceiver;
 
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
@@ -24,7 +24,7 @@ internal class NetworkObjectRpcPacketHandler : IPacketHandler
     private static IEnumerator CoWaitForNetworkObject(ReplantedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        var message = Message<NetworkObjectRpcMessage>.Instance.Deserialize(packetReader);
+        var message = Message<RpcReceiverMessage>.Instance.Deserialize(packet);
         float timeOut = 0f;
 
         try

@@ -1,6 +1,7 @@
 ﻿using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
@@ -29,7 +30,7 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
                 var networkObj = prefab.Clone<NetworkObject>();
                 networkObj.OwnerId = message.OwnerId;
                 networkObj.NetworkId = message.NetworkId;
-                networkObj.transform.SetParent(NetworkObject.NetworkObjectsGo.transform);
+                networkObj.transform.SetParent(GlobalGameObjects.NetworkObjectsGo.transform);
                 Message<NetworkObjectSpawnMessage>.Instance.DeserializeNetworkObject(networkObj, packetReader);
                 networkObj.gameObject.SetActive(true);
                 ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkObject from {sender.Name}: {message.NetworkId}, Prefab: {message.PrefabId}");

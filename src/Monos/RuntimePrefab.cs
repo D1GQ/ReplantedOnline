@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using ReplantedOnline.Modules;
 using UnityEngine;
 
 namespace ReplantedOnline.Monos;
@@ -13,26 +14,6 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// Dictionary storing all registered runtime prefabs by their GUID.
     /// </summary>
     internal static readonly Dictionary<string, RuntimePrefab> Prefabs = [];
-
-    private static GameObject _prefabsGo;
-
-    /// <summary>
-    /// Gets the root GameObject that contains all runtime prefabs.
-    /// Creates the object if it doesn't exist.
-    /// </summary>
-    /// <value>The parent GameObject for all runtime prefabs.</value>
-    internal static GameObject PrefabsGo
-    {
-        get
-        {
-            if (_prefabsGo == null)
-            {
-                _prefabsGo = new GameObject("Prefabs");
-                DontDestroyOnLoad(_prefabsGo);
-            }
-            return _prefabsGo;
-        }
-    }
 
     /// <summary>
     /// Indicates whether this instance is a prefab template or a live clone in the scene.
@@ -61,7 +42,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     internal static T CreatePrefab<T>(string prefabGUID, Action<T> callback = null) where T : RuntimePrefab
     {
         var go = new GameObject($"{typeof(T).Name}_Prefab");
-        go.transform.SetParent(PrefabsGo.transform);
+        go.transform.SetParent(GlobalGameObjects.PrefabsGo.transform);
         go.SetActive(false);
         var prefab = go.AddComponent<T>();
         prefab.GUID = prefabGUID;

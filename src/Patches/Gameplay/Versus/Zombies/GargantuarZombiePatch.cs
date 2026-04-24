@@ -6,6 +6,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted;
+using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Utilities;
 using System.Collections;
@@ -219,7 +220,7 @@ internal static class GargantuarZombiePatch
         var impNetworked = imp.GetNetworked();
         if (impNetworked != null)
         {
-            randomArc = impNetworked.ImpRandomArc;
+            randomArc = impNetworked.GetNetworkComponent<ImpNetworkComponent>().ImpRandomArc;
         }
 
         float baseArc = gargantuar.mPosX - 360f;
@@ -245,14 +246,17 @@ internal static class GargantuarZombiePatch
             packetWriter.WriteNetworkObject(null);
         }
 
-        impNetworked.ImpRandomArc = UnityEngine.Random.Range(0f, 100f);
-        packetWriter.WriteFloat(impNetworked.ImpRandomArc);
+        var impComp = impNetworked.GetNetworkComponent<ImpNetworkComponent>();
+        impComp.ImpRandomArc = UnityEngine.Random.Range(0f, 100f);
+        packetWriter.WriteFloat(impComp.ImpRandomArc);
     }
 
     internal static void ImpDeserialize(ZombieNetworked impNetworked, PacketReader packetReader)
     {
         Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?._Zombie;
-        impNetworked.ImpRandomArc = packetReader.ReadFloat();
+
+        var impComp = impNetworked.GetNetworkComponent<ImpNetworkComponent>();
+        impComp.ImpRandomArc = packetReader.ReadFloat();
 
         // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
         gargantuar?.mRelatedZombieID = impNetworked._Zombie.DataID;

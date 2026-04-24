@@ -1,15 +1,14 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
-using Il2CppSource.Controllers;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using ReplantedOnline.Utilities;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;
 
@@ -22,7 +21,6 @@ internal sealed class PlantNetworked : NetworkObject
     private enum PlantRpcs
     {
         Die,
-        SquashTarget,
         SquishPlant,
         Fire,
         SetZombieTarget,
@@ -50,7 +48,7 @@ internal sealed class PlantNetworked : NetworkObject
                 {
                     if (doSpecialCountdown == 0)
                     {
-                        plant.GetNetworked()?.dead = true;
+                        plant.GetNetworked()?.Dead = true;
                         return true;
                     }
                     else
@@ -93,6 +91,8 @@ internal sealed class PlantNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    internal PlantNetworkComponent LogicComponent;
+
     public override string GetObjectName()
     {
         return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
@@ -110,6 +110,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     public override void OnInit()
     {
+        LogicComponent = PlantNetworkComponent.AddComponent(this, SeedType);
         _Plant.AddNetworkedLookup(this);
         AnimationControllerNetworked.Init(_Plant.mController.AnimationController);
     }
@@ -120,14 +121,14 @@ internal sealed class PlantNetworked : NetworkObject
         {
             _Plant.RemoveNetworkedLookup();
 
-            if (!dead && !_Plant.mDead)
+            if (!Dead && !_Plant.mDead)
             {
                 _Plant.DieOriginal();
             }
         }
     }
 
-    private bool dead;
+    internal bool Dead;
     private void Update()
     {
         if (!IsOnNetwork) return;
@@ -156,7 +157,7 @@ internal sealed class PlantNetworked : NetworkObject
 
         if (!AmOwner)
         {
-            if (!dead)
+            if (!Dead)
             {
                 if (_Plant.mPlantHealth < 25)
                 {
@@ -165,117 +166,14 @@ internal sealed class PlantNetworked : NetworkObject
             }
         }
 
-        switch (SeedType)
-        {
-            case SeedType.Chomper:
-                ChopperUpdate();
-                break;
-            case SeedType.Magnetshroom:
-                MagnetShroomUpdate();
-                break;
-        }
-
-        NormalUpdate();
-    }
-
-    private float _syncCooldown = 2f;
-    private void NormalUpdate()
-    {
-        if (_Plant == null) return;
-
-        if (AmOwner)
-        {
-            if (!dead && !_Plant.mDead)
-            {
-                if (_syncCooldown <= 0f && lastSyncPlantHealth != _Plant.mPlantHealth)
-                {
-                    MarkDirty();
-                    _syncCooldown = 1f;
-                    lastSyncPlantHealth = _Plant.mPlantHealth;
-                }
-                _syncCooldown -= Time.deltaTime;
-            }
-        }
-        else
-        {
-            if (!dead && !_Plant.mDead)
-            {
-                if (lastSyncPlantHealth != null)
-                {
-                    _Plant.mPlantHealth = lastSyncPlantHealth.Value;
-                }
-            }
-        }
-    }
-
-    private void ChopperUpdate()
-    {
-        if (AmOwner)
-        {
-            string plantStateStr = _Plant.mState.ToString();
-
-            if (State?.ToString() != plantStateStr)
-            {
-                State = plantStateStr;
-                SendSetStateRpc(plantStateStr);
-            }
-        }
-        else
-        {
-            if (State is string stateStr)
-            {
-                if (Enum.TryParse(stateStr, out PlantState state))
-                {
-                    if (_Plant.mState != state)
-                    {
-                        if (state == PlantState.ChomperBiting)
-                        {
-                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30f, ReanimLoopType.PlayOnce);
-                            State = PlantState.ChomperBitingMissed.ToString();
-                        }
-                        else if (state == PlantState.ChomperDigesting)
-                        {
-                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15f, ReanimLoopType.Loop);
-                        }
-                        else if (state == PlantState.ChomperSwallowing)
-                        {
-                            _Plant.mState = PlantState.ChomperDigesting;
-                            _Plant.mStateCountdown = 0;
-                            return;
-                        }
-
-                        _Plant.mState = state;
-                        _Plant.mStateCountdown = int.MaxValue;
-                    }
-                    else if (state == PlantState.Ready)
-                    {
-                        if (!_Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE))
-                        {
-                            _Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE, CharacterAnimationTrack.Body, 10.26f, ReanimLoopType.Loop);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void MagnetShroomUpdate()
-    {
-        if (!AmOwner)
-        {
-            if (Target != null)
-            {
-                _Plant.MagnetShroomAttactItemOriginal(Target);
-                Target = null;
-            }
-        }
+        LogicComponent.Update();
     }
 
     internal void SendDieRpc()
     {
-        if (!dead)
+        if (!Dead)
         {
-            dead = true;
+            Dead = true;
             SendNetworkObjectRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
             DespawnAndDestroy();
         }
@@ -286,34 +184,8 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (DoNotSyncDeath(_Plant, doSpecialCountdown)) return;
 
-        dead = true;
+        Dead = true;
         _Plant?.DieOriginal();
-    }
-
-    internal void SendSquashTargetRpc(Zombie target)
-    {
-        if (SeedType != SeedType.Squash) return;
-
-        if (State is not PlantState.DoingSpecial)
-        {
-            State = PlantState.DoingSpecial;
-            SendNetworkObjectRpc(PlantRpcs.SquashTarget, target);
-        }
-    }
-
-    [RpcHandler(PlantRpcs.SquashTarget)]
-    internal void HandleSquashTargetRpc(Zombie target)
-    {
-        if (SeedType != SeedType.Squash) return;
-
-        if (State is not PlantState.DoingSpecial)
-        {
-            State = PlantState.DoingSpecial;
-            _Plant.mTargetZombieID = target.DataID;
-            _Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
-            _Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
-            _Plant.mState = PlantState.SquashLook;
-        }
     }
 
     internal void SendSquashPlantRpc()
@@ -381,9 +253,13 @@ internal sealed class PlantNetworked : NetworkObject
             packetWriter.WriteInt(GridY);
             packetWriter.WriteInt((int)SeedType);
             packetWriter.WriteInt((int)ImitaterType);
+
+            LogicComponent.Serialize(packetWriter, init);
+
+            return;
         }
 
-        packetWriter.WriteInt(_Plant.mPlantHealth);
+        LogicComponent.Serialize(packetWriter, init);
 
         ClearDirtyBits();
     }
@@ -407,10 +283,12 @@ internal sealed class PlantNetworked : NetworkObject
             _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
 
             OnInit();
+
+            LogicComponent.Deserialize(packetReader, init);
+
+            return;
         }
 
-        lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 5);
+        LogicComponent.Deserialize(packetReader, init);
     }
-
-    internal int? lastSyncPlantHealth;
 }

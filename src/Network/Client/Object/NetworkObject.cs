@@ -1,12 +1,12 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Structs;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object;
 
@@ -46,52 +46,9 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     internal List<NetworkComponent> NetworkComponents { get; } = [];
 
     /// <summary>
-    /// Container GameObject for all network prefabs.
+    /// Contains the lookups of network object components associated with this instance.
     /// </summary>
-    private static GameObject NetworkPrefabsObj;
-
-    /// <summary>
-    /// Container GameObject for all network objects
-    /// </summary>
-    internal static GameObject NetworkObjectsGo
-    {
-        get
-        {
-            if (_networkObjectsGo == null)
-            {
-                _networkObjectsGo = new GameObject("NetworkObjects");
-            }
-
-            return _networkObjectsGo;
-        }
-    }
-
-    /// <summary>
-    /// Base container GameObject for network objects to keep when moving to a scene
-    /// </summary>
-    private static GameObject _networkObjectsMoveToScene;
-
-    /// <summary>
-    /// Container GameObject for network objects to keep when moving to a scene
-    /// </summary>
-    internal static GameObject NetworkObjectsMoveToScene
-    {
-        get
-        {
-            if (_networkObjectsMoveToScene == null)
-            {
-                _networkObjectsMoveToScene = new GameObject("NetworkObjectsMoveToScene");
-                DontDestroyOnLoad(_networkObjectsMoveToScene);
-            }
-
-            return _networkObjectsMoveToScene;
-        }
-    }
-
-    /// <summary>
-    /// Base container GameObject for all network objects
-    /// </summary>
-    private static GameObject _networkObjectsGo;
+    private readonly Dictionary<Type, NetworkComponent> _networkComponentsLookup = [];
 
     /// <summary>
     /// Dictionary of registered network prefabs that can be spawned across the network.
@@ -254,7 +211,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
                 IFastPacketResolver.WriteFast(packetWriter, arg, arg.GetType());
             }
         }
-        NetworkDispatcher.SendRpc(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkDispatcher.SendRpcReceiver(this, Convert.ToByte(rpcId), packetWriter);
         packetWriter?.Recycle();
     }
 
@@ -292,18 +249,40 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
 
     /// <summary>
     /// Adds a new network component to this instance's collection of network components.
-    /// This operation is only permitted before the object has been spawned in the network.
     /// </summary>
+    /// <typeparam name="T">The type of  NetworkComponent to create and add.</typeparam>
     [HideFromIl2Cpp]
     internal T AddNetworkComponent<T>() where T : NetworkComponent
     {
-        if (IsOnNetwork) return null;
+        var type = typeof(T);
+
+        if (_networkComponentsLookup.ContainsKey(type))
+        {
+            throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");
+        }
 
         T component = Activator.CreateInstance(typeof(T)) as T;
         component.NetworkObject = this;
         component.Index = NetworkComponents.Count;
+        component.Init();
         NetworkComponents.Add(component);
+        _networkComponentsLookup[type] = component;
         return component;
+    }
+
+    /// <summary>
+    /// Gets network component from this instance's collection of network components by its type.
+    /// </summary>
+    /// <typeparam name="T">The type of  NetworkComponent to get.</typeparam>
+    internal T GetNetworkComponent<T>() where T : NetworkComponent
+    {
+        var type = typeof(T);
+        if (_networkComponentsLookup.TryGetValue(type, out var component))
+        {
+            return component as T;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -321,7 +300,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
             if (NetworkPrefabs.TryGetValue(prefabId, out var prefab))
             {
                 T networkObj = prefab.Clone<T>();
-                networkObj.transform.SetParent(NetworkObjectsGo.transform);
+                networkObj.transform.SetParent(GlobalGameObjects.NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
                 networkObj.OnInit();
                 NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
@@ -366,9 +345,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// </summary>
     internal static void SetupPrefabs()
     {
-        NetworkPrefabsObj = new GameObject($"NetworkPrefabs");
-        DontDestroyOnLoad(NetworkPrefabsObj);
-
         CreateNetworkPrefab<PlantNetworked>(1);
         CreateNetworkPrefab<ZombieNetworked>(2);
     }
@@ -380,6 +356,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkObject
     {
         var networkObject = CreatePrefab<T>($"{typeof(T)}:{prefabId}");
+        networkObject.transform.SetParent(GlobalGameObjects.NetworkPrefabsObj.transform);
         callback?.Invoke(networkObject);
         networkObject.PrefabId = prefabId;
         NetworkPrefabs[prefabId] = networkObject;

@@ -42,7 +42,12 @@ internal abstract class NetworkComponent : IRpcReceiver
     internal int Index { get; set; }
 
     /// <summary>
-    /// Called every frame to update component logic. Override to implement custom update behavior.
+    /// Called after the network component is added to a network object.
+    /// </summary>
+    internal virtual void Init() { }
+
+    /// <summary>
+    /// Called every frame to update component logic.
     /// </summary>
     internal virtual void Update() { }
 
@@ -78,7 +83,7 @@ internal abstract class NetworkComponent : IRpcReceiver
                 IFastPacketResolver.WriteFast(packetWriter, arg, arg.GetType());
             }
         }
-        NetworkDispatcher.SendRpc(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkDispatcher.SendRpcReceiver(this, Convert.ToByte(rpcId), packetWriter);
         packetWriter?.Recycle();
     }
 }

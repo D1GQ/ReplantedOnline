@@ -7,7 +7,7 @@ namespace ReplantedOnline.Network.Packet.Messages;
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on network objects.
 /// Handles both direct NetworkObject RPCs and Component-based RPCs.
 /// </summary>
-internal readonly struct NetworkObjectRpcMessage : IMessage<NetworkObjectRpcMessage, IRpcReceiver, byte>
+internal readonly struct RpcReceiverMessage : IMessage<RpcReceiverMessage, IRpcReceiver, byte>
 {
     /// <summary>
     /// Gets the unique network identifier of the target network object.
@@ -57,7 +57,7 @@ internal readonly struct NetworkObjectRpcMessage : IMessage<NetworkObjectRpcMess
     /// </summary>
     /// <param name="packetReader">The packet reader containing the RPC message data.</param>
     /// <returns>A new NetworkObjectRpcMessage instance with deserialized data.</returns>
-    public NetworkObjectRpcMessage Deserialize(PacketReader packetReader)
+    public RpcReceiverMessage Deserialize(PacketReader packetReader)
     {
         uint networkId = packetReader.ReadUInt(); ;
         byte rpcId = packetReader.ReadByte();
@@ -69,7 +69,7 @@ internal readonly struct NetworkObjectRpcMessage : IMessage<NetworkObjectRpcMess
         else
             componentIndex = -1;
 
-        NetworkObjectRpcMessage message = new()
+        RpcReceiverMessage message = new()
         {
             NetworkId = networkId,
             RpcId = rpcId,

@@ -82,10 +82,10 @@ internal sealed class NetworkedDebugger : MonoBehaviour
                 new Vector2(0f, 15f * ScreenScale.y));
             DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, color);
 
-            if (zombieNetworked.lastSyncPosX != null)
+            if (zombieNetworked.LogicComponent.LastSyncPosX != null)
             {
                 var syncWorldPos = new Vector3(
-                    PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.lastSyncPosX.Value),
+                    PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.LogicComponent.LastSyncPosX.Value),
                     _cachedControllerPosition.y
                 );
                 var syncPos = GetWorldPos(syncWorldPos);

@@ -7,12 +7,10 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
+using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 using ReplantedOnline.Utilities;
-using System.Collections;
-using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;
@@ -42,8 +40,6 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     [HideFromIl2Cpp]
     internal Plant Target { get; set; }
-
-    internal float ImpRandomArc;
 
     internal static bool DoNotSyncDeath(Zombie zombie)
     {
@@ -101,6 +97,9 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    internal ZombieNetworkComponent LogicComponent;
+    internal bool EnteringHouse;
+
     public override string GetObjectName()
     {
         return $"{Enum.GetName(_Zombie.mZombieType)}Zombie ({NetworkId})";
@@ -118,6 +117,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     public override void OnInit()
     {
+        LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
         _Zombie.AddNetworkedLookup(this);
         AnimationControllerNetworked.Init(_Zombie.mController.AnimationController);
     }
@@ -160,227 +160,12 @@ internal sealed class ZombieNetworked : NetworkObject
             return;
         }
 
-        switch (ZombieType)
+        if (ZombieType == ZombieType.Gravestone)
         {
-            case ZombieType.Gravestone:
-                return;
-            case ZombieType.Bungee:
-                BungeeUpdate();
-                return;
-            case ZombieType.Digger:
-                if (_Zombie.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
-                {
-                    NormalUpdate();
-                }
-                return;
-            case ZombieType.Bobsled:
-                if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
-                {
-                    NormalUpdate();
-                }
-                return;
-            case ZombieType.Imp:
-                if (_Zombie.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
-                {
-                    NormalUpdate();
-                }
-                return;
-            case ZombieType.JackInTheBox:
-                JackInTheBoxUpdate();
-                break;
-            case ZombieType.Polevaulter:
-                PolevaulterUpdate();
-                if (_Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
-                {
-                    NormalUpdate();
-                }
-                return;
-            case ZombieType.Ladder:
-                LadderUpdate();
-                break;
-            case ZombieType.Catapult:
-                CatapultUpdate();
-                break;
+            return;
         }
 
-        NormalUpdate();
-    }
-
-    internal bool EnteringHouse;
-    private float _syncCooldown = 2f;
-    private float _lastPos;
-    private void NormalUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (AmOwner)
-        {
-            if (!_Zombie.mDead)
-            {
-                if (_syncCooldown <= 0f && _lastPos != _Zombie.mPosX)
-                {
-                    MarkDirty();
-                    _syncCooldown = 2f;
-                    _lastPos = _Zombie.mPosX;
-                }
-                _syncCooldown -= Time.deltaTime;
-            }
-        }
-        else
-        {
-            if (!EnteringHouse)
-            {
-                if (_Zombie.mPosX <= 0f)
-                {
-                    _Zombie.mPosX = 0f;
-                }
-            }
-        }
-    }
-
-    private void BungeeUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (AmOwner)
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && _Zombie.mPhaseCounter < 10 && State is not NetStates.UPDATE_STATE)
-            {
-                State = NetStates.UPDATE_STATE;
-                SendSetStateRpc(NetStates.UPDATE_STATE);
-            }
-        }
-        else
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
-            {
-                if (State is not NetStates.UPDATE_STATE)
-                {
-                    _Zombie.mPhaseCounter = int.MaxValue;
-                }
-                else
-                {
-                    _Zombie.mPhaseCounter = 0;
-                }
-            }
-        }
-    }
-
-    private void JackInTheBoxUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (AmOwner)
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && State is not NetStates.UPDATE_STATE)
-            {
-                Dead = true;
-                State = NetStates.UPDATE_STATE;
-                SendSetStateRpc(NetStates.UPDATE_STATE);
-                this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || _Zombie.mDead == true, () =>
-                {
-                    DespawnAndDestroy();
-                }));
-            }
-        }
-        else
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
-            {
-                if (State is not NetStates.UPDATE_STATE)
-                {
-                    _Zombie.mPhaseCounter = int.MaxValue;
-                }
-                else
-                {
-                    Dead = true;
-                    _Zombie.mPhaseCounter = 0;
-                }
-            }
-        }
-    }
-
-    private void PolevaulterUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (_Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
-
-        if (AmOwner)
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && Target == null)
-            {
-                // Send target to vault
-                Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Vault);
-                SendSetPlantTargetRpc(target);
-            }
-        }
-
-        // Non owner logic is handled in PolevaulterZombiePatch.cs
-
-        if (_Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
-        {
-            Target = null;
-        }
-    }
-
-    private bool hasPlacedLadder;
-    private void LadderUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (_Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
-
-        if (AmOwner)
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && Target == null)
-            {
-                // Send target to place ladder
-                Plant target = _Zombie.FindPlantTarget(ZombieAttackType.Ladder);
-                SendSetPlantTargetRpc(target);
-            }
-            else if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
-            {
-                if (!hasPlacedLadder)
-                {
-                    hasPlacedLadder = true;
-                    SendSetStateRpc(NetStates.LADDER_ZOMBIE_PLACED_LADDER);
-                }
-            }
-        }
-        else
-        {
-            if (_Zombie.mZombiePhase == ZombiePhase.LadderPlacing && _Zombie.mPhaseCounter == 0)
-            {
-                if (State is NetStates.LADDER_ZOMBIE_PLACED_LADDER)
-                {
-                    _Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
-                    _Zombie.DetachShield();
-                    State = null;
-                }
-            }
-
-            // Rest of non owner logic is handled in LadderZombiePatch.cs
-        }
-
-        if (_Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
-        {
-            Target = null;
-        }
-    }
-
-    private void CatapultUpdate()
-    {
-        if (_Zombie == null) return;
-
-        if (AmOwner)
-        {
-            var target = _Zombie.FindCatapultTarget();
-            if (Target != target)
-            {
-                SendSetPlantTargetRpc(target);
-            }
-        }
+        LogicComponent.Update();
     }
 
     [HideFromIl2Cpp]
@@ -545,7 +330,7 @@ internal sealed class ZombieNetworked : NetworkObject
     internal void HandleEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
-        StopLarpPos();
+        LogicComponent.StopLarpPos();
         _Zombie?.mPosX = xPos;
         VersusGameplayManager.EndGame(_Zombie.mController.transform.position, PlayerTeam.Zombies);
     }
@@ -586,7 +371,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         if (frozen)
         {
-            StopLarpPos();
+            LogicComponent.StopLarpPos();
             _Zombie.HitIceTrapOriginal();
             _Zombie.mIceTrapCounter = counter;
         }
@@ -647,23 +432,13 @@ internal sealed class ZombieNetworked : NetworkObject
             packetWriter.WriteBool(ShakeBush);
             packetWriter.WriteInt((int)ZombieType);
 
-            if (ZombieType == ZombieType.Imp)
-            {
-                GargantuarZombiePatch.ImpSerialize(this, packetWriter);
-            }
-
-            if (ZombieType == ZombieType.Bobsled)
-            {
-                BobsledZombiePatch.BobsledSerialize(_Zombie, packetWriter);
-            }
+            LogicComponent.Serialize(packetWriter, init);
+            ClearDirtyBits();
 
             return;
         }
 
-        packetWriter.WriteInt(_Zombie.mRow);
-        packetWriter.WriteFloat(_Zombie.mVelX);
-        packetWriter.WriteFloat(_Zombie.mPosX);
-
+        LogicComponent.Serialize(packetWriter, init);
         ClearDirtyBits();
     }
 
@@ -682,118 +457,11 @@ internal sealed class ZombieNetworked : NetworkObject
 
             OnInit();
 
-            if (ZombieType == ZombieType.Imp)
-            {
-                GargantuarZombiePatch.ImpDeserialize(this, packetReader);
-            }
-
-            if (ZombieType == ZombieType.Bobsled)
-            {
-                BobsledZombiePatch.BobsledDeserialize(_Zombie, packetReader);
-            }
+            LogicComponent.Deserialize(packetReader, init);
 
             return;
         }
 
-        if (!AmOwner)
-        {
-            _Zombie.mRow = packetReader.ReadInt();
-            _Zombie.mVelX = packetReader.ReadFloat();
-            _Zombie.UpdateAnimSpeed();
-            var posX = packetReader.ReadFloat();
-            lastSyncPosX = posX;
-            LarpPos(posX);
-        }
-    }
-
-    private Coroutine larpCoroutine;
-    internal float? lastSyncPosX;
-
-    /// <summary>
-    /// Smoothly interpolates the zombie's position to the target position when distance threshold is exceeded.
-    /// </summary>
-    /// <param name="posX">The target X position to interpolate to</param>
-    private void LarpPos(float posX)
-    {
-        if (_Zombie == null || EnteringHouse || posX < 15f) return;
-
-        float currentX = _Zombie.mPosX;
-        float distance = Mathf.Abs(currentX - posX);
-
-        // Calculate threshold based on velocity (0.5 seconds of movement)
-        float threshold = Mathf.Abs(_Zombie.mVelX) * 0.3f;
-        threshold = Mathf.Clamp(threshold, 10f, 50f);
-
-        if (distance > threshold)
-        {
-            // Stop existing interpolation
-            StopLarpPos();
-
-            if (distance < 100f && _Zombie.mZombieType != ZombieType.Pogo)
-            {
-                larpCoroutine = this.StartCoroutine(CoLarpPos(posX));
-            }
-            else
-            {
-                _Zombie.mPosX = posX;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Stop larping to network pos
-    /// </summary>
-    private void StopLarpPos()
-    {
-        if (larpCoroutine != null)
-        {
-            lastSyncPosX = null;
-            StopCoroutine(larpCoroutine);
-        }
-    }
-
-    /// <summary>
-    /// Coroutine that smoothly interpolates the zombie's position over time.
-    /// </summary>
-    /// <param name="targetX">The target X position to reach</param>
-    [HideFromIl2Cpp]
-    private IEnumerator CoLarpPos(float targetX)
-    {
-        if (this == null || _Zombie == null) yield break;
-
-        float startX = _Zombie.mPosX;
-        float distance = Mathf.Abs(targetX - startX);
-
-        // Use zombie's current velocity for interpolation speed
-        float speed = Mathf.Abs(_Zombie.mVelX);
-        speed = Mathf.Clamp(speed, 10f, 40f);
-
-        float duration = Mathf.Clamp(distance / speed, 0.1f, 2f);
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            if (this == null || _Zombie == null) yield break;
-
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / duration;
-
-            t = SmoothStep(t);
-
-            _Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
-            yield return null;
-        }
-
-        // Ensure final position is exact
-        _Zombie?.mPosX = targetX;
-
-        lastSyncPosX = null;
-        larpCoroutine = null;
-    }
-
-    private static float SmoothStep(float t)
-    {
-        return t * t * (3f - 2f * t);
+        LogicComponent.Deserialize(packetReader, init);
     }
 }
