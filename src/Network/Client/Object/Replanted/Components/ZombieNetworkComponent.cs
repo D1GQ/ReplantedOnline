@@ -104,6 +104,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     private void LarpPos(float posX)
     {
         if (ZombieNetworked._Zombie == null || ZombieNetworked.EnteringHouse || posX < 15f) return;
+        if (ZombieNetworked._Zombie.mIceTrapCounter > 0) return;
 
         float currentX = ZombieNetworked._Zombie.mPosX;
         float distance = Mathf.Abs(currentX - posX);
