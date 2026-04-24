@@ -21,6 +21,7 @@ internal sealed class PlantNetworked : NetworkObject
     private enum PlantRpcs
     {
         Die,
+        Shoveled,
         SquishPlant,
         Fire,
         SetZombieTarget,
@@ -175,6 +176,24 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (DoNotSyncDeath(_Plant, doSpecialCountdown)) return;
 
+        Dead = true;
+        _Plant?.DieOriginal();
+    }
+
+    internal void SendShoveledRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            _Plant?.DieOriginal();
+            SendNetworkObjectRpc(PlantRpcs.Shoveled);
+            DespawnAndDestroy();
+        }
+    }
+
+    [RpcHandler(PlantRpcs.Shoveled)]
+    internal void HandleShoveledRpc()
+    {
         Dead = true;
         _Plant?.DieOriginal();
     }

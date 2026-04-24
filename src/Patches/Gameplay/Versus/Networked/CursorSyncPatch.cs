@@ -13,8 +13,42 @@ using static Il2CppReloaded.Constants;
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 [HarmonyPatch]
-internal static class SeedPacketSyncPatch
+internal static class CursorSyncPatch
 {
+    // This also works with gamepad
+    [HarmonyPatch(typeof(Board), nameof(Board.MouseDownWithTool))]
+    [HarmonyPrefix]
+    private static bool Board_MouseDownWithTool_Prefix(Board __instance, int x, int y, CursorType theCursorType, int playerIndex)
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            if (playerIndex != ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX) return false;
+            if (!VersusState.AmPlantSide) return false;
+
+            if (theCursorType == CursorType.Shovel)
+            {
+                var gridX = Instances.GameplayActivity.Board.PixelToGridXKeepOnBoard(x, y);
+                var gridY = Instances.GameplayActivity.Board.PixelToGridYKeepOnBoard(x, y);
+
+                var plant = __instance.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
+                if (plant != null)
+                {
+                    var plantNetworked = plant.GetNetworked();
+                    if (plantNetworked != null)
+                    {
+                        __instance.mPlantsShoveled++;
+                        plantNetworked.SendShoveledRpc();
+                        Instances.GameplayActivity.PlaySample(Sound.SOUND_PLANT2);
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(GamepadCursorController), nameof(GamepadCursorController._onCursorConfirmed))]
     [HarmonyPrefix]
     private static bool GamepadCursorController_OnCursorConfirmed_Prefix(GamepadCursorController __instance)
