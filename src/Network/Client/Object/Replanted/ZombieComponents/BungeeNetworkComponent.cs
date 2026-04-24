@@ -23,7 +23,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         {
             if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
             {
-                if (ZombieNetworked._Zombie.mPhaseCounter < 10 && !_isDiving)
+                if (!_isDiving)
                 {
                     _isDiving = true;
                     SendDiveRpc();
