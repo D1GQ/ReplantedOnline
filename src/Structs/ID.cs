@@ -1,9 +1,7 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Data.Json;
 using ReplantedOnline.Enums;
 using System.Net;
 using System.Security.Cryptography;
-using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Structs;
 
@@ -11,7 +9,6 @@ namespace ReplantedOnline.Structs;
 /// Unified identifier supporting SteamId (Steam), ulong (simplified IDs), and IPEndPoint (LAN).
 /// Provides type-safe storage and comparison between different ID types.
 /// </summary>
-[JsonConverter(typeof(IDJsonConverter))]
 internal readonly struct ID : IEquatable<ID>, IComparable<ID>
 {
     private readonly object _id;
