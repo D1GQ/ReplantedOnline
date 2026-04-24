@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
+using Il2CppSource.Utils;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
@@ -93,6 +94,11 @@ internal static class LevelEntries
         Instances.GameplayActivity.Board.InitLevel();
         Instances.GameplayActivity.InitInput();
         Instances.GameplayActivity.VersusMode.m_focusCircleController = Instances.GameplayActivity.CreateFocusCircleController();
+        foreach (var cursorObject in Instances.GameplayActivity.Board.CursorObjects.m_values)
+        {
+            cursorObject.mController = Instances.GameplayActivity.CreateCursorController(cursorObject.CursorType, cursorObject);
+        }
+        DataModelUtils.UpdateGameplayBoard(Instances.GameplayActivity.RootModel, Instances.GameplayActivity.Board, Instances.GameplayActivity.m_seedChooserScreen);
 
         // Play selecting seeds music
         if (selectionSet == SelectionSet.CustomAll)
