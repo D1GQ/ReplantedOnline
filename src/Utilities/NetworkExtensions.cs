@@ -51,6 +51,33 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
+    /// Removes the network object association for the specified network object instance.
+    /// </summary>
+    /// <param name="parent">The network object instance to remove from network lookups.</param>
+    internal static void RemoveNetworkedLookup(this NetworkObject parent)
+    {
+        foreach (var kvp in NetworkedLookups)
+        {
+            var lookup = kvp.Value;
+
+            var childrenToRemove = lookup
+                .Where(x => x.Value == parent)
+                .Select(x => x.Key)
+                .ToList();
+
+            foreach (var child in childrenToRemove)
+            {
+                lookup.Remove(child);
+            }
+
+            if (lookup.Count == 0)
+            {
+                NetworkedLookups.Remove(kvp.Key);
+            }
+        }
+    }
+
+    /// <summary>
     /// Retrieves the network object associated with the specified object instance.
     /// </summary>
     /// <typeparam name="T">The type of NetworkObject to retrieve.</typeparam>

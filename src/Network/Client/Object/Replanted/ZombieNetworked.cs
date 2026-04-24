@@ -41,32 +41,6 @@ internal sealed class ZombieNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Plant Target { get; set; }
 
-    internal static bool DoNotSyncDeath(Zombie zombie)
-    {
-        if (zombie == null) return false;
-
-        // If called DieLoot then allow normal death on non plant side
-        var netZombie = zombie.GetNetworked();
-        if (netZombie == null || netZombie.Dead)
-        {
-            return true;
-        }
-
-        switch (zombie.mZombieType)
-        {
-            case ZombieType.JackInTheBox:
-                if (zombie.mPhaseCounter == 0)
-                {
-                    return true;
-                }
-                break;
-            default:
-                return false;
-        }
-
-        return false;
-    }
-
     /// <summary>
     /// The underlying zombie instance that this networked object represents.
     /// </summary>
@@ -115,10 +89,10 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void OnDestroy()
     {
+        this.RemoveNetworkedLookup();
+
         if (_Zombie != null)
         {
-            _Zombie.RemoveNetworkedLookup();
-
             if (!Dead && !_Zombie.IsDeadOrDying())
             {
                 _Zombie.DieDeserialize();
@@ -143,7 +117,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie == null) return;
 
-        if (_Zombie.mDead)
+        if (_Zombie.mDead && !Dead)
         {
             CheckDeath();
             _Zombie.RemoveNetworkedLookup();
@@ -236,8 +210,6 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.Death)]
     internal void HandleDeathRpc(DamageFlags damageFlags)
     {
-        if (DoNotSyncDeath(_Zombie)) return;
-
         if (!Dead)
         {
             Dead = true;
@@ -259,8 +231,6 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.DieLoot)]
     internal void HandleDieLootRpc(bool withLoot)
     {
-        if (DoNotSyncDeath(_Zombie)) return;
-
         if (!Dead)
         {
             Dead = true;

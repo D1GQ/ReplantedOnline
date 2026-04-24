@@ -81,10 +81,10 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void OnDestroy()
     {
+        this.RemoveNetworkedLookup();
+
         if (_Plant != null)
         {
-            _Plant.RemoveNetworkedLookup();
-
             if (!Dead && !_Plant.mDead)
             {
                 _Plant.DieOriginal();
@@ -97,37 +97,13 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!IsOnNetwork) return;
 
-        // Remove Potatomine off network if blown up
-        if (AmOwner)
-        {
-            if (_Plant == null)
-            {
-                if (SeedType == SeedType.Potatomine)
-                {
-                    DespawnAndDestroy();
-                    return;
-                }
-            }
-        }
-
         if (_Plant == null) return;
 
-        if (_Plant.mDead)
+        if (_Plant.mDead && !Dead)
         {
             _Plant.RemoveNetworkedLookup();
             _Plant = null;
             return;
-        }
-
-        if (!AmOwner)
-        {
-            if (!Dead)
-            {
-                if (_Plant.mPlantHealth < 25)
-                {
-                    _Plant.mPlantHealth = 25;
-                }
-            }
         }
 
         LogicComponent.Update();

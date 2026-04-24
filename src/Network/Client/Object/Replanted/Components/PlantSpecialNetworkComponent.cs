@@ -33,6 +33,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         {
             PlantNetworked.State = PlantState.DoingSpecial;
             SendNetworkComponentRpc(PlantSpecialRpcs.DoSpecial);
+            PlantNetworked.DespawnAndDestroy();
         }
     }
 

@@ -64,6 +64,11 @@ internal class PlantNetworkComponent : NetworkComponent
                 {
                     PlantNetworked._Plant.mPlantHealth = lastSyncPlantHealth.Value;
                 }
+
+                if (PlantNetworked._Plant.mPlantHealth < 25)
+                {
+                    PlantNetworked._Plant.mPlantHealth = 25;
+                }
             }
         }
     }
@@ -75,6 +80,6 @@ internal class PlantNetworkComponent : NetworkComponent
 
     internal override void Deserialize(PacketReader packetReader, bool init)
     {
-        lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 5);
+        lastSyncPlantHealth = Math.Max(packetReader.ReadInt(), 25);
     }
 }

@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -17,8 +16,6 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReplantedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
-
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDeathRpc(theDamageFlags);
             netZombie?.CheckDeath();
@@ -41,8 +38,6 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReplantedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
-
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDieLootRpc(true);
             netZombie?.CheckDeath();
@@ -65,8 +60,6 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReplantedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return ZombieNetworked.DoNotSyncDeath(__instance);
-
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDieLootRpc(false);
             netZombie?.CheckDeath();
