@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
 using System.Collections;
@@ -41,32 +42,19 @@ internal static class PotatominePlantPatch
         if (ReplantedLobby.AmInLobby())
         {
             var netPlant = __instance.GetNetworked();
+            if (netPlant == null) return;
 
-            if (netPlant != null)
+            if (VersusState.AmPlantSide)
             {
-                // PLANT-SIDE PLAYER LOGIC
-                if (VersusState.AmPlantSide)
+                // If the plant found a target zombie
+                if (__result != null)
                 {
-                    // If the plant found a target zombie (original logic worked)
-                    if (__result != null)
+                    __result = null;
+
+                    var potatomineComp = netPlant.GetNetworkComponent<PotatomineNetworkComponent>();
+                    if (potatomineComp != null && !potatomineComp.HasExploded)
                     {
-                        // Send network message to tell other players about the potato mine target
-                        if (netPlant.Target != __result)
-                        {
-                            netPlant.Target = __result;
-                            netPlant.SendSetZombieTargetRpc(__result);
-                        }
-                    }
-                }
-                else
-                {
-                    // For other players, get the target from network state instead of local AI
-                    if (netPlant.Target != null)
-                    {
-                        // Override the result with the networked zombie target
-                        __result = netPlant.Target;
-                        netPlant.Target = null;
-                        __instance.mController.StartCoroutine(CoWaitAndDie(__instance));
+                        potatomineComp.ExplodeSynced();
                     }
                 }
             }

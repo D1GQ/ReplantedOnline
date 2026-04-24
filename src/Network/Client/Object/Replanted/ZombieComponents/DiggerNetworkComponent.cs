@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 

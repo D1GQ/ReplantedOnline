@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
@@ -21,8 +20,6 @@ internal static class PlantSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReplantedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return PlantNetworked.DoNotSyncDeath(__instance, __instance.mDoSpecialCountdown);
-
             __instance.GetNetworked()?.SendDieRpc();
         }
 

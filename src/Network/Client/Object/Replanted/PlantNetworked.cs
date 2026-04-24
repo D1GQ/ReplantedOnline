@@ -4,7 +4,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -18,7 +18,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted;
 /// </summary>
 internal sealed class PlantNetworked : NetworkObject
 {
-    private enum PlantRpcs
+    private enum PlantRpcs : byte
     {
         Die,
         Shoveled,
@@ -33,34 +33,6 @@ internal sealed class PlantNetworked : NetworkObject
     /// </summary>
     [HideFromIl2Cpp]
     internal Zombie Target { get; set; }
-
-    internal static bool DoNotSyncDeath(Plant plant, int doSpecialCountdown)
-    {
-        if (plant == null) return false;
-
-        switch (plant.mSeedType)
-        {
-            case SeedType.Potatomine:
-                return plant.GetNetworked()?.Target != null;
-            case SeedType.Doomshroom:
-            case SeedType.Iceshroom:
-            case SeedType.Cherrybomb:
-            case SeedType.Jalapeno:
-                {
-                    if (doSpecialCountdown == 0)
-                    {
-                        plant.GetNetworked()?.Dead = true;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            default:
-                return false;
-        }
-    }
 
     /// <summary>
     /// The underlying plant instance that this networked object represents.
@@ -172,10 +144,8 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.Die)]
-    internal void HandleDieRpc(int doSpecialCountdown)
+    internal void HandleDieRpc()
     {
-        if (DoNotSyncDeath(_Plant, doSpecialCountdown)) return;
-
         Dead = true;
         _Plant?.DieOriginal();
     }

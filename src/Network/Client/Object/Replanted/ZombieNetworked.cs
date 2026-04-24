@@ -7,7 +7,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
-using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
@@ -21,7 +21,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted;
 /// </summary>
 internal sealed class ZombieNetworked : NetworkObject
 {
-    private enum ZombieRpcs
+    private enum ZombieRpcs : byte
     {
         TakeDamage,
         Death,

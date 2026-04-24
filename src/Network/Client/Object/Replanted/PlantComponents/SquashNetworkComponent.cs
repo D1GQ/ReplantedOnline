@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
@@ -7,7 +8,7 @@ namespace ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 /// <inheritdoc/>
 internal sealed class SquashNetworkComponent : PlantNetworkComponent
 {
-    private enum SquashRpcs
+    private enum SquashRpcs : byte
     {
         SquashTarget
     }

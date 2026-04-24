@@ -1,12 +1,13 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Network.Client.Object.Component;
+using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
+namespace ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 /// <inheritdoc/>
 internal class ZombieNetworkComponent : NetworkComponent

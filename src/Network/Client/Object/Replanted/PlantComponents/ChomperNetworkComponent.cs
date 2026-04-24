@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Modules;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 

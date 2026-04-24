@@ -1,4 +1,6 @@
-﻿namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
+﻿using ReplantedOnline.Network.Client.Object.Replanted.Components;
+
+namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
 /// <inheritdoc/>
 internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
