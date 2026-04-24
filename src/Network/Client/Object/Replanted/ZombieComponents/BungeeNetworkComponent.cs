@@ -23,6 +23,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
             {
                 isDownOnPlant = true;
                 SendDownOnPlantRpc();
+                ZombieNetworked.DespawnAndDestroyWhenNull();
             }
         }
         else

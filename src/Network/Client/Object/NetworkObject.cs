@@ -99,11 +99,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     internal bool IsOnNetwork { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this network object is in the process of despawning.
-    /// </summary>
-    internal bool IsDespawning { get; set; }
-
-    /// <summary>
     /// Gets or sets the unique network identifier for this object.
     /// Used to reference this specific object across all connected clients.
     /// </summary>

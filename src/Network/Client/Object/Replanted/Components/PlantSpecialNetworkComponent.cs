@@ -1,5 +1,4 @@
 ﻿using ReplantedOnline.Attributes;
-using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.Components;
 
@@ -23,7 +22,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
                 {
                     SendDoSpecialRpc();
                     PlantNetworked.Dead = true;
-                    PlantNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => PlantNetworked._Plant == null || PlantNetworked._Plant.mDead, PlantNetworked.DespawnAndDestroy));
+                    PlantNetworked.DespawnAndDestroyWhenNull();
                 }
             }
         }

@@ -77,6 +77,16 @@ internal sealed class PlantNetworked : NetworkObject
         _Plant.AddNetworkedLookup(this);
     }
 
+    private bool _waitingToDespawn;
+    internal void DespawnAndDestroyWhenNull()
+    {
+        if (!_waitingToDespawn)
+        {
+            _waitingToDespawn = true;
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null, DespawnAndDestroy));
+        }
+    }
+
     private void OnDestroy()
     {
         this.RemoveNetworkedLookup();

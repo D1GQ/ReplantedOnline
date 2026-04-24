@@ -87,6 +87,16 @@ internal sealed class ZombieNetworked : NetworkObject
         _Zombie.AddNetworkedLookup(this);
     }
 
+    private bool _waitingToDespawn;
+    internal void DespawnAndDestroyWhenNull()
+    {
+        if (!_waitingToDespawn)
+        {
+            _waitingToDespawn = true;
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null, DespawnAndDestroy));
+        }
+    }
+
     private void OnDestroy()
     {
         this.RemoveNetworkedLookup();
@@ -104,17 +114,6 @@ internal sealed class ZombieNetworked : NetworkObject
     private void Update()
     {
         if (!IsOnNetwork) return;
-
-        if (AmOwner)
-        {
-            if (ZombieType == ZombieType.Bungee || State is NetStates.ZOMBIE_MIND_CONTROLLED_STATE)
-            {
-                if (_Zombie == null)
-                {
-                    DespawnAndDestroy();
-                }
-            }
-        }
 
         if (_Zombie == null) return;
 
@@ -204,7 +203,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             Dead = true;
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
-            DespawnAndDestroy();
+            DespawnAndDestroyWhenNull();
         }
     }
 
@@ -225,7 +224,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             Dead = true;
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
-            DespawnAndDestroy();
+            DespawnAndDestroyWhenNull();
         }
     }
 
@@ -253,7 +252,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             Dead = true;
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
-            DespawnAndDestroy();
+            DespawnAndDestroyWhenNull();
         }
     }
 
@@ -301,6 +300,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
         SendNetworkObjectRpc(ZombieRpcs.MindControlled);
+        DespawnAndDestroyWhenNull();
     }
 
     [RpcHandler(ZombieRpcs.MindControlled)]
@@ -353,7 +353,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (reallyDead && !Dead)
         {
             Dead = true;
-            DespawnAndDestroy();
+            DespawnAndDestroyWhenNull();
         }
     }
 

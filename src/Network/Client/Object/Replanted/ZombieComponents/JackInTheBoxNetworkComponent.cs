@@ -1,7 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
-using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
@@ -25,7 +24,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
                 ZombieNetworked.Dead = true;
                 _isExploding = true;
                 SendExplodeRpc();
-                ZombieNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => ZombieNetworked._Zombie == null || ZombieNetworked._Zombie.mDead, ZombieNetworked.DespawnAndDestroy));
+                ZombieNetworked.DespawnAndDestroyWhenNull();
             }
         }
         else
