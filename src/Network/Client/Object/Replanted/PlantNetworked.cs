@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
-using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
@@ -24,8 +23,7 @@ internal sealed class PlantNetworked : NetworkObject
         Shoveled,
         SquishPlant,
         Fire,
-        SetZombieTarget,
-        SetState
+        SetZombieTarget
     }
 
     /// <summary>
@@ -175,23 +173,6 @@ internal sealed class PlantNetworked : NetworkObject
     internal void HandleSetZombieTargetRpc(Zombie target)
     {
         Target = target;
-    }
-
-    internal void SendSetStateRpc(string state)
-    {
-        SendNetworkObjectRpc(PlantRpcs.SetState, state);
-    }
-
-    [RpcHandler(PlantRpcs.SetState)]
-    internal void HandleSetStateRpc(string state)
-    {
-        if (state == NetStates.NULL_STATE)
-        {
-            State = null;
-            return;
-        }
-
-        State = state;
     }
 
     /// <summary>

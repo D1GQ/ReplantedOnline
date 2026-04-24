@@ -1,5 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
@@ -7,31 +7,45 @@ namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 /// <inheritdoc/>
 internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 {
+    private enum BungeeRpcs : byte
+    {
+        DownOnPlant
+    }
+
+    private bool isDownOnPlant;
     internal override void Update()
     {
         if (ZombieNetworked._Zombie == null) return;
 
         if (ZombieNetworked.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && ZombieNetworked._Zombie.mPhaseCounter < 10 && ZombieNetworked.State is not NetStates.UPDATE_STATE)
+            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing && ZombieNetworked._Zombie.mPhaseCounter < 10 && !isDownOnPlant)
             {
-                ZombieNetworked.State = NetStates.UPDATE_STATE;
-                ZombieNetworked.SendSetStateRpc(NetStates.UPDATE_STATE);
+                isDownOnPlant = true;
+                SendDownOnPlantRpc();
             }
         }
         else
         {
             if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeGrabbing)
             {
-                if (ZombieNetworked.State is not NetStates.UPDATE_STATE)
+                if (!isDownOnPlant)
                 {
                     ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
                 }
-                else
-                {
-                    ZombieNetworked._Zombie.mPhaseCounter = 0;
-                }
             }
         }
+    }
+
+    internal void SendDownOnPlantRpc()
+    {
+        SendNetworkComponentRpc(BungeeRpcs.DownOnPlant);
+    }
+
+    [RpcHandler(BungeeRpcs.DownOnPlant)]
+    private void HandleDownOnPlantRpc()
+    {
+        isDownOnPlant = true;
+        ZombieNetworked._Zombie.mPhaseCounter = 0;
     }
 }

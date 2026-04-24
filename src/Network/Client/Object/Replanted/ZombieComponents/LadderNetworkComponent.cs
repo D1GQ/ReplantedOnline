@@ -1,5 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
@@ -7,7 +7,12 @@ namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 /// <inheritdoc/>
 internal sealed class LadderNetworkComponent : ZombieNetworkComponent
 {
-    private bool hasPlacedLadder;
+    private enum LadderRpcs : byte
+    {
+        DonePlacingLadder
+    }
+
+    private bool _donePlacingLadder;
     internal override void Update()
     {
         if (ZombieNetworked._Zombie == null) return;
@@ -18,16 +23,17 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         {
             if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.LadderPlacing && ZombieNetworked.Target == null)
             {
-                // Send target to place ladder
+                // Send target to place ladder on
                 Plant target = ZombieNetworked._Zombie.FindPlantTarget(ZombieAttackType.Ladder);
                 ZombieNetworked.SendSetPlantTargetRpc(target);
             }
             else if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
             {
-                if (!hasPlacedLadder)
+                // Send the zombie is done placing down ladder
+                if (!_donePlacingLadder)
                 {
-                    hasPlacedLadder = true;
-                    ZombieNetworked.SendSetStateRpc(NetStates.LADDER_ZOMBIE_PLACED_LADDER);
+                    _donePlacingLadder = true;
+                    SendDonePlacingLadderRpc();
                 }
             }
         }
@@ -35,11 +41,11 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         {
             if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.LadderPlacing && ZombieNetworked._Zombie.mPhaseCounter == 0)
             {
-                if (ZombieNetworked.State is NetStates.LADDER_ZOMBIE_PLACED_LADDER)
+                if (_donePlacingLadder)
                 {
                     ZombieNetworked._Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
                     ZombieNetworked._Zombie.DetachShield();
-                    ZombieNetworked.State = null;
+                    _donePlacingLadder = false;
                 }
             }
 
@@ -52,5 +58,16 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         }
 
         UpdatePositionSync();
+    }
+
+    internal void SendDonePlacingLadderRpc()
+    {
+        SendNetworkComponentRpc(LadderRpcs.DonePlacingLadder);
+    }
+
+    [RpcHandler(LadderRpcs.DonePlacingLadder)]
+    private void HandleDonePlacingLadderRpc()
+    {
+        _donePlacingLadder = true;
     }
 }

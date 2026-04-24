@@ -1,5 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Utilities;
 
@@ -8,17 +8,23 @@ namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 /// <inheritdoc/>
 internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
 {
+    private enum JackInTheBoxRpcs : byte
+    {
+        Explode
+    }
+
+    private bool _isExploding;
     internal override void Update()
     {
         if (ZombieNetworked._Zombie == null) return;
 
         if (ZombieNetworked.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && ZombieNetworked.State is not NetStates.UPDATE_STATE)
+            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
                 ZombieNetworked.Dead = true;
-                ZombieNetworked.State = NetStates.UPDATE_STATE;
-                ZombieNetworked.SendSetStateRpc(NetStates.UPDATE_STATE);
+                _isExploding = true;
+                SendExplodeRpc();
                 ZombieNetworked.StartCoroutine(CoroutineUtils.WaitForCondition(() => ZombieNetworked._Zombie == null || ZombieNetworked._Zombie.mDead == true, ZombieNetworked.DespawnAndDestroy));
             }
         }
@@ -26,18 +32,26 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         {
             if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
-                if (ZombieNetworked.State is not NetStates.UPDATE_STATE)
+                if (!_isExploding)
                 {
                     ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
-                }
-                else
-                {
-                    ZombieNetworked.Dead = true;
-                    ZombieNetworked._Zombie.mPhaseCounter = 0;
                 }
             }
         }
 
         UpdatePositionSync();
+    }
+
+    internal void SendExplodeRpc()
+    {
+        SendNetworkComponentRpc(JackInTheBoxRpcs.Explode);
+    }
+
+    [RpcHandler(JackInTheBoxRpcs.Explode)]
+    private void HandleExplodeRpc()
+    {
+        _isExploding = true;
+        ZombieNetworked.Dead = true;
+        ZombieNetworked._Zombie.mPhaseCounter = 0;
     }
 }
