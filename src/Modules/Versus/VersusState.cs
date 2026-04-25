@@ -49,7 +49,7 @@ internal static class VersusState
     /// <summary>
     /// Gets the current arena type.
     /// </summary>
-    internal static ArenaTypes Arena => ReplantedLobby.LobbyData?.Synced_Arena ?? ArenaTypes.Day;
+    internal static ArenaTypes Arena => ReplantedLobby.LobbyData?.Arena.Value ?? ArenaTypes.Day;
 
     /// <summary>
     /// Gets when Versus Mode is in its gameplay state.

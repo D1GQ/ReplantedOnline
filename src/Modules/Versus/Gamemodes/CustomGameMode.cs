@@ -22,7 +22,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameModeStart(VersusMode versusMode)
     {
-        ReplantedClientData.LocalClient?.Ready = false;
+        ReplantedClientData.LocalClient?.Ready.Value = false;
         versusMode.Phase = VersusPhase.ChooseZombiePacket;
         Transitions.ToChooseSeeds();
         Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap());
@@ -67,7 +67,7 @@ internal sealed class CustomGamemode : IVersusGamemode
             setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
 
-        ReplantedClientData.LocalClient?.Ready = true;
+        ReplantedClientData.LocalClient?.Ready.Value = true;
 
         if (ModInfo.DEBUG)
         {

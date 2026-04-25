@@ -141,7 +141,7 @@ internal static class ReplantedLobby
     internal static void ResetLobby(Action callback = null)
     {
         ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Restarting the lobby");
-        ReplantedClientData.LocalClient?.Ready = false;
+        ReplantedClientData.LocalClient?.Ready.Value = false;
         VersusLobbyManager.ResetPlayerInput();
         LobbyData.UnsetAllTeams();
         LobbyData.LocalDespawnAll();
@@ -152,7 +152,7 @@ internal static class ReplantedLobby
             Transitions.ToGameplay(() =>
             {
                 callback?.Invoke();
-                ReplantedClientData.LocalClient?.Ready = true;
+                ReplantedClientData.LocalClient?.Ready.Value = true;
             });
         });
     }
@@ -224,7 +224,7 @@ internal static class ReplantedLobby
         {
             NetworkDispatcher.StartListening();
             LobbyData.UpdateLobbyStates();
-            ReplantedClientData.LocalClient?.Ready = true;
+            ReplantedClientData.LocalClient?.Ready.Value = true;
         });
 
         ProcessMemberList();

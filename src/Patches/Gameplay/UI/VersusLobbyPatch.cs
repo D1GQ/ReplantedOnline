@@ -201,11 +201,11 @@ internal static class VersusLobbyPatch
 
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == 0)
         {
-            ReplantedLobby.LobbyData.Synced_HostTeam = PlayerTeam.Plants;
+            ReplantedLobby.LobbyData.HostTeam.Value = PlayerTeam.Plants;
         }
         else
         {
-            ReplantedLobby.LobbyData.Synced_HostTeam = PlayerTeam.Zombies;
+            ReplantedLobby.LobbyData.HostTeam.Value = PlayerTeam.Zombies;
         }
     }
 
@@ -226,6 +226,6 @@ internal static class VersusLobbyPatch
     {
         if (!__state) return;
 
-        ReplantedLobby.LobbyData.Synced_HostTeam = PlayerTeam.None;
+        ReplantedLobby.LobbyData.HostTeam.Value = PlayerTeam.None;
     }
 }

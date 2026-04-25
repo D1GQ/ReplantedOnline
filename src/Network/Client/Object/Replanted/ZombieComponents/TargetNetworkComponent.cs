@@ -22,9 +22,9 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
         if (_hasDead) return;
         _hasDead = true;
 
-        ReplantedLobby.LobbyData.Local_ZombieLife--;
+        ReplantedLobby.LobbyData.ZombieLife--;
 
-        if (ReplantedLobby.LobbyData.Local_ZombieLife == 0)
+        if (ReplantedLobby.LobbyData.ZombieLife == 0)
         {
             VersusGameplayManager.EndGame(_lastPos, PlayerTeam.Plants);
         }

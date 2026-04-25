@@ -189,7 +189,7 @@ internal static class MatchmakingManager
             ReplantedLobby.NetworkTransport.SetLobbyJoinable(ReplantedLobby.LobbyData.LobbyId, @override.Value);
         }
 
-        ReplantedLobby.NetworkTransport.SetLobbyJoinable(ReplantedLobby.LobbyData.LobbyId, !ReplantedLobby.LobbyData.Synced_HasStarted);
+        ReplantedLobby.NetworkTransport.SetLobbyJoinable(ReplantedLobby.LobbyData.LobbyId, !ReplantedLobby.LobbyData.HasStarted.Value);
     }
 
     /// <summary>

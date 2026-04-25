@@ -56,14 +56,14 @@ internal static class ArenaSelectorPanel
         {
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                ReplantedLobby.LobbyData.Synced_Arena = ReplantedLobby.LobbyData.Synced_Arena.Next();
+                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Next();
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                ReplantedLobby.LobbyData.Synced_Arena = ReplantedLobby.LobbyData.Synced_Arena.Previous();
+                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Previous();
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;

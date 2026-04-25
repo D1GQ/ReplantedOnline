@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Enums.Network;
+﻿using ReplantedOnline.Data.Network;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Panel;
@@ -90,7 +91,7 @@ internal sealed class ReplantedLobbyData : IDisposable
     /// Determines whether all connected clients are currently marked as ready.
     /// </summary>
     /// <returns>true if every client is ready; otherwise, false.</returns>
-    internal bool AllClientsReady() => AllClients.Values.All(c => c.Ready);
+    internal bool AllClientsReady() => AllClients.Values.All(c => c.Ready.Value);
 
     /// <summary>
     /// Sets all clients team to None.
@@ -175,114 +176,53 @@ internal sealed class ReplantedLobbyData : IDisposable
         }
     }
 
-    internal bool Synced_LobbyRestarting
-    {
-        get
-        {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_LobbyRestarting)) == bool.TrueString;
-        }
-        set
-        {
-            if (ReplantedLobby.AmLobbyHost())
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_LobbyRestarting), value.ToString());
-                UpdateLobbyStates();
-            }
-        }
-    }
+    /// <summary>
+    /// Indicates whether the lobby is currently in the process of restarting.
+    /// </summary>
+    internal LobbyVar<bool> LobbyRestarting { get; } = new(nameof(LobbyRestarting), false);
 
-    internal bool Synced_PickingSides
-    {
-        get
-        {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_PickingSides)) == bool.TrueString;
-        }
-        set
-        {
-            if (ReplantedLobby.AmLobbyHost())
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_PickingSides), value.ToString());
-                UpdateLobbyStates();
-            }
-        }
-    }
+    /// <summary>
+    /// Indicates whether the host is currently selecting their sides/teams.
+    /// </summary>
+    internal LobbyVar<bool> PickingSides { get; } = new(nameof(PickingSides), false);
 
-    internal bool Synced_HasStarted
-    {
-        get
-        {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_HasStarted)) == bool.TrueString;
-        }
-        set
-        {
-            if (ReplantedLobby.AmLobbyHost())
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_HasStarted), value.ToString());
-                UpdateLobbyStates();
-            }
-        }
-    }
+    /// <summary>
+    /// Indicates whether the game has started.
+    /// </summary>
+    internal LobbyVar<bool> HasStarted { get; } = new(nameof(HasStarted), false);
 
-    internal PlayerTeam Synced_HostTeam
-    {
-        get
-        {
-            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_HostTeam));
-            if (int.TryParse(data, out var @int))
-            {
-                return (PlayerTeam)@int;
-            }
+    /// <summary>
+    /// Gets or sets the team assigned to the host client.
+    /// </summary>
+    internal LobbyVar<PlayerTeam> HostTeam { get; } = new(nameof(HostTeam), PlayerTeam.None);
 
-            return PlayerTeam.None;
-        }
-        set
-        {
-            if (ReplantedLobby.AmLobbyHost())
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_HostTeam), ((int)value).ToString());
-                UpdateLobbyStates();
-            }
-        }
-    }
+    /// <summary>
+    /// Gets or sets the currently selected arena for the game.
+    /// </summary>
+    internal LobbyVar<ArenaTypes> Arena { get; } = new(nameof(Arena), ArenaTypes.Day);
 
-    internal ArenaTypes Synced_Arena
-    {
-        get
-        {
-            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_Arena));
-            if (int.TryParse(data, out var @int))
-            {
-                return (ArenaTypes)@int;
-            }
+    /// <summary>
+    /// Indicates whether the client is ready to process network objects.
+    /// </summary>
+    internal bool ReadyForNetworkObjects { get; set; } = false;
 
-            return ArenaTypes.Day;
-        }
-        set
-        {
-            if (ReplantedLobby.AmLobbyHost())
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_Arena), ((int)value).ToString());
-                UpdateLobbyStates();
-            }
-        }
-    }
-
-    internal bool Local_ReadyForNetworkObjects { get; set; } = false;
-
-    internal int Local_ZombieLife { get; set; } = 3;
+    /// <summary>
+    /// Gets or sets the remaining number of lives for the zombies.
+    /// </summary>
+    internal int ZombieLife { get; set; } = 3;
 
     /// <summary>
     /// Initializes lobby data to default.
     /// </summary>
     internal void InitializeData()
     {
-        Synced_LobbyRestarting = false;
-        Synced_PickingSides = false;
-        Synced_HasStarted = false;
-        Synced_HostTeam = PlayerTeam.None;
-        Synced_Arena = ArenaTypes.Day;
-        Local_ReadyForNetworkObjects = false;
-        Local_ZombieLife = 3;
+        LobbyRestarting.Value = false;
+        PickingSides.Value = false;
+        HasStarted.Value = false;
+        HostTeam.Value = PlayerTeam.None;
+        Arena.Value = ArenaTypes.Day;
+        ReadyForNetworkObjects = false;
+        ZombieLife = 3;
 
         if (ReplantedLobby.AmLobbyHost())
         {
@@ -299,7 +239,7 @@ internal sealed class ReplantedLobbyData : IDisposable
     {
         if (ReplantedLobby.AmLobbyHost())
         {
-            Synced_LobbyRestarting = true;
+            LobbyRestarting.Value = true;
             NetworkDispatcher.SendPacket(null, false, PacketHandlerType.ResetLobby, PacketChannel.Main);
             ReplantedLobby.ResetLobby();
         }
@@ -310,9 +250,9 @@ internal sealed class ReplantedLobbyData : IDisposable
     /// </summary>
     internal void UpdateLobbyStates()
     {
-        if (Synced_HasStarted || Synced_LobbyRestarting) return;
+        if (HasStarted.Value || LobbyRestarting.Value) return;
 
-        var hostTeam = Synced_HostTeam;
+        var hostTeam = HostTeam.Value;
         if (hostTeam is PlayerTeam.None)
         {
             VersusLobbyManager.ResetPlayerInput();
@@ -338,7 +278,7 @@ internal sealed class ReplantedLobbyData : IDisposable
             VersusLobbyManager.UpdateSideVisuals();
         }
 
-        ArenaSelectorPanel.SetPreview(Synced_Arena);
+        ArenaSelectorPanel.SetPreview(Arena.Value);
     }
 
     /// <summary>

@@ -34,7 +34,7 @@ internal static class VersusModePatch
     {
         if (!ReplantedLobby.AmInLobby()) return;
 
-        __instance.ZombieLife = ReplantedLobby.LobbyData.Local_ZombieLife;
+        __instance.ZombieLife = ReplantedLobby.LobbyData.ZombieLife;
 
         updateInterval++;
         if (updateInterval % 2 != 0)

@@ -1,6 +1,6 @@
-﻿using ReplantedOnline.Enums.Versus;
+﻿using ReplantedOnline.Data.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client;
 
@@ -27,26 +27,14 @@ internal sealed class ReplantedClientData
         {
             OpponentClient = this;
         }
-        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedClientData), $"P2P connections initialized with {Name} ({id})");
+
+        Ready = new(id, nameof(Ready), false);
     }
 
     /// <summary>
     /// Gets or sets a value indicating whether the player is loaded and ready.
     /// </summary>
-    internal bool Ready
-    {
-        get
-        {
-            return ReplantedLobby.NetworkTransport.GetLobbyMemberData(ReplantedLobby.LobbyData.LobbyId, ClientId, nameof(Ready)) == bool.TrueString;
-        }
-        set
-        {
-            if (AmLocal)
-            {
-                ReplantedLobby.NetworkTransport.SetLobbyMemberData(ReplantedLobby.LobbyData.LobbyId, nameof(Ready), value.ToString());
-            }
-        }
-    }
+    internal ClientVar<bool> Ready { get; }
 
     /// <summary>
     /// Get the local NetClient

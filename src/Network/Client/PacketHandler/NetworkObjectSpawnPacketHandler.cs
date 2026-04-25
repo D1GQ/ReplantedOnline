@@ -32,7 +32,7 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
         {
             while (ReplantedLobby.LobbyData != null)
             {
-                if (!ReplantedLobby.LobbyData.Local_ReadyForNetworkObjects)
+                if (!ReplantedLobby.LobbyData.ReadyForNetworkObjects)
                 {
                     yield return null;
                     continue;

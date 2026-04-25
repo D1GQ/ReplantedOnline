@@ -158,7 +158,7 @@ internal sealed class InfoDisplay : MonoBehaviour
         {
             sb.AppendLine("Lobby Info >");
 
-            if (!ReplantedLobby.LobbyData.Local_ReadyForNetworkObjects)
+            if (!ReplantedLobby.LobbyData.ReadyForNetworkObjects)
             {
                 sb.AppendLine($" Not Ready For Network Objects!");
             }
@@ -167,7 +167,7 @@ internal sealed class InfoDisplay : MonoBehaviour
                 sb.AppendLine($" Network Objects: {ReplantedLobby.LobbyData.NetworkObjectsSpawned.Count}");
             }
 
-            if (!ReplantedLobby.LobbyData.Synced_HasStarted)
+            if (!ReplantedLobby.LobbyData.HasStarted.Value)
             {
                 sb.AppendLine(" Versus Phase: Lobby");
             }
