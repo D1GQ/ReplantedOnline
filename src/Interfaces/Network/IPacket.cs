@@ -16,6 +16,11 @@ internal interface IPacket
     /// <summary>
     /// Sets the byte buffer representation of the packet.
     /// </summary>
-    /// <param name="buffer">The buffer to set from</param>
+    /// <param name="buffer">The buffer to set from.</param>
     void SetByteBuffer(byte[] buffer);
+
+    /// <summary>
+    /// Scrambles or unscrambles the packet buffer.
+    /// </summary>
+    void ScrambleBuffer();
 }

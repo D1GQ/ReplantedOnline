@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Enums;
+using ReplantedOnline.Structs;
 using System.Reflection;
 
 namespace ReplantedOnline;
@@ -82,6 +83,11 @@ internal static class ModInfo
 
         return attribute?.Value ?? string.Empty;
     }
+
+    /// <summary>
+    /// The signature for the mod dll file.
+    /// </summary>
+    internal readonly static ModSignature Signature = new();
 
     /// <summary>
     /// Contains constants related to Plants vs. Zombies™: Replanted game information.

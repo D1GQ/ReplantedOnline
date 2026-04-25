@@ -340,4 +340,11 @@ internal sealed class PacketReader : IPacket
     {
         _data = buffer;
     }
+
+    /// <inheritdoc/>
+    public void ScrambleBuffer()
+    {
+        Span<byte> span = _data.AsSpan(_position);
+        ModInfo.Signature.ScrambleBytes(span);
+    }
 }

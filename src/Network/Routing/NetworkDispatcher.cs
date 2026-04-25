@@ -129,11 +129,7 @@ internal static class NetworkDispatcher
         if (targetId.GetNetClient().AmLocal) return;
 
         var packet = PacketWriter.Get();
-        packet.AddTag(tag);
-        if (packetWriter != null)
-        {
-            packet.WritePacketToBuffer(packetWriter);
-        }
+        Message<RpcHeaderMessage>.Instance.Serialize(tag, packetWriter, packet);
 
         if (ReplantedLobby.IsPlayerInOurLobby(targetId))
         {
@@ -155,11 +151,7 @@ internal static class NetworkDispatcher
     internal static void SendPacket(PacketWriter packetWriter, bool receiveLocally, PacketHandlerType tag, PacketChannel packetChannel)
     {
         var packet = PacketWriter.Get();
-        packet.AddTag(tag);
-        if (packetWriter != null)
-        {
-            packet.WritePacketToBuffer(packetWriter);
-        }
+        Message<RpcHeaderMessage>.Instance.Serialize(tag, packetWriter, packet);
 
         int sentCount = 0;
         foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
@@ -312,12 +304,20 @@ internal static class NetworkDispatcher
     /// <param name="packetReader">The packet reader containing the packet data.</param>
     internal static void Streamline(ReplantedClientData sender, PacketReader packetReader)
     {
-        var tag = packetReader.GetTag();
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing {tag} packet from {sender?.Name ?? "Unknown"}");
+        var message = Message<RpcHeaderMessage>.Instance.Deserialize(packetReader);
+
+        if (message.SignatureHash != ModInfo.Signature.SignatureHash)
+        {
+            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Can not processing {message.Tag} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
+            packetReader.Recycle();
+            return;
+        }
+
+        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing {message.Tag} packet from {sender?.Name ?? "Unknown"}");
 
         try
         {
-            switch (tag)
+            switch (message.Tag)
             {
                 case PacketHandlerType.None:
                     ReplantedOnlineMod.Logger.Warning("[NetworkDispatcher] Received packet with no tag");
@@ -340,9 +340,9 @@ internal static class NetworkDispatcher
                     }
                     break;
                 default:
-                    if (!IPacketHandler.HandlePacket(tag, sender, packetReader))
+                    if (!IPacketHandler.HandlePacket(message.Tag, sender, packetReader))
                     {
-                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Unknown packet tag: {tag}");
+                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Unknown packet tag: {message.Tag}");
                     }
                     break;
             }

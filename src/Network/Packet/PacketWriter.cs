@@ -4,6 +4,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 
@@ -268,5 +269,11 @@ internal sealed class PacketWriter : IPacket
     public void SetByteBuffer(byte[] buffer)
     {
         _data = [.. buffer];
+    }
+
+    /// <inheritdoc/>
+    public void ScrambleBuffer()
+    {
+        ModInfo.Signature.ScrambleBytes(CollectionsMarshal.AsSpan(_data));
     }
 }
