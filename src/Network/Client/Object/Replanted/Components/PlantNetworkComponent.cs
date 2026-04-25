@@ -20,11 +20,13 @@ internal class PlantNetworkComponent : NetworkComponent
             SeedType.Chomper => plantNetworked.AddNetworkComponent<ChomperNetworkComponent>(),
             SeedType.Magnetshroom => plantNetworked.AddNetworkComponent<MagnetShroomNetworkComponent>(),
             SeedType.Kernelpult => plantNetworked.AddNetworkComponent<KernelpultNetworkComponent>(),
+            SeedType.Umbrella => plantNetworked.AddNetworkComponent<UmbrellaNetworkComponent>(),
             SeedType.Potatomine => plantNetworked.AddNetworkComponent<PotatomineNetworkComponent>(),
             SeedType.Cherrybomb => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
             SeedType.Jalapeno => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
             SeedType.Doomshroom => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
             SeedType.Iceshroom => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
+            SeedType.InstantCoffee => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
             _ => plantNetworked.AddNetworkComponent<PlantNetworkComponent>(),
         };
     }

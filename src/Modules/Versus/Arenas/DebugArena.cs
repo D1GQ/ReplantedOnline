@@ -22,7 +22,8 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
         Pogo,
         Bobsled,
         Polevaulter,
-        Ladder
+        Ladder,
+        Bungee
     }
 
     private DebugModes Mode = DebugModes.Default;
@@ -151,6 +152,10 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Ladder, 7, 2, false, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, SeedType.Wallnut, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, SeedType.Wallnut, 5, 2, true);
+                break;
+            case DebugModes.Bungee:
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, false, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, SeedType.Umbrella, 4, 2, true);
                 break;
             default:
                 break;

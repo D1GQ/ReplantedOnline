@@ -34,6 +34,13 @@ internal static class PlantSyncPatch
         return true;
     }
 
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetAndFire))]
+    internal static bool FindTargetAndFireOriginal(this Plant __instance, int theRow, PlantWeapon thePlantWeapon)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
     private static uint fireInterval;
     [HarmonyPatch(typeof(Plant), nameof(Plant.Fire))]
     [HarmonyPrefix]
@@ -57,6 +64,13 @@ internal static class PlantSyncPatch
         }
 
         return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Plant), nameof(Plant.Fire))]
+    internal static void FireOriginal(this Plant __instance, Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.Die))]

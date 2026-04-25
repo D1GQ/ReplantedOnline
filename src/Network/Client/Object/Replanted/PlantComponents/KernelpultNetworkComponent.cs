@@ -5,6 +5,7 @@ using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 
+/// <inheritdoc/>
 internal sealed class KernelpultNetworkComponent : PlantNetworkComponent
 {
     private PlantWeapon _plantWeapon;

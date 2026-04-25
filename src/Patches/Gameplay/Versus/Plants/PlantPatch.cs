@@ -7,15 +7,8 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Plants;
 internal static class PlantPatch
 {
     [HarmonyReversePatch]
-    [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetAndFire))]
-    internal static bool FindTargetAndFireOriginal(this Plant __instance, int theRow, PlantWeapon thePlantWeapon)
-    {
-        throw new NotImplementedException("Reverse Patch Stub");
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch(typeof(Plant), nameof(Plant.Fire))]
-    internal static void FireOriginal(this Plant __instance, Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    [HarmonyPatch(typeof(Plant), nameof(Plant.DoSpecial))]
+    internal static void DoSpecialOriginal(this Plant __instance)
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }
