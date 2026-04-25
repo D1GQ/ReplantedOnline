@@ -1,5 +1,4 @@
-﻿using ReplantedOnline;
-using ReplantedOnline.Enums.Network;
+﻿using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 
@@ -22,17 +21,16 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
     /// Serializes the header message into a packet buffer.
     /// </summary>
     /// <param name="packetHandlerType">The packet handler type tag to write to the packet.</param>
-    /// <param name="payload">The packet writer containing the RPC payload data to scramble and embed.</param>
+    /// <param name="payload">The packet writer containing the RPC payload data.</param>
     /// <param name="packet">The target packet writer to write the serialized header data to.</param>
     public void Serialize(PacketHandlerType packetHandlerType, PacketWriter payload, PacketWriter packet)
     {
         packet.AddTag(packetHandlerType);
-        packet.WriteUInt(ModInfo.Signature.SignatureHash);
         if (payload != null)
         {
-            payload.ScrambleBuffer();
             packet.WritePacketToBuffer(payload);
         }
+        packet.EncryptBuffer();
     }
 
     /// <summary>
@@ -42,13 +40,13 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
     /// <returns>A new HeaderMessage instance with deserialized data.</returns>
     public RpcHeaderMessage Deserialize(PacketReader packetReader)
     {
+        uint signatureHash = packetReader.UnencryptBuffer();
+        PacketHandlerType tag = packetReader.GetTag();
         RpcHeaderMessage message = new()
         {
-            Tag = packetReader.GetTag(),
-            SignatureHash = packetReader.ReadUInt()
+            Tag = tag,
+            SignatureHash = signatureHash
         };
-
-        packetReader.ScrambleBuffer();
 
         return message;
     }

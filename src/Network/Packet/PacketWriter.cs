@@ -272,8 +272,9 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <inheritdoc/>
-    public void ScrambleBuffer()
+    internal void EncryptBuffer()
     {
+        _data.InsertRange(0, BitConverter.GetBytes(ModInfo.Signature.SignatureHash));
         ModInfo.Signature.ScrambleBytes(CollectionsMarshal.AsSpan(_data));
     }
 }

@@ -342,9 +342,20 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <inheritdoc/>
-    public void ScrambleBuffer()
+    internal uint UnencryptBuffer()
     {
         Span<byte> span = _data.AsSpan(_position);
         ModInfo.Signature.ScrambleBytes(span);
+
+        if (_position + 4 > _data.Length)
+        {
+            ReplantedOnlineMod.Logger.Error("[PacketReader] Not enough data to read signature hash");
+            return 0;
+        }
+
+        uint signatureHash = BitConverter.ToUInt32(_data, _position);
+        _position += 4;
+
+        return signatureHash;
     }
 }
