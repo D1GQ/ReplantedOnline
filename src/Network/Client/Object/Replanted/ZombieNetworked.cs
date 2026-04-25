@@ -87,12 +87,12 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     private bool _waitingToDespawn;
-    internal void DespawnAndDestroyWhenNull()
+    internal void DespawnAndDestroyWhenNullOrDead()
     {
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null, DespawnAndDestroy));
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || (_Zombie.mDead && Dead), DespawnAndDestroy));
         }
     }
 
@@ -176,7 +176,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
-            DespawnAndDestroyWhenNull();
+            DespawnAndDestroyWhenNullOrDead();
         }
     }
 
@@ -198,7 +198,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
-            DespawnAndDestroyWhenNull();
+            DespawnAndDestroyWhenNullOrDead();
         }
     }
 
@@ -227,7 +227,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
-            DespawnAndDestroyWhenNull();
+            DespawnAndDestroyWhenNullOrDead();
         }
     }
 
@@ -276,7 +276,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
         SendNetworkObjectRpc(ZombieRpcs.MindControlled);
-        DespawnAndDestroyWhenNull();
+        DespawnAndDestroyWhenNullOrDead();
     }
 
     [RpcHandler(ZombieRpcs.MindControlled)]
@@ -330,7 +330,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Burned);
-            DespawnAndDestroyWhenNull();
+            DespawnAndDestroyWhenNullOrDead();
         }
     }
 

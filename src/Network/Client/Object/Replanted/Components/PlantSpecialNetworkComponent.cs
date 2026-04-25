@@ -22,7 +22,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
                 {
                     SendDoSpecialRpc();
                     PlantNetworked.Dead = true;
-                    PlantNetworked.DespawnAndDestroyWhenNull();
+                    PlantNetworked.DespawnAndDestroyWhenDeadOrNull();
                 }
             }
         }

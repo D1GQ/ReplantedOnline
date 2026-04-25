@@ -35,7 +35,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 {
                     _isTakingPlant = true;
                     SendTakePlantRpc();
-                    ZombieNetworked.DespawnAndDestroyWhenNull();
+                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead();
                 }
             }
         }

@@ -78,12 +78,12 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     private bool _waitingToDespawn;
-    internal void DespawnAndDestroyWhenNull()
+    internal void DespawnAndDestroyWhenDeadOrNull()
     {
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null, DespawnAndDestroy));
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null || (_Plant.mDead && Dead), DespawnAndDestroy));
         }
     }
 
