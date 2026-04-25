@@ -341,7 +341,10 @@ internal sealed class PacketReader : IPacket
         _data = buffer;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Decrypts buffer data.
+    /// </summary>
+    /// <returns>The hash signature for decrypting.</returns>
     internal uint UnencryptBuffer()
     {
         Span<byte> span = _data.AsSpan(_position);

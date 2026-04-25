@@ -271,7 +271,9 @@ internal sealed class PacketWriter : IPacket
         _data = [.. buffer];
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Encrypts buffer data.
+    /// </summary>
     internal void EncryptBuffer()
     {
         _data.InsertRange(0, BitConverter.GetBytes(ModInfo.Signature.SignatureHash));
