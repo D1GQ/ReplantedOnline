@@ -35,12 +35,12 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
                 {
                     if (state == PlantState.ChomperBiting)
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE, CharacterAnimationTrack.Body, 30f, ReanimLoopType.PlayOnce);
+                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_BITE.Fps, ReanimLoopType.PlayOnce);
                         _chomperState = PlantState.ChomperBitingMissed.ToString();
                     }
                     else if (state == PlantState.ChomperDigesting)
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW, CharacterAnimationTrack.Body, 15f, ReanimLoopType.Loop);
+                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_CHEW.Fps, ReanimLoopType.Loop);
                     }
                     else if (state == PlantState.ChomperSwallowing)
                     {
@@ -54,9 +54,9 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
                 }
                 else if (state == PlantState.Ready)
                 {
-                    if (!PlantNetworked._Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE))
+                    if (!PlantNetworked._Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE.Anim))
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE, CharacterAnimationTrack.Body, 10.26f, ReanimLoopType.Loop);
+                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_IDLE.Fps, ReanimLoopType.Loop);
                     }
                 }
             }
@@ -65,7 +65,7 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         UpdateHealthSync();
     }
 
-    internal void SendChomperStateRpc(string state)
+    private void SendChomperStateRpc(string state)
     {
         SendNetworkComponentRpc(ChomperRpcs.ChomperState, state);
     }

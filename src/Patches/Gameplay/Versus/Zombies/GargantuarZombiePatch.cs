@@ -204,7 +204,7 @@ internal static class GargantuarZombiePatch
             ConfigureImpArc(gargantuar, imp);
 
             // Play imp flying animation
-            imp.PlayZombieReanim(Animations.IMP_FLYING, ReanimLoopType.Loop, 3, 18f);
+            imp.PlayZombieReanim(Animations.IMP_FLYING.Anim, ReanimLoopType.Loop, 3, Animations.IMP_FLYING.AnimRate);
 
             // Force immediate animation update
             imp.UpdateReanim();

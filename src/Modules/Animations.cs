@@ -5,13 +5,15 @@
 /// </summary>
 internal static class Animations
 {
-    internal const string GARGANTUAR_THROW = "anim_gargantuar_throw";
+    internal static readonly string GARGANTUAR_THROW = "anim_gargantuar_throw";
 
-    internal const string IMP_FLYING = "anim_imp_flying";
+    internal static readonly (string Anim, float AnimRate) IMP_FLYING = ("anim_imp_flying", 18f);
 
-    internal const string CHOMPER_IDLE = "idle";
-    internal const string CHOMPER_BITE = "bite";
-    internal const string CHOMPER_CHEW = "chew";
+    internal static readonly (string Anim, float Fps) CHOMPER_IDLE = ("idle", 10.26f);
+    internal static readonly (string Anim, float Fps) CHOMPER_BITE = ("bite", 30f);
+    internal static readonly (string Anim, float Fps) CHOMPER_CHEW = ("chew", 15f);
 
-    internal const string LADDER_ZOMBIE_PLACELADDER = "placeladder"; // 24 fps
+    internal static readonly (string Anim, float Fps) SQUASH_IDLE = ("idle", 10.0531f);
+    internal static readonly (string Anim, float Fps) SQUASH_LOOKLEFT = ("lookleft", 24f);
+    internal static readonly (string Anim, float Fps) SQUASH_LOOKRIGHT = ("lookright", 24f);
 }

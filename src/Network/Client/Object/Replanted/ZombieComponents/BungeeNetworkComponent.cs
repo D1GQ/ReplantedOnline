@@ -58,7 +58,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal void SendDiveRpc()
+    private void SendDiveRpc()
     {
         SendNetworkComponentRpc(BungeeRpcs.Dive);
     }
@@ -70,7 +70,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         ZombieNetworked._Zombie.mPhaseCounter = 0;
     }
 
-    internal void SendTakePlantRpc()
+    private void SendTakePlantRpc()
     {
         SendNetworkComponentRpc(BungeeRpcs.TakePlant);
     }

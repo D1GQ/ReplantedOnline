@@ -190,7 +190,7 @@ internal sealed class InfoDisplay : MonoBehaviour
 
                 sb.AppendLine($" AmHost: {client.AmHost}");
 
-                sb.AppendLine($" Ready: {client.Ready}");
+                sb.AppendLine($" Ready: {client.Ready.Value}");
             }
         }
 

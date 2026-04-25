@@ -46,7 +46,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
         }
     }
 
-    internal void SendWakeupRpc()
+    private void SendWakeupRpc()
     {
         SendNetworkComponentRpc(PotatomineRpcs.Wakeup);
     }

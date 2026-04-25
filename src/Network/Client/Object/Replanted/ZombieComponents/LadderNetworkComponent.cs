@@ -60,7 +60,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         UpdatePositionSync();
     }
 
-    internal void SendDonePlacingLadderRpc()
+    private void SendDonePlacingLadderRpc()
     {
         SendNetworkComponentRpc(LadderRpcs.DonePlacingLadder);
     }

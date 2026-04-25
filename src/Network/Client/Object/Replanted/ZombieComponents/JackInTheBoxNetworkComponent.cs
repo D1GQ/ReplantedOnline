@@ -41,7 +41,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         UpdatePositionSync();
     }
 
-    internal void SendExplodeRpc()
+    private void SendExplodeRpc()
     {
         SendNetworkComponentRpc(JackInTheBoxRpcs.Explode);
     }
