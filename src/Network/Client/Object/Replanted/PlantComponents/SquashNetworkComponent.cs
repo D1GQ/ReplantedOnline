@@ -28,7 +28,7 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
                 _looking = true;
                 Zombie target = PlantNetworked._Plant.mBoard.ZombieGet(PlantNetworked._Plant.mTargetZombieID);
                 PlantNetworked.SendSetZombieTargetRpc(target);
-                SendLookRpc(true);
+                SendLookRpc();
             }
             else if (PlantNetworked._Plant.mState == PlantState.SquashPreLaunch && !_jump)
             {
@@ -42,9 +42,9 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
         UpdateHealthSync();
     }
 
-    private void SendLookRpc(bool look)
+    private void SendLookRpc()
     {
-        SendNetworkComponentRpc(SquashRpcs.Look, look);
+        SendNetworkComponentRpc(SquashRpcs.Look);
     }
 
     [RpcHandler(SquashRpcs.Look)]
