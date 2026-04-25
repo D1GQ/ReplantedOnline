@@ -16,4 +16,7 @@ internal static class Animations
     internal static readonly (string Anim, float Fps) SQUASH_IDLE = ("idle", 10.0531f);
     internal static readonly (string Anim, float Fps) SQUASH_LOOKLEFT = ("lookleft", 24f);
     internal static readonly (string Anim, float Fps) SQUASH_LOOKRIGHT = ("lookright", 24f);
+
+    internal static readonly string KERNELPULT_BUTTER_OBJECT = "Cornpult_butter";
+    internal static readonly string KERNELPULT_KERNAL_OBJECT = "Cornpult_kernal";
 }

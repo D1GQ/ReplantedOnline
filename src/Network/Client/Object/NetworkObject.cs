@@ -194,6 +194,9 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// <summary>
     /// Sends an RPC (Remote Procedure Call) for this network object.
     /// </summary>
+    /// <typeparam name="T">The enum type of the RPC identifier.</typeparam>
+    /// <param name="rpcId">The RPC identifier to send.</param>
+    /// <param name="args">Optional arguments to pass to the RPC handler.</param>
     [HideFromIl2Cpp]
     public void SendNetworkObjectRpc<T>(T rpcId, params object[] args) where T : Enum
     {
@@ -203,7 +206,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
             packetWriter = PacketWriter.Get();
             foreach (var arg in args)
             {
-                IFastPacketResolver.WriteFast(packetWriter, arg, arg.GetType());
+                IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
             }
         }
         NetworkDispatcher.SendRpcReceiver(this, Convert.ToByte(rpcId), packetWriter);

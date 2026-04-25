@@ -19,6 +19,7 @@ internal class PlantNetworkComponent : NetworkComponent
             SeedType.Squash => plantNetworked.AddNetworkComponent<SquashNetworkComponent>(),
             SeedType.Chomper => plantNetworked.AddNetworkComponent<ChomperNetworkComponent>(),
             SeedType.Magnetshroom => plantNetworked.AddNetworkComponent<MagnetShroomNetworkComponent>(),
+            SeedType.Kernelpult => plantNetworked.AddNetworkComponent<KernelpultNetworkComponent>(),
             SeedType.Potatomine => plantNetworked.AddNetworkComponent<PotatomineNetworkComponent>(),
             SeedType.Cherrybomb => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
             SeedType.Jalapeno => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),

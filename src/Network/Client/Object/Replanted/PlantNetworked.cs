@@ -4,6 +4,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
+using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Patches.Gameplay.Versus.Plants;
@@ -22,6 +23,7 @@ internal sealed class PlantNetworked : NetworkObject
         Die,
         Shoveled,
         SquishPlant,
+        ReadyToFire,
         Fire,
         SetZombieTarget
     }
@@ -128,7 +130,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.Die)]
-    internal void HandleDieRpc()
+    private void HandleDieRpc()
     {
         Dead = true;
         _Plant?.DieOriginal();
@@ -146,7 +148,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.Shoveled)]
-    internal void HandleShoveledRpc()
+    private void HandleShoveledRpc()
     {
         Dead = true;
         _Plant?.DieOriginal();
@@ -158,20 +160,54 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.SquishPlant)]
-    internal void HandleSquashPlantRpc()
+    private void HandleSquashPlantRpc()
     {
         _Plant.SquishOriginal();
     }
 
-    internal void SendFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    internal void SendReadyToFireRpc(int row, ref PlantWeapon plantWeapon)
     {
-        SendNetworkObjectRpc(PlantRpcs.Fire, theTargetZombie, theRow, thePlantWeapon);
+        if (LogicComponent is KernelpultNetworkComponent component)
+        {
+            component.RandomizeWeapon();
+            plantWeapon = component.GetWeapon();
+        }
+
+        SendNetworkObjectRpc(PlantRpcs.ReadyToFire, row, plantWeapon);
+    }
+
+    [RpcHandler(PlantRpcs.ReadyToFire)]
+    private void HandleReadyToFireRpc(int row, PlantWeapon plantWeapon)
+    {
+        if (LogicComponent is KernelpultNetworkComponent component)
+        {
+            component.SetVisuals(plantWeapon);
+        }
+
+        // Play animation
+        _Plant.FindTargetAndFireOriginal(row, plantWeapon);
+    }
+
+    internal void SendFireRpc(Zombie target, int row, ref PlantWeapon plantWeapon)
+    {
+        if (LogicComponent is KernelpultNetworkComponent component)
+        {
+            component.SetVisuals(PlantWeapon.Primary);
+            plantWeapon = component.GetWeapon();
+        }
+
+        SendNetworkObjectRpc(PlantRpcs.Fire, target, row, plantWeapon);
     }
 
     [RpcHandler(PlantRpcs.Fire)]
-    internal void HandleFireRpc(Zombie theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
+    private void HandleFireRpc(Zombie target, int row, PlantWeapon plantWeapon)
     {
-        _Plant.FireOriginal(theTargetZombie, theRow, thePlantWeapon);
+        if (LogicComponent is KernelpultNetworkComponent component)
+        {
+            component.SetVisuals(PlantWeapon.Primary);
+        }
+
+        _Plant.FireOriginal(target, row, plantWeapon);
     }
 
     internal void SendSetZombieTargetRpc(Zombie target)
@@ -180,7 +216,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.SetZombieTarget)]
-    internal void HandleSetZombieTargetRpc(Zombie target)
+    private void HandleSetZombieTargetRpc(Zombie target)
     {
         Target = target;
     }

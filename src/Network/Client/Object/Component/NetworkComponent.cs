@@ -80,7 +80,7 @@ internal abstract class NetworkComponent : IRpcReceiver
             packetWriter = PacketWriter.Get();
             foreach (var arg in args)
             {
-                IFastPacketResolver.WriteFast(packetWriter, arg, arg.GetType());
+                IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
             }
         }
         NetworkDispatcher.SendRpcReceiver(this, Convert.ToByte(rpcId), packetWriter);

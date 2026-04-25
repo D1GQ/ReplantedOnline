@@ -143,8 +143,9 @@ internal sealed class ZombieNetworked : NetworkObject
         int minimumHealth = 5;
         int relevantHealth;
 
-        if ((damageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
-            (damageFlags & DamageFlags.BypassesShield) == DamageFlags.BypassesShield)
+        if (((damageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
+            (damageFlags & DamageFlags.BypassesShield) == DamageFlags.BypassesShield) &&
+            ZombieType != ZombieType.Target)
         {
             relevantHealth = _Zombie.mBodyHealth + _Zombie.mHelmHealth;
         }
@@ -181,7 +182,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.Death)]
-    internal void HandleDeathRpc(DamageFlags damageFlags)
+    private void HandleDeathRpc(DamageFlags damageFlags)
     {
         if (!Dead)
         {
@@ -203,7 +204,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.DieLoot)]
-    internal void HandleDieLootRpc(bool withLoot)
+    private void HandleDieLootRpc(bool withLoot)
     {
         if (!Dead)
         {
@@ -232,7 +233,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.MowDown)]
-    internal void HandleMowDownRpc()
+    private void HandleMowDownRpc()
     {
         if (!Dead)
         {
@@ -252,7 +253,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.SetPlantTarget)]
-    internal void HandleSetPlantTargetRpc(Plant target)
+    private void HandleSetPlantTargetRpc(Plant target)
     {
         Target = target;
     }
@@ -264,7 +265,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.EnteringHouse)]
-    internal void HandleEnteringHouseRpc(float xPos)
+    private void HandleEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
         LogicComponent.StopLarpPos();
@@ -280,7 +281,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.MindControlled)]
-    internal void HandleMindControlledRpc()
+    private void HandleMindControlledRpc()
     {
         State = NetStates.ZOMBIE_MIND_CONTROLLED_STATE;
         _Zombie.StartMindControlledOriginal();
@@ -305,7 +306,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.SetFrozen)]
-    internal void HandleSetFrozenRpc(bool frozen, int counter)
+    private void HandleSetFrozenRpc(bool frozen, int counter)
     {
         if (frozen)
         {
@@ -335,7 +336,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.ApplyBurn)]
-    internal void HandleApplyBurnRpc(bool reallyDead)
+    private void HandleApplyBurnRpc(bool reallyDead)
     {
         if (_Zombie.mZombieType.IsGravestoneOrTarget()) return;
 
@@ -353,7 +354,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.SetState)]
-    internal void HandleSetStateRpc(string state)
+    private void HandleSetStateRpc(string state)
     {
         if (state == NetStates.NULL_STATE)
         {

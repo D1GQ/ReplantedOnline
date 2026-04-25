@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Il2CppReloaded.Characters;
 using ReplantedOnline.Monos;
 using System.Reflection;
 using System.Text;
@@ -10,7 +9,7 @@ internal static class DebugLoggerPatch
 {
     private static readonly MethodBase[] Targets =
     [
-        AccessTools.Method(typeof(CharacterAnimationController), nameof(CharacterAnimationController.PlayAnimation)),
+        // AccessTools.Method(typeof(CharacterAnimationController), nameof(CharacterAnimationController.PlayAnimation)),
     ];
 
     internal static void Patch()

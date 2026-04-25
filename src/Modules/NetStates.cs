@@ -4,6 +4,7 @@ internal class NetStates
 {
     internal const string NULL_STATE = "null";
     internal const string UPDATE_STATE = "update";
+    internal const string SHOOT_STATE = "shoot";
 
     internal const string ZOMBIE_MIND_CONTROLLED_STATE = "mind_controlled";
     internal const string ZOMBIE_CHEWING_PLANT_STATE = "chewing_plant";
