@@ -3,6 +3,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Patches.Gameplay.Versus;
 using ReplantedOnline.Utilities;
@@ -50,6 +51,8 @@ internal class VersusGameplayManager
                     .Player.ActivateInput();
             }
         ));
+
+        ReplantedLobby.LobbyData.Local_ReadyForNetworkObjects = true;
     }
 
     internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)

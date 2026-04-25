@@ -267,6 +267,8 @@ internal sealed class ReplantedLobbyData : IDisposable
         }
     }
 
+    internal bool Local_ReadyForNetworkObjects { get; set; } = false;
+
     internal int Local_ZombieLife { get; set; } = 3;
 
     /// <summary>
@@ -279,6 +281,7 @@ internal sealed class ReplantedLobbyData : IDisposable
         Synced_HasStarted = false;
         Synced_HostTeam = PlayerTeam.None;
         Synced_Arena = ArenaTypes.Day;
+        Local_ReadyForNetworkObjects = false;
         Local_ZombieLife = 3;
 
         if (ReplantedLobby.AmLobbyHost())

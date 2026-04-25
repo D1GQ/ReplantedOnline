@@ -1,8 +1,10 @@
-﻿using ReplantedOnline.Attributes;
+﻿using MelonLoader;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
+using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
@@ -15,27 +17,42 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
-        var message = Message<NetworkObjectDespawnMessage>.Instance.Deserialize(packetReader);
+        MelonCoroutines.Start(CoWaitForNetworkDespawn(sender, packetReader));
+    }
 
-        if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
+    private static IEnumerator CoWaitForNetworkDespawn(ReplantedClientData sender, PacketReader packetReader)
+    {
+        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var message = Message<NetworkObjectDespawnMessage>.Instance.Deserialize(packet);
+
+        try
         {
-            if (networkObj.OwnerId == sender.ClientId)
+            while (ReplantedLobby.LobbyData != null)
             {
-                if (!networkObj.AmChild)
+                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
-                    ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
-                    UnityEngine.Object.Destroy(networkObj.gameObject);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {message.NetworkId}");
+                    if (networkObj.OwnerId == sender.ClientId)
+                    {
+                        if (!networkObj.AmChild)
+                        {
+                            ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
+                            UnityEngine.Object.Destroy(networkObj.gameObject);
+                            ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {message.NetworkId}");
+                        }
+                        else
+                        {
+                            ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {message.NetworkId}, only the parent can be despawned!");
+                        }
+                    }
+                    break;
                 }
-                else
-                {
-                    ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {message.NetworkId}, only the parent can be despawned!");
-                }
+
+                yield return null;
             }
         }
-        else
+        finally
         {
-            ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Failed to despawn NetworkObject: ID {message.NetworkId} not found");
+            packet.Recycle();
         }
     }
 }
