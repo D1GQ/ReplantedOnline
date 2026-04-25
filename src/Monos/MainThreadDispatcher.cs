@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ReplantedOnline.Utilities;
+using UnityEngine;
 
 namespace ReplantedOnline.Monos;
 
@@ -45,7 +46,7 @@ internal class MainThreadDispatcher : MonoBehaviour
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"Error in main thread action: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(MainThreadDispatcher), $"Error in main thread action: {ex}");
             }
         }
     }

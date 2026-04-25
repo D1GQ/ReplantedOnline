@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client;
 
@@ -26,7 +27,7 @@ internal sealed class ReplantedClientData
         {
             OpponentClient = this;
         }
-        ReplantedOnlineMod.Logger.Msg($"[ReplantedClientData] P2P connections initialized with {Name} ({id})");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedClientData), $"P2P connections initialized with {Name} ({id})");
     }
 
     /// <summary>

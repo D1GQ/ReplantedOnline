@@ -13,6 +13,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Patches;
 using ReplantedOnline.Patches.Client;
+using ReplantedOnline.Utilities;
 using System.Reflection;
 using UnityEngine;
 
@@ -117,7 +118,7 @@ internal class ReplantedOnlineMod : MelonMod
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
+                Logger.Error(typeof(ReplantedOnlineMod), $"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
             }
         }
     }

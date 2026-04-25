@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Utilities;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
@@ -33,13 +34,13 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
                 {
                     if (networkObj.OwnerId != sender.ClientId)
                     {
-                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Sync rejected: {sender.Name} is not owner of NetworkObject {message.NetworkId}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkObjectSyncPacketHandler), $"Sync rejected: {sender.Name} is not owner of NetworkObject {message.NetworkId}");
                         break;
                     }
 
                     networkObj.SyncedBits.SyncedDirtyBits = message.DirtyBits;
                     networkObj.Deserialize(packet, message.Init);
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Synced NetworkObject from {sender.Name}: {message.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSyncPacketHandler), $"Synced NetworkObject from {sender.Name}: {message.NetworkId}");
                     break;
                 }
 

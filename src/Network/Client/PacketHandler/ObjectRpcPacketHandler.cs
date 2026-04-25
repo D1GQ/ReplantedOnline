@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ internal class ObjectRpcPacketHandler : IPacketHandler
                 {
                     if (!message.IsComponent)
                     {
-                        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
+                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectRpcPacketHandler), $"Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
                         RpcHandlerAttribute.HandleRpcReceiver(networkObj, sender, message.RpcId, packet);
                     }
                     else
@@ -43,11 +44,11 @@ internal class ObjectRpcPacketHandler : IPacketHandler
                         var component = networkObj.NetworkComponents.ElementAtOrDefault(message.ComponentIndex);
                         if (component == null)
                         {
-                            ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Error processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex} not found!");
+                            ReplantedOnlineMod.Logger.Error(typeof(ObjectRpcPacketHandler), $"Error processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex} not found!");
                             break;
                         }
 
-                        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex}");
+                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectRpcPacketHandler), $"Processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex}");
                         RpcHandlerAttribute.HandleRpcReceiver(component, sender, message.RpcId, packet);
                     }
 

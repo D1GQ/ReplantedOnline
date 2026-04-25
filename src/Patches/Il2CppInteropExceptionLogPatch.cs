@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Exceptions;
+using ReplantedOnline.Utilities;
 using System.Reflection;
 
 namespace ReplantedOnline.Patches;
@@ -18,7 +19,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (exceptionLogType == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find Il2CppInteropExceptionLog type");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInteropExceptionLog type");
                 return null;
             }
 
@@ -28,7 +29,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (loggerField == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find _logger field");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find _logger field");
                 return null;
             }
 
@@ -37,7 +38,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (logger == null)
             {
-                ReplantedOnlineMod.Logger.Error("Logger field was null");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Logger field was null");
                 return null;
             }
 
@@ -46,7 +47,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error($"Failed to get Il2CppInterop logger: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), $"Failed to get Il2CppInterop logger: {ex}");
             return null;
         }
     }
@@ -71,7 +72,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (harmonySupportAssembly == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find Il2CppInterop.HarmonySupport assembly");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInterop.HarmonySupport assembly");
                 return;
             }
 
@@ -79,7 +80,7 @@ internal static class Il2CppInteropExceptionLogPatch
             var detourMethodPatcherType = harmonySupportAssembly.GetType("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher");
             if (detourMethodPatcherType == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find Il2CppDetourMethodPatcher type");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppDetourMethodPatcher type");
                 return;
             }
 
@@ -89,7 +90,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (reportException == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find ReportException method");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find ReportException method");
                 return;
             }
 
@@ -99,7 +100,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (melonPatch == null)
             {
-                ReplantedOnlineMod.Logger.Error("Could not find MelonLoader's ReportException_Prefix");
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find MelonLoader's ReportException_Prefix");
                 return;
             }
 
@@ -109,7 +110,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error($"Failed to unpatch MelonLoader exception log: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), $"Failed to unpatch MelonLoader exception log: {ex}");
         }
     }
 
@@ -138,7 +139,7 @@ internal static class Il2CppInteropExceptionLogPatch
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error($"Failed to install our exception log: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), $"Failed to install our exception log: {ex}");
         }
     }
 

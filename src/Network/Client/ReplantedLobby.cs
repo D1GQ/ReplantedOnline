@@ -12,6 +12,7 @@ using ReplantedOnline.Network.Routing.Transport;
 using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client;
 
@@ -50,14 +51,14 @@ internal static class ReplantedLobby
         {
             case 0:
                 NetworkTransport = new SteamTransport();
-                ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to Steam");
+                ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Network transport set to Steam");
                 break;
             case 1:
                 NetworkTransport = new LanTransport();
-                ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Network transport set to LAN");
+                ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Network transport set to LAN");
                 break;
             default:
-                ReplantedOnlineMod.Logger.Warning($"[ReplantedLobby] Invalid transport mode: {mode}, defaulting to Steam");
+                ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), $"Invalid transport mode: {mode}, defaulting to Steam");
                 NetworkTransport = new SteamTransport();
                 break;
         }
@@ -74,7 +75,7 @@ internal static class ReplantedLobby
         InitializeLan();
 
         SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
-        ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] initialized");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Initialized");
     }
 
     /// <summary>
@@ -139,7 +140,7 @@ internal static class ReplantedLobby
     /// </summary>
     internal static void ResetLobby(Action callback = null)
     {
-        ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Restarting the lobby");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Restarting the lobby");
         ReplantedClientData.LocalClient?.Ready = false;
         VersusLobbyManager.ResetPlayerInput();
         LobbyData.UnsetAllTeams();
@@ -172,7 +173,7 @@ internal static class ReplantedLobby
     {
         NetworkTransport.JoinLobby(lobbyId);
         Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Joining lobby: {lobbyId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Joining lobby: {lobbyId}");
     }
 
     /// <summary>
@@ -182,18 +183,18 @@ internal static class ReplantedLobby
     {
         if (LobbyData == null)
         {
-            ReplantedOnlineMod.Logger.Warning("[ReplantedLobby] Cannot leave - not in a lobby");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), "Cannot leave - not in a lobby");
             return;
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Leaving lobby {LobbyData.LobbyId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Leaving lobby {LobbyData.LobbyId}");
         var lobbyId = LobbyData.LobbyId;
         LobbyData.Dispose();
         Transitions.SetLoading();
         Transitions.ToMainMenu(callback);
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
-        ReplantedOnlineMod.Logger.Msg("[ReplantedLobby] Successfully left lobby");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), "Successfully left lobby");
     }
 
     internal static void OnLobbyCreatedCompleted(Result result, ServerLobby lobby)
@@ -203,13 +204,13 @@ internal static class ReplantedLobby
             LobbyData?.Dispose();
             LobbyData = new(lobby.Id, lobby.OwnerId);
             LobbyData.InitializeData();
-            ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Lobby created successfully: {LobbyData.LobbyId}");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Lobby created successfully: {LobbyData.LobbyId}");
             MatchmakingManager.SetLobbyData(LobbyData);
         }
         else
         {
             Transitions.ToMainMenu();
-            ReplantedOnlineMod.Logger.Error($"[ReplantedLobby] Lobby creation failed with result: {result}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReplantedLobby), $"Lobby creation failed with result: {result}");
         }
     }
 
@@ -232,11 +233,11 @@ internal static class ReplantedLobby
 
         if (memberCount > 1)
         {
-            ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} players");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Joined lobby {LobbyData.LobbyId} with {memberCount} players");
         }
         else
         {
-            ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Joined lobby {LobbyData.LobbyId} with {memberCount} player");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Joined lobby {LobbyData.LobbyId} with {memberCount} player");
         }
     }
 
@@ -251,17 +252,17 @@ internal static class ReplantedLobby
     {
         if (lobby.Id != LobbyData.LobbyId)
         {
-            ReplantedOnlineMod.Logger.Warning($"[ReplantedLobby] Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), $"Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
             return;
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
         ProcessMemberList();
 
         // If we're the host, request P2P session with the new player
         if (AmLobbyHost())
         {
-            ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Host initiating P2P connection with new player {clientId}");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Host initiating P2P connection with new player {clientId}");
             NetworkDispatcher.SendNetworkObjectsTo(clientId);
         }
     }
@@ -294,12 +295,12 @@ internal static class ReplantedLobby
         if (clientId.IsBanned()) return;
 
         NetworkTransport.AcceptP2PSessionWithUser(clientId);
-        ReplantedOnlineMod.Logger.Msg($"[ReplantedLobby] Accepted P2P session with {clientId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReplantedLobby), $"Accepted P2P session with {clientId}");
     }
 
     internal static void Steam_OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
     {
-        ReplantedOnlineMod.Logger.Warning($"[ReplantedLobby] P2P session connection failed with {clientId}: {error}");
+        ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), $"P2P session connection failed with {clientId}: {error}");
     }
 
     /// <summary>
@@ -347,25 +348,25 @@ internal static class ReplantedLobby
     {
         if (!AmInLobby())
         {
-            ReplantedOnlineMod.Logger.Warning("[ReplantedLobby] Cannot kick player - not in a lobby");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), "Cannot kick player - not in a lobby");
             return;
         }
 
         if (!AmLobbyHost())
         {
-            ReplantedOnlineMod.Logger.Warning("[ReplantedLobby] Only the lobby host can kick players");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), "Only the lobby host can kick players");
             return;
         }
 
         if (clientId == NetworkTransport.LocalClientId)
         {
-            ReplantedOnlineMod.Logger.Warning("[ReplantedLobby] Cannot kick yourself");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), "Cannot kick yourself");
             return;
         }
 
         if (!IsPlayerInOurLobby(clientId))
         {
-            ReplantedOnlineMod.Logger.Warning($"[ReplantedLobby] Player {clientId} is not in the lobby");
+            ReplantedOnlineMod.Logger.Warning(typeof(ReplantedLobby), $"Player {clientId} is not in the lobby");
             return;
         }
 

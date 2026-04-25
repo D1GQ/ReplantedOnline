@@ -36,7 +36,7 @@ internal static class NetworkDispatcher
                     var packet = PacketWriter.Get();
                     Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
 
-                    ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent Network Objects to {targetId}");
+                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Network Objects to {targetId}");
                     SendPacketTo(targetId, packet, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Buffered);
                     packet.Recycle();
                 }
@@ -57,7 +57,7 @@ internal static class NetworkDispatcher
         var packet = PacketWriter.Get();
         Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
         SendPacket(packet, false, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main);
         packet.Recycle();
     }
@@ -71,7 +71,7 @@ internal static class NetworkDispatcher
         var packet = PacketWriter.Get();
         Message<NetworkObjectDespawnMessage>.Instance.Serialize(networkObj, packet);
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent Despawn Network Object with ID: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Despawn Network Object with ID: {networkObj.NetworkId}");
         SendPacket(packet, false, PacketHandlerType.NetworkObjectDespawn, PacketChannel.Main);
         packet.Recycle();
 
@@ -93,7 +93,7 @@ internal static class NetworkDispatcher
             packet.WritePacketToBuffer(payload);
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent RPC: {Enum.GetName(rpc)}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent RPC: {Enum.GetName(rpc)}");
         SendPacket(packet, receiveLocally, PacketHandlerType.Rpc, PacketChannel.Rpc);
         packet.Recycle();
     }
@@ -114,7 +114,7 @@ internal static class NetworkDispatcher
             packet.WritePacketToBuffer(payload);
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent Object RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Object RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
         SendPacket(packet, receiveLocally, PacketHandlerType.ObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
     }
@@ -139,7 +139,7 @@ internal static class NetworkDispatcher
             ReplantedLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
         packet.Recycle();
     }
 
@@ -168,7 +168,7 @@ internal static class NetworkDispatcher
             }
         }
 
-        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {sentCount} clients -> Size: {packet.Length} bytes");
 
         if (receiveLocally)
         {
@@ -203,7 +203,7 @@ internal static class NetworkDispatcher
     /// <returns>Enumerator for coroutine execution</returns>
     internal static IEnumerator CoListening()
     {
-        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] Starting NetworkDispatcher");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), "Starting...");
 
         while (ReplantedLobby.AmInLobby())
         {
@@ -246,7 +246,7 @@ internal static class NetworkDispatcher
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Exception in CoListening: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(NetworkDispatcher), $"Exception in CoListening: {ex}");
                 ReplantedLobby.LeaveLobby(() =>
                 {
                     CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
@@ -258,7 +258,7 @@ internal static class NetworkDispatcher
             yield return null;
         }
 
-        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] Stoping NetworkDispatcher");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), "Stoping...");
 
         listeningToken = null;
     }
@@ -276,7 +276,7 @@ internal static class NetworkDispatcher
             if (ReplantedLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
             {
                 var sender = buffer.ClientId.GetNetClient();
-                ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
+                ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
 
                 if (buffer.Size > 0)
                 {
@@ -286,12 +286,12 @@ internal static class NetworkDispatcher
                 }
                 else
                 {
-                    ReplantedOnlineMod.Logger.Error("[NetworkDispatcher] Received packet with zero size");
+                    ReplantedOnlineMod.Logger.Error(typeof(NetworkDispatcher), "Received packet with zero size");
                 }
             }
             else
             {
-                ReplantedOnlineMod.Logger.Error("[NetworkDispatcher] Failed to read P2P packet from network buffer");
+                ReplantedOnlineMod.Logger.Error(typeof(NetworkDispatcher), "Failed to read P2P packet from network buffer");
             }
         }
         finally
@@ -314,7 +314,7 @@ internal static class NetworkDispatcher
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Can not processing {message.Tag} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.Tag} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
             }
 
             packetReader.Recycle();
@@ -323,7 +323,7 @@ internal static class NetworkDispatcher
 
         if (!local)
         {
-            ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Processing {message.Tag} packet from {sender?.Name ?? "Unknown"}");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.Tag} packet from {sender?.Name ?? "Unknown"}");
         }
 
         try
@@ -333,11 +333,11 @@ internal static class NetworkDispatcher
                 case PacketHandlerType.None:
                     if (!local)
                     {
-                        ReplantedOnlineMod.Logger.Warning("[NetworkDispatcher] Received packet with no tag");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), "Received packet with no tag");
                     }
                     else
                     {
-                        ReplantedOnlineMod.Logger.Warning("[NetworkDispatcher] Received local packet with no tag");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), "Received local packet with no tag");
                     }
                     break;
                 case PacketHandlerType.RemoveClient:
@@ -349,7 +349,7 @@ internal static class NetworkDispatcher
                         {
                             CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");
                         });
-                        ReplantedOnlineMod.Logger.Msg("[NetworkDispatcher] P2P closed by host");
+                        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), "P2P closed by host");
                     }
                     break;
                 case PacketHandlerType.ResetLobby:
@@ -361,7 +361,7 @@ internal static class NetworkDispatcher
                 default:
                     if (!IPacketHandler.HandlePacket(message.Tag, sender, packetReader, local))
                     {
-                        ReplantedOnlineMod.Logger.Warning($"[NetworkDispatcher] Unknown packet tag: {message.Tag}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Unknown packet tag: {message.Tag}");
                     }
                     break;
             }

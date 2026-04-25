@@ -103,7 +103,7 @@ internal sealed class PacketReader : IPacket
             return networkObj;
         }
 
-        ReplantedOnlineMod.Logger.Warning($"ReadNetworkObject has unexpectedly returned NULL! NetworkId:{netId} not found");
+        ReplantedOnlineMod.Logger.Warning(typeof(PacketReader), $"ReadNetworkObject has unexpectedly returned NULL! NetworkId:{netId} not found");
 
         return null;
     }
@@ -352,7 +352,7 @@ internal sealed class PacketReader : IPacket
 
         if (_position + 4 > _data.Length)
         {
-            ReplantedOnlineMod.Logger.Error("[PacketReader] Not enough data to read signature hash");
+            ReplantedOnlineMod.Logger.Error(typeof(PacketReader), "Not enough data to read signature hash");
             return 0;
         }
 

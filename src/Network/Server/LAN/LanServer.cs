@@ -4,6 +4,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 using System.Net;
 using System.Net.Sockets;
 
@@ -244,7 +245,7 @@ internal sealed class LanServer : IDisposable
 
         if (serverData.HostAddress == null)
         {
-            ReplantedOnlineMod.Logger.Error("[Server] No host address in server data");
+            ReplantedOnlineMod.Logger.Error(typeof(LanServer), "No host address in server data");
             return;
         }
 
@@ -334,7 +335,7 @@ internal sealed class LanServer : IDisposable
             catch (ObjectDisposedException) { break; }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"[Server] P2P listen error: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"P2P listen error: {ex}");
                 await Task.Delay(100, P2PCTS.Token);
             }
         }
@@ -415,7 +416,7 @@ internal sealed class LanServer : IDisposable
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error($"[Server] Failed to send packet to {iPEndPoint}: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"Failed to send packet to {iPEndPoint}: {ex}");
         }
     }
 
@@ -458,7 +459,7 @@ internal sealed class LanServer : IDisposable
         {
             if (!Members.ContainsKey(memberId))
             {
-                ReplantedOnlineMod.Logger.Warning($"[Server] Cannot send RPC to {memberId} - member not found");
+                ReplantedOnlineMod.Logger.Warning(typeof(LanServer), $"Cannot send RPC to {memberId} - member not found");
                 return false;
             }
         }

@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
@@ -37,7 +38,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         {
             var selectionSet = (SelectionSet)packetReader.ReadByte();
 
-            ReplantedOnlineMod.Logger.Msg("[RPCHandler] Game Starting...");
+            ReplantedOnlineMod.Logger.Msg(typeof(StartGameRpc), "Game Starting...");
 
             // Configure the game with the host's selected game mode
             LevelEntries.SetupVersusArenaForGameplay(selectionSet);
@@ -47,7 +48,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         }
         else
         {
-            ReplantedOnlineMod.Logger.Warning($"[RPCHandler] Rejected StartGame RPC from non-host: {sender.Name}");
+            ReplantedOnlineMod.Logger.Warning(typeof(StartGameRpc), $"Rejected StartGame RPC from non-host: {sender.Name}");
         }
     }
 }

@@ -120,7 +120,7 @@ internal static class Transitions
         {
             if (Time.time - startTime > timeout)
             {
-                ReplantedOnlineMod.Logger.Error($"Timeout waiting for transition '{transitionName}' to start");
+                ReplantedOnlineMod.Logger.Error(typeof(Transitions), $"Timeout waiting for transition '{transitionName}' to start");
                 yield break;
             }
             yield return null;
@@ -131,7 +131,7 @@ internal static class Transitions
         {
             if (Time.time - startTime > timeout)
             {
-                ReplantedOnlineMod.Logger.Error($"Timeout waiting for transition '{transitionName}' to complete");
+                ReplantedOnlineMod.Logger.Error(typeof(Transitions), $"Timeout waiting for transition '{transitionName}' to complete");
                 yield break;
             }
 

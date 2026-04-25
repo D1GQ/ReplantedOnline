@@ -6,6 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Utilities;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
@@ -39,7 +40,7 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
 
                 if (message.PrefabId == NetworkObject.NO_PREFAB_ID)
                 {
-                    ReplantedOnlineMod.Logger.Error("Serialized network object had a unset prefab id!");
+                    ReplantedOnlineMod.Logger.Error(typeof(NetworkObjectSpawnPacketHandler), "Serialized network object had a unset prefab id!");
                 }
                 else
                 {
@@ -51,11 +52,11 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
                         networkObj.transform.SetParent(GlobalGameObjects.NetworkObjectsGo.transform);
                         Message<NetworkObjectSpawnMessage>.Instance.DeserializeNetworkObject(networkObj, packet);
                         networkObj.gameObject.SetActive(true);
-                        ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Spawned prefab NetworkObject from {sender.Name}: {message.NetworkId}, Prefab: {message.PrefabId}");
+                        ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnPacketHandler), $"Spawned prefab NetworkObject from {sender.Name}: {message.NetworkId}, Prefab: {message.PrefabId}");
                     }
                     else
                     {
-                        ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] Failed to spawn NetworkObject: Prefab ID {message.PrefabId} not found");
+                        ReplantedOnlineMod.Logger.Error(typeof(NetworkObjectSpawnPacketHandler), $"Failed to spawn NetworkObject: Prefab ID {message.PrefabId} not found");
                     }
                 }
 

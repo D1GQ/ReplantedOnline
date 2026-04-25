@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 using System.Net;
 using System.Net.Sockets;
 
@@ -206,7 +207,7 @@ internal sealed class LanServerBroadcast : IDisposable
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"[Broadcast] Error: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(LanServerBroadcast), $"Error: {ex}");
                 await Task.Delay(1000, BroadcastCTS.Token);
             }
         }
@@ -250,7 +251,7 @@ internal sealed class LanServerBroadcast : IDisposable
 
                 if (serverData.GamePort < 1 || serverData.GamePort > 65535)
                 {
-                    ReplantedOnlineMod.Logger.Warning($"[Broadcast] Invalid port {serverData.GamePort} from {serverData.GetServerName()}");
+                    ReplantedOnlineMod.Logger.Warning(typeof(LanServerBroadcast), $"Invalid port {serverData.GamePort} from {serverData.GetServerName()}");
                     continue;
                 }
 
@@ -307,7 +308,7 @@ internal sealed class LanServerBroadcast : IDisposable
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"[Broadcast] Listen error: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(LanServerBroadcast), $"Listen error: {ex}");
                 await Task.Delay(1000, ListenCTS.Token);
             }
         }
@@ -349,7 +350,7 @@ internal sealed class LanServerBroadcast : IDisposable
             }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error($"[Broadcast] Cleanup error: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(LanServerBroadcast), $"Cleanup error: {ex}");
             }
         }
     }

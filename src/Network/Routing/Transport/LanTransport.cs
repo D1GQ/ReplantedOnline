@@ -8,6 +8,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Routing.Transport;
 
@@ -35,26 +36,26 @@ internal sealed class LanTransport : INetworkTransport
         try
         {
             _isJoining = true;
-            ReplantedOnlineMod.Logger.Msg("[LanTransport] Searching for lobbies...");
+            ReplantedOnlineMod.Logger.Msg(typeof(LanTransport), "Searching for lobbies...");
 
             var serverData = await LanServer.Server.ServerBroadcast.DiscoverFirstLobby();
 
             if (serverData == null)
             {
-                ReplantedOnlineMod.Logger.Msg("[LanTransport] No lobbies found");
+                ReplantedOnlineMod.Logger.Msg(typeof(LanTransport), "No lobbies found");
                 _isJoining = false;
                 ShowDisconnectPopup("No LAN lobbies found");
                 return;
             }
 
-            ReplantedOnlineMod.Logger.Msg($"[LanTransport] Found lobby: {serverData.GetServerName()}");
+            ReplantedOnlineMod.Logger.Msg(typeof(LanTransport), $"Found lobby: {serverData.GetServerName()}");
             JoinLobby(serverData.LobbyId);
             _hasJoined = true;
             _isJoining = false;
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error($"[LanTransport] Error: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error(typeof(LanTransport), $"Error: {ex.Message}");
             _isJoining = false;
             ShowDisconnectPopup("Error joining LAN lobby");
         }

@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Utilities;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
@@ -37,11 +38,11 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
                         {
                             ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                             UnityEngine.Object.Destroy(networkObj.gameObject);
-                            ReplantedOnlineMod.Logger.Msg($"[NetworkDispatcher] Despawned NetworkObject from {sender.Name}: {message.NetworkId}");
+                            ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectDespawnPacketHandler), $"Despawned NetworkObject from {sender.Name}: {message.NetworkId}");
                         }
                         else
                         {
-                            ReplantedOnlineMod.Logger.Error($"[NetworkDispatcher] {sender.Name} Client requested to despawn child network object {message.NetworkId}, only the parent can be despawned!");
+                            ReplantedOnlineMod.Logger.Error(typeof(NetworkObjectDespawnPacketHandler), $"{sender.Name} Client requested to despawn child network object {message.NetworkId}, only the parent can be despawned!");
                         }
                     }
                     break;
