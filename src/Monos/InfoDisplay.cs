@@ -140,18 +140,33 @@ internal sealed class InfoDisplay : MonoBehaviour
         StringBuilder sb = new();
 
         sb.AppendLine("Debug Info >");
+
         if (DebugLoggerEnabled)
         {
             sb.AppendLine($" Debug Logger: True");
         }
+
+        sb.AppendLine($" Mod Signature: {ModInfo.Signature.SignatureHash}");
+
         sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
+
         sb.AppendLine($" Steam Appid: {SteamClient.AppId}");
+
         sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
 
         if (ReplantedLobby.AmInLobby())
         {
             sb.AppendLine("Lobby Info >");
-            sb.AppendLine($" Network Classes: {ReplantedLobby.LobbyData.NetworkObjectsSpawned.Count}");
+
+            if (!ReplantedLobby.LobbyData.Local_ReadyForNetworkObjects)
+            {
+                sb.AppendLine($" Not Ready For Network Objects!");
+            }
+            else
+            {
+                sb.AppendLine($" Network Objects: {ReplantedLobby.LobbyData.NetworkObjectsSpawned.Count}");
+            }
+
             if (!ReplantedLobby.LobbyData.Synced_HasStarted)
             {
                 sb.AppendLine(" Versus Phase: Lobby");
@@ -160,15 +175,21 @@ internal sealed class InfoDisplay : MonoBehaviour
             {
                 sb.AppendLine($" Versus Phase: {Enum.GetName(Instances.GameplayActivity.VersusMode.Phase)}");
             }
+
             sb.AppendLine($" Clients: {ReplantedLobby.LobbyData.AllClients.Count}");
 
             foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
             {
                 sb.AppendLine($"{client.Name} Client Info >");
+
                 sb.AppendLine($" ID: {client.ClientId}");
+
                 sb.AppendLine($" Team: {Enum.GetName(client.Team)}");
+
                 sb.AppendLine($" AmLocal: {client.AmLocal}");
+
                 sb.AppendLine($" AmHost: {client.AmHost}");
+
                 sb.AppendLine($" Ready: {client.Ready}");
             }
         }
