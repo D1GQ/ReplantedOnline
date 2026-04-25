@@ -27,11 +27,8 @@ internal interface IPacketHandler
     /// <param name="sender">The client that sent the packet.</param>
     /// <param name="packetReader">The packet reader containing the raw packet data
     /// to be deserialized and processed by the handler.</param>
-    /// <remarks>
-    /// Implementations should handle deserialization, validation, and any necessary
-    /// game state modifications based on the packet contents.
-    /// </remarks>
-    void Handle(ReplantedClientData sender, PacketReader packetReader);
+    /// <param name="local">Whether if this packet is from the local client.</param>
+    void Handle(ReplantedClientData sender, PacketReader packetReader, bool local);
 
     /// <summary>
     /// Dispatches an incoming packet to the appropriate registered handler based on its tag.
@@ -39,16 +36,17 @@ internal interface IPacketHandler
     /// <param name="tag">The packet tag identifying the type of packet received.</param>
     /// <param name="sender">The client that sent the packet.</param>
     /// <param name="packetReader">The packet reader containing the packet data.</param>
+    /// <param name="local">Whether if this packet is from the local client.</param>
     /// <returns>
     /// <c>true</c> if a handler was found and successfully processed the packet;
     /// otherwise, <c>false</c> if no handler is registered for the specified tag.
     /// </returns>
-    internal static bool HandlePacket(PacketHandlerType tag, ReplantedClientData sender, PacketReader packetReader)
+    internal static bool HandlePacket(PacketHandlerType tag, ReplantedClientData sender, PacketReader packetReader, bool local)
     {
         foreach (var dispatcher in RegisterPacketHandler.Instances)
         {
             if (dispatcher.Type != tag) continue;
-            dispatcher.Handle(sender, packetReader);
+            dispatcher.Handle(sender, packetReader, local);
             return true;
         }
 

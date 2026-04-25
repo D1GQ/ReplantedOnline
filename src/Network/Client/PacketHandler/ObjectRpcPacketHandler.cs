@@ -16,7 +16,7 @@ internal class ObjectRpcPacketHandler : IPacketHandler
     public PacketHandlerType Type => PacketHandlerType.ObjectRpc;
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkObject(sender, packetReader));
     }

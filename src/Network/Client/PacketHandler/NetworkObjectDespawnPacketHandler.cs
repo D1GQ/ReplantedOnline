@@ -15,7 +15,7 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
     public PacketHandlerType Type => PacketHandlerType.NetworkObjectDespawn;
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkDespawn(sender, packetReader));
     }

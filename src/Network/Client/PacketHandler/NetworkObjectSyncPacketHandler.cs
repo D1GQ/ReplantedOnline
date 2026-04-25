@@ -15,7 +15,7 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
     public PacketHandlerType Type => PacketHandlerType.NetworkObjectSync;
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkObjectSync(sender, packetReader));
     }

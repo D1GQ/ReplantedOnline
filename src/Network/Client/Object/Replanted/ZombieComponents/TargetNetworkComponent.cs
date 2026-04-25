@@ -1,6 +1,5 @@
 ﻿using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
-using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using UnityEngine;
 
@@ -19,7 +18,6 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 
     internal override void OnDeath(DeathReason deathReason)
     {
-        if (VersusState.IsInCountDown) return;
         if (deathReason != DeathReason.Normal) return;
         if (_hasDead) return;
         _hasDead = true;
