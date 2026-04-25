@@ -213,6 +213,7 @@ internal static class VersusEndGameManager
             ZombieAvatar = playerNamePlate.transform.Find("PlayerAvatar/ZombieAvatar").gameObject;
 
             Trophy = playerNamePlate.transform.Find("TrophyCount/Winner/Animator").gameObject;
+            Trophy.SetActive(false);
             PlantTrophy = Trophy.transform.Find("Trophy/PlantTrophy").gameObject;
             ZombieTrophy = Trophy.transform.Find("Trophy/ZombieTrophy").gameObject;
             PlantTrophyCount = playerNamePlate.transform.Find("TrophyCount/TrophesCount/P_EntryWinCount_Plants").gameObject;
