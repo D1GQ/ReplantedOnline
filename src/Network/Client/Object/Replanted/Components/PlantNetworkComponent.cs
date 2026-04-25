@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
@@ -31,6 +32,8 @@ internal class PlantNetworkComponent : NetworkComponent
     {
         PlantNetworked = NetworkObject as PlantNetworked;
     }
+
+    internal virtual void OnDeath(DeathReason deathReason) { }
 
     internal int? lastSyncPlantHealth;
     private float _syncHealthCooldown = 2f;

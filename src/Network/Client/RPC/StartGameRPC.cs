@@ -25,7 +25,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         packetWriter.WriteByte((byte)selectionSet);
         NetworkDispatcher.SendRpc(Rpc, packetWriter, true);
         packetWriter.Recycle();
-        ReplantedLobby.LobbyData.HasStarted = true;
+        ReplantedLobby.LobbyData.Synced_HasStarted = true;
         MatchmakingManager.UpdateLobbyJoinable();
     }
 

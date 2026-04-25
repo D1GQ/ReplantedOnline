@@ -175,59 +175,59 @@ internal sealed class ReplantedLobbyData : IDisposable
         }
     }
 
-    internal bool LobbyRestarting
+    internal bool Synced_LobbyRestarting
     {
         get
         {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(LobbyRestarting)) == bool.TrueString;
+            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_LobbyRestarting)) == bool.TrueString;
         }
         set
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(LobbyRestarting), value.ToString());
+                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_LobbyRestarting), value.ToString());
                 UpdateLobbyStates();
             }
         }
     }
 
-    internal bool PickingSides
+    internal bool Synced_PickingSides
     {
         get
         {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(PickingSides)) == bool.TrueString;
+            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_PickingSides)) == bool.TrueString;
         }
         set
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(PickingSides), value.ToString());
+                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_PickingSides), value.ToString());
                 UpdateLobbyStates();
             }
         }
     }
 
-    internal bool HasStarted
+    internal bool Synced_HasStarted
     {
         get
         {
-            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(HasStarted)) == bool.TrueString;
+            return ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_HasStarted)) == bool.TrueString;
         }
         set
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(HasStarted), value.ToString());
+                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_HasStarted), value.ToString());
                 UpdateLobbyStates();
             }
         }
     }
 
-    internal PlayerTeam HostTeam
+    internal PlayerTeam Synced_HostTeam
     {
         get
         {
-            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(HostTeam));
+            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_HostTeam));
             if (int.TryParse(data, out var @int))
             {
                 return (PlayerTeam)@int;
@@ -239,17 +239,17 @@ internal sealed class ReplantedLobbyData : IDisposable
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(HostTeam), ((int)value).ToString());
+                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_HostTeam), ((int)value).ToString());
                 UpdateLobbyStates();
             }
         }
     }
 
-    internal ArenaTypes Arena
+    internal ArenaTypes Synced_Arena
     {
         get
         {
-            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Arena));
+            var data = ReplantedLobby.NetworkTransport.GetLobbyData(LobbyId, nameof(Synced_Arena));
             if (int.TryParse(data, out var @int))
             {
                 return (ArenaTypes)@int;
@@ -261,22 +261,25 @@ internal sealed class ReplantedLobbyData : IDisposable
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Arena), ((int)value).ToString());
+                ReplantedLobby.NetworkTransport.SetLobbyData(LobbyId, nameof(Synced_Arena), ((int)value).ToString());
                 UpdateLobbyStates();
             }
         }
     }
+
+    internal int Local_ZombieLife { get; set; } = 3;
 
     /// <summary>
     /// Initializes lobby data to default.
     /// </summary>
     internal void InitializeData()
     {
-        LobbyRestarting = false;
-        PickingSides = false;
-        HasStarted = false;
-        HostTeam = PlayerTeam.None;
-        Arena = ArenaTypes.Day;
+        Synced_LobbyRestarting = false;
+        Synced_PickingSides = false;
+        Synced_HasStarted = false;
+        Synced_HostTeam = PlayerTeam.None;
+        Synced_Arena = ArenaTypes.Day;
+        Local_ZombieLife = 3;
 
         if (ReplantedLobby.AmLobbyHost())
         {
@@ -293,7 +296,7 @@ internal sealed class ReplantedLobbyData : IDisposable
     {
         if (ReplantedLobby.AmLobbyHost())
         {
-            LobbyRestarting = true;
+            Synced_LobbyRestarting = true;
             NetworkDispatcher.SendPacket(null, false, PacketHandlerType.ResetLobby, PacketChannel.Main);
             ReplantedLobby.ResetLobby();
         }
@@ -304,9 +307,9 @@ internal sealed class ReplantedLobbyData : IDisposable
     /// </summary>
     internal void UpdateLobbyStates()
     {
-        if (HasStarted || LobbyRestarting) return;
+        if (Synced_HasStarted || Synced_LobbyRestarting) return;
 
-        var hostTeam = HostTeam;
+        var hostTeam = Synced_HostTeam;
         if (hostTeam is PlayerTeam.None)
         {
             VersusLobbyManager.ResetPlayerInput();
@@ -332,7 +335,7 @@ internal sealed class ReplantedLobbyData : IDisposable
             VersusLobbyManager.UpdateSideVisuals();
         }
 
-        ArenaSelectorPanel.SetPreview(Arena);
+        ArenaSelectorPanel.SetPreview(Synced_Arena);
     }
 
     /// <summary>

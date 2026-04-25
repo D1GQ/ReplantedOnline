@@ -18,7 +18,6 @@ internal static class ZombieSyncPatch
         {
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDeathRpc(theDamageFlags);
-            netZombie?.CheckDeath();
         }
 
         return true;
@@ -40,7 +39,6 @@ internal static class ZombieSyncPatch
         {
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDieLootRpc(true);
-            netZombie?.CheckDeath();
         }
 
         return true;
@@ -62,7 +60,6 @@ internal static class ZombieSyncPatch
         {
             var netZombie = __instance.GetNetworked();
             netZombie?.SendDieLootRpc(false);
-            netZombie?.CheckDeath();
         }
 
         return true;

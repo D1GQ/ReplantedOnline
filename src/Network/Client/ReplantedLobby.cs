@@ -218,6 +218,7 @@ internal static class ReplantedLobby
         LobbyData?.Dispose();
         LobbyData = new(lobby.Id, lobby.OwnerId);
         LobbyData.LobbyCode = NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.GAME_CODE_KEY);
+
         Transitions.ToVersus(() =>
         {
             NetworkDispatcher.StartListening();

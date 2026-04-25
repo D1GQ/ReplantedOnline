@@ -49,11 +49,15 @@ internal static class VersusState
     /// <summary>
     /// Gets the current arena type.
     /// </summary>
-    internal static ArenaTypes Arena => ReplantedLobby.LobbyData?.Arena ?? ArenaTypes.Day;
+    internal static ArenaTypes Arena => ReplantedLobby.LobbyData?.Synced_Arena ?? ArenaTypes.Day;
 
     /// <summary>
     /// Gets when Versus Mode is in its gameplay state.
     /// </summary>
-    internal static bool IsInGameplay => Instances.GameplayActivity.VersusMode?.m_versusTime > 3.2f
-        && VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath;
+    internal static bool IsInGameplay => !IsInCountDown && VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath;
+
+    /// <summary>
+    /// Gets when Versus Mode is in read, set, plant.
+    /// </summary>
+    internal static bool IsInCountDown => Instances.GameplayActivity.VersusMode?.m_versusTime <= 3.2f;
 }

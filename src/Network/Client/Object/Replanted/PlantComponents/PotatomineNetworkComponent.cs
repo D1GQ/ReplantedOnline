@@ -4,6 +4,7 @@ using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 
+/// <inheritdoc/>
 internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 {
     private enum PotatomineRpcs : byte

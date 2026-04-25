@@ -167,7 +167,7 @@ internal static class VersusLobbyManager
             return;
         }
 
-        bool shouldEnableButtons = !ReplantedLobby.LobbyData.PickingSides
+        bool shouldEnableButtons = !ReplantedLobby.LobbyData.Synced_PickingSides
             && ReplantedLobby.GetLobbyMemberCount() > 1
             && ReplantedLobby.LobbyData.AllClientsReady();
 

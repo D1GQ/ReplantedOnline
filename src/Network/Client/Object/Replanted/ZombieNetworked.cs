@@ -4,7 +4,6 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
@@ -105,7 +104,6 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             if (!Dead && !_Zombie.IsDeadOrDying())
             {
-                CheckDeath();
                 _Zombie.DieDeserialize();
             }
         }
@@ -119,39 +117,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie.mDead && !Dead)
         {
-            CheckDeath();
+            LogicComponent.OnDeath(DeathReason.Despawn);
             _Zombie.RemoveNetworkedLookup();
             _Zombie = null;
             return;
         }
 
-        if (ZombieType == ZombieType.Gravestone)
-        {
-            return;
-        }
-
         LogicComponent.Update();
-    }
-
-    [HideFromIl2Cpp]
-    internal void CheckDeath()
-    {
-        if (_Zombie.mZombieType == ZombieType.Gravestone)
-        {
-            Instances.GameplayActivity.Board.m_vsGravestones.Remove(_Zombie);
-            _Zombie.mGraveX = 0;
-            _Zombie.mGraveY = 0;
-        }
-        else if (_Zombie.mZombieType == ZombieType.Target)
-        {
-            Instances.GameplayActivity.VersusMode.ZombieLife--;
-
-            if (Instances.GameplayActivity.VersusMode.ZombieLife == 0)
-            {
-                if (_Zombie?.mController == null) return;
-                VersusGameplayManager.EndGame(_Zombie.mController.transform.position, PlayerTeam.Plants);
-            }
-        }
     }
 
     // For some reason TakeDamage gets triggered twice naturally, so we must not send the rpc on the second time using damageInterval.
@@ -202,6 +174,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
             DespawnAndDestroyWhenNull();
         }
@@ -213,7 +186,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            CheckDeath();
+            LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.PlayDeathAnimOriginal(damageFlags);
         }
     }
@@ -223,6 +196,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
             DespawnAndDestroyWhenNull();
         }
@@ -234,7 +208,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            CheckDeath();
+            LogicComponent.OnDeath(DeathReason.Normal);
             if (withLoot)
             {
                 _Zombie.DieWithLootOriginal();
@@ -251,6 +225,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
             DespawnAndDestroyWhenNull();
         }
@@ -262,6 +237,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.MowDownOriginal();
         }
     }
@@ -353,6 +329,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (reallyDead && !Dead)
         {
             Dead = true;
+            LogicComponent.OnDeath(DeathReason.Burned);
             DespawnAndDestroyWhenNull();
         }
     }
@@ -363,6 +340,10 @@ internal sealed class ZombieNetworked : NetworkObject
         if (_Zombie.mZombieType.IsGravestoneOrTarget()) return;
 
         Dead = Dead || reallyDead;
+        if (reallyDead)
+        {
+            LogicComponent.OnDeath(DeathReason.Burned);
+        }
         _Zombie.ApplyBurnOriginal();
     }
 

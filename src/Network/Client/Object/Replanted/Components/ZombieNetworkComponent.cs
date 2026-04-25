@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
@@ -25,6 +26,8 @@ internal class ZombieNetworkComponent : NetworkComponent
             ZombieType.Bungee => zombieNetworked.AddNetworkComponent<BungeeNetworkComponent>(),
             ZombieType.Bobsled => zombieNetworked.AddNetworkComponent<BobsledNetworkComponent>(),
             ZombieType.Imp => zombieNetworked.AddNetworkComponent<ImpNetworkComponent>(),
+            ZombieType.Gravestone => zombieNetworked.AddNetworkComponent<GravestoneNetworkComponent>(),
+            ZombieType.Target => zombieNetworked.AddNetworkComponent<TargetNetworkComponent>(),
             _ => zombieNetworked.AddNetworkComponent<ZombieNetworkComponent>(),
         };
     }
@@ -33,6 +36,8 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         ZombieNetworked = NetworkObject as ZombieNetworked;
     }
+
+    internal virtual void OnDeath(DeathReason deathReason) { }
 
     private float _syncCooldown = 2f;
     private float _lastPos;

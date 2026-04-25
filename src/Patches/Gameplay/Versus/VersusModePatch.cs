@@ -32,6 +32,10 @@ internal static class VersusModePatch
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
     {
+        if (!ReplantedLobby.AmInLobby()) return;
+
+        __instance.ZombieLife = ReplantedLobby.LobbyData.Local_ZombieLife;
+
         updateInterval++;
         if (updateInterval % 2 != 0)
         {
