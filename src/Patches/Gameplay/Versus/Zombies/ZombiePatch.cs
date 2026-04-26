@@ -171,7 +171,7 @@ internal static class ZombiePatch
                 {
                     if (gravestone.mZombiePhase == ZombiePhase.ZombieNormal)
                     {
-                        __result = Rect.zero;
+                        __result.position = new Vector2(-9999, -9999);
                         break;
                     }
                 }
