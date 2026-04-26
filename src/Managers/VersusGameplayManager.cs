@@ -8,6 +8,7 @@ using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Patches.Gameplay.Versus;
 using ReplantedOnline.Utilities;
 using UnityEngine;
+using static ReplantedOnline.Patches.Gameplay.Versus.Zombies.FlagZombiePatch;
 
 namespace ReplantedOnline.Managers;
 
@@ -75,7 +76,7 @@ internal class VersusGameplayManager
     /// <param name="currentCounter">The current brain spawn counter value.</param>
     internal static int MultiplyBrainSpawnCounter(int currentCounter)
     {
-        int plantMultiplier = 25 * Instances.GameplayActivity.Board.GetPlants().Length;
+        int plantMultiplier = 15 * Instances.GameplayActivity.Board.GetPlants().Length;
         return currentCounter + plantMultiplier;
     }
 
@@ -90,24 +91,50 @@ internal class VersusGameplayManager
         {
             zombieMultiplier += zombie.mZombieType switch
             {
-                ZombieType.Target => 200,
-                ZombieType.Gargantuar => 150,
-                ZombieType.Gravestone => 100,
-                ZombieType.Zamboni => 50,
-                ZombieType.Zombatar => 50,
-                ZombieType.Catapult => 30,
-                ZombieType.Football => 30,
-                ZombieType.Dancer => 25,
-                ZombieType.Pogo => 15,
-                ZombieType.Pail => 15,
-                ZombieType.Polevaulter => 15,
-                ZombieType.BackupDancer => 0,
-                _ => 10,
+                ZombieType.Gargantuar => 200, // 1x
+                ZombieType.Gravestone => 50, // 1x
+                ZombieType.Zamboni => 150, // 1x
+                ZombieType.Catapult => 125, // 1x
+                ZombieType.Football => 125, // 1x
+                ZombieType.Target => 100, // 1x
+                ZombieType.Ladder => 100, // 1x
+                ZombieType.Pail => 100, // 1x
+                ZombieType.Pogo => 75, // 1x
+                ZombieType.TrafficCone => 65, // 1x
+                ZombieType.Polevaulter => 65, // 1x
+                ZombieType.Bobsled => 25, // 4x: 100
+                ZombieType.BackupDancer => 25, // 4x : 100
+                ZombieType.Imp => 15, // 1x
+                _ => 50,
             };
         }
 
         int plantMultiplier = 5 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
 
-        return Mathf.FloorToInt((currentCounter * 0.8f)) + zombieMultiplier - plantMultiplier;
+        return currentCounter + Math.Max(zombieMultiplier - plantMultiplier, 0);
+    }
+
+    /// <summary>
+    /// Gets the list of special zombie spawn rules used during flag zombies.
+    /// </summary>
+    /// <returns>
+    /// A list of <see cref="FlagZombieSpecialSpawn"/> defining possible special zombie spawns.
+    /// </returns>
+    internal static List<FlagZombieSpecialSpawn> GetFlagZombieSpawns()
+    {
+        List<FlagZombieSpecialSpawn> zombies = [];
+
+        zombies.Add(new(ZombieType.Pail, 25, 9));
+        zombies.Add(new(ZombieType.TrafficCone, 75, 20));
+
+        return zombies;
+    }
+
+    /// <summary>
+    /// Calculates the amount of zombies flag zombie spawns.
+    /// </summary>
+    internal static int FlagSpawnAmount()
+    {
+        return 10;
     }
 }

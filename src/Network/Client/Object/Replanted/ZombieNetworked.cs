@@ -31,6 +31,7 @@ internal sealed class ZombieNetworked : NetworkObject
         MindControlled,
         SetFrozen,
         ApplyBurn,
+        SnapToPos,
         SetState
     }
 
@@ -346,6 +347,18 @@ internal sealed class ZombieNetworked : NetworkObject
             LogicComponent.OnDeath(DeathReason.Burned);
         }
         _Zombie.ApplyBurnOriginal();
+    }
+
+    internal void SendSnapToPosRpc()
+    {
+        SendNetworkObjectRpc(ZombieRpcs.SnapToPos, _Zombie.mPosX);
+    }
+
+    [RpcHandler(ZombieRpcs.SnapToPos)]
+    private void HandleSnapToPosRpc(float posX)
+    {
+        LogicComponent.StopLarpPos();
+        _Zombie.mPosX = posX;
     }
 
     internal void SendSetStateRpc(string state)

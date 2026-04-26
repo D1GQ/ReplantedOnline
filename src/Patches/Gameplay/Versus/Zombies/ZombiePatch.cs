@@ -26,6 +26,13 @@ internal static class ZombiePatch
             // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
             if (theZombieType is ZombieType.Target) return true;
 
+            // Prevent zombies from spawning when flag zombie is spawned, this is handled in FlagZombiePatch.cs
+            if (theZombieType is ZombieType.Normal or ZombieType.TrafficCone or ZombieType.Pail)
+            {
+                __result = ObjectUtils.CreateReloadedObject<Zombie>();
+                return false;
+            }
+
             if (!VersusState.AmPlantSide)
             {
                 throw new SilentPatchException();
@@ -138,7 +145,7 @@ internal static class ZombiePatch
         if (ReplantedLobby.AmInLobby())
         {
             // From Versus Mode Console:
-            // Prevent hypno affected zombies From eating target and gravestone zombies
+            // Prevent hypno affected zombies from eating target and gravestone zombies
             // This is a issue with replanted itself 
             if (theZombie.mZombieType.IsGravestoneOrTarget())
             {

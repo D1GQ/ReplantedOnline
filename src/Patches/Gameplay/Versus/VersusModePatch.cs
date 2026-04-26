@@ -224,7 +224,7 @@ internal static class VersusModePatch
             // If we marked for nerf in the prefix
             if (__state)
             {
-                // Increase sun spawn timer by 35% (nerfing natural brain production)
+                // Increase sun spawn timer 
                 __instance.mSunCountDown = VersusGameplayManager.MultiplyBrainSpawnCounter(__instance.mSunCountDown);
             }
         }
