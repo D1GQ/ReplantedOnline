@@ -86,9 +86,8 @@ internal static class FlagZombiePatch
             var z = SeedPacketDefinitions.SpawnZombie(type, 9, y, true, false);
             z.mPosX += Common.RandRangeInt(20, 70);
 
-            SeedPacketDefinitions
-                .SpawnZombieOnNetwork(z, 9, y, true)
-                .SendSnapToPosRpc();
+            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(z, 9, y, true);
+            zombieNetworked.SendSnapToPosRpc();
         }
     }
 
