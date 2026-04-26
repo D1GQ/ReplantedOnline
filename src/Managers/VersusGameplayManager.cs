@@ -91,7 +91,6 @@ internal class VersusGameplayManager
             zombieMultiplier += zombie.mZombieType switch
             {
                 ZombieType.Gargantuar => 200, // 1x
-                ZombieType.Gravestone => 50, // 1x
                 ZombieType.Zamboni => 150, // 1x
                 ZombieType.Catapult => 125, // 1x
                 ZombieType.Football => 125, // 1x
@@ -101,6 +100,7 @@ internal class VersusGameplayManager
                 ZombieType.Pogo => 75, // 1x
                 ZombieType.TrafficCone => 65, // 1x
                 ZombieType.Polevaulter => 65, // 1x
+                ZombieType.Gravestone => 33, // 1x
                 ZombieType.Bobsled => 25, // 4x: 100
                 ZombieType.BackupDancer => 25, // 4x : 100
                 ZombieType.Imp => 15, // 1x
