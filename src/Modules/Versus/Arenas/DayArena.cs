@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
@@ -29,6 +30,19 @@ internal sealed class DayArena : IArena, ISetupSeedbank
 
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
+    {
+        foreach (var seedPacket in seedPackets)
+        {
+            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
+
+            seedPacket.Deactivate();
+            seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            seedPacket.mRefreshing = true;
         }
     }
 

@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
@@ -37,6 +38,21 @@ internal sealed class NightArena : IArena, ISetupSeedbank
         versusMode.m_board.AddAGraveStone(5, 3);
         versusMode.m_board.AddAGraveStone(5, 4);
         versusMode.m_board.mEnableGraveStones = true;
+    }
+
+    /// <inheritdoc/>
+    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
+    {
+        foreach (var seedPacket in seedPackets)
+        {
+            if (seedPacket.mPacketType is SeedType.Sunflower or SeedType.Sunshroom or SeedType.ZombieGravestone) continue;
+
+            seedPacket.Deactivate();
+            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            // Start at least with a 15 second cooldown 
+            seedPacket.mRefreshTime = Math.Max(time, 15);
+            seedPacket.mRefreshing = true;
+        }
     }
 
     /// <inheritdoc/>

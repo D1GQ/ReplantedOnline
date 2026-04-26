@@ -39,6 +39,11 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     }
 
     /// <inheritdoc/>
+    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
+    {
+    }
+
+    /// <inheritdoc/>
     public void SetupSeedbank(SeedBank seedBank, SeedBankInfo seedBankInfo, PlayerTeam team)
     {
         if (team == PlayerTeam.Plants)

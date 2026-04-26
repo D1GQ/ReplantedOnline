@@ -26,15 +26,7 @@ internal class VersusGameplayManager
             .. Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets,
         ];
 
-        // Initial cooldowns
-        foreach (var seedPacket in allSeedPackets)
-        {
-            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
-
-            seedPacket.Deactivate();
-            seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
-            seedPacket.mRefreshing = true;
-        }
+        IArena.GetCurrentArena()?.InitializeSeedPacketCooldowns([.. allSeedPackets]);
 
         // Disable inputs for starting countdown 
         Instances.GameplayActivity.InputService
