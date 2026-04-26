@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
@@ -9,7 +10,7 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 [HarmonyPatch]
 internal static class PlantSyncPatch
 {
-    private static uint findTargetAndFireInterval;
+    private readonly static ExecuteInterval findTargetAndFireInterval = new();
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetAndFire))]
     [HarmonyPrefix]
     private static bool Plant_FindTargetAndFire_Prefix(Plant __instance, int theRow, ref PlantWeapon thePlantWeapon)
@@ -19,8 +20,7 @@ internal static class PlantSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                findTargetAndFireInterval++;
-                if (findTargetAndFireInterval % 2 != 0)
+                if (findTargetAndFireInterval.Execute())
                 {
                     __instance.GetNetworked()?.SendReadyToFireRpc(theRow, ref thePlantWeapon);
                 }
@@ -41,7 +41,7 @@ internal static class PlantSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
-    private static uint fireInterval;
+    private readonly static ExecuteInterval fireInterval = new();
     [HarmonyPatch(typeof(Plant), nameof(Plant.Fire))]
     [HarmonyPrefix]
     private static bool Plant_Fire_Prefix(Plant __instance, Zombie theTargetZombie, int theRow, ref PlantWeapon thePlantWeapon)
@@ -51,8 +51,7 @@ internal static class PlantSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                fireInterval++;
-                if (fireInterval % 2 != 0)
+                if (fireInterval.Execute())
                 {
                     __instance.GetNetworked()?.SendFireRpc(theTargetZombie, theRow, ref thePlantWeapon);
                 }

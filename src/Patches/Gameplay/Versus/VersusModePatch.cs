@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using UnityEngine;
@@ -16,7 +17,7 @@ internal static class VersusModePatch
     [HarmonyPrefix]
     private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
-        updateInterval = 0;
+        updateInterval.Reset();
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
         __instance.ClearBoard();
         IArena.GetCurrentArena()?.InitializeArena(__instance);
@@ -27,7 +28,7 @@ internal static class VersusModePatch
         throw new SilentPatchException();
     }
 
-    private static uint updateInterval;
+    private readonly static ExecuteInterval updateInterval = new();
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
@@ -36,8 +37,7 @@ internal static class VersusModePatch
 
         __instance.ZombieLife = ReplantedLobby.LobbyData.ZombieLife;
 
-        updateInterval++;
-        if (updateInterval % 2 != 0)
+        if (updateInterval.Execute())
         {
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);

@@ -8,7 +8,6 @@ using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Patches.Gameplay.Versus;
 using ReplantedOnline.Utilities;
 using UnityEngine;
-using static ReplantedOnline.Patches.Gameplay.Versus.Zombies.FlagZombiePatch;
 
 namespace ReplantedOnline.Managers;
 

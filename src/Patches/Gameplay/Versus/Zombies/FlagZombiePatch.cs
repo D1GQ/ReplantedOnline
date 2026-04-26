@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Managers;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
@@ -11,7 +12,7 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class FlagZombiePatch
 {
-    private static uint spawnInterval;
+    private readonly static ExecuteInterval spawnInterval = new();
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.ZombieInitialize))]
     [HarmonyPrefix]
     private static void Zombie_ZombieInitialize_Prefix(ZombieType theType)
@@ -22,10 +23,9 @@ internal static class FlagZombiePatch
         {
             if (ReplantedLobby.AmLobbyHost())
             {
-                spawnInterval++;
-                if (spawnInterval % 2 != 0)
+                if (spawnInterval.Execute())
                 {
-                    SpawnZombies();
+                    SpawnZombieWave();
                 }
             }
 
@@ -33,84 +33,107 @@ internal static class FlagZombiePatch
         }
     }
 
-    private static void SpawnZombies()
+    /// <summary>
+    /// Spawns a wave of zombies.
+    /// </summary>
+    private static void SpawnZombieWave()
     {
-        // Get how many zombies to spawn and how many rows exist
+        // Determine spawn count and board dimensions
         int amount = VersusGameplayManager.FlagSpawnAmount();
         int rows = Instances.GameplayActivity.Board.GetNumRows();
 
-        // Create initial ordered row list
-        List<int> order = [.. Enumerable.Range(0, rows)];
-
-        // Get special zombie spawn chances
+        // Get weighted special zombie spawn rules
         List<FlagZombieSpecialSpawn> specialSpawns = VersusGameplayManager.GetFlagZombieSpawns();
+
+        List<int> order = [.. Enumerable.Range(0, rows)];
 
         for (int i = 0; i < amount; i++)
         {
-            // Every full cycle, reshuffle rows
-            if (i % rows == 0)
-            {
-                for (int s = order.Count - 1; s > 0; s--)
-                {
-                    int j = Common.RandRangeInt(0, s);
-                    (order[s], order[j]) = (order[j], order[s]);
-                }
-            }
+            // Shuffle once per full pass to distribute zombies evenly across rows
+            ShuffleIfNeeded(order, rows, i);
 
-            // Pick row in cyclic shuffled order
-            int y = order[i % rows];
+            // Select the next row from the shuffled cycle
+            int y = GetRow(order, rows, i);
 
-            // Only allow neighbor shifting After first cycle, ensures at least one zombie per row
-            if (i >= rows && Common.RandRangeInt(0, 100) < 15)
-            {
-                y = Mathf.Clamp(
-                    y + (Common.RandRangeInt(0, 1) == 0 ? -1 : 1),
-                    0, rows - 1
-                );
-            }
+            // After first full cycle, occasionally shift to adjacent rows for variation
+            y = AdjustRowWithNeighborShift(y, rows, i);
 
-            // Default zombie type
-            ZombieType type = ZombieType.Normal;
+            // Determine final zombie type
+            ZombieType type = PickZombieType(specialSpawns);
 
-            // Try to replace with a special zombie
-            foreach (var specialSpawn in specialSpawns)
-            {
-                if (specialSpawn.Pick())
-                {
-                    type = specialSpawn.ZombieType;
-                    break;
-                }
-            }
-
-            // Spawn zombie
-            var z = SeedPacketDefinitions.SpawnZombie(type, 9, y, true, false);
-            z.mPosX += Common.RandRangeInt(20, 70);
-
-            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(z, 9, y, true);
-            zombieNetworked.SendSnapToPosRpc();
+            // Spawn and network the zombie
+            SpawnZombie(type, y);
         }
     }
 
-    internal sealed class FlagZombieSpecialSpawn(ZombieType zombieType, int chance = 100, int decreaseBy = 0)
+    /// <summary>
+    /// Performs a Fisher–Yates shuffle at the start of each cycle.
+    /// This guarantees even distribution while still introducing randomness.
+    /// </summary>
+    private static void ShuffleIfNeeded(List<int> order, int rows, int index)
     {
-        internal readonly ZombieType ZombieType = zombieType;
+        if (index % rows != 0)
+            return;
 
-        private int _chance = chance;
-        private readonly int _decreaseBy = decreaseBy;
-
-        internal bool Pick()
+        for (int s = order.Count - 1; s > 0; s--)
         {
-            if (_chance <= 0) return false;
-
-            if (Common.RandRangeInt(1, 100) <= _chance)
-            {
-                _chance = Math.Max(_chance - _decreaseBy, 0);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            int j = Common.RandRangeInt(0, s);
+            (order[s], order[j]) = (order[j], order[s]);
         }
+    }
+
+    /// <summary>
+    /// Retrieves the next row in the current shuffled cycle.
+    /// Cycles back to the start once all rows have been used.
+    /// </summary>
+    private static int GetRow(List<int> order, int rows, int index)
+    {
+        return order[index % rows];
+    }
+
+    /// <summary>
+    /// Introduces slight randomness after the first cycle by occasionally
+    /// shifting the spawn to a neighboring row. This keeps early distribution fair
+    /// while preventing later waves from feeling too predictable.
+    /// </summary>
+    private static int AdjustRowWithNeighborShift(int y, int rows, int index)
+    {
+        if (index < rows)
+            return y;
+
+        if (Common.RandRangeInt(0, 100) >= 15)
+            return y;
+
+        int direction = Common.RandRangeInt(0, 1) == 0 ? -1 : 1;
+
+        return Mathf.Clamp(y + direction, 0, rows - 1);
+    }
+
+    /// <summary>
+    /// Selects a zombie type based on special spawn rules.
+    /// Falls back to Normal if no special condition is met.
+    /// </summary>
+    private static ZombieType PickZombieType(List<FlagZombieSpecialSpawn> specialSpawns)
+    {
+        foreach (var specialSpawn in specialSpawns)
+        {
+            if (specialSpawn.Pick())
+                return specialSpawn.ZombieType;
+        }
+
+        return ZombieType.Normal;
+    }
+
+    /// <summary>
+    /// Handles local spawn setup and synchronizes the zombie across the network.
+    /// Applies a small random X offset for natural positioning.
+    /// </summary>
+    private static void SpawnZombie(ZombieType type, int y)
+    {
+        var z = SeedPacketDefinitions.SpawnZombie(type, 9, y, true, false);
+        z.mPosX += Common.RandRangeInt(20, 70);
+
+        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(z, 9, y, true);
+        zombieNetworked.SendSnapToPosRpc();
     }
 }
