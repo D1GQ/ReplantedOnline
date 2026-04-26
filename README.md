@@ -60,5 +60,8 @@ Fork the repo, make a branch, and send a PR.
 ## Reporting Issues!
 Please report any bugs or issues you encounter in [Issues](https://github.com/D1GQ/ReplantedOnline/issues) to help improve the mod!
 
+## Contacts
+replantedonlineofficial@gmail.com
+
 ## Disclaimer
 **ReplantedOnline** is a unofficial modification of **Plants vs. Zombies: Replanted** and is not affiliated with **PopCap Games** or **Electronic Arts**.
