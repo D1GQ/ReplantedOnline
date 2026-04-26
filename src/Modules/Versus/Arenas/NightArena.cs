@@ -50,7 +50,7 @@ internal sealed class NightArena : IArena, ISetupSeedbank
             seedPacket.Deactivate();
             var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             // Start at least with a 15 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, 15);
+            seedPacket.mRefreshTime = Math.Max(time, 1500);
             seedPacket.mRefreshing = true;
         }
     }
