@@ -25,8 +25,8 @@ internal sealed class DayArena : IArena, ISetupSeedbank
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, false, true);
 
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 1, true);
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, SeedType.Sunflower, 0, 3, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
 
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);

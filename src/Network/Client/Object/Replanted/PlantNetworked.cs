@@ -44,11 +44,6 @@ internal sealed class PlantNetworked : NetworkObject
     internal SeedType SeedType;
 
     /// <summary>
-    /// The imitater type if this plant was created by an Imitater seed when spawning.
-    /// </summary>
-    internal SeedType ImitaterType;
-
-    /// <summary>
     /// The grid X coordinate where this plant is located when spawning.
     /// </summary>
     internal int GridX;
@@ -234,7 +229,6 @@ internal sealed class PlantNetworked : NetworkObject
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteEnum(SeedType);
-            packetWriter.WriteEnum(ImitaterType);
 
             LogicComponent.Serialize(packetWriter, init);
 
@@ -260,9 +254,8 @@ internal sealed class PlantNetworked : NetworkObject
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             SeedType = packetReader.ReadEnum<SeedType>();
-            ImitaterType = packetReader.ReadEnum<SeedType>();
 
-            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
+            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false);
 
             OnInit();
 

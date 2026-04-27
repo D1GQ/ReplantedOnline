@@ -98,12 +98,11 @@ internal static class SeedPacketDefinitions
     /// Automatically routes to plant spawning for regular seeds and zombie spawning for I, Zombie mode seeds.
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
-    /// <param name="imitaterType">The imitater type for plants (for imitated plants).</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this object.</param>
     /// <returns>The spawned ReloadedObject (either Plant or Zombie).</returns>
-    internal static ReloadedObject PlaceSeed(SeedType seedType, SeedType imitaterType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static ReloadedObject PlaceSeed(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
     {
         // Check if this is a zombie seed (from I, Zombie mode)
         // Zombie seeds have special handling since they spawn zombies instead of plants
@@ -119,7 +118,7 @@ internal static class SeedPacketDefinitions
         else
         {
             // This is a regular plant seed - delegate to plant spawning logic
-            return SpawnPlant(seedType, imitaterType, gridX, gridY, spawnOnNetwork);
+            return SpawnPlant(seedType, gridX, gridY, spawnOnNetwork);
         }
     }
 
@@ -128,15 +127,14 @@ internal static class SeedPacketDefinitions
     /// Creates the actual plant object and optionally sets up network synchronization.
     /// </summary>
     /// <param name="seedType">The type of seed to spawn as a plant.</param>
-    /// <param name="imitaterType">The imitater type for imitated plants.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
     /// <returns>The spawned Plant object.</returns>
-    internal static Plant SpawnPlant(SeedType seedType, SeedType imitaterType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static Plant SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
     {
         // Create the actual plant object in the game world using the original game method
-        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, imitaterType);
+        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, seedType);
 
         // Only create network controller if network synchronization is requested
         // This prevents creating network objects in single-player mode
@@ -167,7 +165,6 @@ internal static class SeedPacketDefinitions
         {
             net._Plant = plant;
             net.SeedType = plant.mSeedType;
-            net.ImitaterType = plant.mImitaterType;
             net.GridX = gridX;
             net.GridY = gridY;
         }, VersusState.PlantClientId);
