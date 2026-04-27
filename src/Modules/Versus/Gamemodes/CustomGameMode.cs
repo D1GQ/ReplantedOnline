@@ -60,11 +60,33 @@ internal sealed class CustomGamemode : IVersusGamemode
             seedBankInfo.mSeedsInBank = 0;
         }
 
+        List<ChosenSeed> chosenSeeds = [
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
+        ];
+
+        foreach (var seedPacket in chosenSeeds)
+        {
+            if (seedPacket.mSeedState == ChosenSeedState.SeedInBank)
+            {
+                seedPacket.mSeedState = ChosenSeedState.SeedInChooser;
+            }
+        }
+
         // Add custom initial seeds
+        var localSeedBankInfo = PvZRUtils.GetLocalSeedBankInfo();
+        var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
+        localSeedBankInfo.mSeedsInBank = 0;
+        opponentSeedBankInfo.mSeedsInBank = 0;
         if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
         {
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.LocalItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[0], ReplantedClientData.LocalClient.Team);
-            setupSeedbank.SetupSeedbank(Instances.GameplayActivity.Board.SeedBanks.OpponentItem(), Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[1], ReplantedClientData.LocalClient.Team.GetOppositeTeam());
+            setupSeedbank.SetupSeedbank(localSeedBankInfo, ReplantedClientData.LocalClient.Team);
+            setupSeedbank.SetupSeedbank(opponentSeedBankInfo, ReplantedClientData.LocalClient.Team.GetOppositeTeam());
+        }
+        else
+        {
+            ISetupSeedbank.BaseSetupSeedbank(localSeedBankInfo, ReplantedClientData.LocalClient.Team);
+            ISetupSeedbank.BaseSetupSeedbank(opponentSeedBankInfo, ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
 
         ReplantedClientData.LocalClient?.Ready.Value = true;

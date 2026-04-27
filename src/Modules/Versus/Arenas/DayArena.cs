@@ -4,12 +4,11 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class DayArena : IArena, ISetupSeedbank
+internal sealed class DayArena : IArena
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Day;
@@ -43,21 +42,6 @@ internal sealed class DayArena : IArena, ISetupSeedbank
             seedPacket.Deactivate();
             seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             seedPacket.mRefreshing = true;
-        }
-    }
-
-    /// <inheritdoc/>
-    public void SetupSeedbank(SeedBank seedBank, SeedBankInfo seedBankInfo, PlayerTeam team)
-    {
-        if (team == PlayerTeam.Plants)
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.Sunflower, true);
-        }
-        else
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.ZombieGravestone, true);
         }
     }
 

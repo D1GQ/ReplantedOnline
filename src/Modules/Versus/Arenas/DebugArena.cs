@@ -8,12 +8,11 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using UnityEngine.InputSystem;
-using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class DebugArena : IArena, ISetupSeedbank
+internal sealed class DebugArena : IArena
 {
     private enum DebugModes
     {
@@ -42,21 +41,6 @@ internal sealed class DebugArena : IArena, ISetupSeedbank
     /// <inheritdoc/>
     public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
     {
-    }
-
-    /// <inheritdoc/>
-    public void SetupSeedbank(SeedBank seedBank, SeedBankInfo seedBankInfo, PlayerTeam team)
-    {
-        if (team == PlayerTeam.Plants)
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.Sunflower, true);
-        }
-        else
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.ZombieGravestone, true);
-        }
     }
 
     /// <inheritdoc/>

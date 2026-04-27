@@ -13,9 +13,56 @@ namespace ReplantedOnline.Patches.Gameplay.Versus;
 [HarmonyPatch]
 internal static class VersusModePatch
 {
+    [HarmonyPatch(typeof(Board), nameof(Board.GetNumSeedsInBank))]
+    [HarmonyPostfix]
+    private static void Board_GetNumSeedsInBank_Postfix(ref int __result)
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            // Set seed back size
+            if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
+            {
+                __result = setupSeedbank.SeedPacketCount;
+            }
+            else
+            {
+                __result = ISetupSeedbank.BaseSeedPacketCount;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(SeedBank), nameof(SeedBank.GetPacketCount))]
+    [HarmonyPrefix]
+    private static bool SeedBank_GetPacketCount_Prefix(SeedBank __instance, ref int __result)
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            // Work around hard coded required seeds in seedbank to start game
+            int inBank = 0;
+            foreach (var seedPacket in __instance.SeedPackets)
+            {
+                if (seedPacket.mPacketType != SeedType.None)
+                {
+                    inBank++;
+                }
+            }
+
+            if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
+            {
+                __result = inBank - (setupSeedbank.SeedPacketCount - VersusMode.k_numPackets);
+            }
+            else
+            {
+                __result = inBank - (ISetupSeedbank.BaseSeedPacketCount - VersusMode.k_numPackets);
+            }
+        }
+
+        return false;
+    }
+
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeGameplay))]
     [HarmonyPrefix]
-    private static bool VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
+    private static void VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         updateInterval.Reset();
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);

@@ -4,12 +4,11 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using static Il2CppReloaded.Gameplay.SeedChooserScreen;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class NightArena : IArena, ISetupSeedbank
+internal sealed class NightArena : IArena
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Night;
@@ -52,21 +51,6 @@ internal sealed class NightArena : IArena, ISetupSeedbank
             // Start at least with a 15 second cooldown 
             seedPacket.mRefreshTime = Math.Max(time, 1500);
             seedPacket.mRefreshing = true;
-        }
-    }
-
-    /// <inheritdoc/>
-    public void SetupSeedbank(SeedBank seedBank, SeedBankInfo seedBankInfo, PlayerTeam team)
-    {
-        if (team == PlayerTeam.Plants)
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.Sunflower, true);
-        }
-        else
-        {
-            seedBankInfo.mSeedsInBank = 1;
-            seedBank.AddSeed(SeedType.ZombieGravestone, true);
         }
     }
 

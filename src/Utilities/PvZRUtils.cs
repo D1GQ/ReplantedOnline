@@ -123,4 +123,51 @@ internal static class PvZRUtils
     {
         return zombieType is ZombieType.Target or ZombieType.Gravestone;
     }
+
+    /// <summary>
+    /// Adds a seed from the seed chooser screen to the seed bank and updates its state.
+    /// </summary>
+    /// <param name="seedBankInfo">The seed bank info to add the seed to.</param>
+    /// <param name="seedType">The type of seed to add.</param>
+    internal static void AddSeedFromChooser(this SeedChooserScreen.SeedBankInfo seedBankInfo, SeedType seedType)
+    {
+        seedBankInfo.mSeedsInBank++;
+        seedBankInfo.mSeedBank.AddSeed(seedType, true);
+
+        List<ChosenSeed> chosenSeeds = [
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
+        ];
+
+        foreach (var seedPacket in chosenSeeds)
+        {
+            if (seedPacket.mSeedType == seedType)
+            {
+                seedPacket.mSeedState = ChosenSeedState.SeedInBank;
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the seed bank information for the local player.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the local player's seed bank data.
+    /// </returns>
+    internal static SeedChooserScreen.SeedBankInfo GetLocalSeedBankInfo()
+    {
+        return Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX];
+    }
+
+    /// <summary>
+    /// Gets the seed bank information for the opponent player.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the opponent player's seed bank data.
+    /// </returns>
+    internal static SeedChooserScreen.SeedBankInfo GetOpponentSeedBankInfo()
+    {
+        return Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX];
+    }
 }

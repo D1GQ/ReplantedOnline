@@ -3,6 +3,7 @@ using Il2CppSource.Utils;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 
@@ -25,29 +26,15 @@ internal sealed class QuickplayGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        if (VersusState.AmPlantSide)
+        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
         {
-            foreach (var seedType in versusMode.m_quickPlayPlants)
-            {
-                versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-            }
-
-            foreach (var seedType in versusMode.m_quickPlayZombies)
-            {
-                versusMode.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-            }
+            setupSeedbank.QuickPlayAddSeedsToSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
+            setupSeedbank.QuickPlayAddSeedsToSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
-        else if (VersusState.AmZombieSide)
+        else
         {
-            foreach (var seedType in versusMode.m_quickPlayZombies)
-            {
-                versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-            }
-
-            foreach (var seedType in versusMode.m_quickPlayPlants)
-            {
-                versusMode.m_board.SeedBanks.OpponentItem().AddSeed(seedType, true);
-            }
+            ISetupSeedbank.BaseQuickPlayAddSeedsToSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
+            ISetupSeedbank.BaseQuickPlayAddSeedsToSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
         }
     }
 

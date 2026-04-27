@@ -134,7 +134,7 @@ internal static class SeedPacketDefinitions
     internal static Plant SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
     {
         // Create the actual plant object in the game world using the original game method
-        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, seedType);
+        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
 
         // Only create network controller if network synchronization is requested
         // This prevents creating network objects in single-player mode
