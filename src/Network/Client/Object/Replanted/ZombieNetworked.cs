@@ -52,9 +52,9 @@ internal sealed class ZombieNetworked : NetworkObject
     internal ZombieType ZombieType;
 
     /// <summary>
-    /// If the bush on the row the zombie spawns in shakes
+    /// The spawn type of the zombie.
     /// </summary>
-    internal bool ShakeBush;
+    internal SpawnType SpawnType;
 
     /// <summary>
     /// The grid X coordinate where this zombie is located when spawning.
@@ -65,6 +65,9 @@ internal sealed class ZombieNetworked : NetworkObject
     /// The grid Y coordinate where this zombie is located when spawning.
     /// </summary>
     internal int GridY;
+
+    internal bool BungeeSpawn;
+    internal ZombieID BungeeRelated = ZombieID.Null;
 
     internal ZombieNetworkComponent LogicComponent;
     internal bool EnteringHouse;
@@ -385,7 +388,8 @@ internal sealed class ZombieNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
-            packetWriter.WriteBool(ShakeBush);
+            packetWriter.WriteEnum(SpawnType);
+            packetWriter.WriteBool(BungeeSpawn);
             packetWriter.WriteEnum(ZombieType);
 
             LogicComponent.Serialize(packetWriter, init);
@@ -406,10 +410,11 @@ internal sealed class ZombieNetworked : NetworkObject
             // Read spawn info
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
-            ShakeBush = packetReader.ReadBool();
+            SpawnType = packetReader.ReadEnum<SpawnType>();
+            BungeeSpawn = packetReader.ReadBool();
             ZombieType = packetReader.ReadEnum<ZombieType>();
 
-            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
+            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false);
 
             OnInit();
 

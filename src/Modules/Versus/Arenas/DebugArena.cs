@@ -24,13 +24,17 @@ internal sealed class DebugArena : IArena
         Polevaulter,
         Ladder,
         Bungee,
-        Flag
+        Flag,
+        Test
     }
 
     private DebugModes Mode = DebugModes.Default;
 
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Debug;
+
+    /// <inheritdoc/>
+    public SpawnType DefaultZombieSpawnType => SpawnType.Rise;
 
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
@@ -111,23 +115,23 @@ internal sealed class DebugArena : IArena
         switch (Mode)
         {
             case DebugModes.Default:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, false, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, false, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, false, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, false, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
                 SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
 
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
                 break;
             case DebugModes.Gargantuar:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 1, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 1, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Gatlingpea, 0, 1, true);
 
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 3, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 3, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 3, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 3, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 3, true);
@@ -136,7 +140,7 @@ internal sealed class DebugArena : IArena
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 3, true);
                 break;
             case DebugModes.Pogo:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Pogo, 7, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Pogo, 7, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 2, true);
@@ -145,24 +149,26 @@ internal sealed class DebugArena : IArena
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
                 break;
             case DebugModes.Bobsled:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 8, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 8, 2, true);
                 break;
             case DebugModes.Polevaulter:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Polevaulter, 7, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Polevaulter, 7, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
                 break;
             case DebugModes.Ladder:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Ladder, 7, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Ladder, 7, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
                 break;
             case DebugModes.Bungee:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, 4, 2, true);
                 break;
             case DebugModes.Flag:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, false, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, true);
+                break;
+            case DebugModes.Test:
                 break;
             default:
                 break;

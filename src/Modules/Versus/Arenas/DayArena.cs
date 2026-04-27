@@ -15,6 +15,9 @@ internal sealed class DayArena : IArena
     public ArenaTypes Type => ArenaTypes.Day;
 
     /// <inheritdoc/>
+    public SpawnType DefaultZombieSpawnType => SpawnType.Rise;
+
+    /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-AdventureArea1Level2");
@@ -32,17 +35,17 @@ internal sealed class DayArena : IArena
     {
         if (ReplantedLobby.AmLobbyHost())
         {
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
 
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, false, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, false, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
         }
     }
 

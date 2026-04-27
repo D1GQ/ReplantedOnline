@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
@@ -130,10 +131,10 @@ internal static class FlagZombiePatch
     /// </summary>
     private static void SpawnZombie(ZombieType type, int y)
     {
-        var z = SeedPacketDefinitions.SpawnZombie(type, 9, y, true, false);
+        var z = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackAndShakeBushes, false);
         z.mPosX += Common.RandRangeInt(20, 70);
 
-        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(z, 9, y, true);
+        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(z, 9, y, SpawnType.BackAndShakeBushes);
         zombieNetworked.SendSnapToPosRpc();
     }
 }

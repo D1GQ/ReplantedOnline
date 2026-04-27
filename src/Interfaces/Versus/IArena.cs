@@ -18,6 +18,11 @@ internal interface IArena
     ArenaTypes Type { get; }
 
     /// <summary>
+    /// Gets the default spawn type for zombies in this arena.
+    /// </summary>
+    SpawnType DefaultZombieSpawnType { get; }
+
+    /// <summary>
     /// Gets the level entry data for this arena.
     /// </summary>
     /// <returns>The level entry data.</returns>
@@ -55,6 +60,37 @@ internal interface IArena
     /// <param name="gridY">The Y grid coordinate (row)</param>
     /// <returns>True if the seed type can be placed at the specified location; otherwise, false</returns>
     bool CanBePlacedAt(SeedType seedType, int gridX, int gridY);
+
+    /// <summary>
+    /// Determines the appropriate spawn type for a given zombie type based on its characteristics.
+    /// </summary>
+    /// <param name="zombieType">The type of zombie to evaluate.</param>
+    /// <returns>
+    /// The spawn type for the zombie:
+    /// <list type="bullet">
+    /// <item><description><see cref="SpawnType.None"/> for Target or Bungee zombies (cannot spawn)</description></item>
+    /// <item><description>The arena's <see cref="DefaultZombieSpawnType"/> for zombies that rise from the ground and don't force back spawn</description></item>
+    /// <item><description><see cref="SpawnType.Back"/> for all other cases</description></item>
+    /// </list>
+    /// </returns>
+    SpawnType GetZombieSpawnType(ZombieType zombieType)
+    {
+        if (zombieType is ZombieType.Target or ZombieType.Bungee)
+        {
+            return SpawnType.None;
+        }
+
+        var isDefault = SeedPacketDefinitions.ZombieRisesFromGround(zombieType);
+        var isForceXPos = SeedPacketDefinitions.ZombieSpawnsInBack(zombieType);
+        if (isDefault && !isForceXPos)
+        {
+            return DefaultZombieSpawnType;
+        }
+        else
+        {
+            return SpawnType.Back;
+        }
+    }
 
     /// <summary>
     /// Retrieves the current active arena instance.

@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client.Object;
@@ -109,7 +110,7 @@ internal static class SeedPacketDefinitions
             var type = Challenge.IZombieSeedTypeToZombieType(seedType);
 
             // Delegate to zombie spawning logic
-            return SpawnZombie(type, gridX, gridY, false, spawnOnNetwork);
+            return SpawnZombie(type, gridX, gridY, spawnOnNetwork);
         }
         else
         {
@@ -174,25 +175,32 @@ internal static class SeedPacketDefinitions
     /// <param name="zombieType">The type of zombie to spawn.</param>
     /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
     /// <param name="gridY">The Y grid coordinate (row) or target row for Bungee zombies.</param>
-    /// <param name="shakeBush">Whether to trigger bush shaking animation on spawn.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
     /// <returns>The spawned Zombie object, or null if spawning was prevented.</returns>
-    internal static Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool shakeBush, bool spawnOnNetwork)
+    internal static Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
     {
-        // Determine if this zombie type rises from the ground (like grave zombies)
-        // Bungee zombies are excluded from rising behavior even if they normally would
-        var rise = ZombieRisesFromGround(zombieType);
+        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType), spawnOnNetwork);
+    }
 
-        // Some zombies have forced spawn positions on the right side
-        var forceXPos = ZombieSpawnsInBack(zombieType);
-
+    /// <summary>
+    /// Spawns a zombie at the specified grid coordinates with optional rising animation.
+    /// Handles special zombie types like Gravestones and Bungee zombies with custom positioning.
+    /// </summary>
+    /// <param name="zombieType">The type of zombie to spawn.</param>
+    /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
+    /// <param name="gridY">The Y grid coordinate (row) or target row for Bungee zombies.</param>
+    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
+    /// <returns>The spawned Zombie object, or null if spawning was prevented.</returns>
+    internal static Zombie SpawnZombie(ZombieType zombieType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    {
         // Add zombie to the board at the specified position
         // Use forced X position (9) for certain zombies, otherwise use the provided gridX
-        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, forceXPos ? 9 : gridX, gridY);
+        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnType is SpawnType.Back or SpawnType.BackAndShakeBushes ? 9 : gridX, gridY);
 
         // If this zombie rises from ground, trigger the rising animation
         // This makes the zombie emerge from the ground rather than just appearing
-        if (rise && !shakeBush)
+        if (spawnType == SpawnType.Rise)
         {
             zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
             zombie.mPhaseCounter = 150;
@@ -215,9 +223,13 @@ internal static class SeedPacketDefinitions
                     break;
             }
         }
-        else if (shakeBush)
+        else if (spawnType == SpawnType.BackAndShakeBushes)
         {
             Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
+        }
+        else if (spawnType == SpawnType.Bungie)
+        {
+
         }
 
         // Set Gravestone grid pos
@@ -239,7 +251,7 @@ internal static class SeedPacketDefinitions
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this zombie across all clients
-            SpawnZombieOnNetwork(zombie, gridX, gridY, shakeBush);
+            SpawnZombieOnNetwork(zombie, gridX, gridY, spawnType);
         }
 
         Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
@@ -256,15 +268,28 @@ internal static class SeedPacketDefinitions
     /// <param name="zombie">The zombie to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <param name="shakeBush">Whether bush shaking animation was triggered on spawn.</param>
     /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, bool shakeBush)
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY)
+    {
+        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType));
+    }
+
+    /// <summary>
+    /// Creates a networked controller for an existing zombie to enable network synchronization.
+    /// Sets up all necessary network properties and initializes the animation controller.
+    /// </summary>
+    /// <param name="zombie">The zombie to create a network controller for.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="spawnType">The type of spawning.</param>
+    /// <returns>The spawned ZombieNetworked controller object.</returns>
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType)
     {
         var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
         {
             net._Zombie = zombie;
             net.ZombieType = zombie.mZombieType;
-            net.ShakeBush = shakeBush;
+            net.SpawnType = spawnType;
             net.GridX = gridX;
             net.GridY = gridY;
         }, VersusState.PlantClientId);

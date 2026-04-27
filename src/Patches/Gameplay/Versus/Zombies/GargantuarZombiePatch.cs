@@ -166,7 +166,7 @@ internal static class GargantuarZombiePatch
         imp.mRelatedZombieID = gargantuar.DataID;
 
         SetupImp(gargantuar, imp);
-        SeedPacketDefinitions.SpawnZombieOnNetwork(imp, 20, 0, false); // spawn imp on network off screen for plant side to sync the throw
+        SeedPacketDefinitions.SpawnZombieOnNetwork(imp, 20, 0); // spawn imp on network off screen for plant side to sync the throw
     }
 
     private static void SetupImp(Zombie gargantuar, Zombie imp)
