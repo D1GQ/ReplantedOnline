@@ -2,6 +2,7 @@
 using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
@@ -149,37 +150,11 @@ internal static class ArenaSelectorPanel
     {
         if (_panel == null || _preview == null) return;
 
-        var arena = GetArenaLevelEntryData(arenaType);
+        var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
         if (arena != null)
         {
-            SetPreviewFromEntryData(arena);
+            SetPreviewFromEntryData(arena.GetLevelEntryData());
         }
-    }
-
-    /// <summary>
-    /// Gets the level entry data for the arena type.
-    /// </summary>
-    /// <param name="arenaType">The arena type (Day or Night) to display a preview for.</param>
-    /// <returns>The LevelEntryData of the ArenaType</returns>
-    internal static LevelEntryData GetArenaLevelEntryData(ArenaTypes arenaType)
-    {
-        string arenaName = string.Empty;
-        switch (arenaType)
-        {
-            case ArenaTypes.Day:
-                arenaName = "Level-AdventureArea1Level2";
-                break;
-            case ArenaTypes.Night:
-                arenaName = "Level-AdventureArea2Level2";
-                break;
-#if DEBUG
-            case ArenaTypes.Debug:
-                arenaName = "Level-Minigame-Beghouled";
-                break;
-#endif
-        }
-
-        return LevelEntries.GetLevel(arenaName);
     }
 
     /// <summary>

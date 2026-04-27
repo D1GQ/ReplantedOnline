@@ -50,44 +50,7 @@ internal sealed class CustomGamemode : IVersusGamemode
             yield return null;
         }
 
-        // Remove initial seeds from vanilla
-        foreach (var seedBack in Instances.GameplayActivity.Board.SeedBanks.m_values)
-        {
-            seedBack.RemoveSeed(0);
-        }
-        foreach (var seedBankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos)
-        {
-            seedBankInfo.mSeedsInBank = 0;
-        }
-
-        List<ChosenSeed> chosenSeeds = [
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
-        ];
-
-        foreach (var seedPacket in chosenSeeds)
-        {
-            if (seedPacket.mSeedState == ChosenSeedState.SeedInBank)
-            {
-                seedPacket.mSeedState = ChosenSeedState.SeedInChooser;
-            }
-        }
-
-        // Add custom initial seeds
-        var localSeedBankInfo = PvZRUtils.GetLocalSeedBankInfo();
-        var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
-        localSeedBankInfo.mSeedsInBank = 0;
-        opponentSeedBankInfo.mSeedsInBank = 0;
-        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
-        {
-            setupSeedbank.SetupSeedbank(localSeedBankInfo, ReplantedClientData.LocalClient.Team);
-            setupSeedbank.SetupSeedbank(opponentSeedBankInfo, ReplantedClientData.LocalClient.Team.GetOppositeTeam());
-        }
-        else
-        {
-            ISetupSeedbank.BaseSetupSeedbank(localSeedBankInfo, ReplantedClientData.LocalClient.Team);
-            ISetupSeedbank.BaseSetupSeedbank(opponentSeedBankInfo, ReplantedClientData.LocalClient.Team.GetOppositeTeam());
-        }
+        IArenaSetupSeedbank.AddInitialSeedsToBanks();
 
         ReplantedClientData.LocalClient?.Ready.Value = true;
 
@@ -96,11 +59,14 @@ internal sealed class CustomGamemode : IVersusGamemode
             if (ReplantedLobby.GetLobbyMemberCount() == 1)
             {
                 // Set up opponent seed bank for debugging
+                var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
                 if (VersusState.AmPlantSide)
                 {
-                    foreach (var seedType in Instances.GameplayActivity.VersusMode.m_quickPlayZombies.Skip(1))
+                    SeedType[] quickPlayZombies = IArenaSetupSeedbank.GetQuickPlayZombies();
+                    for (int i = opponentSeedBankInfo.mSeedsInBank; i < quickPlayZombies.Length; i++)
                     {
-                        Instances.GameplayActivity.Board.SeedBanks.OpponentItem().AddSeed(seedType, true);
+                        SeedType seedType = quickPlayZombies[i];
+                        opponentSeedBankInfo.AddSeedFromChooser(seedType);
                     }
 
                     var seedChooserVSSwapDebug = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
@@ -113,9 +79,11 @@ internal sealed class CustomGamemode : IVersusGamemode
                 }
                 else if (VersusState.AmZombieSide)
                 {
-                    foreach (var seedType in Instances.GameplayActivity.VersusMode.m_quickPlayPlants.Skip(1))
+                    SeedType[] quickPlayPlants = IArenaSetupSeedbank.GetQuickPlayPlants();
+                    for (int i = opponentSeedBankInfo.mSeedsInBank; i < quickPlayPlants.Length; i++)
                     {
-                        Instances.GameplayActivity.Board.SeedBanks.OpponentItem().AddSeed(seedType, true);
+                        SeedType seedType = quickPlayPlants[i];
+                        opponentSeedBankInfo.AddSeedFromChooser(seedType);
                     }
                 }
             }

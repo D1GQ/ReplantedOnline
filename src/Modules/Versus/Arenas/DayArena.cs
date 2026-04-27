@@ -1,4 +1,5 @@
-﻿using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
@@ -12,6 +13,19 @@ internal sealed class DayArena : IArena
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Day;
+
+    /// <inheritdoc/>
+    public LevelEntryData GetLevelEntryData()
+    {
+        return LevelEntries.GetLevel("Level-AdventureArea1Level2");
+    }
+
+    /// <inheritdoc/>
+    public void SetupVersusArenaForGameplay(LevelEntryData versusLevelData)
+    {
+        versusLevelData.m_gameArea = GameArea.Day;
+        versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
+    }
 
     /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)

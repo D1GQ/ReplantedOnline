@@ -1,4 +1,5 @@
-﻿using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Versus;
@@ -15,6 +16,18 @@ internal interface IArena
     /// Gets the type identifier for this arena.
     /// </summary>
     ArenaTypes Type { get; }
+
+    /// <summary>
+    /// Gets the level entry data for this arena.
+    /// </summary>
+    /// <returns>The level entry data.</returns>
+    LevelEntryData GetLevelEntryData();
+
+    /// <summary>
+    /// Sets up the versus arena for gameplay with the specified level data.
+    /// </summary>
+    /// <param name="versusLevelData">The level data to configure the arena with.</param>
+    void SetupVersusArenaForGameplay(LevelEntryData versusLevelData);
 
     /// <summary>
     /// Called when the versus gameplay starts.

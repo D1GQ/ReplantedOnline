@@ -26,15 +26,27 @@ internal sealed class QuickplayGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
+        if (ReplantedClientData.LocalClient.Team == PlayerTeam.Plants)
         {
-            setupSeedbank.QuickPlayAddSeedsToSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
-            setupSeedbank.QuickPlayAddSeedsToSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
+            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
+            {
+                PvZRUtils.GetLocalSeedBankInfo().mSeedBank.AddSeed(seedType, true);
+            }
+            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
+            {
+                PvZRUtils.GetOpponentSeedBankInfo().mSeedBank.AddSeed(seedType, true);
+            }
         }
-        else
+        else if (ReplantedClientData.LocalClient.Team == PlayerTeam.Zombies)
         {
-            ISetupSeedbank.BaseQuickPlayAddSeedsToSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
-            ISetupSeedbank.BaseQuickPlayAddSeedsToSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
+            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
+            {
+                PvZRUtils.GetLocalSeedBankInfo().mSeedBank.AddSeed(seedType, true);
+            }
+            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
+            {
+                PvZRUtils.GetOpponentSeedBankInfo().mSeedBank.AddSeed(seedType, true);
+            }
         }
     }
 

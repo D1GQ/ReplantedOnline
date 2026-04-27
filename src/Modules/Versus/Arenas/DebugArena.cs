@@ -1,4 +1,5 @@
 ﻿#if DEBUG
+using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
@@ -30,6 +31,19 @@ internal sealed class DebugArena : IArena
 
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Debug;
+
+    /// <inheritdoc/>
+    public LevelEntryData GetLevelEntryData()
+    {
+        return LevelEntries.GetLevel("Level-Minigame-Beghouled");
+    }
+
+    /// <inheritdoc/>
+    public void SetupVersusArenaForGameplay(LevelEntryData versusLevelData)
+    {
+        versusLevelData.m_gameArea = GameArea.Day;
+        versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
+    }
 
     /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)

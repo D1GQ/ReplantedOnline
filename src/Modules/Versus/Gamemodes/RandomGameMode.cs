@@ -4,7 +4,6 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 
@@ -27,22 +26,13 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        // Add custom initial seeds
-        if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
-        {
-            setupSeedbank.SetupSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
-            setupSeedbank.SetupSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
-        }
-        else
-        {
-            ISetupSeedbank.BaseSetupSeedbank(PvZRUtils.GetLocalSeedBankInfo(), ReplantedClientData.LocalClient.Team);
-            ISetupSeedbank.BaseSetupSeedbank(PvZRUtils.GetOpponentSeedBankInfo(), ReplantedClientData.LocalClient.Team.GetOppositeTeam());
-        }
+        IArenaSetupSeedbank.AddInitialSeedsToBanks();
 
         if (VersusState.AmPlantSide)
         {
             var plantSeeds = Enum.GetValues<SeedType>().Where(seed =>
                 !Challenge.IsZombieSeedType(seed) &&
+                !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
                 !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
@@ -61,6 +51,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         {
             var zombieSeeds = Enum.GetValues<SeedType>().Where(seed =>
                 Challenge.IsZombieSeedType(seed) &&
+                !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandom.Contains(seed) &&
                 !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0

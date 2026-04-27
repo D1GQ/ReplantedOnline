@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppSource.Utils;
-using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Attributes;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
@@ -51,27 +51,12 @@ internal static class LevelEntries
     /// </summary>
     internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
     {
-        var arena = VersusState.Arena;
-        ICharacterConfig.SetArenaDefinitions(arena);
+        var arenaType = VersusState.Arena;
+        ICharacterConfig.SetArenaDefinitions(arenaType);
 
-        var level = GetLevel("Level-Versus");
-        switch (arena)
-        {
-            case ArenaTypes.Day:
-                level.m_gameArea = GameArea.Day;
-                level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1").BackgroundPrefab;
-                break;
-            case ArenaTypes.Night:
-                level.m_gameArea = GameArea.Night;
-                level.m_backgroundPrefab = GetLevel("Level-AdventureArea2Level1").BackgroundPrefab;
-                break;
-#if DEBUG
-            case ArenaTypes.Debug:
-                level.m_gameArea = GameArea.Day;
-                level.m_backgroundPrefab = GetLevel("Level-AdventureArea2Level1").BackgroundPrefab;
-                break;
-#endif
-        }
+        var versusLevel = GetLevel("Level-Versus");
+        var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
+        arena?.SetupVersusArenaForGameplay(versusLevel);
 
         // Hide arena changing
         if (selectionSet != SelectionSet.CustomAll)
@@ -87,7 +72,7 @@ internal static class LevelEntries
 
         // Set background to new arena
         UnityEngine.Object.Destroy(Instances.GameplayActivity.BackgroundController.gameObject);
-        Instances.GameplayActivity.ChangeLevelBackground(level, true);
+        Instances.GameplayActivity.ChangeLevelBackground(versusLevel, true);
         Instances.GameplayActivity.BackgroundController.Init(Instances.GameplayActivity.Board);
         Instances.GameplayActivity.m_boardOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
         Instances.GameplayActivity.m_gameplayPooler.m_gridOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;

@@ -170,4 +170,33 @@ internal static class PvZRUtils
     {
         return Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX];
     }
+
+    /// <summary>
+    /// Clears all seeds from the specified seed bank by removing each non empty seed packet.
+    /// </summary>
+    /// <param name="seedBankInfo">The seed bank information containing the seed bank to clear.</param>
+    internal static void ClearAllSeedsInSeedBack(this SeedChooserScreen.SeedBankInfo seedBankInfo)
+    {
+        List<SeedType> removed = [];
+        for (int i = 0; i < seedBankInfo.mSeedsInBank; i++)
+        {
+            var packet = seedBankInfo.mSeedBank.SeedPackets[i];
+            seedBankInfo.mSeedBank.RemoveSeed(i);
+            removed.Add(packet.mPacketType);
+        }
+        seedBankInfo.mSeedsInBank = 0;
+
+        List<ChosenSeed> chosenSeeds = [
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
+        ];
+
+        foreach (var seedPacket in chosenSeeds)
+        {
+            if (!removed.Contains(seedPacket.mSeedType)) continue;
+
+            seedPacket.mSeedState = ChosenSeedState.SeedInChooser;
+            seedPacket.mSeedIndexInBank = -1;
+        }
+    }
 }

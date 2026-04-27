@@ -57,13 +57,9 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal static SeedType[] ExcludeFromRandom = [
         // Plants
-        SeedType.Sunflower,
         SeedType.Flowerpot,
         SeedType.Marigold,
         SeedType.Plantern,
-
-        // Zombies
-        SeedType.ZombieGravestone
     ];
 
     /// <summary>

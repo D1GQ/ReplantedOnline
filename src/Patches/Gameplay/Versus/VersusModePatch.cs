@@ -20,14 +20,7 @@ internal static class VersusModePatch
         if (ReplantedLobby.AmInLobby())
         {
             // Set seed back size
-            if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
-            {
-                __result = setupSeedbank.SeedPacketCount;
-            }
-            else
-            {
-                __result = ISetupSeedbank.BaseSeedPacketCount;
-            }
+            __result = IArenaSetupSeedbank.GetSeedPacketCount();
         }
     }
 
@@ -47,14 +40,7 @@ internal static class VersusModePatch
                 }
             }
 
-            if (IArena.GetCurrentArena() is ISetupSeedbank setupSeedbank)
-            {
-                __result = inBank - (setupSeedbank.SeedPacketCount - VersusMode.k_numPackets);
-            }
-            else
-            {
-                __result = inBank - (ISetupSeedbank.BaseSeedPacketCount - VersusMode.k_numPackets);
-            }
+            __result = inBank - (IArenaSetupSeedbank.GetSeedPacketCount() - VersusMode.k_numPackets);
         }
 
         return false;
