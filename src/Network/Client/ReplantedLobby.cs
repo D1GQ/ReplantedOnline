@@ -371,7 +371,7 @@ internal static class ReplantedLobby
         }
 
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteByte((byte)reason);
+        packetWriter.WriteEnum(reason);
         NetworkDispatcher.SendPacketTo(clientId, packetWriter, PacketHandlerType.RemoveClient, PacketChannel.Main);
         packetWriter.Recycle();
 

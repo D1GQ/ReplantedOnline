@@ -344,7 +344,7 @@ internal static class NetworkDispatcher
                     if (local) break;
                     if (sender.AmHost && !ReplantedLobby.AmLobbyHost())
                     {
-                        BanReasons reason = (BanReasons)packetReader.ReadByte();
+                        var reason = packetReader.ReadEnum<BanReasons>();
                         ReplantedLobby.LeaveLobby(() =>
                         {
                             CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");

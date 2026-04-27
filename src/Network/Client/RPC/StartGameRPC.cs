@@ -23,7 +23,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
     public void Send(SelectionSet selectionSet)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteByte((byte)selectionSet);
+        packetWriter.WriteEnum(selectionSet);
         NetworkDispatcher.SendRpc(Rpc, packetWriter, true);
         packetWriter.Recycle();
         ReplantedLobby.LobbyData.HasStarted.Value = true;
@@ -36,7 +36,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         // Only process StartGame RPCs from the actual lobby host
         if (sender.AmHost)
         {
-            var selectionSet = (SelectionSet)packetReader.ReadByte();
+            var selectionSet = packetReader.ReadEnum<SelectionSet>();
 
             ReplantedOnlineMod.Logger.Msg(typeof(StartGameRpc), "Game Starting...");
 

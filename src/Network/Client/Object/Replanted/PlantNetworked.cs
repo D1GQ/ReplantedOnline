@@ -7,7 +7,6 @@ using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using ReplantedOnline.Patches.Gameplay.Versus.Plants;
 using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;
@@ -234,8 +233,8 @@ internal sealed class PlantNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
-            packetWriter.WriteInt((int)SeedType);
-            packetWriter.WriteInt((int)ImitaterType);
+            packetWriter.WriteEnum(SeedType);
+            packetWriter.WriteEnum(ImitaterType);
 
             LogicComponent.Serialize(packetWriter, init);
 
@@ -260,8 +259,8 @@ internal sealed class PlantNetworked : NetworkObject
             // Read spawn info
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
-            SeedType = (SeedType)packetReader.ReadInt();
-            ImitaterType = (SeedType)packetReader.ReadInt();
+            SeedType = packetReader.ReadEnum<SeedType>();
+            ImitaterType = packetReader.ReadEnum<SeedType>();
 
             _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, ImitaterType, GridX, GridY, false);
 

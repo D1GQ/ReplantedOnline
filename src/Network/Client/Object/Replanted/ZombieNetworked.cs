@@ -386,7 +386,7 @@ internal sealed class ZombieNetworked : NetworkObject
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteBool(ShakeBush);
-            packetWriter.WriteInt((int)ZombieType);
+            packetWriter.WriteEnum(ZombieType);
 
             LogicComponent.Serialize(packetWriter, init);
             ClearDirtyBits();
@@ -407,7 +407,7 @@ internal sealed class ZombieNetworked : NetworkObject
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             ShakeBush = packetReader.ReadBool();
-            ZombieType = (ZombieType)packetReader.ReadInt();
+            ZombieType = packetReader.ReadEnum<ZombieType>();
 
             _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, ShakeBush, false);
 

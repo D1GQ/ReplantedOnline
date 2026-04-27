@@ -19,7 +19,7 @@ internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
     public void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteInt((int)theChosenSeed.mSeedType);
+        packetWriter.WriteEnum(theChosenSeed.mSeedType);
         NetworkDispatcher.SendRpc(Rpc, packetWriter);
         packetWriter.Recycle();
     }
@@ -28,7 +28,7 @@ internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
     public void Handle(ReplantedClientData sender, PacketReader packetReader)
     {
         // Read the chosen seed type from the packet
-        var seedType = (SeedType)packetReader.ReadInt();
+        var seedType = packetReader.ReadEnum<SeedType>();
         var SeedChooserScreen = Instances.GameplayActivity.SeedChooserScreen;
         var theChosenSeed = SeedChooserScreen.GetChosenSeedFromType(seedType);
 
