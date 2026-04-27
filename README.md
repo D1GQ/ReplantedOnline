@@ -30,6 +30,44 @@ ReplantedOnline lets you play Versus mode online. Using direct peer-to-peer conn
 - [MelonLoader](https://github.com/LavaGang/MelonLoader)
 - [BloomEngine](https://gamebanana.com/mods/640948)
 
+## Gameplay Tables
+
+### Brain Spawn Cooldown
+
+| Formula | Description |
+|---------|-------------|
+| `New = Current + (15 × Plants)` | Each plant adds 15 to the cooldown |
+
+---
+
+### Grave Cooldown
+
+| Formula | Description |
+|---------|-------------|
+| `New = Current + Max(ZombiePoints - (5 × Plants), 0)` | Zombie points minus plant penalty (cannot go below 0) |
+
+### Zombie Points Table
+
+| Zombie Type | Points |
+|-------------|--------|
+| Gargantuar | 200 |
+| Zamboni | 150 |
+| Catapult | 125 |
+| Football | 125 |
+| Target | 100 |
+| Ladder | 100 |
+| Pail | 100 |
+| Pogo | 75 |
+| Traffic Cone | 65 |
+| Pole Vaulter | 65 |
+| Gravestone | 33 |
+| Bobsled | 25 (×4 = 100) |
+| Backup Dancer | 25 (×4 = 100) |
+| Imp | 15 |
+| Other | 50 |
+
+---
+
 ## Want to help out?
 
 Pull requests are welcome. Code structure:
