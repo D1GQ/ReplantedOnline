@@ -155,8 +155,9 @@ internal static class SeedPacketDefinitions
     /// <param name="plant">The plant to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned PlantNetworked controller object.</returns>
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY)
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, Action<PlantNetworked> callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
         {
@@ -164,6 +165,7 @@ internal static class SeedPacketDefinitions
             net.SeedType = plant.mSeedType;
             net.GridX = gridX;
             net.GridY = gridY;
+            callback?.Invoke(net);
         }, VersusState.PlantClientId);
         return networkObj;
     }
@@ -268,10 +270,11 @@ internal static class SeedPacketDefinitions
     /// <param name="zombie">The zombie to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY)
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked> callback = null)
     {
-        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType));
+        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType), callback);
     }
 
     /// <summary>
@@ -282,8 +285,9 @@ internal static class SeedPacketDefinitions
     /// <param name="gridX">The X grid coordinate (column).</param>
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType)
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType, Action<ZombieNetworked> callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
         {
@@ -292,6 +296,7 @@ internal static class SeedPacketDefinitions
             net.SpawnType = spawnType;
             net.GridX = gridX;
             net.GridY = gridY;
+            callback?.Invoke(net);
         }, VersusState.PlantClientId);
         return networkObj;
     }
