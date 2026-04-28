@@ -132,7 +132,7 @@ internal static class BobsledZombiePatch
         Zombie[] passengers = new Zombie[3];
         for (int i = 0; i < passengers.Length; i++)
         {
-            var passenger = passengers[i] = SeedPacketDefinitions.SpawnZombie(ZombieType.Bobsled, 9, leader.mRow, false);
+            var passenger = passengers[i] = SeedPacketDefinitions.SpawnZombie(ZombieType.Bobsled, 9, leader.mRow, false).Zombie;
             passenger.mRelatedZombieID = leader.DataID;
             SeedPacketDefinitions.SpawnZombieOnNetwork(passenger, 9, leader.mRow);
         }

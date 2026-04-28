@@ -28,5 +28,5 @@ internal enum SpawnType
     /// <summary>
     /// Zombie drops from above via bungee zombie.
     /// </summary>
-    Bungie
+    ZombieWithBungee
 }

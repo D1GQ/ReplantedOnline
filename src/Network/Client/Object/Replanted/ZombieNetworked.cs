@@ -7,6 +7,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
+using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
@@ -66,9 +67,6 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
-    internal bool BungeeSpawn;
-    internal ZombieID BungeeRelated = ZombieID.Null;
-
     internal ZombieNetworkComponent LogicComponent;
     internal bool EnteringHouse;
 
@@ -87,6 +85,12 @@ internal sealed class ZombieNetworked : NetworkObject
     public override void OnInit()
     {
         LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
+
+        if (SpawnType == SpawnType.ZombieWithBungee)
+        {
+            LogicComponent = AddNetworkComponent<ZombieWithBungeeComponent>();
+        }
+
         _Zombie.AddNetworkedLookup(this);
     }
 
@@ -389,7 +393,6 @@ internal sealed class ZombieNetworked : NetworkObject
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
             packetWriter.WriteEnum(SpawnType);
-            packetWriter.WriteBool(BungeeSpawn);
             packetWriter.WriteEnum(ZombieType);
 
             LogicComponent.Serialize(packetWriter, init);
@@ -411,10 +414,9 @@ internal sealed class ZombieNetworked : NetworkObject
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
             SpawnType = packetReader.ReadEnum<SpawnType>();
-            BungeeSpawn = packetReader.ReadBool();
             ZombieType = packetReader.ReadEnum<ZombieType>();
 
-            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false);
+            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false).Zombie;
 
             OnInit();
 

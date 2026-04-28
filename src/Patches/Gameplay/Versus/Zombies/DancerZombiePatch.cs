@@ -44,7 +44,7 @@ internal static class DancerZombiePatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, true);
+            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, true).Zombie;
             __instance.AddNextId(backupDancer);
 
             throw new SilentPatchException();

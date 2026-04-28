@@ -262,9 +262,9 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
         T component = Activator.CreateInstance(typeof(T)) as T;
         component.NetworkObject = this;
         component.Index = NetworkComponents.Count;
-        component.Init();
         NetworkComponents.Add(component);
         _networkComponentsLookup[type] = component;
+        component.Init();
         return component;
     }
 

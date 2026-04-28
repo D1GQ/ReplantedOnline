@@ -1,0 +1,133 @@
+﻿using Il2CppReloaded.Gameplay;
+using Il2CppSource.Controllers;
+using ReplantedOnline.Attributes;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
+using ReplantedOnline.Network.Client.Object.Replanted.Components;
+using ReplantedOnline.Utilities;
+using System.Collections;
+
+namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
+
+/// <inheritdoc/>
+internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
+{
+    private enum BungeeSpawningRpcs : byte
+    {
+        SetPartner
+    }
+
+    private ZombieNetworked _partner;
+    private bool _hasPartner;
+
+    internal override void Init()
+    {
+        base.Init();
+
+        if (ZombieNetworked.ZombieType != ZombieType.Bungee)
+        {
+            Instances.GameplayActivity.StartCoroutine(CoZombieDrop());
+        }
+        else
+        {
+            ZombieNetworked._Zombie.mController.Cast<ZombieBungeeController>().m_bungeeTargetSpriteRenderer.color = new(1f, 1f, 1f, 0.6f);
+        }
+    }
+
+    internal override void Update()
+    {
+        if (ZombieNetworked._Zombie == null) return;
+        if (_partner == null) return;
+        if (!_hasPartner) return;
+
+        if (ZombieNetworked.ZombieType == ZombieType.Bungee)
+        {
+            if (ZombieNetworked._Zombie.mZombiePhase is ZombiePhase.BungeeDiving)
+            {
+                ZombieNetworked._Zombie.BungeeLiftTarget();
+            }
+        }
+    }
+
+    internal void SendSetPartnerRpc(ZombieNetworked partner)
+    {
+        if (!_hasPartner)
+        {
+            _hasPartner = true;
+            _partner = partner;
+            SendNetworkComponentRpc(BungeeSpawningRpcs.SetPartner, partner);
+        }
+    }
+
+    [RpcHandler(BungeeSpawningRpcs.SetPartner)]
+    private void HandleSetPartnerRpc(ZombieNetworked partnerNetworked)
+    {
+        if (!_hasPartner)
+        {
+            _hasPartner = true;
+            _partner = partnerNetworked;
+        }
+    }
+
+    private IEnumerator CoZombieDrop()
+    {
+        ZombieNetworked._Zombie.mController.gameObject.SetActive(false);
+
+        if (ZombieNetworked.AmOwner)
+        {
+            yield return CoSpawnBungee();
+        }
+
+        while (!_hasPartner)
+        {
+            yield return null;
+        }
+
+        var theX = Instances.GameplayActivity.Board.GridToPixelX(ZombieNetworked.GridX, ZombieNetworked.GridY);
+        ZombieNetworked._Zombie.mPosX = theX - 25;
+        ZombieNetworked._Zombie.mController.gameObject.SetActive(true);
+
+        var oldVelX = ZombieNetworked._Zombie.mVelX;
+        var oldRenderOrder = ZombieNetworked._Zombie.RenderOrder;
+        while (_partner._Zombie.mZombiePhase != ZombiePhase.BungeeAtBottom)
+        {
+            ZombieNetworked._Zombie.mBungeeOffsetY = _partner._Zombie.mController.GetTrackPosition("").y - 50;
+            ZombieNetworked._Zombie.RenderOrder = _partner._Zombie.RenderOrder + 1;
+            ZombieNetworked._Zombie.mVelX = 0;
+            ZombieNetworked._Zombie.UpdateAnimSpeed();
+            yield return null;
+        }
+
+        _partner._Zombie.mZombiePhase = ZombiePhase.BungeeRising;
+        if (_partner.AmOwner)
+        {
+            _partner.DespawnAndDestroyWhenNullOrDead();
+        }
+
+        ZombieNetworked._Zombie.mBungeeOffsetY = 0;
+        ZombieNetworked._Zombie.RenderOrder = oldRenderOrder;
+        ZombieNetworked._Zombie.mVelX = oldVelX;
+        ZombieNetworked._Zombie.UpdateAnimSpeed();
+
+        var component = ZombieNetworked.NetworkComponents.First();
+        if (component is ZombieNetworkComponent zombieComponent)
+        {
+            ZombieNetworked.LogicComponent = zombieComponent;
+        }
+    }
+
+    private IEnumerator CoSpawnBungee()
+    {
+        var bungeeNetworked = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, ZombieNetworked.GridX, ZombieNetworked.GridY, SpawnType.ZombieWithBungee, true).ZombieNetworked;
+        while (!bungeeNetworked.IsOnNetwork)
+        {
+            yield return null;
+        }
+
+        yield return null;
+
+        bungeeNetworked.GetNetworkComponent<ZombieWithBungeeComponent>().SendSetPartnerRpc(ZombieNetworked);
+        SendSetPartnerRpc(bungeeNetworked);
+    }
+}

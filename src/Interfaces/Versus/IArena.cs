@@ -80,6 +80,11 @@ internal interface IArena
             return SpawnType.None;
         }
 
+        if (zombieType is ZombieType.Gravestone)
+        {
+            return SpawnType.Rise;
+        }
+
         var isDefault = SeedPacketDefinitions.ZombieRisesFromGround(zombieType);
         var isForceXPos = SeedPacketDefinitions.ZombieSpawnsInBack(zombieType);
         if (isDefault && !isForceXPos)

@@ -255,7 +255,7 @@ internal sealed class PlantNetworked : NetworkObject
             GridY = packetReader.ReadInt();
             SeedType = packetReader.ReadEnum<SeedType>();
 
-            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false);
+            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;
 
             OnInit();
 
