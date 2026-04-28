@@ -27,5 +27,5 @@ internal interface IArenaData
     /// Sets up the versus arena for gameplay with the specified level data.
     /// </summary>
     /// <param name="versusLevelData">The level data to configure the arena with.</param>
-    void SetupVersusArenaForGameplay(LevelEntryData versusLevelData);
+    void SetupVersusLevel(LevelEntryData versusLevelData);
 }

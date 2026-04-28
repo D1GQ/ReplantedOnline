@@ -24,7 +24,7 @@ internal sealed class DayArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public void SetupVersusArenaForGameplay(LevelEntryData versusLevelData)
+    public void SetupVersusLevel(LevelEntryData versusLevelData)
     {
         versusLevelData.m_gameArea = GameArea.Day;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;

@@ -24,7 +24,7 @@ internal sealed class NightArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public void SetupVersusArenaForGameplay(LevelEntryData versusLevelData)
+    public void SetupVersusLevel(LevelEntryData versusLevelData)
     {
         versusLevelData.m_gameArea = GameArea.Night;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
