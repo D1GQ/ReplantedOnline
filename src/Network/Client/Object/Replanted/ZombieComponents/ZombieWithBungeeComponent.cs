@@ -7,6 +7,7 @@ using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Utilities;
 using System.Collections;
+using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
@@ -27,7 +28,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
         if (ZombieNetworked.ZombieType != ZombieType.Bungee)
         {
-            Instances.GameplayActivity.StartCoroutine(CoZombieDrop());
+            Instances.GameplayActivity.StartCoroutine(CoDrop());
         }
         else
         {
@@ -70,8 +71,12 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
         }
     }
 
-    private IEnumerator CoZombieDrop()
+    private IEnumerator CoDrop()
     {
+        var oldVelX = ZombieNetworked._Zombie.mVelX;
+        var oldRenderOrder = ZombieNetworked._Zombie.RenderOrder;
+        var oldRect = ZombieNetworked._Zombie.mZombieRect;
+        ZombieNetworked._Zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
         ZombieNetworked._Zombie.mController.gameObject.SetActive(false);
 
         if (ZombieNetworked.AmOwner)
@@ -84,12 +89,18 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
             yield return null;
         }
 
+        _partner.Dead = true;
+        _partner._Zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
+        var partnerComponent = _partner.GetNetworkComponent<ZombieWithBungeeComponent>();
+        while (!partnerComponent._hasPartner)
+        {
+            yield return null;
+        }
+
         var theX = Instances.GameplayActivity.Board.GridToPixelX(ZombieNetworked.GridX, ZombieNetworked.GridY);
         ZombieNetworked._Zombie.mPosX = theX - 25;
         ZombieNetworked._Zombie.mController.gameObject.SetActive(true);
 
-        var oldVelX = ZombieNetworked._Zombie.mVelX;
-        var oldRenderOrder = ZombieNetworked._Zombie.RenderOrder;
         while (_partner._Zombie.mZombiePhase != ZombiePhase.BungeeAtBottom)
         {
             ZombieNetworked._Zombie.mBungeeOffsetY = _partner._Zombie.mController.GetTrackPosition("").y - 50;
@@ -98,22 +109,25 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
             ZombieNetworked._Zombie.UpdateAnimSpeed();
             yield return null;
         }
-
         _partner._Zombie.mZombiePhase = ZombiePhase.BungeeRising;
-        if (_partner.AmOwner)
-        {
-            _partner.DespawnAndDestroyWhenNullOrDead();
-        }
-
-        ZombieNetworked._Zombie.mBungeeOffsetY = 0;
-        ZombieNetworked._Zombie.RenderOrder = oldRenderOrder;
-        ZombieNetworked._Zombie.mVelX = oldVelX;
-        ZombieNetworked._Zombie.UpdateAnimSpeed();
 
         var component = ZombieNetworked.NetworkComponents.First();
         if (component is ZombieNetworkComponent zombieComponent)
         {
             ZombieNetworked.LogicComponent = zombieComponent;
+        }
+
+        ZombieNetworked._Zombie.mBungeeOffsetY = 0;
+        ZombieNetworked._Zombie.RenderOrder = oldRenderOrder;
+        ZombieNetworked._Zombie.mVelX = oldVelX;
+        ZombieNetworked._Zombie.mZombieRect = oldRect;
+        ZombieNetworked._Zombie.UpdateAnimSpeed();
+
+        yield return new WaitForSeconds(1f);
+
+        if (_partner.AmOwner)
+        {
+            _partner.DespawnAndDestroy();
         }
     }
 
