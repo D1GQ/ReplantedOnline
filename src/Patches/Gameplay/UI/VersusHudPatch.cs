@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Binders;
-using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
@@ -65,28 +64,12 @@ internal static class VersusHudPatch
 
         if (VersusState.AmZombieSide)
         {
-            if (VersusState.SelectionSet == SelectionSet.Random)
-            {
-                plantHud.gameObject.SetActive(false);
-                return;
-            }
-
             var binder = plantHud.transform.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-
             SetUnknownCount(binder);
         }
         else
         {
-            if (VersusState.SelectionSet == SelectionSet.Random)
-            {
-                menuButtonContainer.Find("Nested_VS")?.gameObject?.SetActive(false);
-                menuButtonContainer.Find("Nested_NotVS")?.gameObject?.SetActive(true);
-
-                zombieHud.gameObject.SetActive(false);
-            }
-
             var binder = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-
             SetUnknownCount(binder);
         }
     }

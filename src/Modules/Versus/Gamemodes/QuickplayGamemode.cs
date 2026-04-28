@@ -3,7 +3,6 @@ using Il2CppSource.Utils;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Patches.Gameplay.UI;
 using ReplantedOnline.Utilities;
 
@@ -26,7 +25,7 @@ internal sealed class QuickplayGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        if (ReplantedClientData.LocalClient.Team == PlayerTeam.Plants)
+        if (VersusState.AmPlantSide)
         {
             foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
             {
@@ -37,7 +36,7 @@ internal sealed class QuickplayGamemode : IVersusGamemode
                 PvZRUtils.GetOpponentSeedBankInfo().mSeedBank.AddSeed(seedType, true);
             }
         }
-        else if (ReplantedClientData.LocalClient.Team == PlayerTeam.Zombies)
+        else if (VersusState.AmZombieSide)
         {
             foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
             {

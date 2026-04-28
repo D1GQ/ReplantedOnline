@@ -16,9 +16,14 @@ namespace ReplantedOnline.Modules.Versus;
 internal static class SeedPacketDefinitions
 {
     /// <summary>
+    /// The SeedType used to hide seed.
+    /// </summary>
+    internal readonly static SeedType HiddenSeed = SeedType.SlotMachineDiamond;
+
+    /// <summary>
     /// Collection of seed types that are disabled and cannot be used in gameplay.
     /// </summary>
-    internal static SeedType[] DisabledSeedTypes = [
+    internal readonly static SeedType[] DisabledSeedTypes = [
         // Misc
         SeedType.NumSeedsInChooser,
         SeedType.NumSeedTypes,
@@ -35,7 +40,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that ignore the initial cooldown period and are available immediately.
     /// </summary>
-    internal static SeedType[] IgnoreInitialCooldown = [
+    internal readonly static SeedType[] IgnoreInitialCooldown = [
         // Plants
         SeedType.Sunflower,
         SeedType.Peashooter,
@@ -47,13 +52,15 @@ internal static class SeedPacketDefinitions
         // Zombies
         SeedType.ZombieGravestone,
         SeedType.ZombieNormal,
-        SeedType.ZombieTrashCan
+        SeedType.ZombieTrashCan,
+
+        HiddenSeed
     ];
 
     /// <summary>
     /// Collection of seed types that should be excluded from random selection pools.
     /// </summary>
-    internal static SeedType[] ExcludeFromRandom = [
+    internal readonly static SeedType[] ExcludeFromRandom = [
         // Plants
         SeedType.Flowerpot,
         SeedType.Marigold,
@@ -63,15 +70,16 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that sleep by default.
     /// </summary>
-    internal static SeedType[] SleepingPlants = [
+    internal readonly static SeedType[] SleepingPlants = [
         SeedType.Puffshroom,
         SeedType.Seashroom,
         SeedType.Scaredyshroom,
         SeedType.Sunshroom,
         SeedType.Fumeshroom,
+        SeedType.Magnetshroom,
+        SeedType.Hypnoshroom,
         SeedType.Iceshroom,
-        SeedType.Doomshroom,
-        SeedType.Magnetshroom
+        SeedType.Doomshroom
     ];
 
     /// <summary>

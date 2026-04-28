@@ -47,6 +47,7 @@ internal sealed class NightArena : DayArena
     {
         foreach (var seedPacket in seedPackets)
         {
+            if (seedPacket.PacketType == SeedPacketDefinitions.HiddenSeed) continue;
             if (seedPacket.mPacketType is SeedType.Sunflower or SeedType.Sunshroom or SeedType.ZombieGravestone) continue;
 
             seedPacket.Deactivate();
