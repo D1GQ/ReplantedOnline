@@ -56,7 +56,10 @@ internal static class LevelEntries
 
         var versusLevel = GetLevel("Level-Versus");
         var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
-        arena?.SetupVersusArenaForGameplay(versusLevel);
+        if (arena is IArenaData data)
+        {
+            data.SetupVersusArenaForGameplay(versusLevel);
+        }
 
         // Hide arena changing
         if (selectionSet != SelectionSet.CustomAll)

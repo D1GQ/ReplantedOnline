@@ -1,9 +1,9 @@
-﻿using Il2CppReloaded.Data;
-using Il2CppSource.UI;
+﻿using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
@@ -151,19 +151,9 @@ internal static class ArenaSelectorPanel
         if (_panel == null || _preview == null) return;
 
         var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
-        if (arena != null)
+        if (arena != null && arena is IArenaData data)
         {
-            SetPreviewFromEntryData(arena.GetLevelEntryData());
+            _preview.sprite = data.GetThumbnail();
         }
-    }
-
-    /// <summary>
-    /// Sets the preview sprite from a LevelEntryData object.
-    /// </summary>
-    /// <param name="levelEntryData">The level entry data containing the thumbnail sprite to display.</param>
-    private static void SetPreviewFromEntryData(LevelEntryData levelEntryData)
-    {
-        Sprite sprite = levelEntryData.EntryThumbnail.Asset.Cast<Sprite>();
-        _preview.sprite = sprite;
     }
 }

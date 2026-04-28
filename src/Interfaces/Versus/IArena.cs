@@ -1,5 +1,4 @@
-﻿using Il2CppReloaded.Data;
-using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Versus;
@@ -7,8 +6,7 @@ using ReplantedOnline.Modules.Versus;
 namespace ReplantedOnline.Interfaces.Versus;
 
 /// <summary>
-/// Defines the contract for arena-specific behavior in versus gamemode.
-/// Implementations provide custom logic for different arena types.
+/// Defines the contract for arena behavior in versus gamemode.
 /// </summary>
 internal interface IArena
 {
@@ -21,18 +19,6 @@ internal interface IArena
     /// Gets the default spawn type for zombies in this arena.
     /// </summary>
     SpawnType DefaultZombieSpawnType { get; }
-
-    /// <summary>
-    /// Gets the level entry data for this arena.
-    /// </summary>
-    /// <returns>The level entry data.</returns>
-    LevelEntryData GetLevelEntryData();
-
-    /// <summary>
-    /// Sets up the versus arena for gameplay with the specified level data.
-    /// </summary>
-    /// <param name="versusLevelData">The level data to configure the arena with.</param>
-    void SetupVersusArenaForGameplay(LevelEntryData versusLevelData);
 
     /// <summary>
     /// Called when the versus gameplay starts.

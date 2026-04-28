@@ -13,7 +13,7 @@ using UnityEngine.InputSystem;
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class DebugArena : IArena
+internal sealed class DebugArena : IArena, IArenaData
 {
     private enum DebugModes
     {
