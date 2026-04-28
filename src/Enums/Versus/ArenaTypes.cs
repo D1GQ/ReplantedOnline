@@ -16,6 +16,16 @@ internal enum ArenaTypes
     Night,
 
     /// <summary>
+    /// Arena is set on the roof.
+    /// </summary>
+    Roof,
+
+    /// <summary>
+    /// Arena is set on the roof during the nighttime.
+    /// </summary>
+    RoofNight,
+
+    /// <summary>
     /// Arena is set at China!
     /// </summary>
     China,
