@@ -35,7 +35,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         get
         {
-            field ??= [SeedType.Flowerpot, .. Instances.GameplayActivity.VersusMode.m_quickPlayPlants];
+            field ??= [Instances.GameplayActivity.VersusMode.m_quickPlayPlants.First(), SeedType.Flowerpot, .. Instances.GameplayActivity.VersusMode.m_quickPlayPlants.Skip(1)];
             return field;
         }
     }
