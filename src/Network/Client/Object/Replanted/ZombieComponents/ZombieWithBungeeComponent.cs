@@ -76,6 +76,8 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
         var oldVelX = ZombieNetworked._Zombie.mVelX;
         var oldRenderOrder = ZombieNetworked._Zombie.RenderOrder;
         var oldRect = ZombieNetworked._Zombie.mZombieRect;
+
+        // Temporarily hide and make zombie invulnerable
         ZombieNetworked._Zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
         ZombieNetworked._Zombie.mController.gameObject.SetActive(false);
 
@@ -89,6 +91,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
             yield return null;
         }
 
+        // Make bungee Zombie invulnerable
         _partner.Dead = true;
         _partner._Zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
         var partnerComponent = _partner.GetNetworkComponent<ZombieWithBungeeComponent>();
@@ -103,6 +106,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
         while (_partner._Zombie.mZombiePhase != ZombiePhase.BungeeAtBottom)
         {
+            // Animate zombie coming down with bungee zombie
             ZombieNetworked._Zombie.mBungeeOffsetY = _partner._Zombie.mController.GetTrackPosition("").y - 50;
             ZombieNetworked._Zombie.RenderOrder = _partner._Zombie.RenderOrder + 1;
             ZombieNetworked._Zombie.mVelX = 0;
@@ -117,6 +121,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
             ZombieNetworked.LogicComponent = zombieComponent;
         }
 
+        // Set zombie up
         ZombieNetworked._Zombie.mBungeeOffsetY = 0;
         ZombieNetworked._Zombie.RenderOrder = oldRenderOrder;
         ZombieNetworked._Zombie.mVelX = oldVelX;
@@ -125,6 +130,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
         yield return new WaitForSeconds(1f);
 
+        // Despawn bungie zombie
         if (_partner.AmOwner)
         {
             _partner.DespawnAndDestroy();
