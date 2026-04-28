@@ -35,7 +35,10 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         get
         {
-            field ??= [Instances.GameplayActivity.VersusMode.m_quickPlayPlants.First(), SeedType.Flowerpot, .. Instances.GameplayActivity.VersusMode.m_quickPlayPlants.Skip(1)];
+            field ??=
+                [SeedType.Sunflower, SeedType.Flowerpot, SeedType.Cabbagepult,
+                SeedType.Kernelpult, SeedType.Tallnut, SeedType.Jalapeno,
+                SeedType.Squash];
             return field;
         }
     }
@@ -45,7 +48,10 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         get
         {
-            field ??= [.. Instances.GameplayActivity.VersusMode.m_quickPlayZombies, SeedType.ZombieBungee];
+            field ??=
+                [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrafficCone,
+                SeedType.ZombiePail, SeedType.ZombieBungee, SeedType.ZombieGargantuar,
+                SeedType.ZombieFlag];
             return field;
         }
     }
@@ -85,7 +91,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 
             for (int column = 0; column < 3; column++)
             {
-                for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
                 {
                     SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
                 }
@@ -93,6 +99,12 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+
+            for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
+            {
+                var lawMower = versusMode.m_board.m_lawnMowers.DataArrayAlloc();
+                lawMower.LawnMowerInitialize(row, versusMode.m_board.mApp);
+            }
         }
     }
 

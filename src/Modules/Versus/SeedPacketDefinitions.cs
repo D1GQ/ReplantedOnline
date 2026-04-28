@@ -46,8 +46,11 @@ internal static class SeedPacketDefinitions
         SeedType.Peashooter,
         SeedType.Potatomine,
         SeedType.Wallnut,
-        SeedType.GiantWallnut,
+        SeedType.Tallnut,
         SeedType.Puffshroom,
+
+        // Replanted Online
+        SeedType.Cabbagepult,
 
         // Zombies
         SeedType.ZombieGravestone,

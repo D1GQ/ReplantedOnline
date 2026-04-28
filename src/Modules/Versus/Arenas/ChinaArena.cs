@@ -35,7 +35,10 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         get
         {
-            field ??= [Instances.GameplayActivity.VersusMode.m_quickPlayPlants.First(), SeedType.Flowerpot, .. Instances.GameplayActivity.VersusMode.m_quickPlayPlants.Skip(1)];
+            field ??=
+                [SeedType.Sunflower, SeedType.Flowerpot, SeedType.Peashooter,
+                SeedType.Potatomine, SeedType.Wallnut, SeedType.Jalapeno,
+                SeedType.Squash];
             return field;
         }
     }
@@ -45,7 +48,10 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         get
         {
-            field ??= [.. Instances.GameplayActivity.VersusMode.m_quickPlayZombies, SeedType.ZombieBungee];
+            field ??=
+                [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrashCan,
+                SeedType.ZombieTrafficCone, SeedType.ZombieFootball, SeedType.ZombieBungee,
+                SeedType.ZombieFlag];
             return field;
         }
     }
@@ -85,7 +91,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 
             for (int column = 0; column < 3; column++)
             {
-                for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
                 {
                     SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
                 }
