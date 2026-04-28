@@ -273,4 +273,17 @@ internal static class VersusModePatch
             }
         }
     }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.VacuumCoins))]
+    [HarmonyPrefix]
+    private static bool Board_VacuumCoins_Prefix()
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            // Remove ability to collect all coins on the screen!
+            return false;
+        }
+
+        return true;
+    }
 }
