@@ -34,46 +34,69 @@ internal static class VersusHudPatch
         }
     }
 
-    // Hide opponents hud
     internal static void SetHuds()
     {
+        if (plantHud == null) return;
+        if (zombieHud == null) return;
+
+        // Set opponent money
         Instances.GameplayActivity.Board.mSunMoney.OpponentItem().Amount = 9999;
 
-        plantHud?.transform?.Cast<RectTransform>().localScale = new(0.9f, 0.9f, 1f);
-        zombieHud?.transform?.Cast<RectTransform>().localScale = new(0.9f, 0.9f, 1f);
+        // Scale HUDs
+        if (plantHud.transform.Il2CppTryCast<RectTransform>(out var rect))
+        {
+            rect.anchoredPosition = new(35, -35);
+            rect.localScale = new Vector3(0.9f, 0.9f, 1f);
+        }
+        if (zombieHud.transform.Il2CppTryCast<RectTransform>(out var rect2))
+        {
+            rect2.anchoredPosition = new(-35, -35);
+            rect2.localScale = new Vector3(0.9f, 0.9f, 1f);
+        }
+
+        var menuButtonContainer = plantHud.transform.parent?.Find("MenuButtonVisiblityContainer");
+        if (menuButtonContainer == null) return;
+
+        if (menuButtonContainer.Find("Nested_VS").Il2CppTryCast<RectTransform>(out var rect3))
+        {
+            rect3.anchoredPosition = new Vector2(-35f, 0f);
+            rect3.localScale = new Vector3(0.9f, 0.9f, 1f);
+        }
 
         if (VersusState.AmZombieSide)
         {
             if (VersusState.SelectionSet == SelectionSet.Random)
             {
-                plantHud?.gameObject?.SetActive(false);
+                plantHud.gameObject.SetActive(false);
+                return;
             }
-            else
-            {
-                var numberLabelBinder = plantHud?.transform?.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-                numberLabelBinder.m_formatString = "???";
-                numberLabelBinder.BindNumber(0);
-            }
+
+            var binder = plantHud.transform.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+
+            SetUnknownCount(binder);
         }
         else
         {
-            var menuButtonVisiblityContainer = plantHud?.transform?.parent?.Find("MenuButtonVisiblityContainer");
-            if (menuButtonVisiblityContainer != null)
+            if (VersusState.SelectionSet == SelectionSet.Random)
             {
-                if (VersusState.SelectionSet == SelectionSet.Random)
-                {
-                    menuButtonVisiblityContainer.Find("Nested_VS")?.gameObject?.SetActive(false);
-                    menuButtonVisiblityContainer.Find("Nested_NotVS")?.gameObject?.SetActive(true);
-                    zombieHud?.gameObject?.SetActive(false);
-                }
-                else
-                {
-                    menuButtonVisiblityContainer.Find("Nested_VS")?.transform?.localPosition = new(0f, 35f, 0f);
-                    var numberLabelBinder = zombieHud?.transform?.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-                    numberLabelBinder.m_formatString = "???";
-                    numberLabelBinder.BindNumber(0);
-                }
+                menuButtonContainer.Find("Nested_VS")?.gameObject?.SetActive(false);
+                menuButtonContainer.Find("Nested_NotVS")?.gameObject?.SetActive(true);
+
+                zombieHud.gameObject.SetActive(false);
             }
+
+            var binder = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+
+            SetUnknownCount(binder);
         }
+    }
+
+    private static void SetUnknownCount(NumberLabelBinder binder)
+    {
+        if (binder == null)
+            return;
+
+        binder.m_formatString = "???";
+        binder.BindNumber(0);
     }
 }

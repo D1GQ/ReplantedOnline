@@ -133,9 +133,6 @@ internal static class SeedPacketDefinitions
         // Create the actual plant object in the game world using the original game method
         var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
 
-        // Update render to new pos
-        plant.UpdateInternal();
-
         // Only create network controller if network synchronization is requested
         // This prevents creating network objects in single-player mode
         PlantNetworked plantNetworked = null;
@@ -257,9 +254,6 @@ internal static class SeedPacketDefinitions
             zombie.mTargetCol = gridX;
             zombie.mTargetRow = gridY;
         }
-
-        // Update render to new pos
-        zombie.UpdateReanim();
 
         // Only create network controller if network synchronization is requested
         ZombieNetworked zombieNetworked = null;

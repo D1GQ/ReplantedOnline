@@ -1,4 +1,6 @@
-﻿namespace ReplantedOnline.Utilities;
+﻿using Il2CppInterop.Runtime.InteropTypes;
+
+namespace ReplantedOnline.Utilities;
 
 /// <summary>
 /// Provides extension methods for Il2Cpp types to improve interoperability with C# and simplify common operations.
@@ -144,5 +146,22 @@ internal static class Il2CppExtensions
 
         var tempList = new List<T>(enumerable);
         return tempList.ToIl2CppArray();
+    }
+
+    /// <summary>
+    /// Attempts to cast the specified <see cref="Il2CppObjectBase"/> to the given type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The target <see cref="Il2CppObjectBase"/>-derived type to cast to.</typeparam>
+    /// <param name="value">The source object to cast.</param>
+    /// <param name="typeCast">
+    /// When this method returns, contains the casted object if the cast succeeded; otherwise, <c>null</c>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the cast succeeded; otherwise, <c>false</c>.
+    /// </returns>
+    internal static bool Il2CppTryCast<T>(this Il2CppObjectBase value, out T typeCast) where T : Il2CppObjectBase
+    {
+        typeCast = value.TryCast<T>();
+        return typeCast != null;
     }
 }

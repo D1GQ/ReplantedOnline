@@ -32,7 +32,10 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
         }
         else
         {
-            ZombieNetworked._Zombie.mController.Cast<ZombieBungeeController>().m_bungeeTargetSpriteRenderer.color = new(1f, 1f, 1f, 0.6f);
+            if (ZombieNetworked._Zombie.mController.Il2CppTryCast<ZombieBungeeController>(out var zombieBungeeController))
+            {
+                zombieBungeeController.m_bungeeTargetSpriteRenderer.color = new(1f, 1f, 1f, 0.6f);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
@@ -54,6 +55,16 @@ internal static class VersusModePatch
         __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
         __instance.ClearBoard();
         IArena.GetCurrentArena()?.InitializeArena(__instance);
+        foreach (var plant in __instance.m_board.GetPlants())
+        {
+            // Update position visually in count down
+            plant.UpdateInternal();
+        }
+        foreach (var zombie in __instance.m_board.GetZombies())
+        {
+            // Update position visually in count down
+            zombie.UpdateReanim();
+        }
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
 
