@@ -38,7 +38,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
-            int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
+            int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
             var shuffledSeeds = plantSeeds.Shuffle().ToList();
 
             if (VersusState.Arena is not (ArenaTypes.Night or ArenaTypes.RoofNight))
@@ -82,7 +82,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
-            int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
+            int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
             var shuffledSeeds = zombieSeeds.Shuffle().Take(numSeedsToAdd).ToArray();
             foreach (var seedType in shuffledSeeds)
             {
@@ -91,7 +91,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         }
 
         // Set opponent seeds to hide, which will be revealed once SyncSeedPacketRpc.cs is received
-        for (int i = IArenaSetupSeedbank.GetStartingSeedPacketCount(); i < IArenaSetupSeedbank.GetSeedPacketCount(); i++)
+        for (int i = IArenaSetupSeedbank.GetStartingSeedPacketCount(); i < Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count; i++)
         {
             SeedPacket seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[i];
             seedPacket.mActive = false;
