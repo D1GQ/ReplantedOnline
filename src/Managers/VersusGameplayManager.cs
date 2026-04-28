@@ -33,16 +33,12 @@ internal class VersusGameplayManager
             .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
             .Player.DeactivateInput();
 
-        Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() =>
-            {
-                return VersusState.IsInGameplay;
-            }, () =>
-            {
-                Instances.GameplayActivity.InputService
-                    .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
-                    .Player.ActivateInput();
-            }
-        ));
+        Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() => VersusState.IsInGameplay, () =>
+        {
+            Instances.GameplayActivity.InputService
+                .GetPlayer(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX)
+                .Player.ActivateInput();
+        }));
 
         ReplantedLobby.LobbyData.ReadyForNetworkObjects = true;
     }
