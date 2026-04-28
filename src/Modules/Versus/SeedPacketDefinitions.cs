@@ -133,6 +133,9 @@ internal static class SeedPacketDefinitions
         // Create the actual plant object in the game world using the original game method
         var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
 
+        // Update render to new pos
+        plant.UpdateInternal();
+
         // Only create network controller if network synchronization is requested
         // This prevents creating network objects in single-player mode
         PlantNetworked plantNetworked = null;
@@ -201,27 +204,36 @@ internal static class SeedPacketDefinitions
         // Use forced X position (9) for certain zombies, otherwise use the provided gridX
         var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes ? 9 : gridX, gridY);
 
+        bool canRise = !VersusState.IsInCountDown;
         // If this zombie rises from ground, trigger the rising animation
         // This makes the zombie emerge from the ground rather than just appearing
         if (spawnType == SpawnType.RiseFromGround)
         {
-            zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
-            zombie.mPhaseCounter = 150;
-            Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_DIRT_RISE);
+            if (canRise)
+            {
+                zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
+                zombie.mPhaseCounter = 150;
+                Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_DIRT_RISE);
+            }
+
             var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
             var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
+
             switch (zombieType)
             {
                 case ZombieType.Gravestone:
-                    Instances.GameplayActivity.AddTodParticle(theX + 25, theY + 75, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
+                    if (canRise)
+                        Instances.GameplayActivity.AddTodParticle(theX + 25, theY + 75, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
+                    else
+                        zombie.mPhaseCounter = 0;
                     zombie.mPosX = theX - 25;
                     break;
                 case ZombieType.BackupDancer:
-                    Instances.GameplayActivity.AddTodParticle(gridX + 55, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    if (canRise) Instances.GameplayActivity.AddTodParticle(gridX + 55, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
                     zombie.mPosX = gridX;
                     break;
                 default:
-                    Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    if (canRise) Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
                     zombie.mPosX = theX - 25;
                     break;
             }
@@ -245,6 +257,9 @@ internal static class SeedPacketDefinitions
             zombie.mTargetCol = gridX;
             zombie.mTargetRow = gridY;
         }
+
+        // Update render to new pos
+        zombie.UpdateReanim();
 
         // Only create network controller if network synchronization is requested
         ZombieNetworked zombieNetworked = null;

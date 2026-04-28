@@ -6,25 +6,60 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities;
+using System.Reflection;
+using UnityEngine;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
 [RegisterArena]
-internal sealed class DayArena : IArena, IArenaData
+internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 {
     /// <inheritdoc/>
-    public ArenaTypes Type => ArenaTypes.Day;
+    public ArenaTypes Type => ArenaTypes.China;
 
     /// <inheritdoc/>
-    public MusicTune Music => MusicTune.MinigameLoonboon;
+    public MusicTune Music => MusicTune.RoofGrazetheroof;
 
     /// <inheritdoc/>
-    public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
+    public SpawnType DefaultZombieSpawnType => SpawnType.ZombieWithBungee;
+
+    /// <inheritdoc/>
+    public int SeedPacketCount => 7;
+
+    /// <inheritdoc/>
+    public int StartingSeedPacketCount => 2;
+
+    /// <inheritdoc/>
+    public SeedType[] QuickPlayPlants
+    {
+        get
+        {
+            field ??= [SeedType.Flowerpot, .. Instances.GameplayActivity.VersusMode.m_quickPlayPlants];
+            return field;
+        }
+    }
+
+    /// <inheritdoc/>
+    public SeedType[] QuickPlayZombies
+    {
+        get
+        {
+            field ??= [.. Instances.GameplayActivity.VersusMode.m_quickPlayZombies, SeedType.ZombieBungee];
+            return field;
+        }
+    }
 
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea1Level2");
+        return LevelEntries.GetLevel("Level-China");
+    }
+
+    /// <inheritdoc/>
+    public Sprite GetThumbnail()
+    {
+        return Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.China.png");
     }
 
     /// <inheritdoc/>
@@ -48,6 +83,14 @@ internal sealed class DayArena : IArena, IArenaData
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
 
+            for (int column = 0; column < 3; column++)
+            {
+                for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                {
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
+                }
+            }
+
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
@@ -70,5 +113,16 @@ internal sealed class DayArena : IArena, IArenaData
     public void UpdateArena(VersusMode versusMode) { }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;
+    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
+    {
+        if (!Challenge.IsZombieSeedType(seedType) && seedType != SeedType.Flowerpot)
+        {
+            if (Instances.GameplayActivity.Board.GetFlowerPotAt(gridX, gridY) == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

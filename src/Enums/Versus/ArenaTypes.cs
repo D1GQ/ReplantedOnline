@@ -15,6 +15,11 @@ internal enum ArenaTypes
     /// </summary>
     Night,
 
+    /// <summary>
+    /// Arena is set at China!
+    /// </summary>
+    China,
+
 #if DEBUG
     Debug
 #endif

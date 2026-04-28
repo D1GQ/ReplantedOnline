@@ -39,6 +39,9 @@ internal static class VersusHudPatch
     {
         Instances.GameplayActivity.Board.mSunMoney.OpponentItem().Amount = 9999;
 
+        plantHud?.transform?.Cast<RectTransform>().localScale = new(0.9f, 0.9f, 1f);
+        zombieHud?.transform?.Cast<RectTransform>().localScale = new(0.9f, 0.9f, 1f);
+
         if (VersusState.AmZombieSide)
         {
             if (VersusState.SelectionSet == SelectionSet.Random)
@@ -54,16 +57,22 @@ internal static class VersusHudPatch
         }
         else
         {
-            if (VersusState.SelectionSet == SelectionSet.Random)
+            var menuButtonVisiblityContainer = plantHud?.transform?.parent?.Find("MenuButtonVisiblityContainer");
+            if (menuButtonVisiblityContainer != null)
             {
-                plantHud?.transform?.parent?.Find("MenuButtonVisiblityContainer")?.transform?.position += new Vector3(0f, 350f, 0f);
-                zombieHud?.gameObject?.SetActive(false);
-            }
-            else
-            {
-                var numberLabelBinder = zombieHud?.transform?.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-                numberLabelBinder.m_formatString = "???";
-                numberLabelBinder.BindNumber(0);
+                if (VersusState.SelectionSet == SelectionSet.Random)
+                {
+                    menuButtonVisiblityContainer.Find("Nested_VS")?.gameObject?.SetActive(false);
+                    menuButtonVisiblityContainer.Find("Nested_NotVS")?.gameObject?.SetActive(true);
+                    zombieHud?.gameObject?.SetActive(false);
+                }
+                else
+                {
+                    menuButtonVisiblityContainer.Find("Nested_VS")?.transform?.localPosition = new(0f, 35f, 0f);
+                    var numberLabelBinder = zombieHud?.transform?.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+                    numberLabelBinder.m_formatString = "???";
+                    numberLabelBinder.BindNumber(0);
+                }
             }
         }
     }

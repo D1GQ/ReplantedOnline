@@ -1,6 +1,7 @@
 ﻿#if DEBUG
 using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
@@ -32,6 +33,9 @@ internal sealed class DebugArena : IArena, IArenaData
 
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Debug;
+
+    /// <inheritdoc/>
+    public MusicTune Music => MusicTune.None;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
@@ -121,11 +125,11 @@ internal sealed class DebugArena : IArena, IArenaData
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
-
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
                 break;
             case DebugModes.Gargantuar:
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 1, true);

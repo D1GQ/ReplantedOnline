@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Services;
 using UnityEngine;
 
 namespace ReplantedOnline.Interfaces.Versus;
@@ -8,6 +9,11 @@ namespace ReplantedOnline.Interfaces.Versus;
 /// </summary>
 internal interface IArenaData
 {
+    /// <summary>
+    /// The MusicTune to play for this arena.
+    /// </summary>
+    MusicTune Music { get; }
+
     /// <summary>
     /// Gets the level entry data for this arena.
     /// </summary>

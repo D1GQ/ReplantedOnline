@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
@@ -13,6 +14,9 @@ internal sealed class NightArena : IArena, IArenaData
 {
     /// <inheritdoc/>
     public ArenaTypes Type => ArenaTypes.Night;
+
+    /// <inheritdoc/>
+    public MusicTune Music => MusicTune.PuzzleCerebrawl;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
@@ -41,11 +45,11 @@ internal sealed class NightArena : IArena, IArenaData
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
-
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
         versusMode.m_board.AddAGraveStone(5, 0);
