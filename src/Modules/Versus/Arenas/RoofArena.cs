@@ -50,7 +50,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrafficCone,
-                SeedType.ZombiePail, SeedType.ZombieBungee, SeedType.ZombieGargantuar,
+                SeedType.ZombieLadder, SeedType.ZombieBungee, SeedType.ZombieGargantuar,
                 SeedType.ZombieFlag];
             return field;
         }
