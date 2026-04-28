@@ -131,10 +131,10 @@ internal static class FlagZombiePatch
     /// </summary>
     private static void SpawnZombie(ZombieType type, int y)
     {
-        var zombie = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackAndShakeBushes, false).Zombie;
+        var zombie = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackgroundAndShakeBushes, false).Zombie;
         zombie.mPosX += Common.RandRangeInt(20, 70);
 
-        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, SpawnType.BackAndShakeBushes);
+        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, SpawnType.BackgroundAndShakeBushes);
         zombieNetworked.SendSnapToPosRpc();
     }
 }

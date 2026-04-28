@@ -15,7 +15,7 @@ internal sealed class DayArena : IArena
     public ArenaTypes Type => ArenaTypes.Day;
 
     /// <inheritdoc/>
-    public SpawnType DefaultZombieSpawnType => SpawnType.Rise;
+    public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()

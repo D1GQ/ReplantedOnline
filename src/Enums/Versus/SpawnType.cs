@@ -13,17 +13,17 @@ internal enum SpawnType
     /// <summary>
     /// Zombie rises from the ground.
     /// </summary>
-    Rise,
+    RiseFromGround,
 
     /// <summary>
     /// Zombie spawns from the back of the arena.
     /// </summary>
-    Back,
+    Background,
 
     /// <summary>
     /// Zombie spawns from the back of the arena with bush shaking effect.
     /// </summary>
-    BackAndShakeBushes,
+    BackgroundAndShakeBushes,
 
     /// <summary>
     /// Zombie drops from above via bungee zombie.

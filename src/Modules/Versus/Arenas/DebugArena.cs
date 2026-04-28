@@ -34,7 +34,7 @@ internal sealed class DebugArena : IArena
     public ArenaTypes Type => ArenaTypes.Debug;
 
     /// <inheritdoc/>
-    public SpawnType DefaultZombieSpawnType => SpawnType.Rise;
+    public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()

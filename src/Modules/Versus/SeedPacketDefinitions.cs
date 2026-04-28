@@ -199,11 +199,11 @@ internal static class SeedPacketDefinitions
     {
         // Add zombie to the board at the specified position
         // Use forced X position (9) for certain zombies, otherwise use the provided gridX
-        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnType is SpawnType.Back or SpawnType.BackAndShakeBushes ? 9 : gridX, gridY);
+        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes ? 9 : gridX, gridY);
 
         // If this zombie rises from ground, trigger the rising animation
         // This makes the zombie emerge from the ground rather than just appearing
-        if (spawnType == SpawnType.Rise)
+        if (spawnType == SpawnType.RiseFromGround)
         {
             zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
             zombie.mPhaseCounter = 150;
@@ -226,7 +226,7 @@ internal static class SeedPacketDefinitions
                     break;
             }
         }
-        else if (spawnType == SpawnType.BackAndShakeBushes)
+        else if (spawnType == SpawnType.BackgroundAndShakeBushes)
         {
             Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
         }

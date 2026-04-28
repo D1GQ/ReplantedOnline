@@ -15,7 +15,7 @@ internal sealed class NightArena : IArena
     public ArenaTypes Type => ArenaTypes.Night;
 
     /// <inheritdoc/>
-    public SpawnType DefaultZombieSpawnType => SpawnType.Rise;
+    public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()

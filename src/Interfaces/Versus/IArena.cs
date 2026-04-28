@@ -70,7 +70,7 @@ internal interface IArena
     /// <list type="bullet">
     /// <item><description><see cref="SpawnType.None"/> for Target or Bungee zombies (cannot spawn)</description></item>
     /// <item><description>The arena's <see cref="DefaultZombieSpawnType"/> for zombies that rise from the ground and don't force back spawn</description></item>
-    /// <item><description><see cref="SpawnType.Back"/> for all other cases</description></item>
+    /// <item><description><see cref="SpawnType.Background"/> for all other cases</description></item>
     /// </list>
     /// </returns>
     SpawnType GetZombieSpawnType(ZombieType zombieType)
@@ -82,7 +82,7 @@ internal interface IArena
 
         if (zombieType is ZombieType.Gravestone)
         {
-            return SpawnType.Rise;
+            return SpawnType.RiseFromGround;
         }
 
         var isDefault = SeedPacketDefinitions.ZombieRisesFromGround(zombieType);
@@ -93,7 +93,7 @@ internal interface IArena
         }
         else
         {
-            return SpawnType.Back;
+            return SpawnType.Background;
         }
     }
 
