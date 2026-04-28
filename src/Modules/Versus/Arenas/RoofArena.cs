@@ -97,7 +97,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
+    public virtual void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
     {
         foreach (var seedPacket in seedPackets)
         {

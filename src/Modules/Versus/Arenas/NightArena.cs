@@ -52,7 +52,7 @@ internal sealed class NightArena : DayArena
             seedPacket.Deactivate();
             var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             // Start at least with a 15 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, 1500);
+            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN);
             seedPacket.mRefreshing = true;
         }
     }
