@@ -38,12 +38,37 @@ internal sealed class RandomGamemode : IVersusGamemode
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
-            var shuffledSeeds = plantSeeds.OrderBy(x => Guid.NewGuid()).ToList();
-
             int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
-            for (int i = 0; i < numSeedsToAdd && i < shuffledSeeds.Count; i++)
+            var shuffledSeeds = plantSeeds.Shuffle().ToList();
+
+            if (VersusState.Arena is not (ArenaTypes.Night or ArenaTypes.RoofNight))
             {
-                var seedType = shuffledSeeds[i];
+                var potentialSeeds = shuffledSeeds.Take(numSeedsToAdd).ToList();
+                bool hasInstantCoffee = potentialSeeds.Contains(SeedType.InstantCoffee);
+                bool hasSleepingPlant = potentialSeeds.Any(seed => SeedPacketDefinitions.SleepingPlants.Contains(seed));
+
+                if (!hasInstantCoffee)
+                {
+                    // Sleeping plants without Instant Coffee
+                    shuffledSeeds.RemoveAll(seed => SeedPacketDefinitions.SleepingPlants.Contains(seed));
+                }
+
+                if (!hasSleepingPlant)
+                {
+                    // Instant Coffee without sleeping plants
+                    shuffledSeeds.Remove(SeedType.InstantCoffee);
+                }
+
+                shuffledSeeds = [.. shuffledSeeds.Take(numSeedsToAdd)];
+            }
+            else
+            {
+                shuffledSeeds.Remove(SeedType.InstantCoffee);
+                shuffledSeeds = [.. shuffledSeeds.Take(numSeedsToAdd)];
+            }
+
+            foreach (var seedType in shuffledSeeds)
+            {
                 versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
             }
         }
@@ -57,12 +82,10 @@ internal sealed class RandomGamemode : IVersusGamemode
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
-            var shuffledSeeds = zombieSeeds.OrderBy(x => Guid.NewGuid()).ToList();
-
             int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
-            for (int i = 0; i < numSeedsToAdd && i < shuffledSeeds.Count; i++)
+            var shuffledSeeds = zombieSeeds.Shuffle().Take(numSeedsToAdd).ToArray();
+            foreach (var seedType in shuffledSeeds)
             {
-                var seedType = shuffledSeeds[i];
                 versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
             }
         }

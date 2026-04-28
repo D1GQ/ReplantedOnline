@@ -17,7 +17,6 @@ internal static class SeedPacketDefinitions
 {
     /// <summary>
     /// Collection of seed types that are disabled and cannot be used in gameplay.
-    /// Includes miscellaneous seeds, invalid seeds, and specific plants that are disabled.
     /// </summary>
     internal static SeedType[] DisabledSeedTypes = [
         // Misc
@@ -35,7 +34,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Collection of seed types that ignore the initial cooldown period and are available immediately.
-    /// Includes basic plants and zombies that should be immediately available.
     /// </summary>
     internal static SeedType[] IgnoreInitialCooldown = [
         // Plants
@@ -54,7 +52,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Collection of seed types that should be excluded from random selection pools.
-    /// These seeds are typically special plants or zombies that shouldn't appear randomly.
     /// </summary>
     internal static SeedType[] ExcludeFromRandom = [
         // Plants
@@ -64,13 +61,26 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
+    /// Collection of seed types that sleep by default.
+    /// </summary>
+    internal static SeedType[] SleepingPlants = [
+        SeedType.Puffshroom,
+        SeedType.Seashroom,
+        SeedType.Scaredyshroom,
+        SeedType.Sunshroom,
+        SeedType.Fumeshroom,
+        SeedType.Iceshroom,
+        SeedType.Doomshroom,
+        SeedType.Magnetshroom
+    ];
+
+    /// <summary>
     /// A lookup of the original seed packet cost.
     /// </summary>
     internal static readonly Dictionary<SeedType, int> BaseSeedVersusCost = [];
 
     /// <summary>
     /// Initializes plant definitions and applies custom modifications.
-    /// Currently sets custom versus mode costs for specific seeds.
     /// </summary>
     internal static void Initialize()
     {
@@ -92,7 +102,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Places a seed on the board, handling both plant and zombie seeds appropriately.
-    /// Automatically routes to plant spawning for regular seeds and zombie spawning for I, Zombie mode seeds.
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -121,7 +130,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Spawns a plant at the specified grid coordinates.
-    /// Creates the actual plant object and optionally sets up network synchronization.
     /// </summary>
     /// <param name="seedType">The type of seed to spawn as a plant.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -151,7 +159,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Creates a networked controller for an existing plant to enable network synchronization.
-    /// Sets up all necessary network properties and initializes the animation controller.
     /// </summary>
     /// <param name="plant">The plant to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -173,7 +180,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Spawns a zombie at the specified grid coordinates with optional rising animation.
-    /// Handles special zombie types like Gravestones and Bungee zombies with custom positioning.
     /// </summary>
     /// <param name="zombieType">The type of zombie to spawn.</param>
     /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
@@ -187,7 +193,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Spawns a zombie at the specified grid coordinates with optional rising animation.
-    /// Handles special zombie types like Gravestones and Bungee zombies with custom positioning.
     /// </summary>
     /// <param name="zombieType">The type of zombie to spawn.</param>
     /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
@@ -272,7 +277,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Creates a networked controller for an existing zombie to enable network synchronization.
-    /// Sets up all necessary network properties and initializes the animation controller.
     /// </summary>
     /// <param name="zombie">The zombie to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -286,7 +290,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Creates a networked controller for an existing zombie to enable network synchronization.
-    /// Sets up all necessary network properties and initializes the animation controller.
     /// </summary>
     /// <param name="zombie">The zombie to create a network controller for.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -310,7 +313,6 @@ internal static class SeedPacketDefinitions
 
     /// <summary>
     /// Determines if a seed can be placed at the specified grid coordinates.
-    /// This is a extension of Board.CanPlantAt()
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
     /// <param name="gridX">The X grid coordinate (column).</param>

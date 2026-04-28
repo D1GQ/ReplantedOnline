@@ -6,6 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
@@ -51,7 +52,7 @@ internal static class FlagZombiePatch
         for (int i = 0; i < amount; i++)
         {
             // Shuffle once per full pass to distribute zombies evenly across rows
-            ShuffleIfNeeded(order, rows, i);
+            ShuffleIfNeeded(ref order, rows, i);
 
             // Select the next row from the shuffled cycle
             int y = GetRow(order, rows, i);
@@ -71,16 +72,12 @@ internal static class FlagZombiePatch
     /// Performs a Fisher–Yates shuffle at the start of each cycle.
     /// This guarantees even distribution while still introducing randomness.
     /// </summary>
-    private static void ShuffleIfNeeded(List<int> order, int rows, int index)
+    private static void ShuffleIfNeeded(ref List<int> order, int rows, int index)
     {
         if (index % rows != 0)
             return;
 
-        for (int s = order.Count - 1; s > 0; s--)
-        {
-            int j = Common.RandRangeInt(0, s);
-            (order[s], order[j]) = (order[j], order[s]);
-        }
+        order = [.. order.Shuffle()];
     }
 
     /// <summary>
