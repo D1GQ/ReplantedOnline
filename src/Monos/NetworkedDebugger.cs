@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
@@ -54,9 +55,8 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DebugZombie(ZombieNetworked zombieNetworked)
     {
         var zombie = zombieNetworked._Zombie;
-        if (zombie != null)
+        if (zombie != null && !zombie.mDead)
         {
-            if (zombie.mDead) return;
             if (zombieNetworked.ZombieType.IsGravestoneOrTarget()) return;
 
             _cachedControllerPosition = zombie.mController.transform.position;
@@ -120,9 +120,9 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DebugPlant(PlantNetworked plantNetworked)
     {
         var plant = plantNetworked._Plant;
-        if (plant != null)
+        if (plant != null && !plant.mDead)
         {
-            if (plant.mDead) return;
+            if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad) return;
 
             _cachedControllerPosition = plant.mController.transform.position;
             _cachedWPos = GetWorldPos(_cachedControllerPosition);
