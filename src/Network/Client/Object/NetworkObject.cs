@@ -284,6 +284,16 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     }
 
     /// <summary>
+    /// Trys to get network component from this instance's collection of network components by its type.
+    /// </summary>
+    /// <typeparam name="T">The type of  NetworkComponent to get.</typeparam>
+    internal bool TryGetNetworkComponent<T>(out T component) where T : NetworkComponent
+    {
+        component = GetNetworkComponent<T>();
+        return component != null;
+    }
+
+    /// <summary>
     /// Spawns a new instance of a NetworkObject-derived type across the network.
     /// Creates the object locally and broadcasts spawn notification to all clients.
     /// </summary>

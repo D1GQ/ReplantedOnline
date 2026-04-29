@@ -20,7 +20,6 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
     }
 
     private ZombieNetworked _partner;
-    private bool _hasPartner;
 
     internal override void Init()
     {
@@ -43,7 +42,6 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
     {
         if (ZombieNetworked._Zombie == null) return;
         if (_partner == null) return;
-        if (!_hasPartner) return;
 
         if (ZombieNetworked.ZombieType == ZombieType.Bungee)
         {
@@ -56,20 +54,26 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
     internal void SendSetPartnerRpc(ZombieNetworked partner)
     {
-        if (!_hasPartner)
+        if (_partner == null)
         {
-            _hasPartner = true;
             _partner = partner;
             SendNetworkComponentRpc(BungeeSpawningRpcs.SetPartner, partner);
+
+            if (_partner.AmOwner && _partner.ZombieType == ZombieType.Bungee)
+            {
+                if (_partner.TryGetNetworkComponent<ZombieWithBungeeComponent>(out var partnerComponent))
+                {
+                    partnerComponent.SendSetPartnerRpc(ZombieNetworked);
+                }
+            }
         }
     }
 
     [RpcHandler(BungeeSpawningRpcs.SetPartner)]
     private void HandleSetPartnerRpc(ZombieNetworked partnerNetworked)
     {
-        if (!_hasPartner)
+        if (_partner == null)
         {
-            _hasPartner = true;
             _partner = partnerNetworked;
         }
     }
@@ -89,7 +93,7 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
             yield return CoSpawnBungee();
         }
 
-        while (!_hasPartner)
+        while (_partner == null)
         {
             yield return null;
         }
@@ -97,8 +101,13 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
         // Make bungee Zombie invulnerable
         _partner.Dead = true;
         _partner._Zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
-        var partnerComponent = _partner.GetNetworkComponent<ZombieWithBungeeComponent>();
-        while (!partnerComponent._hasPartner)
+        ZombieWithBungeeComponent partnerComponent;
+        while (!_partner.TryGetNetworkComponent(out partnerComponent))
+        {
+            yield return null;
+        }
+
+        while (partnerComponent._partner == null)
         {
             yield return null;
         }
@@ -150,7 +159,6 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
         yield return null;
 
-        bungeeNetworked.GetNetworkComponent<ZombieWithBungeeComponent>().SendSetPartnerRpc(ZombieNetworked);
         SendSetPartnerRpc(bungeeNetworked);
     }
 }
