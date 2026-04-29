@@ -19,9 +19,6 @@ internal readonly struct ModSignature
     /// </summary>
     internal readonly uint SignatureHash;
 
-    /// <summary>
-    /// Initializes a new instance of the ModSignature structure.
-    /// </summary>
     public ModSignature()
     {
         var assembly = Assembly.GetExecutingAssembly();

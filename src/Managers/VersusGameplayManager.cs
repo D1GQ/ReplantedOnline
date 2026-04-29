@@ -65,48 +65,29 @@ internal class VersusGameplayManager
         VersusEndGameManager.EndGame(winningTeam);
     }
 
-    /// <summary>
-    /// Calculates the new brain spawn counter.
-    /// </summary>
-    /// <param name="currentCounter">The current brain spawn counter value.</param>
-    internal static int MultiplyBrainSpawnCounter(int currentCounter)
+    internal static int GetSkyRate()
     {
-        int plantMultiplier = 15 * Instances.GameplayActivity.Board.GetPlants().Length;
-        return currentCounter + plantMultiplier;
+        return ReplantedOnlineMod.Constants.Production.SKY_RATE;
     }
 
-    /// <summary>
-    /// Calculates the new grave counter.
-    /// </summary>
-    /// <param name="currentCounter">The current grave counter value.</param>
-    internal static int MultiplyGraveCounter(int currentCounter)
+    internal static int GetInitSkyRate()
     {
-        int zombieMultiplier = 0;
-        foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
-        {
-            zombieMultiplier += zombie.mZombieType switch
-            {
-                ZombieType.Gargantuar => 200, // 1x
-                ZombieType.Zamboni => 150, // 1x
-                ZombieType.Catapult => 125, // 1x
-                ZombieType.Football => 125, // 1x
-                ZombieType.Target => 100, // 1x
-                ZombieType.Ladder => 100, // 1x
-                ZombieType.Pail => 100, // 1x
-                ZombieType.Pogo => 75, // 1x
-                ZombieType.TrafficCone => 65, // 1x
-                ZombieType.Polevaulter => 65, // 1x
-                ZombieType.Gravestone => 33, // 1x
-                ZombieType.Bobsled => 25, // 4x: 100
-                ZombieType.BackupDancer => 25, // 4x : 100
-                ZombieType.Imp => 15, // 1x
-                _ => 50,
-            };
-        }
+        return ReplantedOnlineMod.Constants.Production.INITIAL_SKY_RATE;
+    }
 
-        int plantMultiplier = 5 * Instances.GameplayActivity.Board.m_plants.m_itemLookup.Keys.Count;
+    internal static int GetInitPlantOrGraveRate()
+    {
+        return Common.RandRangeInt(ReplantedOnlineMod.Constants.Production.INITIAL_PLANT_OR_GRAVE_RATE_RANGE.MIN, ReplantedOnlineMod.Constants.Production.INITIAL_PLANT_OR_GRAVE_RATE_RANGE.MAX);
+    }
 
-        return currentCounter + Math.Max(zombieMultiplier - plantMultiplier, 0);
+    internal static int GetPlantRate()
+    {
+        return ReplantedOnlineMod.Constants.Production.PLANT_RATE;
+    }
+
+    internal static int GetGraveRate()
+    {
+        return ReplantedOnlineMod.Constants.Production.GRAVE_RATE;
     }
 
     /// <summary>

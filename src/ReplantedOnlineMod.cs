@@ -123,7 +123,7 @@ internal class ReplantedOnlineMod : MelonMod
         }
     }
 
-    internal class Constants
+    internal static class Constants
     {
         internal const int DEFAULT_PLAYER_INDEX = -1;
         internal const int LOCAL_PLAYER_INDEX = 0;
@@ -131,6 +131,15 @@ internal class ReplantedOnlineMod : MelonMod
         internal const string MOD_VERSION_KEY = "mod_version";
         internal const string GAME_CODE_KEY = "game_code";
         internal const int MAX_NETWORK_CHILDREN = 5;
-        internal const int NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN = 1500;
+        internal const int NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN = 1500; // 15s
+
+        internal static class Production
+        {
+            internal const int INITIAL_SKY_RATE = 1200; // 12s
+            internal static readonly (int MIN, int MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (800, 1200); // 8s - 12s
+            internal const int SKY_RATE = 2200; // 22s
+            internal const int PLANT_RATE = 2000; // 20s
+            internal const int GRAVE_RATE = 3500; // 35s
+        }
     }
 }
