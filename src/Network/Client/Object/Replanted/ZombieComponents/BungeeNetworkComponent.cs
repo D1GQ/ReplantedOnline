@@ -1,6 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
+using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
@@ -18,6 +21,12 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     internal override void Update()
     {
         if (ZombieNetworked._Zombie == null) return;
+
+        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        {
+            // Offset based off roof elevation 
+            ZombieNetworked._Zombie.mImageOffsetY = Mathf.Lerp(80f, 0f, Mathf.Clamp01(ZombieNetworked.GridX / 5f));
+        }
 
         if (ZombieNetworked.AmOwner)
         {

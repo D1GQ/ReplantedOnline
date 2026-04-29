@@ -1,5 +1,4 @@
 ﻿using Il2CppReloaded.Gameplay;
-using Il2CppSource.Controllers;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
@@ -28,13 +27,6 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
         if (ZombieNetworked.ZombieType != ZombieType.Bungee)
         {
             Instances.GameplayActivity.StartCoroutine(CoDrop());
-        }
-        else
-        {
-            if (ZombieNetworked._Zombie.mController.Il2CppTryCast<ZombieBungeeController>(out var zombieBungeeController))
-            {
-                zombieBungeeController.m_bungeeTargetSpriteRenderer.color = new(1f, 1f, 1f, 0.6f);
-            }
         }
     }
 
