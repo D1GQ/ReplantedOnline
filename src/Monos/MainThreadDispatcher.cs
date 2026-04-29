@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Utilities;
+﻿using ReplantedOnline.Interfaces.Data;
+using ReplantedOnline.Utilities;
 using UnityEngine;
 
 namespace ReplantedOnline.Monos;
@@ -38,6 +39,15 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        try
+        {
+            IAssetReferenceOverride.UpdateAllOverrides();
+        }
+        catch (Exception ex)
+        {
+            ReplantedOnlineMod.Logger.Error(typeof(MainThreadDispatcher), $"Error trying to override asset: {ex}");
+        }
+
         while (_executionQueue.Count > 0)
         {
             try

@@ -1,10 +1,14 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
+using System.Reflection;
+using UnityEngine;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -95,6 +99,12 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal static void Initialize()
     {
+        // Replace seed packet icon for hidden seed packet
+        var slotMachineDiamondDef = Instances.DataServiceActivity.Service.GetPlantDefinition(HiddenSeed);
+        var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
+        IAssetReferenceOverride.Register(assetOverride);
+        assetOverride.SetOverride(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
+
         foreach (var seedDefinition in Instances.DataServiceActivity.Service.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
             BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
