@@ -75,6 +75,20 @@ internal sealed class LobbyVar<T>
         if (value is IFormattable formattable)
             return formattable.ToString(null, CultureInfo.InvariantCulture);
 
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            var itemType = type.GetGenericArguments()[0];
+            var list = (System.Collections.IList)value;
+            var serializedItems = new List<string>();
+
+            foreach (var item in list)
+            {
+                serializedItems.Add(Serialize(item, itemType));
+            }
+
+            return string.Join("|", serializedItems);
+        }
+
         throw new NotSupportedException($"Type {type} is not supported for serialization");
     }
 
@@ -104,6 +118,22 @@ internal sealed class LobbyVar<T>
                 return Enum.ToObject(type, num);
 
             return _defaultValue;
+        }
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            var itemType = type.GetGenericArguments()[0];
+            var items = value.Split(['|'], StringSplitOptions.None);
+            var listType = typeof(List<>).MakeGenericType(itemType);
+            var list = (System.Collections.IList)Activator.CreateInstance(listType);
+
+            foreach (var item in items)
+            {
+                var deserializedItem = Deserialize(item, itemType);
+                list.Add(deserializedItem);
+            }
+
+            return list;
         }
 
         try
