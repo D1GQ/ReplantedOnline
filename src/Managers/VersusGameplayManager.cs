@@ -111,6 +111,8 @@ internal class VersusGameplayManager
     /// </summary>
     internal static int FlagSpawnAmount()
     {
-        return 10;
+        float normalized = Mathf.Clamp01(VersusState.VersusTime / VersusMode.k_suddenDeathStartTime);
+        float value = Mathf.Lerp(8f, 12f, normalized);
+        return Mathf.FloorToInt(value);
     }
 }

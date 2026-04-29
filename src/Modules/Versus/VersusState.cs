@@ -22,6 +22,11 @@ internal static class VersusState
     internal static SelectionSet SelectionSet => Instances.GameplayActivity?.VersusMode?.SelectionSet ?? SelectionSet.QuickPlay;
 
     /// <summary>
+    /// Gets the amount of time the game mode has been going on.
+    /// </summary>
+    internal static float VersusTime => Instances.GameplayActivity?.VersusMode?.m_versusTime ?? 0f;
+
+    /// <summary>
     /// Determines if the local player is currently on the zombie team.
     /// </summary>
     internal static bool AmZombieSide => ReplantedClientData.LocalClient?.Team == PlayerTeam.Zombies;
