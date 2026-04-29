@@ -99,12 +99,12 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+        }
 
-            for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
-            {
-                var lawMower = versusMode.m_board.m_lawnMowers.DataArrayAlloc();
-                lawMower.LawnMowerInitialize(row, versusMode.m_board.mApp);
-            }
+        for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
+        {
+            var lawMower = versusMode.m_board.m_lawnMowers.DataArrayAlloc();
+            lawMower.LawnMowerInitialize(row, versusMode.m_board.mApp);
         }
     }
 
