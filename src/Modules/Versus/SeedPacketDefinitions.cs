@@ -47,19 +47,20 @@ internal static class SeedPacketDefinitions
     internal readonly static SeedType[] IgnoreInitialCooldown = [
         // Plants
         SeedType.Sunflower,
-        SeedType.Peashooter,
-        SeedType.Potatomine,
-        SeedType.Wallnut,
-        SeedType.Tallnut,
-        SeedType.Puffshroom,
+        // SeedType.Peashooter,
+        // SeedType.Potatomine,
+        // SeedType.Wallnut,
+        // SeedType.Tallnut,
+        // SeedType.Puffshroom,
 
         // Replanted Online
-        SeedType.Cabbagepult,
+        // SeedType.Cabbagepult,
+        SeedType.Sunshroom,
 
         // Zombies
         SeedType.ZombieGravestone,
-        SeedType.ZombieNormal,
-        SeedType.ZombieTrashCan,
+        // SeedType.ZombieNormal,
+        // SeedType.ZombieTrashCan,
 
         HiddenSeed
     ];

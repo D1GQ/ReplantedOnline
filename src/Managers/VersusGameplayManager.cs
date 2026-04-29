@@ -100,8 +100,8 @@ internal class VersusGameplayManager
     {
         List<FlagZombieSpecialSpawn> zombies = [];
 
-        zombies.Add(new(ZombieType.Pail, 25, 9));
-        zombies.Add(new(ZombieType.TrafficCone, 75, 20));
+        zombies.Add(new(ZombieType.Pail, 15, 10));
+        zombies.Add(new(ZombieType.TrafficCone, 25, 10));
 
         return zombies;
     }
@@ -112,7 +112,7 @@ internal class VersusGameplayManager
     internal static int FlagSpawnAmount()
     {
         float normalized = Mathf.Clamp01(VersusState.VersusTime / VersusMode.k_suddenDeathStartTime);
-        float value = Mathf.Lerp(8f, 12f, normalized);
+        float value = Mathf.Lerp(5f, 10f, normalized);
         return Mathf.FloorToInt(value);
     }
 }

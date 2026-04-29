@@ -61,7 +61,9 @@ internal class DayArena : IArena, IArenaData
             if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
 
             seedPacket.Deactivate();
-            seedPacket.mRefreshTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            // Start at least with a 10 second cooldown 
+            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.DAY_SEEDPACKET_MIN_INITIAL_COOLDOWN);
             seedPacket.mRefreshing = true;
         }
     }

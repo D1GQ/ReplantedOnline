@@ -39,8 +39,7 @@ internal sealed class RoofNightArena : RoofArena
     {
         foreach (var seedPacket in seedPackets)
         {
-            if (seedPacket.PacketType == SeedPacketDefinitions.HiddenSeed) continue;
-            if (seedPacket.mPacketType is SeedType.Sunflower or SeedType.Sunshroom or SeedType.ZombieGravestone) continue;
+            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
 
             seedPacket.Deactivate();
             var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
