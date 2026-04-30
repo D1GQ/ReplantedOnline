@@ -130,6 +130,8 @@ internal sealed class LanServer : IDisposable
     /// </summary>
     internal TaskCompletionSource<bool> HandshakeCompletionSource;
 
+    private static readonly IPAddress LOCALHOST_IP = IPAddress.Parse("127.0.0.1");
+
     private bool _isRunning;
 
     /// <summary>
@@ -842,13 +844,17 @@ internal sealed class LanServer : IDisposable
     /// <exception cref="Exception">Thrown when no suitable network IP is found.</exception>
     private static IPAddress GetLocalNetworkIP()
     {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
+        try
         {
-            if (ip.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip))
-                return ip;
+            return Dns.GetHostEntry(Dns.GetHostName())
+                .AddressList
+                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork
+                                   && !IPAddress.IsLoopback(ip)) ?? LOCALHOST_IP;
         }
-        throw new Exception("Error getting LocalNetworkIP!");
+        catch
+        {
+            return LOCALHOST_IP;
+        }
     }
 
     /// <summary>
