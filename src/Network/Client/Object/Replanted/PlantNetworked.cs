@@ -9,7 +9,6 @@ using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities;
-using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;
 
@@ -148,7 +147,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         Dead = true;
         _Plant?.DieOriginal();
-        Instances.GameplayActivity.PlaySample(Sound.SOUND_PLANT2);
+        Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
     }
 
     internal void SendSquashPlantRpc()
