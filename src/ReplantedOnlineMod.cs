@@ -44,7 +44,14 @@ internal class ReplantedOnlineMod : MelonMod
         Application.runInBackground = true;
     }
 
-    private void OnInitializeMainMenu()
+    public override void OnLateInitializeMelon()
+    {
+        // Fix constant "Memory Access Violations" on older versions of Unity Explorer!
+        // I personally prefer using this older version because it allows to access custom classes https://github.com/sinai-dev/UnityExplorer
+        UniverseLibPatch.Patch();
+    }
+
+    private static void OnInitializeMainMenu()
     {
         if (!SteamClient.initialized)
             SteamClient.Init((uint)AppIdServers.PVZ_Replanted);

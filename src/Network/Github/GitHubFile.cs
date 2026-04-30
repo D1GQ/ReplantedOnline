@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ReplantedOnline.Utilities;
+using System.Collections;
 using UnityEngine.Networking;
 
 namespace ReplantedOnline.Network.Github;
@@ -31,7 +32,7 @@ internal static class GitHubFile
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            ReplantedOnlineMod.Logger.Error($"Error downloading file from URL '{url}': {www.error} (Response Code: {(int)www.responseCode})");
+            ReplantedOnlineMod.Logger.Error(typeof(GitHubFile), $"Error downloading file from URL '{url}': {www.error} (Response Code: {(int)www.responseCode})");
             yield break;
         }
 
@@ -58,7 +59,7 @@ internal static class GitHubFile
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            ReplantedOnlineMod.Logger.Error($"Error downloading {url}: {www.error}");
+            ReplantedOnlineMod.Logger.Error(typeof(GitHubFile), $"Error downloading {url}: {www.error}");
             yield break;
         }
 

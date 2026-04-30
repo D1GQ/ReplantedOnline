@@ -111,8 +111,8 @@ internal static class ModInfo
     internal static class BloomEngine
     {
         /// <summary>
-        /// Dependency name for BloomEngine.
+        /// Name for BloomEngine.
         /// </summary>
-        internal const string BLOOM_ENGINE_DEPENDENCY = "BloomEngine";
+        internal const string BLOOM_ENGINE_NAME = "BloomEngine";
     }
 }

@@ -9,4 +9,4 @@ using System.Reflection;
 
 [assembly: MelonInfo(typeof(ReplantedOnlineMod), ModInfo.MOD_NAME, ModInfo.MOD_VERSION_FORMATTED, ModInfo.CREATOR, ModInfo.GITHUB)]
 [assembly: MelonGame(ModInfo.PVZR.COMPANY, ModInfo.PVZR.GAME)]
-[assembly: MelonAdditionalDependencies(ModInfo.BloomEngine.BLOOM_ENGINE_DEPENDENCY)]
+[assembly: MelonAdditionalDependencies(ModInfo.BloomEngine.BLOOM_ENGINE_NAME)]
