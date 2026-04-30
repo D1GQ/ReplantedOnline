@@ -7,7 +7,7 @@ using ReplantedOnline.Network.Client;
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 
 [HarmonyPatch]
-internal static class CurrencyProductionPatch
+internal static class SunAndBrainProductionPatch
 {
     [HarmonyPatch(typeof(Plant), nameof(Plant.PlantInitialize))]
     [HarmonyPostfix]
