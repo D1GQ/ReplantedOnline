@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
@@ -14,46 +13,6 @@ namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class ZombiePatch
 {
-    /// Reworks wave zombie spawning to use RPCs for network synchronization
-    /// Handles zombies spawned during waves
-    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
-    [HarmonyPrefix]
-    private static bool Board_AddZombieInRow_Prefix(Board __instance, ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
-    {
-        // Only intercept during active gameplay in multiplayer
-        if (ReplantedLobby.AmInLobby() && VersusState.IsInGameplay)
-        {
-            // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
-            if (theZombieType is ZombieType.Target) return true;
-
-            // Prevent zombies from spawning when flag zombie is spawned, this is handled in FlagZombiePatch.cs
-            if (theZombieType is ZombieType.Normal or ZombieType.TrafficCone or ZombieType.Pail)
-            {
-                __result = ObjectUtils.CreateReloadedObject<Zombie>();
-                return false;
-            }
-
-            if (!VersusState.AmPlantSide)
-            {
-                throw new SilentPatchException();
-            }
-
-            // Prevent imps from spawning normally, this is handled in GargantuarZombiePatch.cs
-            if (theZombieType is ZombieType.Imp) throw new SilentPatchException();
-
-            // Spawn zombie at column 9 (right side of board) with network synchronization
-            __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 9, theRow, true).Zombie;
-
-            // Prevent VersusMode from handling Bobsled, this is done in BobsledZombiePatch.cs
-            if (theZombieType == ZombieType.Bobsled) throw new SilentPatchException();
-
-            // Skip original method since we handled spawning with network sync
-            return false;
-        }
-
-        return true; // Allow original method in single player or non-gameplay phases
-    }
-
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
     internal static Zombie AddZombieInRowOriginal(this Board __instance, ZombieType theZombieType, int theRow, int theFromWave, bool shakeBrush = true)

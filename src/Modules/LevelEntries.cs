@@ -80,6 +80,7 @@ internal static class LevelEntries
         Instances.GameplayActivity.m_boardOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
         Instances.GameplayActivity.m_gameplayPooler.m_gridOffset = Instances.GameplayActivity.BackgroundController.GridOffset.transform;
         Instances.GameplayActivity.Board.InitLevel();
+        Instances.GameplayActivity.BackgroundController.EnableBowlingLine(true, 515);
         Instances.GameplayActivity.InitInput();
         Instances.GameplayActivity.VersusMode.m_focusCircleController = Instances.GameplayActivity.CreateFocusCircleController();
         foreach (var cursorObject in Instances.GameplayActivity.Board.CursorObjects.m_values)

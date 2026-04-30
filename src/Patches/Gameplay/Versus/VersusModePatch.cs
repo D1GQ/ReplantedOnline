@@ -18,8 +18,6 @@ internal static class VersusModePatch
     private static void VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
     {
         updateInterval.Reset();
-        __instance.m_app.BackgroundController.EnableBowlingLine(true, 515);
-        __instance.ClearBoard();
         IArena.GetCurrentArena()?.InitializeArena(__instance);
         IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
         VersusGameplayManager.OnStart();
