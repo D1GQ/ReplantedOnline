@@ -16,18 +16,8 @@ internal sealed class InfoDisplay : MonoBehaviour
 {
     internal static bool DebugEnabled { get; private set; }
     internal static bool DebugLoggerEnabled { get; private set; }
+
     private bool _enabled = true;
-
-    /// <summary>
-    /// Initializes the InfoDisplay component and creates a persistent GameObject.
-    /// </summary>
-    internal static void Initialize()
-    {
-        var go = new GameObject(nameof(InfoDisplay));
-        go.AddComponent<InfoDisplay>();
-        DontDestroyOnLoad(go);
-    }
-
     internal static GUIStyle Style;
 
     private void Update()

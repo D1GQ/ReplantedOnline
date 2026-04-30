@@ -11,6 +11,7 @@ using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
+using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches;
 using ReplantedOnline.Patches.Client;
 using ReplantedOnline.Utilities;
@@ -37,7 +38,8 @@ internal class ReplantedOnlineMod : MelonMod
         NetworkObject.SetupPrefabs();
         RpcHandlerAttribute.Initialize();
         BloomEngineManager.InitializeBloom(this);
-        InfoDisplay.Initialize();
+        MonoSingleton<InfoDisplay>.CreateInstance();
+        MonoSingleton<GithubAPI>.CreateInstance();
         AudioManager.Initialize();
         Application.runInBackground = true;
     }
@@ -49,7 +51,7 @@ internal class ReplantedOnlineMod : MelonMod
         LevelEntries.Initialize();
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
-        MainThreadDispatcher.Initialize();
+        MonoSingleton<MainThreadDispatcher>.CreateInstance();
         ReplantedLobby.Initialize();
     }
 

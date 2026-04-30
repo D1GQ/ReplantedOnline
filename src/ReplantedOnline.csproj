@@ -109,6 +109,9 @@
 		<Reference Include="Unity.ResourceManager">
 			<HintPath>References\UnityEngine\Unity.ResourceManager.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestModule">
+			<HintPath>References\UnityEngine\UnityEngine.UnityWebRequestModule.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">

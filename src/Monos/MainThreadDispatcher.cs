@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Interfaces.Data;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Utilities;
 using UnityEngine;
 
@@ -10,31 +11,9 @@ namespace ReplantedOnline.Monos;
 /// </summary>
 internal class MainThreadDispatcher : MonoBehaviour
 {
-    private static readonly Queue<Action> _executionQueue = new();
+    private readonly Queue<Action> _executionQueue = new();
 
     /// <summary>
-    /// Gets the singleton instance of the MainThreadDispatcher.
-    /// </summary>
-    internal static MainThreadDispatcher Instance { get; private set; }
-
-    /// <summary>
-    /// Initializes the MainThreadDispatcher by creating a persistent GameObject.
-    /// Should be called once during mod initialization.
-    /// </summary>
-    internal static void Initialize()
-    {
-        if (Instance != null) return;
-
-        var go = new GameObject("MainThreadDispatcher")
-        {
-            hideFlags = HideFlags.HideAndDontSave
-        };
-        DontDestroyOnLoad(go);
-        Instance = go.AddComponent<MainThreadDispatcher>();
-    }
-
-    /// <summary>
-    /// Unity Update method called once per frame.
     /// Processes all queued actions on the main thread.
     /// </summary>
     private void Update()
@@ -70,7 +49,7 @@ internal class MainThreadDispatcher : MonoBehaviour
     {
         if (action == null) return;
 
-        _executionQueue.Enqueue(action);
+        MonoSingleton<MainThreadDispatcher>.Instance._executionQueue.Enqueue(action);
     }
 
     /// <summary>
@@ -79,6 +58,5 @@ internal class MainThreadDispatcher : MonoBehaviour
     private void OnDestroy()
     {
         _executionQueue.Clear();
-        Instance = null;
     }
 }
