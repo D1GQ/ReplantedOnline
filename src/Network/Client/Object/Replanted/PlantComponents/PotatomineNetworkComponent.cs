@@ -63,5 +63,6 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
         HasExploded = true;
         SendDoSpecialRpc();
         DoSpecial();
+        PlantNetworked.DespawnAndDestroyWhenDeadOrNull();
     }
 }
