@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
@@ -44,6 +45,16 @@ internal class ZombieNetworkComponent : NetworkComponent
     internal override void Update()
     {
         UpdatePositionSync();
+    }
+
+
+    protected void UpdateBungeeRoofOffset()
+    {
+        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        {
+            // Offset based off roof elevation 
+            ZombieNetworked._Zombie.mImageOffsetY = Mathf.Lerp(80f, 0f, Mathf.Clamp01(ZombieNetworked.GridX / 5f));
+        }
     }
 
     protected void UpdatePositionSync()

@@ -37,6 +37,8 @@ internal sealed class ZombieWithBungeeComponent : ZombieNetworkComponent
 
         if (ZombieNetworked.ZombieType == ZombieType.Bungee)
         {
+            UpdateBungeeRoofOffset();
+
             if (ZombieNetworked._Zombie.mZombiePhase is ZombiePhase.BungeeDiving)
             {
                 ZombieNetworked._Zombie.BungeeLiftTarget();
