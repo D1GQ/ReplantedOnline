@@ -3,6 +3,8 @@ using Il2CppSource.Utils;
 using Il2CppTekly.TreeState;
 using MelonLoader;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Panel;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
 using System.Collections;
 using UnityEngine;
@@ -121,6 +123,13 @@ internal static class Transitions
             if (Time.time - startTime > timeout)
             {
                 ReplantedOnlineMod.Logger.Error(typeof(Transitions), $"Timeout waiting for transition '{transitionName}' to start");
+                if (ReplantedLobby.AmInLobby())
+                {
+                    ReplantedLobby.LeaveLobby(() =>
+                    {
+                        CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
+                    });
+                }
                 yield break;
             }
             yield return null;
@@ -132,6 +141,13 @@ internal static class Transitions
             if (Time.time - startTime > timeout)
             {
                 ReplantedOnlineMod.Logger.Error(typeof(Transitions), $"Timeout waiting for transition '{transitionName}' to complete");
+                if (ReplantedLobby.AmInLobby())
+                {
+                    ReplantedLobby.LeaveLobby(() =>
+                    {
+                        CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
+                    });
+                }
                 yield break;
             }
 
