@@ -14,13 +14,11 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
 {
     internal override void Enabled()
     {
+        _screamRng = Math.Min(_screamRng, 2);
         ZombieNetworked.StartCoroutine(CoBungeeDropZombie());
     }
 
-    internal override void Update()
-    {
-        // Don't sync pos
-    }
+    private int _screamRng;
 
     private IEnumerator CoBungeeDropZombie()
     {
@@ -35,7 +33,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.mController.gameObject.SetActive(false);
 
         // Spawn bungee zombie
-        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, ZombieNetworked.GridX, ZombieNetworked.GridY, SpawnType.BungeeDropZombie, false).Zombie;
+        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, ZombieNetworked.GridX, ZombieNetworked.GridY, SpawnType.None, false).Zombie;
         bungee.BungeeLiftTarget(); // Make arms close with 
         bungee.mZombieRect = new Rect(9999, 9999, 0, 0); // Make invulnerable
 
@@ -44,15 +42,27 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.mPosX = targetX - 25;
         zombie.mController.gameObject.SetActive(true);
 
+        if (ZombieNetworked.SpawnType == SpawnType.BungeeDropZombieNoTarget)
+        {
+            SeedPacketDefinitions.SetBungeeTarget(bungee, false);
+            bungee.mZombiePhase = ZombiePhase.BungeeDivingScreaming;
+            bungee.mAltitude = 500 + (100 * ZombieNetworked.GridY);
+        }
+
         // Animate descent
         while (bungee.mZombiePhase != ZombiePhase.BungeeAtBottom)
         {
             SeedPacketDefinitions.SetBungeeRenderOrder(bungee);
-            zombie.mBungeeOffsetY = bungee.mController.GetTrackPosition("").y - 50;
+            zombie.mBungeeOffsetY = -bungee.mAltitude;
             zombie.RenderOrder = bungee.RenderOrder + 1;
             zombie.mVelX = 0;
             zombie.UpdateAnimSpeed();
             yield return null;
+        }
+
+        if (ZombieNetworked.SpawnType == SpawnType.BungeeDropZombieNoTarget)
+        {
+            Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_ZOMBIE_FALLING_1);
         }
 
         bungee.mZombiePhase = ZombiePhase.BungeeRising;

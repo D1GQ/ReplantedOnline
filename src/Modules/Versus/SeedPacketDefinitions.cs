@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppSource.Controllers;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
@@ -281,6 +282,7 @@ internal static class SeedPacketDefinitions
         // Set Bungee grid target
         if (zombieType == ZombieType.Bungee)
         {
+            SetBungeeTarget(zombie, true);
             zombie.mTargetCol = gridX;
             zombie.mTargetRow = gridY;
         }
@@ -409,9 +411,11 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Sets up Bungee rendering.
     /// </summary>
-    /// <param name="bungee">The zombie to set up.</param>
+    /// <param name="bungee">The Bungee zombie.</param>
     internal static void SetBungeeRenderOrder(Zombie bungee)
     {
+        if (bungee.mZombieType != ZombieType.Bungee) return;
+
         bungee.mBungeeTargetRenderOrder = bungee.RenderOrder;
 
         if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
@@ -419,5 +423,17 @@ internal static class SeedPacketDefinitions
             // Offset based off roof elevation 
             bungee.mImageOffsetY = Mathf.Lerp(80f, 0f, Mathf.Clamp01(bungee.mBoard.PixelToGridX(bungee.mPosX, bungee.mPosY) / 5f));
         }
+    }
+
+    /// <summary>
+    /// Sets the Bungees target SpriteRender active.
+    /// </summary>
+    /// <param name="bungee">The Bungee zombie.</param>
+    /// <param name="active">If it should be visible.</param>
+    internal static void SetBungeeTarget(Zombie bungee, bool active)
+    {
+        if (bungee.mZombieType != ZombieType.Bungee) return;
+
+        bungee.mController.Cast<ZombieBungeeController>().m_bungeeTargetSpriteRenderer.color = active ? Color.white : Color.white * 0f;
     }
 }

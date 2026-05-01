@@ -28,5 +28,10 @@ internal enum SpawnType
     /// <summary>
     /// Zombie drops from above via bungee zombie.
     /// </summary>
-    BungeeDropZombie
+    BungeeDropZombie,
+
+    /// <summary>
+    /// Zombie drops from above via bungee zombie skiping the target drop animation.
+    /// </summary>
+    BungeeDropZombieNoTarget
 }
