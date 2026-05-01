@@ -7,24 +7,28 @@ using ReplantedOnline.Interfaces.Versus;
 namespace ReplantedOnline.Modules.Versus.Configs.Zombie;
 
 [RegisterCharacterConfig]
-internal sealed class GravestoneZombieConfig : IZombieConfig
+internal sealed class DiggerZombieConfig : IZombieConfig
 {
     /// <inheritdoc/>
-    public ZombieType Type => ZombieType.Gravestone;
+    public ZombieType Type => ZombieType.Digger;
 
     /// <inheritdoc/>
     public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
-    public bool IsAllowedInArena(ArenaTypes arena) => true;
+    public bool IsAllowedInArena(ArenaTypes arena)
+    {
+        if (arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY) => true;
 
     /// <inheritdoc/>
-    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY)
-    {
-        // Fix rendering order
-        zombie.RenderOrder -= 100 + 5 * (gridY + 1);
-    }
+    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY) { }
 }

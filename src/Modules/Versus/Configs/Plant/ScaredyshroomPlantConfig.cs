@@ -24,6 +24,9 @@ internal class ScaredyshroomPlantConfig : IPlantConfig
     }
 
     /// <inheritdoc/>
+    public bool IsAllowedInArena(ArenaTypes arena) => true;
+
+    /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY) => true;
 
     /// <inheritdoc/>

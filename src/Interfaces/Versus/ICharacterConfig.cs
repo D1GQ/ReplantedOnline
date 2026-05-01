@@ -118,6 +118,56 @@ internal interface ICharacterConfig
                         {
                             return false;
                         }
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        foreach (var config in RegisterCharacterConfig.Instances)
+        {
+            if (config is IPlantConfig plantConfig)
+            {
+                if (plantConfig.Type == seedType)
+                {
+                    if (!plantConfig.CanBePlacedAt(arena, gridX, gridY))
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gets rather if a seedtype is allowd to be used in the arena.
+    /// </summary>
+    /// <param name="seedType">The seed type to check placement for</param>
+    /// <param name="arena">The arena type where placement is being attempted</param>
+    /// <returns>True if the seed can be used in the arena</returns>
+    internal static bool IsAllowedInArena(SeedType seedType, ArenaTypes arena)
+    {
+        if (Challenge.IsZombieSeedType(seedType))
+        {
+            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
+
+            foreach (var config in RegisterCharacterConfig.Instances)
+            {
+                if (config is IZombieConfig zombieConfig)
+                {
+                    if (zombieConfig.Type == zombieType)
+                    {
+                        if (!zombieConfig.IsAllowedInArena(arena))
+                        {
+                            return false;
+                        }
+
+                        return true;
                     }
                 }
             }
@@ -131,10 +181,12 @@ internal interface ICharacterConfig
             {
                 if (plantConfig.Type == seedType)
                 {
-                    if (!plantConfig.CanBePlacedAt(arena, gridX, gridY))
+                    if (!plantConfig.IsAllowedInArena(arena))
                     {
                         return false;
                     }
+
+                    return true;
                 }
             }
         }
@@ -155,6 +207,12 @@ internal interface ICharacterConfig<EnumType, DefinitionType, CharacterType> : I
     /// Gets the specific type identifier for this character configuration.
     /// </summary>
     EnumType Type { get; }
+
+    /// <summary>
+    /// Gets rather if the character definition is allowd to be used in the arena.
+    /// </summary>
+    /// <param name="arena">The current arena type</param>
+    bool IsAllowedInArena(ArenaTypes arena);
 
     /// <summary>
     /// Configures the character definition with initial values and properties for arena.

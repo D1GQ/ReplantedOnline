@@ -16,6 +16,9 @@ internal sealed class TargetZombieConfig : IZombieConfig
     public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
+    public bool IsAllowedInArena(ArenaTypes arena) => true;
+
+    /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY) => true;
 
     /// <inheritdoc/>

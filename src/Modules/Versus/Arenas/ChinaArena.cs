@@ -76,11 +76,6 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public void SetSeedPacketRecommendations(List<ChosenSeed> plantSeeds, List<ChosenSeed> zombieSeeds)
-    {
-    }
-
-    /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)
     {
         if (ReplantedLobby.AmLobbyHost())

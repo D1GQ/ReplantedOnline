@@ -16,6 +16,9 @@ internal sealed class DancerZombieConfig : IZombieConfig
     public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
+    public bool IsAllowedInArena(ArenaTypes arena) => true;
+
+    /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY)
     {
         return gridY != 0 && gridY != 4;

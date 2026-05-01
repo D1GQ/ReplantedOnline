@@ -50,6 +50,11 @@ internal sealed class CustomGamemode : IVersusGamemode
             yield return null;
         }
 
+        List<ChosenSeed> chosenSeeds = [
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
+            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
+        ];
+
         IArenaSetupSeedbank.AddInitialSeedsToBanks();
 
         ReplantedClientData.LocalClient?.Ready.Value = true;
@@ -72,7 +77,7 @@ internal sealed class CustomGamemode : IVersusGamemode
                     var seedChooserVSSwapDebug = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
                     seedChooserVSSwapDebug.playerTurn = 1;
                     seedChooserVSSwapDebug.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
-                    DisableSeedPackets();
+                    DisableSeedPackets(chosenSeeds);
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChoosePlantPacket;
 
                     yield break;
@@ -95,21 +100,21 @@ internal sealed class CustomGamemode : IVersusGamemode
         seedChooserVSSwap.m_vsSeedChooserAnimator.Play(-160334332, 0, 1f);
         seedChooserVSSwap.playerTurn = 1;
         seedChooserVSSwap.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
-        DisableSeedPackets();
-        if (IArena.GetCurrentArena() is IArenaSetupSeedbank arenaSetupSeedbank)
+
+        foreach (var seedPacket in chosenSeeds)
         {
-            arenaSetupSeedbank.SetSeedPacketRecommendations(Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds.ToManagedList(), Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.ToManagedList());
+            if (!ICharacterConfig.IsAllowedInArena(seedPacket.mSeedType, VersusState.Arena))
+            {
+                seedPacket.mSeedState = ChosenSeedState.SeedPacketHidden;
+            }
         }
+
+        DisableSeedPackets(chosenSeeds);
     }
 
     // Hide disabled seed packets 
-    private static void DisableSeedPackets()
+    private static void DisableSeedPackets(List<ChosenSeed> chosenSeeds)
     {
-        List<ChosenSeed> chosenSeeds = [
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
-        ];
-
         foreach (var seedPacket in chosenSeeds)
         {
             if (SeedPacketDefinitions.DisabledSeedTypes.Contains(seedPacket.mSeedType))
