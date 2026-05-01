@@ -31,10 +31,13 @@ internal class PlantNetworkComponent : NetworkComponent
         };
     }
 
-    internal override void Init()
+    internal sealed override void Init()
     {
         PlantNetworked = NetworkObject as PlantNetworked;
+        OnInit();
     }
+
+    internal virtual void OnInit() { }
 
     internal virtual void OnDeath(DeathReason deathReason) { }
 

@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
@@ -19,7 +20,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     {
         if (ZombieNetworked._Zombie == null) return;
 
-        UpdateBungeeRoofOffset();
+        SeedPacketDefinitions.SetBungeeRenderOrder(ZombieNetworked._Zombie);
 
         if (ZombieNetworked.AmOwner)
         {

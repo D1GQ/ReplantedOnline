@@ -47,6 +47,11 @@ internal abstract class NetworkComponent : IRpcReceiver
     internal virtual void Init() { }
 
     /// <summary>
+    /// Called after Network Object has been set active.
+    /// </summary>
+    internal virtual void Enabled() { }
+
+    /// <summary>
     /// Called every frame to update component logic.
     /// </summary>
     internal virtual void Update() { }

@@ -86,9 +86,9 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
 
-        if (SpawnType == SpawnType.ZombieWithBungee)
+        if (SpawnType == SpawnType.BungeeDropZombie)
         {
-            LogicComponent = AddNetworkComponent<ZombieWithBungeeComponent>();
+            LogicComponent = AddNetworkComponent<BungeeDropZombieComponent>();
         }
 
         _Zombie.AddNetworkedLookup(this);

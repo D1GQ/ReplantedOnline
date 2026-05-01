@@ -128,7 +128,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
 
     /// <summary>
     /// Clears all dirty bits, marking all properties as synchronized.
-    /// Called after successful network synchronization.
     /// </summary>
     internal void ClearDirtyBits()
     {
@@ -163,7 +162,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
 
     /// <summary>
     /// Marks the object as dirty by setting a default dirty bit.
-    /// Forces the object to be synchronized on the next network update.
     /// </summary>
     new internal void MarkDirty()
     {
@@ -172,13 +170,22 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
 
     /// <summary>
     /// Called when the network object is first initialized on the client side.
-    /// Override this method to implement client-side initialization logic.
     /// </summary>
     public virtual void OnInit() { }
 
     /// <summary>
+    /// Called after Network Object has been set active.
+    /// </summary>
+    public virtual void OnEnabled()
+    {
+        foreach (var component in NetworkComponents)
+        {
+            component.Enabled();
+        }
+    }
+
+    /// <summary>
     /// Called when the network object is being despawned/removed on the client side.
-    /// Override this method to implement client-side cleanup logic before the object is destroyed.
     /// </summary>
     public virtual void OnDespawn() { }
 
@@ -313,6 +320,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
                 networkObj.OnInit();
                 NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
+                networkObj.OnEnabled();
                 return networkObj;
             }
         }

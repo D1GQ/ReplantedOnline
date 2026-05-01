@@ -22,7 +22,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     public MusicTune Music => MusicTune.RoofGrazetheroof;
 
     /// <inheritdoc/>
-    public SpawnType DefaultZombieSpawnType => SpawnType.ZombieWithBungee;
+    public SpawnType DefaultZombieSpawnType => SpawnType.BungeeDropZombie;
 
     /// <inheritdoc/>
     public int SeedPacketCount => 7;

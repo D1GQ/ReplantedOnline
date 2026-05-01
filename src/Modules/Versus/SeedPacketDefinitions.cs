@@ -405,4 +405,19 @@ internal static class SeedPacketDefinitions
 
         return false;
     }
+
+    /// <summary>
+    /// Sets up Bungee rendering.
+    /// </summary>
+    /// <param name="bungee">The zombie to set up.</param>
+    internal static void SetBungeeRenderOrder(Zombie bungee)
+    {
+        bungee.mBungeeTargetRenderOrder = bungee.RenderOrder;
+
+        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        {
+            // Offset based off roof elevation 
+            bungee.mImageOffsetY = Mathf.Lerp(80f, 0f, Mathf.Clamp01(bungee.mBoard.PixelToGridX(bungee.mPosX, bungee.mPosY) / 5f));
+        }
+    }
 }
