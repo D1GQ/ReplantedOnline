@@ -180,7 +180,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     {
         foreach (var component in NetworkComponents)
         {
-            component.Enabled();
+            component.OnEnabled();
         }
     }
 
