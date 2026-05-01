@@ -1,5 +1,4 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Utilities;
@@ -7,33 +6,74 @@ using UnityEngine;
 
 namespace ReplantedOnline.Monos;
 
-/// <summary>
-/// Debugger component for visualizing and debugging networked objects in the game.
-/// </summary>
 internal sealed class NetworkedDebugger : MonoBehaviour
 {
     private NetworkObject _instance;
-    private const float BASE_WIDTH = 1920f;
-    private const float BASE_HEIGHT = 1080f;
+    private GUIStyle _boxOutlineStyle;
+    private GUIStyle _boxFillStyle;
+    private GUIStyle _labelStyle;
+    private GUIStyle _infoStyle;
+    private GUIStyle _backgroundStyle;
+    private Texture2D _whiteTexture;
+    private bool _isMouseOver;
+    private Vector3 _cachedScreenPos;
 
-    private static Vector2 ScreenScale => new(
-        Screen.width / BASE_WIDTH,
-        Screen.height / BASE_HEIGHT
-    );
-
-    /// <summary>
-    /// Initializes the debugger with a networked object instance.
-    /// </summary>
-    /// <param name="networkObj">The networked object instance to debug.</param>
     [HideFromIl2Cpp]
     internal void Initialize(NetworkObject networkObj)
     {
         _instance = networkObj;
+        CreateWhiteTexture();
+        CreateStyles();
     }
 
-    private Vector3 _cachedControllerPosition;
-    private Vector3 _cachedWPos;
-    private string[] _cachedTexts;
+    [HideFromIl2Cpp]
+    private void CreateWhiteTexture()
+    {
+        _whiteTexture = new Texture2D(1, 1);
+        _whiteTexture.SetPixel(0, 0, Color.white);
+        _whiteTexture.Apply();
+    }
+
+    [HideFromIl2Cpp]
+    private void CreateStyles()
+    {
+        Texture2D outlineTex = new(1, 1);
+        outlineTex.SetPixel(0, 0, new Color(1f, 1f, 0f, 0.8f));
+        outlineTex.Apply();
+
+        Texture2D fillTex = new(1, 1);
+        fillTex.SetPixel(0, 0, new Color(1f, 1f, 0f, 0.15f));
+        fillTex.Apply();
+
+        Texture2D bgTex = new(1, 1);
+        bgTex.SetPixel(0, 0, new Color(0f, 0f, 0f, 0.7f));
+        bgTex.Apply();
+
+        _boxOutlineStyle = new GUIStyle();
+        _boxOutlineStyle.normal.background = outlineTex;
+
+        _boxFillStyle = new GUIStyle();
+        _boxFillStyle.normal.background = fillTex;
+
+        _backgroundStyle = new GUIStyle();
+        _backgroundStyle.normal.background = bgTex;
+
+        _labelStyle = new GUIStyle
+        {
+            fontSize = 11,
+            fontStyle = FontStyle.Bold,
+            alignment = TextAnchor.MiddleCenter
+        };
+        _labelStyle.normal.textColor = Color.yellow;
+
+        _infoStyle = new GUIStyle
+        {
+            fontSize = 10,
+            alignment = TextAnchor.UpperLeft,
+            wordWrap = true
+        };
+        _infoStyle.normal.textColor = Color.white;
+    }
 
     private void OnGUI()
     {
@@ -55,63 +95,26 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DebugZombie(ZombieNetworked zombieNetworked)
     {
         var zombie = zombieNetworked._Zombie;
-        if (zombie != null && !zombie.mDead)
+
+        bool isDead = zombie == null || zombie.mDead;
+
+        if (!isDead)
         {
-            if (zombieNetworked.ZombieType.IsGravestoneOrTarget()) return;
+            Vector3 worldPos = zombie.mController.transform.position + zombie.mController.GetRenderOffset();
+            Rect hitboxRect = zombie.mZombieRect;
+            _cachedScreenPos = WorldToScreen(worldPos + new Vector3(0f, 100f, 0f));
 
-            _cachedControllerPosition = zombie.mController.transform.position;
-            _cachedWPos = GetWorldPos(_cachedControllerPosition);
+            string phaseInfo = $"{zombie.mZombiePhase}: {zombie.mPhaseCounter}";
+            DrawDebugInfo(worldPos + new Vector3(0f, 100f, 0f), hitboxRect, zombieNetworked.gameObject.name, phaseInfo);
 
-            // Scale offsets based on screen resolution
-            Vector2 scaledOffset = new Vector2(85f, 175f) * ScreenScale.y; // Scale based on height for consistency
-            _cachedWPos += new Vector3(scaledOffset.x, scaledOffset.y, 0f);
-
-            _cachedTexts =
-            [
-                zombieNetworked.gameObject.name,
-                $"{Enum.GetName(zombie.mZombiePhase)}: {zombie.mPhaseCounter}"
-            ];
-
-            // Scale box size based on resolution
-            Vector2 boxSize = new Vector2(100f, 150f) * ScreenScale.y;
-            Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (75f * ScreenScale.y));
-
-            Color color = zombieNetworked.AmOwner ? Color.cyan : Color.white;
-            DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
-                1f, 1f, _cachedTexts, color,
-                new Vector2(0f, 15f * ScreenScale.y));
-            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, color);
-
-            if (zombieNetworked.LogicComponent.LastSyncPosX != null)
-            {
-                var syncWorldPos = new Vector3(
-                    PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.LogicComponent.LastSyncPosX.Value),
-                    _cachedControllerPosition.y
-                );
-                var syncPos = GetWorldPos(syncWorldPos);
-
-                // Scale sync position offset
-                Vector2 syncOffset = new Vector2(75f, 125f) * ScreenScale.y;
-                syncPos += new Vector3(syncOffset.x, syncOffset.y, 0f);
-
-                DebugRender.Line(_cachedWPos, syncPos, 1 * ScreenScale.y, Color.magenta);
-
-                Vector2 syncBoxSize = new Vector2(50f, 50f) * ScreenScale.y;
-                DebugRender.Box(new Vector2(syncPos.x, syncPos.y), syncBoxSize,
-                    1f * ScreenScale.y, Color.magenta);
-            }
+            Vector3 screenPos = WorldToScreen(worldPos + new Vector3(0f, 100f, 0f));
+            DrawSyncPosition(zombieNetworked, worldPos, screenPos);
         }
         else
         {
-            if (_cachedTexts != null && _cachedTexts.Length > 0)
+            if (_cachedScreenPos != Vector3.zero)
             {
-                DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (15f * ScreenScale.y),
-                    1f, 1f, _cachedTexts, Color.red,
-                    new Vector2(0f, 15f * ScreenScale.y));
-
-                Vector2 boxSize = new Vector2(100f, 150f) * ScreenScale.y;
-                Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (75f * ScreenScale.y));
-                DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
+                DrawDeadObjectDebug(_cachedScreenPos, zombieNetworked.gameObject.name);
             }
         }
     }
@@ -120,66 +123,231 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DebugPlant(PlantNetworked plantNetworked)
     {
         var plant = plantNetworked._Plant;
-        if (plant != null && !plant.mDead)
+
+        bool isDead = plant == null || plant.mDead;
+
+        if (!isDead)
         {
-            if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad) return;
+            Vector3 worldPos = plant.mController.transform.position + plant.mController.GetRenderOffset();
+            Rect hitboxRect = plant.mPlantRect;
+            _cachedScreenPos = WorldToScreen(worldPos + new Vector3(0f, 100f, 0f));
 
-            _cachedControllerPosition = plant.mController.transform.position;
-            _cachedWPos = GetWorldPos(_cachedControllerPosition);
-
-            // Scale offsets based on screen resolution
-            Vector2 scaledOffset = new Vector2(55f, 90f) * ScreenScale.y;
-            _cachedWPos += new Vector3(scaledOffset.x, scaledOffset.y, 0f);
-
-            _cachedTexts =
-            [
-                plantNetworked.gameObject.name,
-                $"{Enum.GetName(plant.mState)}: {plant.mStateCountdown}"
-            ];
-
-            // Scale box size based on resolution
-            Vector2 boxSize = new Vector2(100f, 100f) * ScreenScale.y;
-            Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (25f * ScreenScale.y));
-
-            Color color = plantNetworked.AmOwner ? Color.cyan : Color.white;
-            DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
-                1f, 1f, _cachedTexts, color,
-                new Vector2(0f, 15f * ScreenScale.y));
-            DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, color);
+            string stateInfo = $"{plant.mState}: {plant.mStateCountdown}";
+            DrawDebugInfo(worldPos + new Vector3(0f, 100f, 0f), hitboxRect, plantNetworked.gameObject.name, stateInfo);
         }
         else
         {
-            if (_cachedTexts != null && _cachedTexts.Length > 0)
-            {
-                DebugRender.Strings(_cachedWPos.x, _cachedWPos.y + (35f * ScreenScale.y),
-                    1f, 1f, _cachedTexts, Color.red,
-                    new Vector2(0f, 15f * ScreenScale.y));
 
-                Vector2 boxSize = new Vector2(100f, 100f) * ScreenScale.y;
-                Vector2 boxPosition = new(_cachedWPos.x, _cachedWPos.y - (25f * ScreenScale.y));
-                DebugRender.Box(boxPosition, boxSize, 1f * ScreenScale.y, Color.red);
+            if (_cachedScreenPos != Vector3.zero)
+            {
+                DrawDeadObjectDebug(_cachedScreenPos, plantNetworked.gameObject.name);
             }
         }
     }
 
-    private static Vector3 GetWorldPos(Vector3 worldPos)
+    [HideFromIl2Cpp]
+    private void DrawDebugInfo(Vector3 worldPos, Rect hitboxRect, string objectName, string info)
     {
-        var cam = Camera.main;
-        Vector3 viewportPos = cam.WorldToViewportPoint(worldPos);
+        Vector3 screenPos = WorldToScreen(worldPos);
+        if (screenPos.z < 0) return;
 
-        float distance = Mathf.Round(Vector3.Distance(worldPos, cam.transform.parent.position));
-        float size = Mathf.Clamp(1000f / distance, 10f, 50f);
+        Vector2 hitboxScreenSize = WorldSizeToScreen(hitboxRect.width, hitboxRect.height, worldPos);
 
-        // Scale size based on screen resolution to maintain consistent appearance
-        float screenScale = Mathf.Min(Screen.width / 1920f, Screen.height / 1080f);
-        size *= screenScale;
-
-        Vector3 screenPos = new(
-            viewportPos.x * Screen.width,
-            (1 - viewportPos.y) * Screen.height,
-            size
+        Rect boxRect = new(
+            screenPos.x - (hitboxScreenSize.x / 2f),
+            screenPos.y - (hitboxScreenSize.y / 2f),
+            hitboxScreenSize.x,
+            hitboxScreenSize.y
         );
 
+        _isMouseOver = boxRect.Contains(Event.current.mousePosition);
+
+        Color outlineColor = _isMouseOver ? new Color(0f, 1f, 1f, 0.8f) : new Color(1f, 1f, 0f, 0.8f);
+        Color fillColor = _isMouseOver ? new Color(0f, 1f, 1f, 0.15f) : new Color(1f, 1f, 0f, 0.15f);
+
+        UpdateBoxColors(outlineColor, fillColor);
+
+        GUI.Box(boxRect, "", _boxFillStyle);
+        DrawBoxOutline(boxRect, 2f);
+
+        Vector2 nameSize = _labelStyle.CalcSize(new GUIContent(objectName));
+        Rect nameRect = new(
+            screenPos.x - (nameSize.x / 2f) - 4f,
+            boxRect.y + boxRect.height + 5f,
+            nameSize.x + 8f,
+            nameSize.y + 4f
+        );
+        GUI.Box(nameRect, "", _backgroundStyle);
+
+        Color originalTextColor = _labelStyle.normal.textColor;
+        GUI.Label(new Rect(nameRect.x + 4f, nameRect.y + 2f, nameSize.x, nameSize.y), objectName, _labelStyle);
+        _labelStyle.normal.textColor = originalTextColor;
+
+        if (_isMouseOver && !string.IsNullOrEmpty(info))
+        {
+            Vector2 infoSize = _infoStyle.CalcSize(new GUIContent(info));
+            Rect infoRect = new Rect(
+                screenPos.x - (infoSize.x / 2f) - 4f,
+                nameRect.y + nameRect.height + 5f,
+                infoSize.x + 8f,
+                infoSize.y + 4f
+            );
+            GUI.Box(infoRect, "", _backgroundStyle);
+            GUI.Label(new Rect(infoRect.x + 4f, infoRect.y + 2f, infoSize.x, infoSize.y), info, _infoStyle);
+        }
+    }
+
+    [HideFromIl2Cpp]
+    private void DrawDeadObjectDebug(Vector3 cachedScreenPos, string objectName)
+    {
+
+        Vector3 screenPos = cachedScreenPos;
+        if (screenPos.z < 0) return;
+
+        Vector2 boxSize = new(100f, 100f);
+        Vector2 hitboxScreenSize = WorldSizeToScreen(boxSize.x, boxSize.y, Vector3.zero);
+
+        Rect boxRect = new Rect(
+            screenPos.x - (hitboxScreenSize.x / 2f),
+            screenPos.y - (hitboxScreenSize.y / 2f),
+            hitboxScreenSize.x,
+            hitboxScreenSize.y
+        );
+
+        _isMouseOver = boxRect.Contains(Event.current.mousePosition);
+
+        UpdateBoxColors(new Color(1f, 0f, 0f, 0.8f), new Color(1f, 0f, 0f, 0.15f));
+
+        GUI.Box(boxRect, "", _boxFillStyle);
+        DrawBoxOutline(boxRect, 2f);
+
+        Color originalTextColor = _labelStyle.normal.textColor;
+        _labelStyle.normal.textColor = Color.red;
+
+        Vector2 nameSize = _labelStyle.CalcSize(new GUIContent(objectName));
+        Rect nameRect = new(
+            screenPos.x - (nameSize.x / 2f) - 4f,
+            boxRect.y + boxRect.height + 5f,
+            nameSize.x + 8f,
+            nameSize.y + 4f
+        );
+        GUI.Box(nameRect, "", _backgroundStyle);
+        GUI.Label(new Rect(nameRect.x + 4f, nameRect.y + 2f, nameSize.x, nameSize.y), objectName, _labelStyle);
+        _labelStyle.normal.textColor = originalTextColor;
+    }
+
+    [HideFromIl2Cpp]
+    private void DrawSyncPosition(ZombieNetworked zombieNetworked, Vector3 currentWorldPos, Vector3 currentScreenPos)
+    {
+
+        if (zombieNetworked.LogicComponent.LastSyncPosX.HasValue)
+        {
+
+            Vector3 syncWorldPos = new Vector3(
+                PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.LogicComponent.LastSyncPosX.Value),
+                currentWorldPos.y,
+                currentWorldPos.z
+            );
+
+            Vector3 syncScreenPos = WorldToScreen(syncWorldPos + new Vector3(0f, 100f, 0f));
+
+            if (syncScreenPos.z >= 0)
+            {
+
+                DrawLine(currentScreenPos, syncScreenPos, 2f, Color.magenta);
+
+                Vector2 syncBoxSize = new Vector2(50f, 50f);
+                Vector2 syncScreenSize = WorldSizeToScreen(syncBoxSize.x, syncBoxSize.y, syncWorldPos);
+
+                Rect syncBoxRect = new(
+                    syncScreenPos.x - (syncScreenSize.x / 2f),
+                    syncScreenPos.y - (syncScreenSize.y / 2f),
+                    syncScreenSize.x,
+                    syncScreenSize.y
+                );
+
+                Color originalOutline = _boxOutlineStyle.normal.background.GetPixel(0, 0);
+                Color originalFill = _boxFillStyle.normal.background.GetPixel(0, 0);
+
+                UpdateBoxColors(Color.magenta, new Color(1f, 0f, 1f, 0.15f));
+                GUI.Box(syncBoxRect, "", _boxFillStyle);
+                DrawBoxOutline(syncBoxRect, 2f);
+
+                UpdateBoxColors(originalOutline, originalFill);
+            }
+        }
+    }
+
+    private void DrawLine(Vector3 from, Vector3 to, float thickness, Color color)
+    {
+        Vector2 from2D = new Vector2(from.x, from.y);
+        Vector2 to2D = new Vector2(to.x, to.y);
+        Vector2 delta = to2D - from2D;
+        float angle = Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
+        float distance = delta.magnitude;
+
+        Texture2D lineTex = new(1, 1);
+        lineTex.SetPixel(0, 0, color);
+        lineTex.Apply();
+
+        GUIStyle lineStyle = new();
+        lineStyle.normal.background = lineTex;
+
+        GUIUtility.RotateAroundPivot(angle, from2D);
+        GUI.Box(new Rect(from2D.x, from2D.y, distance, thickness), GUIContent.none, lineStyle);
+        GUIUtility.RotateAroundPivot(-angle, from2D);
+    }
+
+    private void UpdateBoxColors(Color outlineColor, Color fillColor)
+    {
+        Texture2D outlineTex = new Texture2D(1, 1);
+        outlineTex.SetPixel(0, 0, outlineColor);
+        outlineTex.Apply();
+        _boxOutlineStyle.normal.background = outlineTex;
+
+        Texture2D fillTex = new Texture2D(1, 1);
+        fillTex.SetPixel(0, 0, fillColor);
+        fillTex.Apply();
+        _boxFillStyle.normal.background = fillTex;
+    }
+
+    private void DrawBoxOutline(Rect rect, float thickness)
+    {
+        GUI.Box(new Rect(rect.x, rect.y, rect.width, thickness), "", _boxOutlineStyle);
+        GUI.Box(new Rect(rect.x, rect.y + rect.height - thickness, rect.width, thickness), "", _boxOutlineStyle);
+        GUI.Box(new Rect(rect.x, rect.y, thickness, rect.height), "", _boxOutlineStyle);
+        GUI.Box(new Rect(rect.x + rect.width - thickness, rect.y, thickness, rect.height), "", _boxOutlineStyle);
+    }
+
+    private static Vector3 WorldToScreen(Vector3 worldPos)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return Vector3.zero;
+
+        Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
+        screenPos.y = Screen.height - screenPos.y;
         return screenPos;
+    }
+
+    private static Vector2 WorldSizeToScreen(float worldWidth, float worldHeight, Vector3 worldPos)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return new Vector2(50f, 50f);
+
+        Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
+
+        Vector3 worldCorner = worldPos + new Vector3(worldWidth, worldHeight, 0);
+        Vector3 screenCorner = cam.WorldToScreenPoint(worldCorner);
+
+        screenPos.y = Screen.height - screenPos.y;
+        screenCorner.y = Screen.height - screenCorner.y;
+
+        float screenWidth = Mathf.Abs(screenCorner.x - screenPos.x);
+        float screenHeight = Mathf.Abs(screenCorner.y - screenPos.y);
+
+        return new Vector2(
+            Mathf.Max(20f, screenWidth),
+            Mathf.Max(20f, screenHeight)
+        );
     }
 }
