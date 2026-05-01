@@ -76,6 +76,18 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
+    public void SetSeedPacketRecommendations(List<ChosenSeed> plantSeeds, List<ChosenSeed> zombieSeeds)
+    {
+        foreach (var zombieSeed in zombieSeeds)
+        {
+            if (zombieSeed.mSeedType is SeedType.ZombieDigger)
+            {
+                zombieSeed.mSeedState = ChosenSeedState.SeedPacketHidden;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)
     {
         if (ReplantedLobby.AmLobbyHost())

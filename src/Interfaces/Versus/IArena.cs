@@ -66,7 +66,7 @@ internal interface IArena
             return SpawnType.None;
         }
 
-        if (zombieType is ZombieType.Gravestone)
+        if (zombieType is ZombieType.Gravestone or ZombieType.Digger)
         {
             return SpawnType.RiseFromGround;
         }

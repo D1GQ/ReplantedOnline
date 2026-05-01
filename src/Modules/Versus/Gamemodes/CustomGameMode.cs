@@ -96,6 +96,10 @@ internal sealed class CustomGamemode : IVersusGamemode
         seedChooserVSSwap.playerTurn = 1;
         seedChooserVSSwap.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
         DisableSeedPackets();
+        if (IArena.GetCurrentArena() is IArenaSetupSeedbank arenaSetupSeedbank)
+        {
+            arenaSetupSeedbank.SetSeedPacketRecommendations(Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds.ToManagedList(), Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.ToManagedList());
+        }
     }
 
     // Hide disabled seed packets 

@@ -32,6 +32,11 @@ internal interface IArenaSetupSeedbank
     SeedType[] QuickPlayZombies { get; }
 
     /// <summary>
+    /// Sets up SeedPacket recommendations for current arena.
+    /// </summary>
+    void SetSeedPacketRecommendations(List<ChosenSeed> plantSeeds, List<ChosenSeed> zombieSeeds);
+
+    /// <summary>
     /// Gets the seed packet count from the current arena or default versus mode.
     /// </summary>
     /// <returns>The number of seed packets available.</returns>
