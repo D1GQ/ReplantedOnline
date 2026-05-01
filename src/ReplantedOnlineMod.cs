@@ -29,7 +29,7 @@ internal class ReplantedOnlineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        File.WriteAllText("steam_appid.txt", ((uint)AppIdServers.PVZ_Replanted).ToString());
+        File.WriteAllText("steam_appid.txt", ((uint)AppIds.PVZ_Replanted).ToString());
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
         InstanceAttribute.RegisterAll();
@@ -54,7 +54,7 @@ internal class ReplantedOnlineMod : MelonMod
     private static void OnInitializeMainMenu()
     {
         if (!SteamClient.initialized)
-            SteamClient.Init((uint)AppIdServers.PVZ_Replanted);
+            SteamClient.Init((uint)AppIds.PVZ_Replanted);
         LevelEntries.Initialize();
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();

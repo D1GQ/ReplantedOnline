@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Patches;
 
@@ -17,7 +18,7 @@ internal static class UniverseLibPatch
 
     private static bool AssetBundle_LoadFromMemory_Prefix(byte[] binary, uint crc, ref object __result)
     {
-        ReplantedOnlineMod.Logger.Warning("Interrupting UniverseLib asset bundle load, DO NOT REPORT WARNING BELOW!!!");
+        ReplantedOnlineMod.Logger.Warning(typeof(UniverseLibPatch), "DO NOT REPORT WARNING BELOW!!! Interrupting AssetBundle load...");
         __result = null;
         return false;
     }
