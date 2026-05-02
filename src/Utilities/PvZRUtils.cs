@@ -1,6 +1,11 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.TreeStateActivities;
 using Il2CppReloaded.Utils;
+using Il2CppSource.Controllers;
+using Il2CppSpine.Unity;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 
 namespace ReplantedOnline.Utilities;
 
@@ -197,6 +202,129 @@ internal static class PvZRUtils
 
             seedPacket.mSeedState = ChosenSeedState.SeedInChooser;
             seedPacket.mSeedIndexInBank = -1;
+        }
+    }
+
+    /// <summary>
+    /// Initializes a lawn mower instance with the appropriate settings based on the game state and arena type.
+    /// </summary>
+    /// <param name="lawnMower">The lawn mower instance to initialize.</param>
+    /// <param name="row">The row in which the lawn mower is located.</param>
+    /// <param name="app">The gameplay activity instance.</param>
+    internal static void LawnMowerInitialize(LawnMower lawnMower, int row, GameplayActivity app)
+    {
+        // Set basic references
+        lawnMower.mApp = app;
+        lawnMower.mBoard = app.Board;
+        lawnMower.mRow = row;
+
+        // Make render order
+        lawnMower.mRenderOrder = Board.MakeRenderOrder(RenderLayer.LawnMower, row, 0);
+        lawnMower.mShadowRenderOrder = lawnMower.RenderOrder - 100;
+
+        // Get Y position based on row
+        float posY = lawnMower.mBoard.GetPosYBasedOnRow(19f, row);
+        lawnMower.mY = posY + 23f;
+        lawnMower.X = -21;
+
+        // Initialize state flags
+        lawnMower.mDead = false;
+        lawnMower.mMowerState = LawnMowerState.Ready;
+        lawnMower.mVisible = true;
+        lawnMower.mMowerHeight = MowerHeight.Land;
+
+        // Initialize other fields
+        lawnMower.mChompCounter = 0;
+        lawnMower.mRollingInCounter = 0;
+        lawnMower.mSquishedCounter = 0;
+        lawnMower.mLastPortalX = -1;
+
+        // Determine mower type based on Arena
+        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        {
+            lawnMower.mMowerType = LawnMowerType.Roof;
+            lawnMower.mMowerState = LawnMowerState.Ready;
+        }
+        else if (VersusState.Arena is ArenaTypes.Pool)
+        {
+            var groundType = lawnMower.mBoard.mPlantRow[row];
+            if (groundType == PlantRowType.Pool)
+            {
+                lawnMower.mMowerType = LawnMowerType.Pool;
+            }
+            else
+            {
+                lawnMower.mMowerType = LawnMowerType.Lawn;
+            }
+        }
+        else
+        {
+            lawnMower.mMowerType = LawnMowerType.Lawn;
+        }
+
+        // Create controller
+        lawnMower.mController = app.CreateLawnMowerController(lawnMower);
+
+        if (lawnMower.mController != null)
+        {
+            // Set initial position
+            lawnMower.mController.SetPosition(0f, 19f, 0f);
+
+            // Set scale and animation based on type
+            switch (lawnMower.mMowerType)
+            {
+                case LawnMowerType.Lawn:
+                    lawnMower.mController.OverrideScale(0.9f, 0.9f);
+                    lawnMower.mController.PlayAnimationOnTrack("normal", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    break;
+                case LawnMowerType.SuperMower:
+                    lawnMower.mController.OverrideScale(0.8f, 0.8f);
+                    lawnMower.mController.PlayAnimationOnTrack("", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    break;
+                case LawnMowerType.Roof:
+                    lawnMower.mController.PlayAnimationOnTrack("default", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    break;
+                case LawnMowerType.Pool:
+                    lawnMower.mController.PlayAnimationOnTrack("land", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    break;
+            }
+        }
+
+        // Set shadow offsets
+        float altitude = lawnMower.mAltitude;
+        lawnMower.mShadowOffsetX = -28f;
+        lawnMower.mShadowOffsetY = 47f - altitude;
+
+        if (lawnMower.mMowerType == LawnMowerType.SuperMower)
+        {
+            lawnMower.mShadowOffsetX = -24f;
+            lawnMower.mShadowOffsetY = (47f - altitude) - 8f;
+        }
+        else if (lawnMower.mMowerType == LawnMowerType.Roof)
+        {
+            lawnMower.mShadowScaleY = 1.2f;
+            lawnMower.mShadowOffsetX -= 9f;
+        }
+
+        // Final position adjustments
+        float finalY = -altitude;
+        if (lawnMower.mMowerType == LawnMowerType.SuperMower)
+        {
+            finalY = -altitude - 33f;
+        }
+        else if (lawnMower.mMowerType == LawnMowerType.Roof)
+        {
+            finalY = -altitude - 40f;
+        }
+
+        // Set final position
+        lawnMower.mController?.SetPosition(6f, finalY, 0f);
+
+        // Force skeleton update
+        if (lawnMower.mController != null)
+        {
+            var skeleton = lawnMower.mController.GetComponent<SkeletonAnimation>();
+            skeleton?.Update(0f);
         }
     }
 }

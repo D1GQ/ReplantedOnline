@@ -112,6 +112,9 @@
 		<Reference Include="UnityEngine.UnityWebRequestModule">
 			<HintPath>References\UnityEngine\UnityEngine.UnityWebRequestModule.dll</HintPath>
 		</Reference>
+		<Reference Include="Il2Cppspine-unity">
+			<HintPath>References\UnityEngine\Il2Cppspine-unity.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">

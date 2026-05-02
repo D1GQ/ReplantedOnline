@@ -57,10 +57,13 @@ internal static class BoardPatch
         if (ReplantedLobby.AmInLobby())
         {
             // Always initialize lawn mowers.
-            for (int row = 0; row < __instance.GetNumRows(); row++)
+            if (__instance.m_lawnMowers.Count == 0)
             {
-                var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
-                lawMower.LawnMowerInitialize(row, __instance.mApp);
+                for (int row = 0; row < __instance.GetNumRows(); row++)
+                {
+                    var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
+                    PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
+                }
             }
 
             return false;
