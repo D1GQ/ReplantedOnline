@@ -37,7 +37,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.Sunflower, SeedType.Flowerpot, SeedType.Cabbagepult,
-                SeedType.Kernelpult, SeedType.Tallnut, SeedType.Jalapeno,
+                SeedType.Kernelpult, SeedType.Umbrella, SeedType.Jalapeno,
                 SeedType.Squash];
             return field;
         }

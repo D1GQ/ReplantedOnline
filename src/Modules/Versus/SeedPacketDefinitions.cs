@@ -56,6 +56,7 @@ internal static class SeedPacketDefinitions
 
         // Replanted Online
         SeedType.Cabbagepult,
+        SeedType.Kernelpult,
         SeedType.Sunshroom,
 
         // Zombies
