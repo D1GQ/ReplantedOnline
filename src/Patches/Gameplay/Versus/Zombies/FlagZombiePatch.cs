@@ -192,7 +192,7 @@ internal static class FlagZombiePatch
                 if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad or SeedType.GiantWallnut)
                     continue;
 
-                if (SeedPacketDefinitions.SunProducingPlants.Contains(plant.mSeedType))
+                if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(plant.mSeedType))
                 {
                     colWeight += (sunflowerCount == 1) ? 1 : 10000;
                 }

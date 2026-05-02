@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Packet;
@@ -44,6 +45,7 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
                 seedPacket.mActive = false;
             }
             seedPacket.WasPlanted(ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX);
+            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
             seedPacket.mActive = false;
         }
     }

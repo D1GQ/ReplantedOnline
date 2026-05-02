@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Exceptions;
+using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
@@ -82,6 +83,7 @@ internal static class CursorSyncPatch
                         // Mark the packet as used and deduct the sun cost
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
+                        seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
                         Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
@@ -114,10 +116,12 @@ internal static class CursorSyncPatch
     // This actually took hours to find out what's doing what :(
     [HarmonyPatch(typeof(GameplayActivity), nameof(GameplayActivity.OnMouseDownBG))]
     [HarmonyPrefix]
-    private static bool GameplayActivity_OnMouseDownBG_Prefix(GameplayActivity __instance, int mouseButton, int playerIndex)
+    private static bool GameplayActivity_OnMouseDownBG_Prefix(GameplayActivity __instance, int playerIndex)
     {
         if (ReplantedLobby.AmInLobby())
         {
+            if (playerIndex != ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX) return false;
+
             // Get the type of seed being planted
             var seedType = __instance.Board.GetSeedTypeInCursor(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
 
@@ -141,6 +145,7 @@ internal static class CursorSyncPatch
                     {
                         // Mark the packet as used and deduct the sun cost
                         seedPacket.WasPlanted(ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
+                        seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);

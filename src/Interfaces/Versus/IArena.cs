@@ -27,12 +27,6 @@ internal interface IArena
     void InitializeArena(VersusMode versusMode);
 
     /// <summary>
-    /// Called when seed packet cooldowns need to be initialized.
-    /// </summary>
-    /// <param name="seedPackets">The array of all seedpackets in play.</param>
-    void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets);
-
-    /// <summary>
     /// Called every frame during the versus game mode's active state.
     /// </summary>
     /// <param name="versusMode">The instance of VersusMode.</param>

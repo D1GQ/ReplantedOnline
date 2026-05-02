@@ -126,14 +126,6 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie == null) return;
 
-        if (_Zombie.mDead && !Dead)
-        {
-            LogicComponent.OnDeath(DeathReason.Despawn);
-            _Zombie.RemoveNetworkedLookup();
-            _Zombie = null;
-            return;
-        }
-
         LogicComponent.Update();
     }
 
@@ -199,8 +191,9 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.PlayDeathAnimOriginal(damageFlags);
-            IsReadyToDespawn = true;
         }
+
+        IsReadyToDespawn = true;
     }
 
     internal void SendDieLootRpc(bool withLoot)
@@ -229,8 +222,9 @@ internal sealed class ZombieNetworked : NetworkObject
             {
                 _Zombie.DieNoLootOriginal();
             }
-            IsReadyToDespawn = true;
         }
+
+        IsReadyToDespawn = true;
     }
 
     internal void SendMowDownRpc()
@@ -252,8 +246,9 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.MowDownOriginal();
-            IsReadyToDespawn = true;
         }
+
+        IsReadyToDespawn = true;
     }
 
     internal void SendSetPlantTargetRpc(Plant target)
@@ -357,9 +352,11 @@ internal sealed class ZombieNetworked : NetworkObject
         if (reallyDead)
         {
             LogicComponent.OnDeath(DeathReason.Burned);
+            _Zombie.ApplyBurnOriginal();
+            IsReadyToDespawn = true;
+            return;
         }
         _Zombie.ApplyBurnOriginal();
-        IsReadyToDespawn = true;
     }
 
     internal void SendSnapToPosRpc()

@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Utilities;
 using System.Reflection;
 using UnityEngine;
@@ -32,20 +31,5 @@ internal sealed class RoofNightArena : RoofArena
     {
         versusLevelData.m_gameArea = GameArea.Boss;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
-    }
-
-    /// <inheritdoc/>
-    public override void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
-    {
-        foreach (var seedPacket in seedPackets)
-        {
-            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
-
-            seedPacket.Deactivate();
-            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
-            // Start at least with a 15 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN);
-            seedPacket.mRefreshing = true;
-        }
     }
 }

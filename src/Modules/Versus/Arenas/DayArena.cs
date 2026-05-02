@@ -4,7 +4,6 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
@@ -50,21 +49,6 @@ internal class DayArena : IArena, IArenaData
 
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
-        }
-    }
-
-    /// <inheritdoc/>
-    public virtual void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
-    {
-        foreach (var seedPacket in seedPackets)
-        {
-            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
-
-            seedPacket.Deactivate();
-            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
-            // Start at least with a 10 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.DAY_SEEDPACKET_MIN_INITIAL_COOLDOWN);
-            seedPacket.mRefreshing = true;
         }
     }
 

@@ -107,13 +107,6 @@ internal sealed class PlantNetworked : NetworkObject
 
         if (_Plant == null) return;
 
-        if (_Plant.mDead && !Dead)
-        {
-            _Plant.RemoveNetworkedLookup();
-            _Plant = null;
-            return;
-        }
-
         LogicComponent.Update();
     }
 
@@ -130,8 +123,11 @@ internal sealed class PlantNetworked : NetworkObject
     [RpcHandler(PlantRpcs.Die)]
     private void HandleDieRpc()
     {
-        Dead = true;
-        _Plant?.DieOriginal();
+        if (!Dead)
+        {
+            Dead = true;
+            _Plant?.DieOriginal();
+        }
         IsReadyToDespawn = true;
     }
 
@@ -149,9 +145,13 @@ internal sealed class PlantNetworked : NetworkObject
     [RpcHandler(PlantRpcs.Shoveled)]
     private void HandleShoveledRpc()
     {
-        Dead = true;
-        _Plant?.DieOriginal();
-        Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
+        if (!Dead)
+        {
+            Dead = true;
+            _Plant?.DieOriginal();
+            Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
+        }
+
         IsReadyToDespawn = true;
     }
 

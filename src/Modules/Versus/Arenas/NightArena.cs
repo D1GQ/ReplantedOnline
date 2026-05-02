@@ -3,7 +3,6 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Instance;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
@@ -40,20 +39,5 @@ internal sealed class NightArena : DayArena
         versusMode.m_board.AddAGraveStone(5, 3);
         versusMode.m_board.AddAGraveStone(5, 4);
         versusMode.m_board.mEnableGraveStones = true;
-    }
-
-    /// <inheritdoc/>
-    public override void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
-    {
-        foreach (var seedPacket in seedPackets)
-        {
-            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
-
-            seedPacket.Deactivate();
-            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
-            // Start at least with a 15 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN);
-            seedPacket.mRefreshing = true;
-        }
     }
 }

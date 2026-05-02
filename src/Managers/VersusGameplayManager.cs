@@ -26,7 +26,15 @@ internal class VersusGameplayManager
             .. Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets,
         ];
 
-        IArena.GetCurrentArena()?.InitializeSeedPacketCooldowns([.. allSeedPackets]);
+        foreach (var seedPacket in allSeedPackets)
+        {
+            if (SeedPacketDefinitions.IgnoreInitialCooldownSeedTypes.Contains(seedPacket.mPacketType)) continue;
+
+            seedPacket.Deactivate();
+            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            seedPacket.mRefreshTime = time;
+            seedPacket.mRefreshing = true;
+        }
 
         // Disable inputs for starting countdown 
         Instances.GameplayActivity.InputService
@@ -132,5 +140,28 @@ internal class VersusGameplayManager
         float normalized = Mathf.Clamp01(VersusState.VersusTime / VersusMode.k_suddenDeathStartTime);
         float value = Mathf.Lerp(5f, 10f, normalized);
         return Mathf.FloorToInt(value);
+    }
+
+    /// <summary>
+    /// Gets the refresh time for a seed packet in versus mode, which scales down over time to its base cooldown.
+    /// </summary>
+    /// <param name="seedType"></param>
+    /// <returns></returns>
+    internal static int GetSeedPacketRefreshTime(SeedType seedType)
+    {
+        if (VersusState.VersusPhase == VersusPhase.SuddenDeath)
+        {
+            return Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusSuddenDeathRefreshTime ?? 0;
+        }
+
+        if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+        {
+            return Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
+        }
+
+        float normalized = Mathf.Clamp01(VersusState.VersusTime / ReplantedOnlineMod.Constants.X2_SEEDPACKET_COOLDOWN_TIME_END);
+        int baseTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
+        float time = Mathf.Lerp(baseTime * 2, baseTime, normalized);
+        return Mathf.FloorToInt(time);
     }
 }

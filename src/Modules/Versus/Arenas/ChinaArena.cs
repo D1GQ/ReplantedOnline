@@ -103,21 +103,6 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
-    {
-        foreach (var seedPacket in seedPackets)
-        {
-            if (SeedPacketDefinitions.IgnoreInitialCooldown.Contains(seedPacket.mPacketType)) continue;
-
-            seedPacket.Deactivate();
-            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
-            // Start at least with a 10 second cooldown 
-            seedPacket.mRefreshTime = Math.Max(time, ReplantedOnlineMod.Constants.DAY_SEEDPACKET_MIN_INITIAL_COOLDOWN);
-            seedPacket.mRefreshing = true;
-        }
-    }
-
-    /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode) { }
 
     /// <inheritdoc/>

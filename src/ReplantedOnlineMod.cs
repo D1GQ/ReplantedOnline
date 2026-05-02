@@ -140,8 +140,7 @@ internal class ReplantedOnlineMod : MelonMod
         internal const string MOD_VERSION_KEY = "mod_version";
         internal const string GAME_CODE_KEY = "game_code";
         internal const int MAX_NETWORK_CHILDREN = 5;
-        internal const int DAY_SEEDPACKET_MIN_INITIAL_COOLDOWN = 1000; // 10s
-        internal const int NIGHT_SEEDPACKET_MIN_INITIAL_COOLDOWN = 1500; // 15s
+        internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f; // 60s
 
         internal static class Production
         {

@@ -45,23 +45,23 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that ignore the initial cooldown period and are available immediately.
     /// </summary>
-    internal readonly static SeedType[] IgnoreInitialCooldown = [
+    internal readonly static SeedType[] IgnoreInitialCooldownSeedTypes = [
         // Plants
         SeedType.Sunflower,
-        // SeedType.Peashooter,
-        // SeedType.Potatomine,
-        // SeedType.Wallnut,
-        // SeedType.Tallnut,
-        // SeedType.Puffshroom,
+        SeedType.Peashooter,
+        SeedType.Potatomine,
+        SeedType.Wallnut,
+        SeedType.Tallnut,
+        SeedType.Puffshroom,
 
         // Replanted Online
-        // SeedType.Cabbagepult,
+        SeedType.Cabbagepult,
         SeedType.Sunshroom,
 
         // Zombies
         SeedType.ZombieGravestone,
-        // SeedType.ZombieNormal,
-        // SeedType.ZombieTrashCan,
+        SeedType.ZombieNormal,
+        SeedType.ZombieTrashCan,
 
         HiddenSeed
     ];
@@ -69,11 +69,23 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that should be excluded from random selection pools.
     /// </summary>
-    internal readonly static SeedType[] ExcludeFromRandom = [
+    internal readonly static SeedType[] ExcludeFromRandomSeedTypes = [
         // Plants
         SeedType.Flowerpot,
         SeedType.Marigold,
         SeedType.Plantern,
+    ];
+
+    /// <summary>
+    /// Collection of seed types that produce currency, sun or brains.
+    /// </summary>
+    internal readonly static SeedType[] CurrencyProducingSeedTypes = [
+        // Plants
+        SeedType.Sunflower,
+        SeedType.Sunshroom,
+
+        // Zombies
+        SeedType.ZombieGravestone
     ];
 
     /// <summary>
@@ -89,14 +101,6 @@ internal static class SeedPacketDefinitions
         SeedType.Hypnoshroom,
         SeedType.Iceshroom,
         SeedType.Doomshroom
-    ];
-
-    /// <summary>
-    /// Collection of seed types that produce sun.
-    /// </summary>
-    internal readonly static SeedType[] SunProducingPlants = [
-        SeedType.Sunflower,
-        SeedType.Sunshroom
     ];
 
     /// <summary>
