@@ -147,7 +147,8 @@ internal static class FlagZombiePatch
         else
         {
             // Pick a target column for the Bungee Zombie
-            int row = PickBungeeColumn(Instances.GameplayActivity.Board, y);
+            bool spawningZombie = Common.RandRangeInt(0, 100) > 15;
+            int row = PickBungeeColumn(Instances.GameplayActivity.Board, y, spawningZombie);
             if (row == -1)
             {
                 // fallback to other zombie tyoe if no valid bungee targets
@@ -156,7 +157,7 @@ internal static class FlagZombiePatch
                 return;
             }
 
-            if (Common.RandRangeInt(0, 100) < 15)
+            if (!spawningZombie)
             {
                 // Spawn Bungee to take plant
                 SeedPacketDefinitions.SpawnZombie(type, row, y, SpawnType.None, true);
@@ -174,37 +175,75 @@ internal static class FlagZombiePatch
     /// Selects a target column for a Bungee Zombie using weighted random selection based on plant values.
     /// Recreates the original game logic from PickBungeeZombieTarget.
     /// </summary>
-    private static int PickBungeeColumn(Board board, int targetGridY)
+    private static int PickBungeeColumn(Board board, int targetGridY, bool spawningZombie)
     {
         int sunflowerCount = board.CountSunFlowers();
 
         List<(int gridX, int weight)> targets = [];
 
         // Check columns in this row
-        for (int gridX = 0; gridX < 6; gridX++)
+        if (!spawningZombie)
         {
-            int colWeight = 0;
-
-            Plant plant = board.GetTopPlantAt(gridX, targetGridY, PlantPriority.BungeeOrder);
-
-            if (plant != null && !board.BungeeIsTargetingCell(gridX, targetGridY))
+            for (int gridX = 0; gridX < 6; gridX++)
             {
-                if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad or SeedType.GiantWallnut)
+                if (board.BungeeIsTargetingCell(gridX, targetGridY)) continue;
+                int colWeight = 0;
+
+                Plant plant = board.GetTopPlantAt(gridX, targetGridY, PlantPriority.BungeeOrder);
+
+                if (plant != null)
+                {
+                    if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad or SeedType.GiantWallnut)
+                        continue;
+
+                    if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(plant.mSeedType))
+                    {
+                        colWeight += (sunflowerCount == 1) ? 1 : 10000;
+                    }
+                    else
+                    {
+                        colWeight += 10000;
+                    }
+
+                    if (colWeight > 0)
+                    {
+                        targets.Add((gridX, colWeight));
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int gridX = 5; gridX > 2; gridX--)
+            {
+                if (board.BungeeIsTargetingCell(gridX, targetGridY)) continue;
+
+                Plant plant = board.GetTopPlantAt(gridX, targetGridY, PlantPriority.BungeeOrder);
+
+                if (plant != null)
+                {
+                    if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad)
+                        continue;
+
+                    int weight = 10000 - (gridX * 1500);
+                    if (plant.mSeedType is SeedType.Wallnut or SeedType.GiantWallnut)
+                    {
+                        // Spawn zombie over wallnuts
+                        targets.Add((gridX - 1, weight));
+                    }
+                    else
+                    {
+                        // Spawn zombie infront of other plants
+                        targets.Add((gridX + 1, weight));
+                    }
                     continue;
+                }
+            }
 
-                if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(plant.mSeedType))
-                {
-                    colWeight += (sunflowerCount == 1) ? 1 : 10000;
-                }
-                else
-                {
-                    colWeight += 10000;
-                }
-
-                if (colWeight > 0)
-                {
-                    targets.Add((gridX, colWeight));
-                }
+            // If no plants to target, spawn close
+            if (targets.Count == 0)
+            {
+                return 2;
             }
         }
 
