@@ -24,7 +24,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
                 ZombieNetworked.Dead = true;
                 _isExploding = true;
                 SendExplodeRpc();
-                ZombieNetworked.DespawnAndDestroyWhenNullOrDead();
+                ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
             }
         }
         else
@@ -52,5 +52,6 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         _isExploding = true;
         ZombieNetworked.Dead = true;
         ZombieNetworked._Zombie.mPhaseCounter = 0;
+        ZombieNetworked.IsReadyToDespawn = true;
     }
 }

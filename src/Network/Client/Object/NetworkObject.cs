@@ -99,6 +99,11 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     internal bool IsOnNetwork { get; set; }
 
     /// <summary>
+    /// Gets or sets whether this network object is ready to despawn locally.
+    /// </summary>
+    internal bool IsReadyToDespawn { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique network identifier for this object.
     /// Used to reference this specific object across all connected clients.
     /// </summary>
@@ -332,11 +337,12 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// Despawns the network object and removes it from all connected clients.
     /// Also destroys the associated game object.
     /// </summary>
-    public void DespawnAndDestroy()
+    /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
+    public void DespawnAndDestroy(bool waitToBeReady = false)
     {
         if (!AmOwner || AmChild) return;
 
-        Despawn();
+        Despawn(waitToBeReady);
         Destroy(gameObject);
     }
 
@@ -344,13 +350,14 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// Despawns the network object and removes it from all connected clients.
     /// Cleans up network resources and sends despawn notification to other clients.
     /// </summary>
-    public void Despawn()
+    /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
+    public void Despawn(bool waitToBeReady = false)
     {
         if (!AmOwner || AmChild) return;
 
         if (IsOnNetwork)
         {
-            NetworkDispatcher.DespawnNetworkObject(this);
+            NetworkDispatcher.DespawnNetworkObject(this, waitToBeReady);
         }
     }
 

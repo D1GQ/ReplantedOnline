@@ -66,10 +66,11 @@ internal static class NetworkDispatcher
     /// Despawns a network object instance.
     /// </summary>
     /// <param name="networkObj">The network object instance to despawn.</param>
-    internal static void DespawnNetworkObject(NetworkObject networkObj)
+    /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
+    internal static void DespawnNetworkObject(NetworkObject networkObj, bool waitToBeReady)
     {
         var packet = PacketWriter.Get();
-        Message<NetworkObjectDespawnMessage>.Instance.Serialize(networkObj, packet);
+        Message<NetworkObjectDespawnMessage>.Instance.Serialize(networkObj, waitToBeReady, packet);
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Despawn Network Object with ID: {networkObj.NetworkId}");
         SendPacket(packet, false, PacketHandlerType.NetworkObjectDespawn, PacketChannel.Main);

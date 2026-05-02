@@ -75,12 +75,15 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     private bool _waitingToDespawn;
-    internal void DespawnAndDestroyWhenDeadOrNull()
+    internal void DespawnAndDestroyWhenDeadOrNull(bool waitToBeReady = false)
     {
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null || (_Plant.mDead && Dead), DespawnAndDestroy));
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null || (_Plant.mDead && Dead), () =>
+            {
+                DespawnAndDestroy(waitToBeReady);
+            }));
         }
     }
 
@@ -120,7 +123,7 @@ internal sealed class PlantNetworked : NetworkObject
         {
             Dead = true;
             SendNetworkObjectRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
-            DespawnAndDestroy();
+            DespawnAndDestroy(true);
         }
     }
 
@@ -129,6 +132,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         Dead = true;
         _Plant?.DieOriginal();
+        IsReadyToDespawn = true;
     }
 
     internal void SendShoveledRpc()
@@ -138,7 +142,7 @@ internal sealed class PlantNetworked : NetworkObject
             Dead = true;
             _Plant?.DieOriginal();
             SendNetworkObjectRpc(PlantRpcs.Shoveled);
-            DespawnAndDestroy();
+            DespawnAndDestroy(true);
         }
     }
 
@@ -148,6 +152,7 @@ internal sealed class PlantNetworked : NetworkObject
         Dead = true;
         _Plant?.DieOriginal();
         Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
+        IsReadyToDespawn = true;
     }
 
     internal void SendSquashPlantRpc()

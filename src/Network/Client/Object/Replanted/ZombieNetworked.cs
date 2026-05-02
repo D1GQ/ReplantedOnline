@@ -95,12 +95,15 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     private bool _waitingToDespawn;
-    internal void DespawnAndDestroyWhenNullOrDead()
+    internal void DespawnAndDestroyWhenNullOrDead(bool waitToBeReady = false)
     {
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || (_Zombie.mDead && Dead), DespawnAndDestroy));
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Zombie == null || (_Zombie.mDead && Dead), () =>
+            {
+                DespawnAndDestroy(waitToBeReady);
+            }));
         }
     }
 
@@ -184,7 +187,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
-            DespawnAndDestroyWhenNullOrDead();
+            DespawnAndDestroyWhenNullOrDead(true);
         }
     }
 
@@ -196,6 +199,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.PlayDeathAnimOriginal(damageFlags);
+            IsReadyToDespawn = true;
         }
     }
 
@@ -206,7 +210,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
-            DespawnAndDestroyWhenNullOrDead();
+            DespawnAndDestroyWhenNullOrDead(true);
         }
     }
 
@@ -225,6 +229,7 @@ internal sealed class ZombieNetworked : NetworkObject
             {
                 _Zombie.DieNoLootOriginal();
             }
+            IsReadyToDespawn = true;
         }
     }
 
@@ -235,7 +240,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
-            DespawnAndDestroyWhenNullOrDead();
+            DespawnAndDestroyWhenNullOrDead(true);
         }
     }
 
@@ -247,6 +252,7 @@ internal sealed class ZombieNetworked : NetworkObject
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Normal);
             _Zombie.MowDownOriginal();
+            IsReadyToDespawn = true;
         }
     }
 
@@ -338,7 +344,7 @@ internal sealed class ZombieNetworked : NetworkObject
         {
             Dead = true;
             LogicComponent.OnDeath(DeathReason.Burned);
-            DespawnAndDestroyWhenNullOrDead();
+            DespawnAndDestroyWhenNullOrDead(true);
         }
     }
 
@@ -353,6 +359,7 @@ internal sealed class ZombieNetworked : NetworkObject
             LogicComponent.OnDeath(DeathReason.Burned);
         }
         _Zombie.ApplyBurnOriginal();
+        IsReadyToDespawn = true;
     }
 
     internal void SendSnapToPosRpc()

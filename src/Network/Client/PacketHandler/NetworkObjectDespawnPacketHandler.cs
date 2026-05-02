@@ -36,6 +36,11 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
                     {
                         if (!networkObj.AmChild)
                         {
+                            while (message.WaitToBeReady && !networkObj.IsReadyToDespawn)
+                            {
+                                yield return null;
+                            }
+
                             ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
                             UnityEngine.Object.Destroy(networkObj.gameObject);
                             ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectDespawnPacketHandler), $"Despawned NetworkObject from {sender.Name}: {message.NetworkId}");

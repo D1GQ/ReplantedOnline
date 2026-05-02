@@ -15,6 +15,11 @@ namespace ReplantedOnline.Utilities;
 internal static class NetworkExtensions
 {
     /// <summary>
+    /// Lock object for thread-safe access to NetworkedLookups dictionary.
+    /// </summary>
+    private static readonly object _lookupLock = new();
+
+    /// <summary>
     /// Dictionary storing networked lookups by type and object instance.
     /// </summary>
     internal static Dictionary<Type, Dictionary<object, NetworkObject>> NetworkedLookups = [];
@@ -26,11 +31,24 @@ internal static class NetworkExtensions
     /// <param name="networkObj">The network object to associate with the object.</param>
     internal static void AddNetworkedLookup(this object child, NetworkObject networkObj)
     {
-        if (!NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        if (child == null)
         {
-            lookup = NetworkedLookups[child.GetType()] = [];
+            throw new ArgumentNullException(nameof(child));
         }
-        lookup[child] = networkObj;
+
+        if (networkObj == null)
+        {
+            throw new ArgumentNullException(nameof(networkObj));
+        }
+
+        lock (_lookupLock)
+        {
+            if (!NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+            {
+                lookup = NetworkedLookups[child.GetType()] = [];
+            }
+            lookup[child] = networkObj;
+        }
     }
 
     /// <summary>
@@ -39,13 +57,21 @@ internal static class NetworkExtensions
     /// <param name="child">The object instance to remove from network lookups.</param>
     internal static void RemoveNetworkedLookup(this object child)
     {
-        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        if (child == null)
         {
-            lookup.Remove(child);
+            throw new ArgumentNullException(nameof(child));
+        }
 
-            if (lookup.Count == 0)
+        lock (_lookupLock)
+        {
+            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
             {
-                NetworkedLookups.Remove(child.GetType());
+                lookup.Remove(child);
+
+                if (lookup.Count == 0)
+                {
+                    NetworkedLookups.Remove(child.GetType());
+                }
             }
         }
     }
@@ -56,23 +82,31 @@ internal static class NetworkExtensions
     /// <param name="parent">The network object instance to remove from network lookups.</param>
     internal static void RemoveNetworkedLookup(this NetworkObject parent)
     {
-        foreach (var kvp in NetworkedLookups)
+        if (parent == null)
         {
-            var lookup = kvp.Value;
+            throw new ArgumentNullException(nameof(parent));
+        }
 
-            var childrenToRemove = lookup
-                .Where(x => x.Value == parent)
-                .Select(x => x.Key)
-                .ToList();
-
-            foreach (var child in childrenToRemove)
+        lock (_lookupLock)
+        {
+            foreach (var kvp in NetworkedLookups)
             {
-                lookup.Remove(child);
-            }
+                var lookup = kvp.Value;
 
-            if (lookup.Count == 0)
-            {
-                NetworkedLookups.Remove(kvp.Key);
+                var childrenToRemove = lookup
+                    .Where(x => x.Value == parent)
+                    .Select(x => x.Key)
+                    .ToList();
+
+                foreach (var child in childrenToRemove)
+                {
+                    lookup.Remove(child);
+                }
+
+                if (lookup.Count == 0)
+                {
+                    NetworkedLookups.Remove(kvp.Key);
+                }
             }
         }
     }
@@ -90,11 +124,14 @@ internal static class NetworkExtensions
             throw new ArgumentNullException(nameof(child));
         }
 
-        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        lock (_lookupLock)
         {
-            if (lookup.TryGetValue(child, out var networkObj))
+            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
             {
-                return (T)networkObj;
+                if (lookup.TryGetValue(child, out var networkObj))
+                {
+                    return (T)networkObj;
+                }
             }
         }
 
@@ -136,12 +173,15 @@ internal static class NetworkExtensions
             throw new ArgumentNullException(nameof(child));
         }
 
-        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        lock (_lookupLock)
         {
-            if (lookup.TryGetValue(child, out var networkObj))
+            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
             {
-                networkObject = (T)networkObj;
-                return true;
+                if (lookup.TryGetValue(child, out var networkObj))
+                {
+                    networkObject = (T)networkObj;
+                    return true;
+                }
             }
         }
 
@@ -155,9 +195,17 @@ internal static class NetworkExtensions
     /// <param name="child">The object instance to look up.</param>
     internal static bool HasNetworked(this object child)
     {
-        if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+        if (child == null)
         {
-            return lookup.ContainsKey(child);
+            return false;
+        }
+
+        lock (_lookupLock)
+        {
+            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+            {
+                return lookup.ContainsKey(child);
+            }
         }
 
         return false;

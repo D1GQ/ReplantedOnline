@@ -38,7 +38,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 {
                     _isTakingPlant = true;
                     SendTakePlantRpc();
-                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead();
+                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
                 }
             }
         }
@@ -57,6 +57,10 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 {
                     ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
                 }
+            }
+            else if (ZombieNetworked._Zombie.mAltitude > 500 && !ZombieNetworked.IsReadyToDespawn)
+            {
+                ZombieNetworked.IsReadyToDespawn = true;
             }
         }
     }
