@@ -92,6 +92,14 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
+    /// Collection of seed types that produce sun.
+    /// </summary>
+    internal readonly static SeedType[] SunProducingPlants = [
+        SeedType.Sunflower,
+        SeedType.Sunshroom
+    ];
+
+    /// <summary>
     /// A lookup of the original seed packet cost.
     /// </summary>
     internal static readonly Dictionary<SeedType, int> BaseSeedVersusCost = [];

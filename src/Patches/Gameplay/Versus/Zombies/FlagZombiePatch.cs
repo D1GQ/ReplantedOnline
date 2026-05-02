@@ -64,7 +64,7 @@ internal static class FlagZombiePatch
             ZombieType type = PickZombieType(specialSpawns);
 
             // Spawn and network the zombie
-            SpawnZombie(type, y);
+            SpawnZombie(type, y, specialSpawns);
         }
     }
 
@@ -111,10 +111,18 @@ internal static class FlagZombiePatch
     /// Selects a zombie type based on special spawn rules.
     /// Falls back to Normal if no special condition is met.
     /// </summary>
-    private static ZombieType PickZombieType(List<FlagZombieSpecialSpawn> specialSpawns)
+    private static ZombieType PickZombieType(List<FlagZombieSpecialSpawn> specialSpawns, bool excludeBungee = false)
     {
         foreach (var specialSpawn in specialSpawns)
         {
+            if (excludeBungee)
+            {
+                if (specialSpawn.ZombieType == ZombieType.Bungee)
+                {
+                    continue;
+                }
+            }
+
             if (specialSpawn.Pick())
                 return specialSpawn.ZombieType;
         }
@@ -126,12 +134,100 @@ internal static class FlagZombiePatch
     /// Handles local spawn setup and synchronizes the zombie across the network.
     /// Applies a small random X offset for natural positioning.
     /// </summary>
-    private static void SpawnZombie(ZombieType type, int y)
+    private static void SpawnZombie(ZombieType type, int y, List<FlagZombieSpecialSpawn> specialSpawns)
     {
-        var zombie = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackgroundAndShakeBushes, false).Zombie;
-        zombie.mPosX += Common.RandRangeInt(20, 70);
+        if (type != ZombieType.Bungee)
+        {
+            var zombie = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackgroundAndShakeBushes, false).Zombie;
+            zombie.mPosX += Common.RandRangeInt(20, 70);
 
-        var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, SpawnType.BackgroundAndShakeBushes);
-        zombieNetworked.SendSnapToPosRpc();
+            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, SpawnType.BackgroundAndShakeBushes);
+            zombieNetworked.SendSnapToPosRpc();
+        }
+        else
+        {
+            // Pick a target column for the Bungee Zombie
+            int row = PickBungeeColumn(Instances.GameplayActivity.Board, y);
+            if (row == -1)
+            {
+                // fallback to other zombie tyoe if no valid bungee targets
+                var zombieToSpawn = PickZombieType(specialSpawns, true);
+                SpawnZombie(zombieToSpawn, y, specialSpawns);
+                return;
+            }
+
+            if (Common.RandRangeInt(0, 100) < 15)
+            {
+                // Spawn Bungee to take plant
+                SeedPacketDefinitions.SpawnZombie(type, row, y, SpawnType.None, true);
+            }
+            else
+            {
+                // Drop random zombie from wave
+                var zombieToDrop = PickZombieType(specialSpawns, true);
+                SeedPacketDefinitions.SpawnZombie(zombieToDrop, row, y, SpawnType.BungeeDropZombie, true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Selects a target column for a Bungee Zombie using weighted random selection based on plant values.
+    /// Recreates the original game logic from PickBungeeZombieTarget.
+    /// </summary>
+    private static int PickBungeeColumn(Board board, int targetGridY)
+    {
+        int sunflowerCount = board.CountSunFlowers();
+
+        List<(int gridX, int weight)> targets = [];
+
+        // Check columns in this row
+        for (int gridX = 0; gridX < 6; gridX++)
+        {
+            int colWeight = 0;
+
+            Plant plant = board.GetTopPlantAt(gridX, targetGridY, PlantPriority.BungeeOrder);
+
+            if (plant != null && !board.BungeeIsTargetingCell(gridX, targetGridY))
+            {
+                if (plant.mSeedType is SeedType.Flowerpot or SeedType.Lilypad or SeedType.GiantWallnut)
+                    continue;
+
+                if (SeedPacketDefinitions.SunProducingPlants.Contains(plant.mSeedType))
+                {
+                    colWeight += (sunflowerCount == 1) ? 1 : 10000;
+                }
+                else
+                {
+                    colWeight += 10000;
+                }
+
+                if (colWeight > 0)
+                {
+                    targets.Add((gridX, colWeight));
+                }
+            }
+        }
+
+        // No valid targets
+        if (targets.Count == 0)
+            return -1;
+
+        // Weighted random pick
+        int totalWeight = 0;
+        foreach (var (gridX, weight) in targets)
+            totalWeight += weight;
+
+        int randomValue = Common.Rand(totalWeight);
+        int cumulative = 0;
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            var (gridX, weight) = targets[i];
+            cumulative += weight;
+            if (randomValue < cumulative)
+                return gridX;
+        }
+
+        return targets[0].gridX;
     }
 }

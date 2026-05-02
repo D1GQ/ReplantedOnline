@@ -170,6 +170,9 @@ internal sealed class DebugArena : IArena, IArenaData
                 SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, 4, 2, true);
                 break;
             case DebugModes.Flag:
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 0, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 2, 2, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 3, 4, true);
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, true);
                 break;
             case DebugModes.Test:
