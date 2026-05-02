@@ -12,6 +12,9 @@ internal readonly struct NetworkObjectDespawnMessage : IMessage<NetworkObjectDes
     /// </summary>
     public uint NetworkId { get; private init; }
 
+    /// <summary>
+    /// Get if the network object should wait locally to despawn.
+    /// </summary>
     public bool WaitToBeReady { get; private init; }
 
     /// <summary>
