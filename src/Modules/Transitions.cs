@@ -130,6 +130,10 @@ internal static class Transitions
                         CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
                     });
                 }
+                else
+                {
+                    ToMainMenu();
+                }
                 yield break;
             }
             yield return null;
@@ -147,6 +151,10 @@ internal static class Transitions
                     {
                         CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
                     });
+                }
+                else
+                {
+                    ToMainMenu();
                 }
                 yield break;
             }
