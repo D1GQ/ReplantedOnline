@@ -50,6 +50,25 @@ internal static class BoardPatch
         return true; // Allow original method in single player or non-gameplay phases
     }
 
+    [HarmonyPatch(typeof(Board), nameof(Board.InitLawnMowers))]
+    [HarmonyPrefix]
+    private static bool Board_InitLawnMowers_Prefix(Board __instance)
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            // Always initialize lawn mowers.
+            for (int row = 0; row < __instance.GetNumRows(); row++)
+            {
+                var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
+                lawMower.LawnMowerInitialize(row, __instance.mApp);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(CutScene), nameof(CutScene.AddFlowerPots))]
     [HarmonyPrefix]
     private static bool CutScene_AddFlowerPots_Prefix()

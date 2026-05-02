@@ -25,7 +25,7 @@ internal static class UserPatch
             // Force enable roof and pool cleaner for online play
             if (item is StoreItem.RoofCleaner or StoreItem.PoolCleaner)
             {
-                __result = 0;
+                __result = 1;
             }
         }
     }
