@@ -100,8 +100,26 @@ internal class VersusGameplayManager
     {
         List<FlagZombieSpecialSpawn> zombies = [];
 
-        zombies.Add(new(ZombieType.Pail, 15, 10));
-        zombies.Add(new(ZombieType.TrafficCone, 25, 10));
+        switch (VersusState.Arena)
+        {
+            case ArenaTypes.Night:
+                zombies.Add(new(ZombieType.Pail, 15, 13)); // 15% -> 2% -> 0%
+                zombies.Add(new(ZombieType.Newspaper, 15, 10)); // 15% -> 5% -> 0%
+                zombies.Add(new(ZombieType.TrafficCone, 25, 10)); // 25% -> 15% -> 0%
+                break;
+            case ArenaTypes.Roof:
+            case ArenaTypes.RoofNight:
+            case ArenaTypes.China:
+                // Bungees ether takes a plant or drops another FlagZombieSpecialSpawn zombie type from this list
+                zombies.Add(new(ZombieType.Bungee, 75, 35)); // 75% -> 40% -> 5% | 15% chance to spawn normal bungee in FlagZombiePatch.cs
+                zombies.Add(new(ZombieType.Pail, 15, 10)); // 15% -> 5% -> 0%
+                zombies.Add(new(ZombieType.TrafficCone, 25, 10)); // 25% -> 15% -> 0%
+                break;
+            default:
+                zombies.Add(new(ZombieType.Pail, 15, 10)); // 15% -> 5% -> 0%
+                zombies.Add(new(ZombieType.TrafficCone, 25, 10)); // 25% -> 15% -> 0%
+                break;
+        }
 
         return zombies;
     }
