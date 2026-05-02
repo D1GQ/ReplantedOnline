@@ -26,6 +26,11 @@ internal enum SpawnType
     BackgroundAndShakeBushes,
 
     /// <summary>
+    /// Zombie rises from the pool.
+    /// </summary>
+    RiseFromPool,
+
+    /// <summary>
     /// Zombie drops from above via bungee zombie.
     /// </summary>
     BungeeDropZombie,

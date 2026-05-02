@@ -67,6 +67,7 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    internal ZombieInPoolNetworkComponent PoolComponent;
     internal ZombieNetworkComponent LogicComponent;
     internal bool EnteringHouse;
 
@@ -85,6 +86,7 @@ internal sealed class ZombieNetworked : NetworkObject
     public override void OnInit()
     {
         LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
+        PoolComponent = AddNetworkComponent<ZombieInPoolNetworkComponent>();
 
         if (SpawnType is SpawnType.BungeeDropZombie or SpawnType.BungeeDropZombieNoTarget)
         {
@@ -126,6 +128,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (_Zombie == null) return;
 
+        PoolComponent.Update();
         LogicComponent.Update();
     }
 

@@ -227,7 +227,7 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
     internal static (Zombie Zombie, ZombieNetworked ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
     {
-        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType), spawnOnNetwork);
+        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType, gridX, gridY), spawnOnNetwork);
     }
 
     /// <summary>
@@ -275,6 +275,27 @@ internal static class SeedPacketDefinitions
                     break;
                 default:
                     if (canRise) Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    zombie.mPosX = theX - 25;
+                    break;
+            }
+        }
+        else if (spawnType is SpawnType.RiseFromPool)
+        {
+            zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
+            zombie.mPhaseCounter = 30;
+
+            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
+            var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
+
+            switch (zombieType)
+            {
+                case ZombieType.Gravestone:
+                    zombie.mPosX = theX - 25;
+                    break;
+                case ZombieType.BackupDancer:
+                    zombie.mPosX = gridX;
+                    break;
+                default:
                     zombie.mPosX = theX - 25;
                     break;
             }
@@ -328,7 +349,7 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned ZombieNetworked controller object.</returns>
     internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked> callback = null)
     {
-        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType), callback);
+        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType, gridX, gridY), callback);
     }
 
     /// <summary>

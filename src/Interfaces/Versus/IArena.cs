@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 
 namespace ReplantedOnline.Interfaces.Versus;
@@ -45,16 +46,21 @@ internal interface IArena
     /// Determines the appropriate spawn type for a given zombie type based on its characteristics.
     /// </summary>
     /// <param name="zombieType">The type of zombie to evaluate.</param>
+    /// <param name="gridX">The X grid coordinate.</param>
+    /// <param name="gridY">The Y grid coordinate.</param>
     /// <returns>
     /// The spawn type for the zombie:
-    /// <list type="bullet">
-    /// <item><description><see cref="SpawnType.None"/> for Target or Bungee zombies (cannot spawn)</description></item>
-    /// <item><description>The arena's <see cref="DefaultZombieSpawnType"/> for zombies that rise from the ground and don't force back spawn</description></item>
-    /// <item><description><see cref="SpawnType.Background"/> for all other cases</description></item>
-    /// </list>
     /// </returns>
-    SpawnType GetZombieSpawnType(ZombieType zombieType)
+    SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
     {
+        if (VersusState.Arena is ArenaTypes.Pool)
+        {
+            if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
+            {
+                return SpawnType.RiseFromPool;
+            }
+        }
+
         if (zombieType is ZombieType.Target or ZombieType.Bungee)
         {
             return SpawnType.None;
