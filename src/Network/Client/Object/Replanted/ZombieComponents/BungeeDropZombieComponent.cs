@@ -27,9 +27,11 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         var originalVelX = zombie.mVelX;
         var originalRenderOrder = zombie.RenderOrder;
         var originalRect = zombie.mZombieRect;
+        var originalAttackRect = zombie.mZombieAttackRect;
 
         // Temporarily hide and make zombie invulnerable
         zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
+        zombie.mZombieAttackRect = new Rect(9999, 9999, 0, 0);
         zombie.mController.gameObject.SetActive(false);
 
         // Spawn bungee zombie
@@ -79,6 +81,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.RenderOrder = originalRenderOrder;
         zombie.mVelX = originalVelX;
         zombie.mZombieRect = originalRect;
+        zombie.mZombieAttackRect = originalAttackRect;
         zombie.UpdateAnimSpeed();
     }
 }
