@@ -279,13 +279,12 @@ internal static class SeedPacketDefinitions
                     break;
             }
         }
-        else if (spawnType is SpawnType.RiseFromPool)
+        else if (spawnType == SpawnType.RiseFromPool)
         {
             zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
-            zombie.mPhaseCounter = 30;
+            zombie.mPhaseCounter = 50;
 
             var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-            var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
 
             switch (zombieType)
             {

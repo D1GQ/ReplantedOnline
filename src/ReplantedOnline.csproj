@@ -161,5 +161,8 @@
 		<Reference Include="Il2CppInterop.Common">
 			<HintPath>References\Il2Cpp\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
+		<Reference Include="Il2CppSystem.Core">
+			<HintPath>References\Il2Cpp\Il2CppSystem.Core.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 </Project>
