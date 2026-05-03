@@ -22,6 +22,11 @@ internal enum ArenaTypes
     Pool,
 
     /// <summary>
+    /// Arena is set in the backyard pool during the nighttime.
+    /// </summary>
+    PoolNight,
+
+    /// <summary>
     /// Arena is set on the roof.
     /// </summary>
     Roof,

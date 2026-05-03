@@ -15,7 +15,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     public virtual ArenaTypes Type => ArenaTypes.Pool;
 
     /// <inheritdoc/>
-    public virtual MusicTune Music => MusicTune.MinigameLoonboon;
+    public virtual MusicTune Music => MusicTune.PoolWaterygraves;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
@@ -66,7 +66,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public virtual void InitializeArena(VersusMode versusMode)
+    public void InitializeArena(VersusMode versusMode)
     {
         if (ReplantedLobby.AmLobbyHost())
         {

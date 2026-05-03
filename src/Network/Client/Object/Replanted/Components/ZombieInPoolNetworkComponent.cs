@@ -7,6 +7,19 @@ namespace ReplantedOnline.Network.Client.Object.Replanted.Components;
 internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 {
     private bool _inPool;
+
+    internal override void OnInit()
+    {
+        var groundType = ZombieNetworked._Zombie.mBoard.mPlantRow[ZombieNetworked._Zombie.mRow];
+        if (groundType == PlantRowType.Pool)
+        {
+            ZombieNetworked._Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
+
+            // remove arms overlay to appear over the water
+            ZombieNetworked._Zombie.mController.SetImageOverride("whitewater", string.Empty);
+        }
+    }
+
     internal override void Update()
     {
         var zombie = ZombieNetworked._Zombie;

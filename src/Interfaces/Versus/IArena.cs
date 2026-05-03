@@ -53,7 +53,7 @@ internal interface IArena
     /// </returns>
     SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
     {
-        if (VersusState.Arena is ArenaTypes.Pool)
+        if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
         {
             if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
             {
