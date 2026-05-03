@@ -4,6 +4,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
@@ -72,6 +73,8 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 5, true);
 
@@ -87,5 +90,16 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     public void UpdateArena(VersusMode versusMode) { }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;
+    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
+    {
+        if (Instances.GameplayActivity.Board.mPlantRow[gridY] == PlantRowType.Pool)
+        {
+            if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or SeedType.ZombiePogo or SeedType.ZombiePolevaulter)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

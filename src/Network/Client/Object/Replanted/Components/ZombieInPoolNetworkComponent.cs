@@ -51,7 +51,7 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 
         if (_inPool)
         {
-            zombie.mController.ClipRect(new(0, -50, 999, 170));
+            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
         }
     }
 }

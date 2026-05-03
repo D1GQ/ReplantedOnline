@@ -53,14 +53,6 @@ internal interface IArena
     /// </returns>
     SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
     {
-        if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
-        {
-            if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
-            {
-                return SpawnType.RiseFromPool;
-            }
-        }
-
         if (zombieType is ZombieType.Target or ZombieType.Bungee)
         {
             return SpawnType.None;
@@ -75,6 +67,14 @@ internal interface IArena
         var isForceXPos = SeedPacketDefinitions.ZombieSpawnsInBack(zombieType);
         if (isDefault && !isForceXPos)
         {
+            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+            {
+                if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
+                {
+                    return SpawnType.RiseFromPool;
+                }
+            }
+
             return DefaultZombieSpawnType;
         }
         else
