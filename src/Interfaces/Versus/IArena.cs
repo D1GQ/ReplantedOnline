@@ -58,7 +58,7 @@ internal interface IArena
             return SpawnType.None;
         }
 
-        if (zombieType is ZombieType.Gravestone or ZombieType.Digger)
+        if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
         {
             return SpawnType.RiseFromGround;
         }
