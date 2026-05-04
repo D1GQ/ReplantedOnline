@@ -139,8 +139,8 @@ internal static class SeedPacketDefinitions
             }
         }
 
-        SetVersusDefinitionFromBase(SeedType.Flowerpot);
-        SetVersusDefinitionFromBase(SeedType.Lilypad);
+        SetVersusDefinitionFromBase(SeedType.Flowerpot, 0.5f);
+        SetVersusDefinitionFromBase(SeedType.Lilypad, 0.5f);
         SetVersusDefinitionFromBase(SeedType.Tanglekelp);
         SetVersusDefinitionFromBase(SeedType.Seashroom);
         SetVersusDefinitionFromBase(SeedType.Blover);
@@ -160,12 +160,14 @@ internal static class SeedPacketDefinitions
     /// Sets the versus properties of a plant definition based on its base properties.
     /// </summary>
     /// <param name="seedType">The type of seed to set properties for.</param>
+    /// <param name="baseRefreshTimeX">Multiplier for the base refresh time.</param>
     /// <returns>The updated plant definition.</returns>
-    private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType)
+    private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType, float baseRefreshTimeX = 1f)
     {
         var definition = Instances.IDataService.GetPlantDefinition(seedType);
-        definition.m_versusBaseRefreshTime = definition.RefreshTime;
-        definition.m_versusSuddenDeathRefreshTime = definition.RefreshTime / 2;
+        int baseRefreshTime = Mathf.FloorToInt(definition.RefreshTime * baseRefreshTimeX);
+        definition.m_versusBaseRefreshTime = baseRefreshTime;
+        definition.m_versusSuddenDeathRefreshTime = baseRefreshTime / 2;
         definition.m_versusCost = definition.SeedCost;
         return definition;
     }
