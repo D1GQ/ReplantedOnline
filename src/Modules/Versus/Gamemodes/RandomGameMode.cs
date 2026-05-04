@@ -35,7 +35,6 @@ internal sealed class RandomGamemode : IVersusGamemode
                 !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.NoneSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandomSeedTypes.Contains(seed) &&
-                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
@@ -80,7 +79,6 @@ internal sealed class RandomGamemode : IVersusGamemode
                 !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.NoneSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandomSeedTypes.Contains(seed) &&
-                !SeedPacketDefinitions.DisabledSeedTypes.Contains(seed) &&
                 Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
             );
 
@@ -97,7 +95,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         {
             SeedPacket seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[i];
             seedPacket.mActive = false;
-            seedPacket.PacketType = SeedPacketDefinitions.HiddenSeed;
+            seedPacket.PacketType = SeedPacketDefinitions.RandomHiddenSeed;
         }
     }
 

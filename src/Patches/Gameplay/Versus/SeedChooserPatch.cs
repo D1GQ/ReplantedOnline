@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
 using Il2CppSource.DataModels;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
@@ -20,6 +22,7 @@ internal static class SeedChooserPatch
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds.Count; i++)
             {
                 var plantChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds[i];
+                if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(plantChosenSeed.mSeedType)) continue;
                 PlantDefinition plantDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(plantChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, plantChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
@@ -43,6 +46,7 @@ internal static class SeedChooserPatch
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Count; i++)
             {
                 var zombieChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenZombies[i];
+                if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(zombieChosenSeed.mSeedType)) continue;
                 PlantDefinition plantDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(zombieChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, zombieChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
@@ -53,5 +57,15 @@ internal static class SeedChooserPatch
         }
 
         return true;
+    }
+
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.SeedNotAllowedToPick))]
+    [HarmonyPostfix]
+    private static void SeedChooserScreen_SeedNotAllowedToPick_Postfix(SeedType theSeedType, ref bool __result)
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            __result = false;
+        }
     }
 }

@@ -7,9 +7,9 @@ using ReplantedOnline.Interfaces.Versus;
 namespace ReplantedOnline.Modules.Versus.Configs.Plant;
 
 [RegisterCharacterConfig]
-internal class HypnoshroomPlantConfig : IPlantConfig
+internal class SeashroomPlantConfig : IPlantConfig
 {
-    public SeedType Type => SeedType.Hypnoshroom;
+    public SeedType Type => SeedType.Seashroom;
 
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)

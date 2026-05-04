@@ -1,4 +1,5 @@
-﻿using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
@@ -23,7 +24,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// The SeedType used to hide seed.
     /// </summary>
-    internal readonly static SeedType HiddenSeed = SeedType.SlotMachineDiamond;
+    internal readonly static SeedType RandomHiddenSeed = SeedType.SlotMachineDiamond;
 
     /// <summary>
     /// Collection of seed types that are not real seeds.
@@ -38,12 +39,10 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that are disabled and cannot be used in gameplay.
     /// </summary>
-    internal readonly static SeedType[] DisabledSeedTypes = [
+    internal readonly static SeedType[] HideInChooserSeedTypes = [
         // Plants
         SeedType.Lilypad,
-        SeedType.Tanglekelp,
-        SeedType.Seashroom,
-        SeedType.Blover,
+        SeedType.Flowerpot,
     ];
 
     /// <summary>
@@ -68,7 +67,7 @@ internal static class SeedPacketDefinitions
         SeedType.ZombieNormal,
         SeedType.ZombieTrashCan,
 
-        HiddenSeed
+        RandomHiddenSeed
     ];
 
     /// <summary>
@@ -77,8 +76,9 @@ internal static class SeedPacketDefinitions
     internal readonly static SeedType[] ExcludeFromRandomSeedTypes = [
         // Plants
         SeedType.Flowerpot,
+        SeedType.Lilypad,
         SeedType.Marigold,
-        SeedType.Plantern,
+        SeedType.Plantern
     ];
 
     /// <summary>
@@ -119,7 +119,7 @@ internal static class SeedPacketDefinitions
     internal static void Initialize()
     {
         // Replace seed packet icon for hidden seed packet
-        var slotMachineDiamondDef = Instances.DataServiceActivity.Service.GetPlantDefinition(HiddenSeed);
+        var slotMachineDiamondDef = Instances.DataServiceActivity.Service.GetPlantDefinition(RandomHiddenSeed);
         var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(assetOverride);
         assetOverride.SetOverride(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
@@ -138,6 +138,36 @@ internal static class SeedPacketDefinitions
                 zombieDefinition.m_versusBodyHealth = 270;
             }
         }
+
+        SetVersusDefinitionFromBase(SeedType.Flowerpot);
+        SetVersusDefinitionFromBase(SeedType.Lilypad);
+        SetVersusDefinitionFromBase(SeedType.Tanglekelp);
+        SetVersusDefinitionFromBase(SeedType.Seashroom);
+        SetVersusDefinitionFromBase(SeedType.Blover);
+
+        var balloonDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.ZombieBalloon);
+        balloonDefinition.m_versusBaseRefreshTime = 2500;
+        balloonDefinition.m_versusSuddenDeathRefreshTime = 1000;
+        balloonDefinition.m_versusCost = 75;
+
+        var impDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.ZombieImp);
+        impDefinition.m_versusBaseRefreshTime = 700;
+        impDefinition.m_versusSuddenDeathRefreshTime = 300;
+        impDefinition.m_versusCost = 25;
+    }
+
+    /// <summary>
+    /// Sets the versus properties of a plant definition based on its base properties.
+    /// </summary>
+    /// <param name="seedType">The type of seed to set properties for.</param>
+    /// <returns>The updated plant definition.</returns>
+    private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType)
+    {
+        var definition = Instances.DataServiceActivity.Service.GetPlantDefinition(seedType);
+        definition.m_versusBaseRefreshTime = definition.RefreshTime;
+        definition.m_versusSuddenDeathRefreshTime = definition.RefreshTime / 2;
+        definition.m_versusCost = definition.SeedCost;
+        return definition;
     }
 
     /// <summary>
@@ -412,7 +442,7 @@ internal static class SeedPacketDefinitions
     /// <returns>True if the zombie should rise from the ground; false if it should spawn normally.</returns>
     internal static bool ZombieRisesFromGround(ZombieType zombieType)
     {
-        if (zombieType is ZombieType.Bungee or ZombieType.Target or ZombieType.Imp or ZombieType.Bobsled)
+        if (zombieType is ZombieType.Bungee or ZombieType.Target or ZombieType.Bobsled)
         {
             return false;
         }
@@ -433,6 +463,11 @@ internal static class SeedPacketDefinitions
     internal static bool ZombieSpawnsInBack(ZombieType zombieType)
     {
         if (zombieType is ZombieType.Bobsled)
+        {
+            return true;
+        }
+
+        if (zombieType is ZombieType.Balloon)
         {
             return true;
         }

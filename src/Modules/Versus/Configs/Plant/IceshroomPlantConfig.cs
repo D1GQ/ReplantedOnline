@@ -16,7 +16,7 @@ internal class IceshroomPlantConfig : IPlantConfig
     {
         plantDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[Type];
 
-        if (arena is ArenaTypes.Night or ArenaTypes.RoofNight)
+        if (arena is ArenaTypes.Night or ArenaTypes.PoolNight or ArenaTypes.RoofNight)
         {
             // Add Cost of instant coffee to balance price
             plantDefinition.m_versusCost += 25;

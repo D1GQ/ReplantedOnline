@@ -77,7 +77,6 @@ internal sealed class CustomGamemode : IVersusGamemode
                     var seedChooserVSSwapDebug = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
                     seedChooserVSSwapDebug.playerTurn = 1;
                     seedChooserVSSwapDebug.GetComponent<VersusChooserSwapBinder>().PlayerTurn = 1;
-                    DisableSeedPackets(chosenSeeds);
                     Instances.GameplayActivity.VersusMode.Phase = VersusPhase.ChoosePlantPacket;
 
                     yield break;
@@ -106,20 +105,6 @@ internal sealed class CustomGamemode : IVersusGamemode
             if (!ICharacterConfig.IsAllowedInArena(seedPacket.mSeedType, VersusState.Arena))
             {
                 seedPacket.mSeedState = ChosenSeedState.SeedPacketHidden;
-            }
-        }
-
-        DisableSeedPackets(chosenSeeds);
-    }
-
-    // Hide disabled seed packets 
-    private static void DisableSeedPackets(List<ChosenSeed> chosenSeeds)
-    {
-        foreach (var seedPacket in chosenSeeds)
-        {
-            if (SeedPacketDefinitions.DisabledSeedTypes.Contains(seedPacket.mSeedType))
-            {
-                seedPacket.mIsImitater = true;
             }
         }
     }
