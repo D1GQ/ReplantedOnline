@@ -24,7 +24,7 @@ internal static class ContentManager
     {
         bool isDecember = DateAndTime.Now.Month is 12;
 
-        foreach (var plant in Instances.DataServiceActivity.Service.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var plant in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
             if (isDecember)
             {
@@ -39,7 +39,7 @@ internal static class ContentManager
             }
         }
 
-        foreach (var zombie in Instances.DataServiceActivity.Service.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var zombie in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
             if (isDecember)
             {

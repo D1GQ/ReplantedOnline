@@ -24,7 +24,7 @@ internal static class LevelEntries
     /// </summary>
     internal static void Initialize()
     {
-        foreach (var level in Instances.DataServiceActivity.Service.AllLevelsData.EnumerateIl2CppReadonlyList())
+        foreach (var level in Instances.IDataService.AllLevelsData.EnumerateIl2CppReadonlyList())
         {
             _levelNameLookup[level.name] = level;
         }

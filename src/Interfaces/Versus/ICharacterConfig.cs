@@ -64,7 +64,7 @@ internal interface ICharacterConfig
     /// </summary>
     internal static void SetArenaDefinitions(ArenaTypes arena)
     {
-        foreach (var zombieDefinition in Instances.DataServiceActivity.Service.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
             foreach (var config in RegisterCharacterConfig.Instances)
             {
@@ -78,7 +78,7 @@ internal interface ICharacterConfig
             }
         }
 
-        foreach (var plantDefinition in Instances.DataServiceActivity.Service.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var plantDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
             foreach (var config in RegisterCharacterConfig.Instances)
             {

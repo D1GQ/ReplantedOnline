@@ -31,7 +31,7 @@ internal class VersusGameplayManager
             if (SeedPacketDefinitions.IgnoreInitialCooldownSeedTypes.Contains(seedPacket.mPacketType)) continue;
 
             seedPacket.Deactivate();
-            var time = Instances.DataServiceActivity.Service.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
+            var time = Instances.IDataService.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;
             seedPacket.mRefreshTime = time;
             seedPacket.mRefreshing = true;
         }
@@ -151,16 +151,16 @@ internal class VersusGameplayManager
     {
         if (VersusState.VersusPhase == VersusPhase.SuddenDeath)
         {
-            return Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusSuddenDeathRefreshTime ?? 0;
+            return Instances.IDataService.GetPlantDefinition(seedType)?.m_versusSuddenDeathRefreshTime ?? 0;
         }
 
         if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
         {
-            return Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
+            return Instances.IDataService.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
         }
 
         float normalized = Mathf.Clamp01(VersusState.VersusTime / ReplantedOnlineMod.Constants.X2_SEEDPACKET_COOLDOWN_TIME_END);
-        int baseTime = Instances.DataServiceActivity.Service.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
+        int baseTime = Instances.IDataService.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
         float time = Mathf.Lerp(baseTime * 2, baseTime, normalized);
         return Mathf.FloorToInt(time);
     }

@@ -61,4 +61,13 @@ internal static class EnumUtils
                 return PlayerTeam.None;
         }
     }
+
+    /// <summary>
+    /// Determines if the given arena type is a night arena.
+    /// </summary>
+    /// <param name="arena">The arena type to check.</param>
+    internal static bool IsArenaAtNight(this ArenaTypes arena)
+    {
+        return arena == ArenaTypes.Night || arena == ArenaTypes.PoolNight || arena == ArenaTypes.RoofNight;
+    }
 }

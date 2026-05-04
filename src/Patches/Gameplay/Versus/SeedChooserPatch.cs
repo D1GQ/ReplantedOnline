@@ -23,7 +23,7 @@ internal static class SeedChooserPatch
             {
                 var plantChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds[i];
                 if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(plantChosenSeed.mSeedType)) continue;
-                PlantDefinition plantDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(plantChosenSeed.mSeedType);
+                PlantDefinition plantDefinition = Instances.IDataService.GetPlantDefinition(plantChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, plantChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
                 __instance.m_entriesModel.Add(i.ToString(), entry);
@@ -47,7 +47,7 @@ internal static class SeedChooserPatch
             {
                 var zombieChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenZombies[i];
                 if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(zombieChosenSeed.mSeedType)) continue;
-                PlantDefinition plantDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(zombieChosenSeed.mSeedType);
+                PlantDefinition plantDefinition = Instances.IDataService.GetPlantDefinition(zombieChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, zombieChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
                 __instance.m_zombieEntriesModel.Add(i.ToString(), entry);

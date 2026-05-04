@@ -35,13 +35,13 @@ internal sealed class RandomGamemode : IVersusGamemode
                 !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.NoneSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandomSeedTypes.Contains(seed) &&
-                Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
+                Instances.IDataService.GetPlantDefinition(seed).VersusCost > 0
             );
 
             int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();
             var shuffledSeeds = plantSeeds.Shuffle().ToList();
 
-            if (VersusState.Arena is not (ArenaTypes.Night or ArenaTypes.RoofNight))
+            if (!VersusState.Arena.IsArenaAtNight())
             {
                 var potentialSeeds = shuffledSeeds.Take(numSeedsToAdd).ToList();
                 bool hasInstantCoffee = potentialSeeds.Contains(SeedType.InstantCoffee);
@@ -79,7 +79,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 !IArenaSetupSeedbank.ExcludeSeedFromRandom(seed) &&
                 !SeedPacketDefinitions.NoneSeedTypes.Contains(seed) &&
                 !SeedPacketDefinitions.ExcludeFromRandomSeedTypes.Contains(seed) &&
-                Instances.DataServiceActivity.Service.GetPlantDefinition(seed).VersusCost > 0
+                Instances.IDataService.GetPlantDefinition(seed).VersusCost > 0
             );
 
             int numSeedsToAdd = versusMode.m_board.SeedBanks.LocalItem().NumPackets - versusMode.m_board.SeedBanks.LocalItem().GetPacketCount();

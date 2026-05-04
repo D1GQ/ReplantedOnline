@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Modules.Versus.Configs.Plant;
 
@@ -16,7 +17,7 @@ internal class PuffshroomPlantConfig : IPlantConfig
     {
         plantDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[Type];
 
-        if (arena is ArenaTypes.Night or ArenaTypes.PoolNight or ArenaTypes.RoofNight)
+        if (arena.IsArenaAtNight())
         {
             // Add Cost of instant coffee to balance price
             plantDefinition.m_versusCost += 25;

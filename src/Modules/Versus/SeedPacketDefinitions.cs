@@ -119,17 +119,17 @@ internal static class SeedPacketDefinitions
     internal static void Initialize()
     {
         // Replace seed packet icon for hidden seed packet
-        var slotMachineDiamondDef = Instances.DataServiceActivity.Service.GetPlantDefinition(RandomHiddenSeed);
+        var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
         var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(assetOverride);
         assetOverride.SetOverride(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
 
-        foreach (var seedDefinition in Instances.DataServiceActivity.Service.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
             BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
         }
 
-        foreach (var zombieDefinition in Instances.DataServiceActivity.Service.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
             // From Versus Mode Console:
             // Buff versus body health
@@ -145,12 +145,12 @@ internal static class SeedPacketDefinitions
         SetVersusDefinitionFromBase(SeedType.Seashroom);
         SetVersusDefinitionFromBase(SeedType.Blover);
 
-        var balloonDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.ZombieBalloon);
+        var balloonDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieBalloon);
         balloonDefinition.m_versusBaseRefreshTime = 2500;
         balloonDefinition.m_versusSuddenDeathRefreshTime = 1000;
         balloonDefinition.m_versusCost = 75;
 
-        var impDefinition = Instances.DataServiceActivity.Service.GetPlantDefinition(SeedType.ZombieImp);
+        var impDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieImp);
         impDefinition.m_versusBaseRefreshTime = 700;
         impDefinition.m_versusSuddenDeathRefreshTime = 300;
         impDefinition.m_versusCost = 25;
@@ -163,7 +163,7 @@ internal static class SeedPacketDefinitions
     /// <returns>The updated plant definition.</returns>
     private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType)
     {
-        var definition = Instances.DataServiceActivity.Service.GetPlantDefinition(seedType);
+        var definition = Instances.IDataService.GetPlantDefinition(seedType);
         definition.m_versusBaseRefreshTime = definition.RefreshTime;
         definition.m_versusSuddenDeathRefreshTime = definition.RefreshTime / 2;
         definition.m_versusCost = definition.SeedCost;
