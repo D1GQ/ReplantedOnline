@@ -26,15 +26,19 @@ internal static class SeedPacketDefinitions
     internal readonly static SeedType HiddenSeed = SeedType.SlotMachineDiamond;
 
     /// <summary>
-    /// Collection of seed types that are disabled and cannot be used in gameplay.
+    /// Collection of seed types that are not real seeds.
     /// </summary>
-    internal readonly static SeedType[] DisabledSeedTypes = [
-        // Misc
+    internal readonly static SeedType[] NoneSeedTypes = [
         SeedType.NumSeedsInChooser,
         SeedType.NumSeedTypes,
         SeedType.LastZombieIndex,
         SeedType.None,
+    ];
 
+    /// <summary>
+    /// Collection of seed types that are disabled and cannot be used in gameplay.
+    /// </summary>
+    internal readonly static SeedType[] DisabledSeedTypes = [
         // Plants
         SeedType.Lilypad,
         SeedType.Tanglekelp,
