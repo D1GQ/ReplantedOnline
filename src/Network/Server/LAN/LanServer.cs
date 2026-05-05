@@ -782,7 +782,7 @@ internal sealed class LanServer : IDisposable
                     return false;
                 }
 
-                buffer.LanData = packet.Data;
+                buffer.Data = packet.Data;
                 buffer.Size = packet.Size;
                 buffer.ClientId = packet.SenderId;
                 packet.Dispose();

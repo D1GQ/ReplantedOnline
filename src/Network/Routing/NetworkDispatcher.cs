@@ -282,6 +282,10 @@ internal static class NetworkDispatcher
                 if (buffer.Size > 0)
                 {
                     var receivedData = buffer.ToByteArray();
+                    if (receivedData == null)
+                    {
+                        return;
+                    }
                     var packetReader = PacketReader.Get(receivedData);
                     Streamline(sender, packetReader, false);
                 }

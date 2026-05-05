@@ -29,11 +29,6 @@ internal sealed class P2PPacketBuffer
     public Il2CppStructArray<byte> Data;
 
     /// <summary>
-    /// Optional raw byte array for LAN packets, used when the packet data is received directly as a byte array instead of an Il2CppStructArray.
-    /// </summary>
-    public byte[] LanData;
-
-    /// <summary>
     /// Retrieves a P2PPacketBuffer instance from the pool or creates a new one if the pool is empty.
     /// </summary>
     /// <returns>A P2PPacketBuffer instance ready for use.</returns>
@@ -71,15 +66,7 @@ internal sealed class P2PPacketBuffer
     /// <returns>A byte array containing the packet data, or an empty array if no data is present.</returns>
     internal byte[] ToByteArray()
     {
-        if (Size == 0)
-            return [];
-
-        if (LanData != null)
-        {
-            return LanData;
-        }
-
-        if (Data == null)
+        if (Data == null || Size == 0)
             return [];
 
         var result = new byte[Size];
