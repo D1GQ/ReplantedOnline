@@ -18,10 +18,10 @@ internal static class CatapultZombiePatchPatch
             // Catapult phases are handled by ZombieNetworked.cs for non plant client
             if (!VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked();
-                if (netZombie != null)
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
                 {
-                    __result = netZombie.Target;
+                    __result = zombieNetworked.Target;
                 }
             }
         }

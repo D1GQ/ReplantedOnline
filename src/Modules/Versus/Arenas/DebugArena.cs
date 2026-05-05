@@ -21,6 +21,7 @@ internal sealed class DebugArena : IArena, IArenaData
         Default,
         Gargantuar,
         Pogo,
+        Catapult,
         Bobsled,
         Polevaulter,
         Ladder,
@@ -151,6 +152,11 @@ internal sealed class DebugArena : IArena, IArenaData
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
+                break;
+            case DebugModes.Catapult:
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Catapult, 8, 2, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 2, true);
                 break;
             case DebugModes.Bobsled:
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 8, 2, true);

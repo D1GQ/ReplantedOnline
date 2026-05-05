@@ -24,6 +24,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             ZombieType.JackInTheBox => zombieNetworked.AddNetworkComponent<JackInTheBoxNetworkComponent>(),
             ZombieType.Digger => zombieNetworked.AddNetworkComponent<DiggerNetworkComponent>(),
             ZombieType.Bungee => zombieNetworked.AddNetworkComponent<BungeeNetworkComponent>(),
+            ZombieType.Catapult => zombieNetworked.AddNetworkComponent<CatapultNetworkComponent>(),
             ZombieType.Bobsled => zombieNetworked.AddNetworkComponent<BobsledNetworkComponent>(),
             ZombieType.Imp => zombieNetworked.AddNetworkComponent<ImpNetworkComponent>(),
             ZombieType.Gravestone => zombieNetworked.AddNetworkComponent<GravestoneNetworkComponent>(),
