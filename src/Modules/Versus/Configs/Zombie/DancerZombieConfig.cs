@@ -21,7 +21,14 @@ internal sealed class DancerZombieConfig : IZombieConfig
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY)
     {
-        return gridY != 0 && gridY != 4;
+        if (arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+        {
+            return gridY > 0 && gridY < 5;
+        }
+        else
+        {
+            return gridY > 0 && gridY < 6;
+        }
     }
 
     /// <inheritdoc/>
