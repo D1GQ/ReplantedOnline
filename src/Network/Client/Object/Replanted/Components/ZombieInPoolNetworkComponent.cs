@@ -10,6 +10,11 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 
     internal override void OnInit()
     {
+        if (!CanGoInWater())
+        {
+            return;
+        }
+
         var groundType = ZombieNetworked._Zombie.mBoard.mPlantRow[ZombieNetworked._Zombie.mRow];
         if (groundType == PlantRowType.Pool)
         {
@@ -22,6 +27,11 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 
     internal override void Update()
     {
+        if (!CanGoInWater())
+        {
+            return;
+        }
+
         var zombie = ZombieNetworked._Zombie;
         if (zombie == null) return;
         if (zombie.mBoard == null) return;
@@ -53,5 +63,12 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
         {
             zombie.mController.ClipRect(new(-500, -500, 1000, 615));
         }
+    }
+
+    private bool CanGoInWater()
+    {
+        bool typeCheck = ZombieNetworked.ZombieType != ZombieType.Bungee;
+        bool phaseCheck = ZombieNetworked._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
+        return typeCheck && phaseCheck;
     }
 }

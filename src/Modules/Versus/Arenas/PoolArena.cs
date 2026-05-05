@@ -81,6 +81,8 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 4, true);
 
+            SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, 0, 2, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, 0, 3, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
         }
