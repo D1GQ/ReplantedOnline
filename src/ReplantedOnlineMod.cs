@@ -53,8 +53,13 @@ internal class ReplantedOnlineMod : MelonMod
 
     private static void OnInitializeMainMenu()
     {
-        if (!SteamClient.initialized)
+        int attempt = 0;
+        while (!SteamClient.initialized && attempt < 100)
+        {
             SteamClient.Init((uint)AppIds.PVZ_Replanted);
+            attempt++;
+        }
+
         LevelEntries.Initialize();
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
