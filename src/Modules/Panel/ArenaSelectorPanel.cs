@@ -19,6 +19,12 @@ namespace ReplantedOnline.Modules.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
+#if DEBUG
+    internal static readonly ArenaTypes[] Disabled = [];
+#else
+    internal static readonly ArenaTypes[] Disabled = [ArenaTypes.Pool, ArenaTypes.PoolNight];
+#endif
+
     private static GameObject _panel;
     private static Image _preview;
 
@@ -30,9 +36,11 @@ internal static class ArenaSelectorPanel
     {
         if (_panel != null) return;
 
+        // Find the center panel within the VsSideChooser to use as a parent for the arena selector panel
         var VsPanels = VsSideChooser.transform.Find("Canvas/Layout/Center").gameObject;
         VsPanels.transform.Find("Panel")?.localPosition = new Vector3(0f, -100f, 0f);
 
+        // Clone the existing plant panel from the almanac and use it as the base for the arena selector panel
         GameObject plantPanel = Instances.GlobalPanels.GetPanel("almanac").transform.Find("Canvas/Layout/Center/Panel/PlantPanel").gameObject;
         _panel = UnityEngine.Object.Instantiate(plantPanel, VsPanels.transform);
         _panel.name = "ArenaPanel";
@@ -42,10 +50,12 @@ internal static class ArenaSelectorPanel
             UnityEngine.Object.Destroy(viewPlantsButton);
         }
 
+        // Position and scale the arena selector panel appropriately within the UI
         _panel.transform.localPosition = new Vector3(0f, 780f, 0f);
         _panel.transform.localScale = Vector3.one * 0.5f;
         _panel.transform.SetSiblingIndex(2);
 
+        // Set up the preview image by replacing the existing RawImage component with a new Image component, and configure its position and scale
         var previewObj = _panel.transform.Find("Sunflower").gameObject;
         previewObj.RemoveComponent<RawImage>(true);
         _preview = previewObj.AddComponent<Image>();
@@ -55,16 +65,34 @@ internal static class ArenaSelectorPanel
 
         if (ReplantedLobby.AmLobbyHost())
         {
+            // Create forward and back navigation buttons for arena selection
+
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Next();
+                // Loop to find the next available arena type, skipping any that are disabled
+                ArenaTypes nextArena = ReplantedLobby.LobbyData.Arena.Value;
+                while (true)
+                {
+                    nextArena = nextArena.Next();
+                    if (!Disabled.Contains(nextArena)) break;
+                }
+
+                ReplantedLobby.LobbyData.Arena.Value = nextArena;
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Previous();
+                // Loop to find the previous available arena type, skipping any that are disabled
+                ArenaTypes previousArena = ReplantedLobby.LobbyData.Arena.Value;
+                while (true)
+                {
+                    previousArena = previousArena.Previous();
+                    if (!Disabled.Contains(previousArena)) break;
+                }
+
+                ReplantedLobby.LobbyData.Arena.Value = previousArena;
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;
