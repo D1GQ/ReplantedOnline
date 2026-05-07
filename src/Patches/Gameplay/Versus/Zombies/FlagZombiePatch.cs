@@ -243,7 +243,7 @@ internal static class FlagZombiePatch
             // If no plants to target, spawn close
             if (targets.Count == 0)
             {
-                return 2;
+                return 4;
             }
         }
 
