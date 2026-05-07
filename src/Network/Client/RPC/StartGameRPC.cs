@@ -13,18 +13,15 @@ using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.StartGame)]
 internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.StartGame;
-
     /// <inheritdoc/>
     public void Send(SelectionSet selectionSet)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(selectionSet);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter, true);
+        NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
         ReplantedLobby.LobbyData.HasStarted.Value = true;
         MatchmakingManager.UpdateLobbyJoinable();

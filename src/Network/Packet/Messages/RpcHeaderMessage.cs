@@ -8,9 +8,9 @@ using ReplantedOnline.Network.Packet;
 internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHandlerType, PacketWriter>
 {
     /// <summary>
-    /// Gets the packet handler tag that identifies the type of message this header contains.
+    /// Gets the packet handler type of message this header contains.
     /// </summary>
-    public PacketHandlerType Tag { get; private init; }
+    public PacketHandlerType handlerType { get; private init; }
 
     /// <summary>
     /// Gets the signature hash used for validating message integrity and origin.
@@ -44,7 +44,7 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
         PacketHandlerType tag = packetReader.GetTag();
         RpcHeaderMessage message = new()
         {
-            Tag = tag,
+            handlerType = tag,
             SignatureHash = signatureHash
         };
 

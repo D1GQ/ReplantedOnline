@@ -11,12 +11,9 @@ using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
-[RegisterPacketHandler]
+[RegisterPacketHandler(PacketHandlerType.NetworkObjectSpawn)]
 internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
 {
-    /// <inheritdoc/>
-    public PacketHandlerType Type => PacketHandlerType.NetworkObjectSpawn;
-
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {

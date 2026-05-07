@@ -10,18 +10,15 @@ using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.StartMower)]
 internal sealed class StartMowerRpc : IRpcDispatcher<LawnMower>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.StartMower;
-
     /// <inheritdoc/>
     public void Send(LawnMower lawnMower)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(lawnMower.DataID);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.StartMower, packetWriter);
         packetWriter.Recycle();
     }
 

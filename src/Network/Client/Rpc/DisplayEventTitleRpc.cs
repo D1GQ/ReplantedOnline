@@ -7,18 +7,15 @@ using ReplantedOnline.Network.Routing;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.DisplayEventTitleRpc)]
 internal sealed class DisplayEventTitleRpc : IRpcDispatcher<ArenaEvents.EventTitle>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.DisplayEventTitleRpc;
-
     /// <inheritdoc/>
     public void Send(ArenaEvents.EventTitle title)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(title);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.DisplayEventTitleRpc, packetWriter);
         packetWriter.Recycle();
     }
 

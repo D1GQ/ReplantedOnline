@@ -319,7 +319,7 @@ internal static class NetworkDispatcher
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.Tag} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
             }
 
             packetReader.Recycle();
@@ -328,12 +328,12 @@ internal static class NetworkDispatcher
 
         if (!local)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.Tag} packet from {sender?.Name ?? "Unknown"}");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}");
         }
 
         try
         {
-            switch (message.Tag)
+            switch (message.handlerType)
             {
                 case PacketHandlerType.None:
                     if (!local)
@@ -364,9 +364,9 @@ internal static class NetworkDispatcher
                     }
                     break;
                 default:
-                    if (!IPacketHandler.HandlePacket(message.Tag, sender, packetReader, local))
+                    if (!IPacketHandler.HandlePacket(message.handlerType, sender, packetReader, local))
                     {
-                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Unknown packet tag: {message.Tag}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Unknown packet tag: {message.handlerType}");
                     }
                     break;
             }

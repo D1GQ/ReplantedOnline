@@ -9,18 +9,15 @@ using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.ChooseSeed)]
 internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.ChooseSeed;
-
     /// <inheritdoc/>
     public void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(theChosenSeed.mSeedType);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.ChooseSeed, packetWriter);
         packetWriter.Recycle();
     }
 

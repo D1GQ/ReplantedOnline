@@ -10,12 +10,9 @@ using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
-[RegisterPacketHandler]
+[RegisterPacketHandler(PacketHandlerType.ObjectRpc)]
 internal class ObjectRpcPacketHandler : IPacketHandler
 {
-    /// <inheritdoc/>
-    public PacketHandlerType Type => PacketHandlerType.ObjectRpc;
-
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {

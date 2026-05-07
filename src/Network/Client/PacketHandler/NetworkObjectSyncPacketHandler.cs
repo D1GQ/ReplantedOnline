@@ -9,12 +9,9 @@ using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
-[RegisterPacketHandler]
+[RegisterPacketHandler(PacketHandlerType.NetworkObjectSync)]
 internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
 {
-    /// <inheritdoc/>
-    public PacketHandlerType Type => PacketHandlerType.NetworkObjectSync;
-
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {

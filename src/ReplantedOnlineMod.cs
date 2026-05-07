@@ -32,7 +32,7 @@ internal class ReplantedOnlineMod : MelonMod
         File.WriteAllText("steam_appid.txt", ((uint)AppIds.PVZ_Replanted).ToString());
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
-        InstanceAttribute.RegisterAll();
+        AutoRegisterAttribute.RegisterAll();
         RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();
         NetworkObject.SetupPrefabs();

@@ -11,19 +11,16 @@ using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.SyncSeedPacket)]
 internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.SyncSeedPacket;
-
     /// <inheritdoc/>
     public void Send(SeedType seedType)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(seedType);
         packetWriter.WriteInt(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets.First(packet => packet.mPacketType == seedType).Index);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.SyncSeedPacket, packetWriter);
         packetWriter.Recycle();
     }
 

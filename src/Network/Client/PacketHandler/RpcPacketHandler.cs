@@ -7,12 +7,9 @@ using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;
 
-[RegisterPacketHandler]
+[RegisterPacketHandler(PacketHandlerType.Rpc)]
 internal sealed class RpcPacketHandler : IPacketHandler
 {
-    /// <inheritdoc/>
-    public PacketHandlerType Type => PacketHandlerType.Rpc;
-
     /// <inheritdoc/>
     public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
     {

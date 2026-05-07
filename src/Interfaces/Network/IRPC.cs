@@ -12,12 +12,6 @@ namespace ReplantedOnline.Interfaces.Network;
 internal interface IRpc
 {
     /// <summary>
-    /// Gets the RPC type that this handler is responsible for processing.
-    /// </summary>
-    /// <value>The <see cref="RpcType"/> that this handler will respond to.</value>
-    RpcType Rpc { get; }
-
-    /// <summary>
     /// Processes an incoming RPC packet from a network client.
     /// </summary>
     /// <param name="sender">The client that sent the RPC request.</param>
@@ -27,18 +21,13 @@ internal interface IRpc
     /// <summary>
     /// Dispatches an incoming RPC to the appropriate handler based on the RPC type.
     /// </summary>
-    /// <param name="rpc">The type of RPC to handle.</param>
+    /// <param name="rpcType">The type of RPC to handle.</param>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data.</param>
-    internal static void HandleRpc(RpcType rpc, ReplantedClientData sender, PacketReader packetReader)
+    internal static void HandleRpc(RpcType rpcType, ReplantedClientData sender, PacketReader packetReader)
     {
-        foreach (var handler in RegisterRpc.Instances)
-        {
-            if (handler.Rpc != rpc) continue;
-            handler.Handle(sender, packetReader);
-
-            break;
-        }
+        var handler = RegisterRpc.GetInstanceFromLookup(rpcType);
+        handler?.Handle(sender, packetReader);
     }
 }
 

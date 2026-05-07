@@ -10,19 +10,16 @@ using ReplantedOnline.Patches.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.AddLadder)]
 internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.AddLadder;
-
     /// <inheritdoc/>
     public void Send(int theGridX, int theGridY)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteInt(theGridX);
         packetWriter.WriteInt(theGridY);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.AddLadder, packetWriter);
         packetWriter.Recycle();
     }
 

@@ -10,12 +10,9 @@ using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
-[RegisterRpc]
+[RegisterRpc(RpcType.PushBackZombie)]
 internal sealed class PushBackZombieRpc : IRpcDispatcher<Zombie>
 {
-    /// <inheritdoc/>
-    public RpcType Rpc => RpcType.PushBackZombie;
-
     /// <inheritdoc/>
     public void Send(Zombie zombie)
     {
@@ -23,7 +20,7 @@ internal sealed class PushBackZombieRpc : IRpcDispatcher<Zombie>
         if (zombieNetworked == null) return;
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteNetworkObject(zombieNetworked);
-        NetworkDispatcher.SendRpc(Rpc, packetWriter);
+        NetworkDispatcher.SendRpc(RpcType.PushBackZombie, packetWriter);
         packetWriter.Recycle();
     }
 
