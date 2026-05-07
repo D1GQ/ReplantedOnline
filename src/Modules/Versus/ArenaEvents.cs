@@ -114,7 +114,16 @@ internal static class ArenaEvents
     /// <returns>An IEnumerator for coroutine execution.</returns>
     private static IEnumerator CoPushBackZombie(Zombie zombie)
     {
-        zombie.GetNetworked()?.LogicComponent?.StopLarpPos();
+        var zombieNetworked = zombie.GetNetworked();
+        if (zombieNetworked != null)
+        {
+            zombieNetworked.LogicComponent?.StopLarpPos();
+
+            if (zombieNetworked.State is NetStates.ZOMBIE_CHEWING_PLANT_STATE)
+            {
+                zombieNetworked.State = null;
+            }
+        }
 
         float originalY = zombie.mPosY;
         float archY = 75f;
