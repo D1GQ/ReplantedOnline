@@ -37,7 +37,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.Sunflower, SeedType.Flowerpot, SeedType.Cabbagepult,
-                SeedType.Kernelpult, SeedType.Umbrella, SeedType.Jalapeno,
+                SeedType.Kernelpult, SeedType.Wallnut, SeedType.Jalapeno,
                 SeedType.Squash];
             return field;
         }
@@ -50,7 +50,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrafficCone,
-                SeedType.ZombieLadder, SeedType.ZombieBungee, SeedType.ZombieGargantuar,
+                SeedType.ZombieLadder, SeedType.ZombieCatapult, SeedType.ZombieGargantuar,
                 SeedType.ZombieFlag];
             return field;
         }

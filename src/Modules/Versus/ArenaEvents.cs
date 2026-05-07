@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Rpc;
@@ -79,6 +80,21 @@ internal static class ArenaEvents
 
             PushBackZombie(zombie);
             Rpc<PushBackZombieRpc>.Instance.Send(zombie);
+        }
+
+        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+        {
+            for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)
+            {
+                for (int gridX = 0; gridX < 5; gridX++)
+                {
+                    var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
+                    if (plant == null)
+                    {
+                        SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
+                    }
+                }
+            }
         }
     }
 
