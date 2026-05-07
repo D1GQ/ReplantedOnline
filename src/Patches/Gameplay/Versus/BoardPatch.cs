@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Exceptions;
+using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
@@ -50,19 +52,36 @@ internal static class BoardPatch
         return true; // Allow original method in single player or non-gameplay phases
     }
 
+    private static readonly ExecuteInterval _initLawnMowersInterval = new();
     [HarmonyPatch(typeof(Board), nameof(Board.InitLawnMowers))]
     [HarmonyPrefix]
     private static bool Board_InitLawnMowers_Prefix(Board __instance)
     {
         if (ReplantedLobby.AmInLobby())
         {
-            // Always initialize lawn mowers.
-            if (__instance.m_lawnMowers.Count == 0)
+            if (_initLawnMowersInterval.Execute())
             {
-                for (int row = 0; row < __instance.GetNumRows(); row++)
+                if (VersusState.Arena == ArenaTypes.China)
                 {
-                    var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
-                    PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
+                    if (ReplantedLobby.AmLobbyHost())
+                    {
+                        for (int row = 0; row < __instance.GetNumRows(); row++)
+                        {
+                            SeedPacketDefinitions.SpawnPlant(SeedType.Jalapeno, -1, row, SpawnType.ChinaJalapeno, true);
+                        }
+                    }
+
+                    return false;
+                }
+
+                // Always initialize lawn mowers.
+                if (__instance.m_lawnMowers.Count == 0)
+                {
+                    for (int row = 0; row < __instance.GetNumRows(); row++)
+                    {
+                        var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
+                        PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
+                    }
                 }
             }
 

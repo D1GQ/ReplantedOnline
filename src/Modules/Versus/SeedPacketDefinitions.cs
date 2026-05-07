@@ -210,6 +210,20 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned Plant objects.</returns>
     internal static (Plant Plant, PlantNetworked PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
     {
+        return SpawnPlant(seedType, gridX, gridY, SpawnType.None, spawnOnNetwork);
+    }
+
+    /// <summary>
+    /// Spawns a plant at the specified grid coordinates.
+    /// </summary>
+    /// <param name="seedType">The type of seed to spawn as a plant.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
+    /// <returns>The spawned Plant objects.</returns>
+    internal static (Plant Plant, PlantNetworked PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    {
         // Create the actual plant object in the game world using the original game method
         var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
 
@@ -222,7 +236,7 @@ internal static class SeedPacketDefinitions
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this plant across all clients
-            plantNetworked = SpawnPlantOnNetwork(plant, gridX, gridY);
+            plantNetworked = SpawnPlantOnNetwork(plant, gridX, gridY, spawnType);
         }
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
@@ -242,10 +256,25 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned PlantNetworked controller object.</returns>
     internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, Action<PlantNetworked> callback = null)
     {
+        return SpawnPlantOnNetwork(plant, gridX, gridY, SpawnType.None, callback);
+    }
+
+    /// <summary>
+    /// Creates a networked controller for an existing plant to enable network synchronization.
+    /// </summary>
+    /// <param name="plant">The plant to create a network controller for.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="callback">Optional callback to configure the object before spawning.</param>
+    /// <returns>The spawned PlantNetworked controller object.</returns>
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, SpawnType spawnType, Action<PlantNetworked> callback = null)
+    {
         var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
         {
             net._Plant = plant;
             net.SeedType = plant.mSeedType;
+            net.SpawnType = spawnType;
             net.GridX = gridX;
             net.GridY = gridY;
             callback?.Invoke(net);

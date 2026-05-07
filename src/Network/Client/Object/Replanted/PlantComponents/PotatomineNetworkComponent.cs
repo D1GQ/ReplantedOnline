@@ -60,9 +60,18 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 
     internal void ExplodeSynced()
     {
+        if (!HasExploded)
+        {
+            HasExploded = true;
+            SendDoSpecialRpc();
+            DoSpecial();
+            PlantNetworked.DespawnAndDestroyWhenDeadOrNull(true);
+        }
+    }
+
+    protected override void DoSpecial()
+    {
         HasExploded = true;
-        SendDoSpecialRpc();
-        DoSpecial();
-        PlantNetworked.DespawnAndDestroyWhenDeadOrNull();
+        base.DoSpecial();
     }
 }

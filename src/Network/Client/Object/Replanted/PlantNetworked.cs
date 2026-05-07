@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Monos;
@@ -45,6 +46,11 @@ internal sealed class PlantNetworked : NetworkObject
     internal SeedType SeedType;
 
     /// <summary>
+    /// The spawn type of the plant.
+    /// </summary>
+    internal SpawnType SpawnType;
+
+    /// <summary>
     /// The grid X coordinate where this plant is located when spawning.
     /// </summary>
     internal int GridX;
@@ -72,6 +78,11 @@ internal sealed class PlantNetworked : NetworkObject
     {
         LogicComponent = PlantNetworkComponent.AddComponent(this, SeedType);
         _Plant.AddNetworkedLookup(this);
+
+        if (SpawnType == SpawnType.ChinaJalapeno)
+        {
+            LogicComponent = AddNetworkComponent<ChinaJalapenoNetworkComponent>();
+        }
     }
 
     private bool _waitingToDespawn;
@@ -235,6 +246,7 @@ internal sealed class PlantNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
+            packetWriter.WriteEnum(SpawnType);
             packetWriter.WriteEnum(SeedType);
 
             LogicComponent.Serialize(packetWriter, init);
@@ -260,6 +272,7 @@ internal sealed class PlantNetworked : NetworkObject
             // Read spawn info
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
+            SpawnType = packetReader.ReadEnum<SpawnType>();
             SeedType = packetReader.ReadEnum<SeedType>();
 
             _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;

@@ -43,5 +43,10 @@ internal enum SpawnType
     /// <summary>
     /// Zombie drops from above via bungee zombie skiping the target drop animation.
     /// </summary>
-    BungeeDropZombieNoTarget
+    BungeeDropZombieNoTarget,
+
+    /// <summary>
+    /// Jalapenos that replaces the lawn mowers in China Arena.
+    /// </summary>
+    ChinaJalapeno
 }

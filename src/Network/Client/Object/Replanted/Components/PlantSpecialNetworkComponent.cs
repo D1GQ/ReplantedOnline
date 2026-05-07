@@ -22,7 +22,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
                 {
                     SendDoSpecialRpc();
                     PlantNetworked.Dead = true;
-                    PlantNetworked.DespawnAndDestroyWhenDeadOrNull();
+                    PlantNetworked.DespawnAndDestroyWhenDeadOrNull(true);
                 }
             }
         }
@@ -37,6 +37,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         if (!_isDoingSpecial)
         {
             _isDoingSpecial = true;
+            DoSpecial_PlantSide();
             SendNetworkComponentRpc(PlantSpecialRpcs.DoSpecial);
         }
     }
@@ -48,6 +49,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         {
             _isDoingSpecial = true;
             DoSpecial();
+            PlantNetworked.IsReadyToDespawn = true;
         }
     }
 
@@ -56,4 +58,6 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         PlantNetworked.Dead = true;
         PlantNetworked._Plant.DoSpecial();
     }
+
+    protected virtual void DoSpecial_PlantSide() { }
 }
