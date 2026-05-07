@@ -6,6 +6,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
+using UnityEngine;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
 
@@ -85,18 +86,31 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, 0, 3, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
+
+            _pushBackEventTimer = 30f; // 30s
         }
     }
 
+    private float _pushBackEventTimer;
     /// <inheritdoc/>
-    public void UpdateArena(VersusMode versusMode) { }
+    public void UpdateArena(VersusMode versusMode)
+    {
+        if (!ReplantedLobby.AmLobbyHost()) return;
+
+        _pushBackEventTimer += Time.deltaTime;
+        if (_pushBackEventTimer >= 120f) // 2m
+        {
+            _pushBackEventTimer = 0f;
+            ArenaEvents.PushBackEvent();
+        }
+    }
 
     /// <inheritdoc/>
     public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
     {
         if (Instances.GameplayActivity.Board.mPlantRow[gridY] == PlantRowType.Pool)
         {
-            if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or SeedType.ZombiePogo or SeedType.ZombiePolevaulter)
+            if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or SeedType.ZombiePogo or SeedType.ZombiePolevaulter or SeedType.ZombieBalloon)
             {
                 return false;
             }

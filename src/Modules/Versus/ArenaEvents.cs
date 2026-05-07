@@ -77,21 +77,31 @@ internal static class ArenaEvents
             if (zombie.IsDeadOrDying()) continue;
             if (zombie.mVelX <= 0f) continue;
             if (zombie.mPosX > 490f) continue;
+            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
 
             PushBackZombie(zombie);
             Rpc<PushBackZombieRpc>.Instance.Send(zombie);
         }
 
-        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+        for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)
         {
-            for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)
+            for (int gridX = 0; gridX < 5; gridX++)
             {
-                for (int gridX = 0; gridX < 5; gridX++)
+                var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
+                if (plant == null)
                 {
-                    var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
-                    if (plant == null)
+                    if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
                     {
                         SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
+                    }
+                    else if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+                    {
+                        if (Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
+                        {
+                            continue;
+                        }
+
+                        SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, gridX, gridY, true);
                     }
                 }
             }
