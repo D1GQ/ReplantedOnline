@@ -150,8 +150,8 @@ internal class ReplantedOnlineMod : MelonMod
             internal const int INITIAL_SKY_RATE = 1200; // 12s
             internal static readonly (int MIN, int MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (800, 1200); // 8s - 12s
             internal const int SKY_RATE = 2200; // 22s
-            internal const int PLANT_RATE = 1800; // 18s
-            internal const int GRAVE_RATE = 3800; // 38s
+            internal const int PLANT_RATE = 1400; // 14s
+            internal const int GRAVE_RATE = 3400; // 34s
         }
     }
 }
