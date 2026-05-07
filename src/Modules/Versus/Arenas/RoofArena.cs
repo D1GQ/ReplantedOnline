@@ -111,7 +111,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         if (!ReplantedLobby.AmLobbyHost()) return;
 
         _pushBackEventTimer += Time.deltaTime;
-        if (_pushBackEventTimer >= 90f)
+        if (_pushBackEventTimer >= 90f) // 1m 30s
         {
             _pushBackEventTimer = 0f;
             ArenaEvents.PushBackEvent();

@@ -101,7 +101,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
-        _pushBackEventTimer = 0;
+        _pushBackEventTimer = 30f; // 30s
     }
 
     private float _pushBackEventTimer;
@@ -111,7 +111,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
         if (!ReplantedLobby.AmLobbyHost()) return;
 
         _pushBackEventTimer += Time.deltaTime;
-        if (_pushBackEventTimer >= 90f)
+        if (_pushBackEventTimer >= 120f) // 2m
         {
             _pushBackEventTimer = 0f;
             ArenaEvents.PushBackEvent();
