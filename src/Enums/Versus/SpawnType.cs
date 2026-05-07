@@ -31,6 +31,11 @@ internal enum SpawnType
     RiseFromPool,
 
     /// <summary>
+    /// Zombie drops from above.
+    /// </summary>
+    FallFromSky,
+
+    /// <summary>
     /// Zombie drops from above via bungee zombie.
     /// </summary>
     BungeeDropZombie,

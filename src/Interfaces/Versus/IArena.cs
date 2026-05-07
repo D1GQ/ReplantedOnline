@@ -60,6 +60,11 @@ internal interface IArena
 
         if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
         {
+            if (zombieType == ZombieType.Gravestone && Type is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+            {
+                return SpawnType.FallFromSky;
+            }
+
             return SpawnType.RiseFromGround;
         }
 

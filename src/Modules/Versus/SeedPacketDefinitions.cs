@@ -335,6 +335,25 @@ internal static class SeedPacketDefinitions
                     break;
             }
         }
+        else if (spawnType == SpawnType.FallFromSky)
+        {
+            Animations.PlayFallFromSky(zombie, gridY);
+
+            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
+
+            switch (zombieType)
+            {
+                case ZombieType.Gravestone:
+                    zombie.mPosX = theX - 25;
+                    break;
+                case ZombieType.BackupDancer:
+                    zombie.mPosX = gridX;
+                    break;
+                default:
+                    zombie.mPosX = theX - 25;
+                    break;
+            }
+        }
         else if (spawnType == SpawnType.BackgroundAndShakeBushes)
         {
             Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
