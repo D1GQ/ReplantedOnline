@@ -32,7 +32,7 @@
 
 	<!-- Build Events -->
 	<PropertyGroup>
-		<ModPathFile>build\mod_folder_path</ModPathFile>
+		<ModPathFile>$(MSBuildProjectDirectory)\build\mod_folder_path</ModPathFile>
 		<GamePath Condition="Exists('$(ModPathFile)')">$([System.IO.File]::ReadAllText('$(ModPathFile)').Trim())</GamePath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
 	</PropertyGroup>
