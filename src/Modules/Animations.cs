@@ -43,8 +43,13 @@ internal static class Animations
         if (VersusState.IsInCountDown) yield break;
 
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.Swing, Mathf.Lerp(-25f, -15, Mathf.Clamp01(gridY / 5)));
-        var startAltitude = zombie.mAltitude;
+        float startAltitude = zombie.mAltitude;
+        var originalRect = zombie.mZombieRect;
+        var originalAttackRect = zombie.mZombieAttackRect;
+
         zombie.mController.m_shadowController.m_spriteRenderer.gameObject.SetActive(false);
+        zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
+        zombie.mZombieAttackRect = new Rect(9999, 9999, 0, 0);
         zombie.mAltitude = 300 + (100 * gridY);
         while (zombie.mAltitude > startAltitude)
         {
@@ -52,6 +57,8 @@ internal static class Animations
             yield return null;
         }
         Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_VASE_BREAKING);
+        zombie.mZombieRect = originalRect;
+        zombie.mZombieAttackRect = originalAttackRect;
         zombie.mAltitude = startAltitude;
         zombie.mController.m_shadowController.m_spriteRenderer.gameObject.SetActive(true);
     }
