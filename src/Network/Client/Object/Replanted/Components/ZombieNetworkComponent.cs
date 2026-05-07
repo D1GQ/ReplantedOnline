@@ -145,6 +145,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         if (_larpCoroutine != null)
         {
+            _syncCooldown = 2f;
             LastSyncPosX = null;
             ZombieNetworked.StopCoroutine(_larpCoroutine);
         }

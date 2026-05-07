@@ -35,7 +35,7 @@ internal static class Animations
     /// <param name="gridY">The vertical grid coordinate that determines fall height and swing pitch.</param>
     internal static void PlayFallFromSky(Zombie zombie, int gridY)
     {
-        Instances.GameplayActivity.StartCoroutine(CoPlayFallFromSky(zombie, gridY));
+        zombie.mController.StartCoroutine(CoPlayFallFromSky(zombie, gridY));
     }
 
     private static IEnumerator CoPlayFallFromSky(Zombie zombie, int gridY)

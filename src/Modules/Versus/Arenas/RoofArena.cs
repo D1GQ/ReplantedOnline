@@ -100,10 +100,23 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
+
+        _pushBackEventTimer = 0f;
     }
 
+    private float _pushBackEventTimer;
     /// <inheritdoc/>
-    public void UpdateArena(VersusMode versusMode) { }
+    public void UpdateArena(VersusMode versusMode)
+    {
+        if (!ReplantedLobby.AmLobbyHost()) return;
+
+        _pushBackEventTimer += Time.deltaTime;
+        if (_pushBackEventTimer >= 90f)
+        {
+            _pushBackEventTimer = 0f;
+            ArenaEvents.PushBackEvent();
+        }
+    }
 
     /// <inheritdoc/>
     public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)

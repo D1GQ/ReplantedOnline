@@ -34,5 +34,15 @@ internal enum RpcType
     /// <summary>
     /// Syncs seed packet cooldown.
     /// </summary>
-    SyncSeedPacket
+    SyncSeedPacket,
+
+    /// <summary>
+    /// Displays event title on screem.
+    /// </summary>
+    DisplayEventTitleRpc,
+
+    /// <summary>
+    /// Pushs back a zombie from the pushback event.
+    /// </summary>
+    PushBackZombie,
 }
