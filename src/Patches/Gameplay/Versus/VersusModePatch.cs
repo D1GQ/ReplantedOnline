@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Exceptions;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
@@ -13,17 +12,18 @@ namespace ReplantedOnline.Patches.Gameplay.Versus;
 [HarmonyPatch]
 internal static class VersusModePatch
 {
-    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeGameplay))]
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPrefix]
-    private static void VersusMode_InitializeGameplay_Prefix(VersusMode __instance)
+    private static void VersusMode_UpdateGameplay_Prefix(VersusMode __instance)
     {
-        updateInterval.Reset();
-        IArena.GetCurrentArena()?.InitializeArena(__instance);
-        IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
-        VersusGameplayManager.OnStart();
-
-        // Prevent initial plants and zombies from being placed
-        throw new SilentPatchException();
+        if (__instance.m_gameplayInitialized == false)
+        {
+            __instance.m_gameplayInitialized = true;
+            updateInterval.Reset();
+            IArena.GetCurrentArena()?.InitializeArena(__instance);
+            IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
+            VersusGameplayManager.OnStart();
+        }
     }
 
     private readonly static ExecuteInterval updateInterval = new();
@@ -40,6 +40,19 @@ internal static class VersusModePatch
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
         }
+    }
+
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateWin))]
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.InitializeWin))]
+    [HarmonyPrefix]
+    private static bool VersusMode_Win_Prefix()
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.SetFocus))]
