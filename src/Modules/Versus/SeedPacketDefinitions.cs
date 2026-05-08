@@ -354,7 +354,7 @@ internal static class SeedPacketDefinitions
             switch (zombieType)
             {
                 case ZombieType.Gravestone:
-                    zombie.mPosX = theX - 25;
+                    zombie.mPosX = theX - 40;
                     break;
                 case ZombieType.BackupDancer:
                     zombie.mPosX = gridX;
