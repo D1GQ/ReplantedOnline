@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Injection;
 using System.Collections;
 
-namespace ReplantedOnline.Modules;
+namespace ReplantedOnline.Modules.Il2cpp;
 
 /// <summary>
 /// A wrapper that converts a managed IEnumerator to an Il2Cpp IEnumerator for interop compatibility.

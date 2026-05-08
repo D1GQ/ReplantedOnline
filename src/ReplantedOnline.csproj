@@ -12,6 +12,7 @@
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<!-- Build Metadata -->
@@ -54,7 +55,7 @@
 
 	<!-- Packages -->
 	<ItemGroup>
-		<PackageReference Include="HarmonyX" Version="2.16.0" />
+		<PackageReference Include="HarmonyX" Version="2.10.2.0" />
 	</ItemGroup>
 
 	<!-- References -->

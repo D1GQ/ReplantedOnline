@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using ReplantedOnline.Utilities;
 
-namespace ReplantedOnline.Patches;
+namespace ReplantedOnline.Patches.Other;
 
 [HarmonyPatch]
 internal static class UniverseLibPatch
