@@ -19,12 +19,6 @@ namespace ReplantedOnline.Modules.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
-#if DEBUG
-    internal static readonly ArenaTypes[] Disabled = [];
-#else
-    internal static readonly ArenaTypes[] Disabled = [ArenaTypes.Pool, ArenaTypes.PoolNight];
-#endif
-
     private static GameObject _panel;
     private static Image _preview;
 
@@ -69,30 +63,14 @@ internal static class ArenaSelectorPanel
 
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                // Loop to find the next available arena type, skipping any that are disabled
-                ArenaTypes nextArena = ReplantedLobby.LobbyData.Arena.Value;
-                while (true)
-                {
-                    nextArena = nextArena.Next();
-                    if (!Disabled.Contains(nextArena)) break;
-                }
-
-                ReplantedLobby.LobbyData.Arena.Value = nextArena;
+                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Next();
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                // Loop to find the previous available arena type, skipping any that are disabled
-                ArenaTypes previousArena = ReplantedLobby.LobbyData.Arena.Value;
-                while (true)
-                {
-                    previousArena = previousArena.Previous();
-                    if (!Disabled.Contains(previousArena)) break;
-                }
-
-                ReplantedLobby.LobbyData.Arena.Value = previousArena;
+                ReplantedLobby.LobbyData.Arena.Value = ReplantedLobby.LobbyData.Arena.Value.Previous();
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;
