@@ -73,6 +73,20 @@ internal static class LevelEntries
             Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.2f, Transitions.FadeIn));
         }
 
+        // Set new board to new arena
+        var cutScene = Instances.GameplayActivity.Board.mCutScene;
+        Instances.GameplayActivity.MakeNewBoard();
+        Instances.GameplayActivity.Board.mCutScene = cutScene;
+        Instances.GameplayActivity.Board.mCutScene.mBoard = Instances.GameplayActivity.Board;
+        Instances.GameplayActivity.VersusMode.m_board = Instances.GameplayActivity.Board;
+        Instances.GameplayActivity.SeedChooserScreen.mBoard = Instances.GameplayActivity.Board;
+        var list = Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos.ToArray();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var seedBankInfo = list[i];
+            seedBankInfo._mSeedBank_k__BackingField = Instances.GameplayActivity.Board.SeedBanks[i];
+        }
+
         // Set background to new arena
         UnityEngine.Object.Destroy(Instances.GameplayActivity.BackgroundController.gameObject);
         Instances.GameplayActivity.ChangeLevelBackground(versusLevel, true);
