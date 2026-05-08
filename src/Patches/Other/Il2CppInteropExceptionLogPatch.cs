@@ -92,8 +92,15 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (melonPatch == null)
             {
-                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find MelonLoader's ReportException_Prefix");
-                return;
+                // Fallback to namespace on newer versions
+                melonPatch = HarmonyLib.AccessTools.Method("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog:ReportException_Prefix");
+
+                if (melonPatch == null)
+                {
+                    ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find MelonLoader's ReportException_Prefix");
+
+                    return;
+                }
             }
 
             // Remove MelonLoader's patch from the original method
