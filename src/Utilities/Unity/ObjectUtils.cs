@@ -2,9 +2,10 @@
 using Il2CppSource.UI;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
+using Il2CppTekly.PanelViews;
 using UnityEngine;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Unity;
 
 /// <summary>
 /// Provides helper methods for GameObject manipulation and cleanup.
@@ -94,5 +95,21 @@ internal static class ObjectUtils
                 UnityEngine.Object.Destroy(comp);
             }
         }
+    }
+
+    /// <summary>
+    /// Gets a PanelView from a PanelViewContainer by id.
+    /// </summary>
+    /// <param name="panelViewContainer">The PanelViewContainer.</param>
+    /// <param name="panelId">The PanelView id.</param>
+    internal static PanelView GetPanel(this PanelViewContainer panelViewContainer, string panelId)
+    {
+        foreach (var panel in panelViewContainer.m_panels)
+        {
+            if (panel.Id != panelId) continue;
+            return panel;
+        }
+
+        return null;
     }
 }

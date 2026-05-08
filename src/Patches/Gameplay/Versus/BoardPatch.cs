@@ -5,7 +5,8 @@ using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus;
 

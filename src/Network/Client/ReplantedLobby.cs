@@ -12,7 +12,7 @@ using ReplantedOnline.Network.Routing.Transport;
 using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Client;
 

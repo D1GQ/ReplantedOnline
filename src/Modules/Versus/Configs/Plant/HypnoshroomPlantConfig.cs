@@ -3,7 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Modules.Versus.Configs.Plant;
 

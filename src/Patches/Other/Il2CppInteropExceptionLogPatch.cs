@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 using ReplantedOnline.Exceptions;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Reflection;
 
 namespace ReplantedOnline.Patches.Other;

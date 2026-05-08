@@ -8,7 +8,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using UnityEngine;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides extension methods for game-specific types to simplify common operations
@@ -299,7 +299,7 @@ internal static class PvZRUtils
         if (lawnMower.mMowerType == LawnMowerType.SuperMower)
         {
             lawnMower.mShadowOffsetX = -24f;
-            lawnMower.mShadowOffsetY = (47f - altitude) - 8f;
+            lawnMower.mShadowOffsetY = 47f - altitude - 8f;
         }
         else if (lawnMower.mMowerType == LawnMowerType.Roof)
         {

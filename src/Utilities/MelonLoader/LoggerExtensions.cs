@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.MelonLoader;
 
 /// <summary>
 /// Provides extension methods for MelonLoader's logger instance to include class type information in log messages.

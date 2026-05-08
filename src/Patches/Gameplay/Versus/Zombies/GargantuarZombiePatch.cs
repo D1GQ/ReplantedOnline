@@ -8,7 +8,8 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;

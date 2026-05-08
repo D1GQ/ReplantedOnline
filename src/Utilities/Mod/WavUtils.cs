@@ -1,7 +1,8 @@
-﻿using System.Reflection;
+﻿using ReplantedOnline.Utilities.MelonLoader;
+using System.Reflection;
 using UnityEngine;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides utility methods for loading and converting WAV audio files.

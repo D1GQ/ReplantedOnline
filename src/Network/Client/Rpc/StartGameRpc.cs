@@ -9,7 +9,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Patches.Gameplay.UI;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 

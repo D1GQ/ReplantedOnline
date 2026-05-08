@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Utilities;
+﻿namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides extension methods for shuffling collections.

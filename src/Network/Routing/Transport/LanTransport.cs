@@ -8,7 +8,7 @@ using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Server.LAN;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Routing.Transport;
 

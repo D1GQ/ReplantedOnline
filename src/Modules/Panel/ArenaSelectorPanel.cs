@@ -8,6 +8,8 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -6,7 +6,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using System.Reflection;
 using UnityEngine;
 

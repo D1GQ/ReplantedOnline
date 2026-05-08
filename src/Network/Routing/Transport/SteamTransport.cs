@@ -5,7 +5,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Network.Routing.Transport;
 

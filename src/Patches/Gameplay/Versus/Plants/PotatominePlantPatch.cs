@@ -4,7 +4,7 @@ using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using System.Collections;
 using UnityEngine;
 

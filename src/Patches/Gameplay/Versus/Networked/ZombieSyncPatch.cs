@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;
 

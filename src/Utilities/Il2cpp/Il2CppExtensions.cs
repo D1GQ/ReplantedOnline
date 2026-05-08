@@ -1,6 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Il2cpp;
 
 /// <summary>
 /// Provides extension methods for Il2Cpp types to improve interoperability with C# and simplify common operations.

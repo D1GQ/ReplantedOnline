@@ -4,7 +4,7 @@ using Il2CppSource.Controllers;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Il2cpp;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Arenas;
 

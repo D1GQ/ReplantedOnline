@@ -9,7 +9,8 @@ using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
+using ReplantedOnline.Utilities.Mod;
 using System.Collections;
 using UnityEngine;
 

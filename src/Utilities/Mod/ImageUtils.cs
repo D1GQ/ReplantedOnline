@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides utility methods for loading and managing images and sprites from various sources.

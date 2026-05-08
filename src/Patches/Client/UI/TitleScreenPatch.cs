@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppTekly.PanelViews;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;

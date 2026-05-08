@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Enums.Versus;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides utility methods for working with enumerations.

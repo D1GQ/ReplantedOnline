@@ -6,6 +6,8 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 

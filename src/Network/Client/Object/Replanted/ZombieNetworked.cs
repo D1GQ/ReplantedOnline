@@ -10,7 +10,8 @@ using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;

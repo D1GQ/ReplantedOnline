@@ -1,5 +1,5 @@
 ﻿using Il2CppSteamworks.Data;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Structs;
 

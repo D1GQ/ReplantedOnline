@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Patches.Other;
 

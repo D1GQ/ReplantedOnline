@@ -3,7 +3,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 

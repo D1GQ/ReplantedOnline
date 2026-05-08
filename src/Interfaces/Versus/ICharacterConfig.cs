@@ -4,7 +4,7 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Il2cpp;
 
 namespace ReplantedOnline.Interfaces.Versus;
 

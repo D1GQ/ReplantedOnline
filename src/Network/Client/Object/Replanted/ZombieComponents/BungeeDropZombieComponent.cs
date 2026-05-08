@@ -3,7 +3,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 

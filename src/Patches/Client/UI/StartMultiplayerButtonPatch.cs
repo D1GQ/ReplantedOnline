@@ -5,7 +5,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Routing.Transport;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Client.UI;

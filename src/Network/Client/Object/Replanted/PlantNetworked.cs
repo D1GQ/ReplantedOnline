@@ -9,7 +9,8 @@ using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Network.Client.Object.Replanted.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Gameplay.Versus.Networked;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted;
 

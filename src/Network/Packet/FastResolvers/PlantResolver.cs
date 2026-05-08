@@ -2,7 +2,7 @@
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Network.Packet.FastResolvers;
 

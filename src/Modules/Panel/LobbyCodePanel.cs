@@ -5,7 +5,7 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Modules.Panel;

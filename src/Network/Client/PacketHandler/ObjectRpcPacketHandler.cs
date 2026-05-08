@@ -4,7 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Collections;
 using UnityEngine;
 

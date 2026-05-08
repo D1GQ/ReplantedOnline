@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Unity;
 
 /// <summary>
 /// Provides utility methods for creating and managing coroutines with network awareness.

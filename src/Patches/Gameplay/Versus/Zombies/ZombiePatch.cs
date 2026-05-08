@@ -5,7 +5,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;

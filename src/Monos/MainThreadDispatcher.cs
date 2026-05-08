@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Modules;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
 
 namespace ReplantedOnline.Monos;

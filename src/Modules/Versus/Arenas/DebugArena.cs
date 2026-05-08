@@ -8,7 +8,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using UnityEngine.InputSystem;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;

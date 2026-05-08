@@ -7,7 +7,7 @@ using ReplantedOnline.Network.Client.Object.Replanted;
 using ReplantedOnline.Structs;
 using System.Net;
 
-namespace ReplantedOnline.Utilities;
+namespace ReplantedOnline.Utilities.Mod;
 
 /// <summary>
 /// Provides helper methods for managing network object lookups and associations.

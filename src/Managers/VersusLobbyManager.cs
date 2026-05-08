@@ -7,7 +7,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Routing.Transport;
 using ReplantedOnline.Patches.Gameplay.UI;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using System.Text;
 using UnityEngine;

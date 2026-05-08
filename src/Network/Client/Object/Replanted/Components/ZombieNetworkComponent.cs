@@ -4,7 +4,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 

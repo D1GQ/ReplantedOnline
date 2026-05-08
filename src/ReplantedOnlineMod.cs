@@ -15,7 +15,7 @@ using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Client;
 using ReplantedOnline.Patches.Other;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Reflection;
 using UnityEngine;
 

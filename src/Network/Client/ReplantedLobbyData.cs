@@ -6,7 +6,7 @@ using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 
 namespace ReplantedOnline.Network.Client;
 

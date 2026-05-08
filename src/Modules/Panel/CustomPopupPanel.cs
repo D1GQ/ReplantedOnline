@@ -1,7 +1,7 @@
 ﻿using BloomEngine.Extensions;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Modules.Panel;

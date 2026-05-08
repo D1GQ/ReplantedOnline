@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Utilities;
+﻿using ReplantedOnline.Utilities.MelonLoader;
 using System.Collections;
 using UnityEngine.Networking;
 

@@ -6,7 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Text;
 

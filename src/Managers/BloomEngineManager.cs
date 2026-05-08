@@ -3,7 +3,7 @@ using BloomEngine.Config.Inputs;
 using BloomEngine.ModMenu;
 using MelonLoader;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using System.Reflection;
 
 namespace ReplantedOnline.Managers;

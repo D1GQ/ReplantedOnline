@@ -4,7 +4,7 @@ using ReplantedOnline.Managers;
 using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Net.Sockets;
 

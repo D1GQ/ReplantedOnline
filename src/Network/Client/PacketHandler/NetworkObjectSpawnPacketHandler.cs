@@ -6,7 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;

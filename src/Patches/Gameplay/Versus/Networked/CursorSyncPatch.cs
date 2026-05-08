@@ -9,7 +9,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Rpc;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using static Il2CppReloaded.Constants;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Networked;

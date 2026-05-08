@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Mod;
 using UnityEngine;
 
 namespace ReplantedOnline.Monos;

@@ -3,7 +3,8 @@ using Il2CppReloaded.Binders;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Il2cpp;
+using ReplantedOnline.Utilities.Mod;
 using UnityEngine;
 using UnityEngine.UI;
 

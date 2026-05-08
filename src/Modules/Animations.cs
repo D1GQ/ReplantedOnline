@@ -2,7 +2,7 @@
 using Il2CppReloaded.Services;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 

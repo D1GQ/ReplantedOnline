@@ -14,7 +14,7 @@ using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Rpc;
-using ReplantedOnline.Utilities;
+using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
