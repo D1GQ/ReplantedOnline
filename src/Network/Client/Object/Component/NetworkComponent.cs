@@ -52,6 +52,11 @@ internal abstract class NetworkComponent : IRpcReceiver
     internal virtual void OnEnabled() { }
 
     /// <summary>
+    /// Called before Network Object gets destroyed.
+    /// </summary>
+    internal virtual void OnDestroyed() { }
+
+    /// <summary>
     /// Called every frame to update component logic.
     /// </summary>
     internal virtual void Update() { }

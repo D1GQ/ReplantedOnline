@@ -98,7 +98,7 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
-    private void OnDestroy()
+    public override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();
 

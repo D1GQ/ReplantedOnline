@@ -109,7 +109,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    private void OnDestroy()
+    public override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();
 

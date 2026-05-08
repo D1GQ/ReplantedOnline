@@ -195,6 +195,23 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     public virtual void OnDespawn() { }
 
     /// <summary>
+    /// Called when the network object is being destroyed.
+    /// </summary>
+    private void OnDestroy()
+    {
+        foreach (var component in NetworkComponents)
+        {
+            component.OnDestroyed();
+        }
+        OnDestroyed();
+    }
+
+    /// <summary>
+    /// Called when the network object is being destroyed.
+    /// </summary>
+    public virtual void OnDestroyed() { }
+
+    /// <summary>
     /// Gets the name to set the GameObject when the network object is spawned.
     /// </summary>
     /// <returns></returns>

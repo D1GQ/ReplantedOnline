@@ -1,6 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
+using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
+using ReplantedOnline.Utilities;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
@@ -39,6 +42,24 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         }
 
         UpdatePositionSync();
+    }
+
+    internal override void OnDestroyed()
+    {
+        int jackInTheBoxCount = 0;
+        foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
+        {
+            if (ZombieNetworked._Zombie == zombie) continue;
+            if (zombie.mZombieType != ZombieType.JackInTheBox) continue;
+
+            jackInTheBoxCount++;
+        }
+
+        // Stop JackInThebox song if none are left
+        if (jackInTheBoxCount == 0)
+        {
+            Instances.GameplayActivity.m_audioService.StopFoley(FoleyType.JackInThebox);
+        }
     }
 
     private void SendExplodeRpc()
