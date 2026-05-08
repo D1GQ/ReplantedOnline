@@ -6,6 +6,7 @@ using Il2CppSpine.Unity;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
+using UnityEngine;
 
 namespace ReplantedOnline.Utilities;
 
@@ -326,5 +327,26 @@ internal static class PvZRUtils
             var skeleton = lawnMower.mController.GetComponent<SkeletonAnimation>();
             skeleton?.Update(0f);
         }
+    }
+
+    /// <summary>
+    /// Create a new bowling line on the current stage.
+    /// </summary>
+    /// <returns>The SpriteRenderer for the bowling line.</returns>
+    internal static GameObject CreateBowlingLine(Sprite sprite)
+    {
+        if (Instances.GameplayActivity.BackgroundController.m_bowlingLine != null)
+        {
+            UnityEngine.Object.Destroy(Instances.GameplayActivity.BackgroundController.m_bowlingLine);
+        }
+
+        var bowlingLineGo = new GameObject("P_WalnutBowlingLine");
+        bowlingLineGo.transform.SetParent(Instances.GameplayActivity.m_boardOffset);
+        bowlingLineGo.transform.localPosition = new(0f, -907.26f, 0f);
+        bowlingLineGo.transform.localScale = new(97f, 97f, 1f);
+        Instances.GameplayActivity.BackgroundController.m_bowlingLine = bowlingLineGo;
+        var spriteRenderer = bowlingLineGo.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = sprite;
+        return bowlingLineGo;
     }
 }
