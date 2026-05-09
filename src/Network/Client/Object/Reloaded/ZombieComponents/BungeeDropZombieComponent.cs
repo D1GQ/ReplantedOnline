@@ -37,8 +37,6 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         bungee.mZombieRect = RectUtils.NonInteractableRect; // Make invulnerable
 
         // Position zombie under bungee
-        var targetX = Instances.GameplayActivity.Board.GridToPixelX(ZombieNetworked.GridX, ZombieNetworked.GridY);
-        zombie.mPosX = targetX - 25;
         zombie.mController.gameObject.SetActive(true);
 
         if (ZombieNetworked.SpawnType == SpawnType.BungeeDropZombieNoTarget)
@@ -51,6 +49,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         // Animate descent
         while (bungee.mZombiePhase is not (ZombiePhase.BungeeAtBottom or ZombiePhase.BungeeRising))
         {
+            bungee.mPosX = zombie.mPosX + 25;
             SeedPacketDefinitions.SetBungeeRenderOrder(bungee);
             zombie.mBungeeOffsetY = -bungee.mAltitude;
             zombie.RenderOrder = bungee.RenderOrder + 1;

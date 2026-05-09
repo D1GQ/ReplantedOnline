@@ -27,6 +27,31 @@ internal static class PvZRUtils
         return posX * 2.92f + Instances.GameplayActivity?.m_boardOffset?.localPosition.x ?? 975f;
     }
 
+
+    /// <summary>
+    /// Converts a ReloadedObject X position to a grid index based on the game's grid spacing.
+    /// </summary>
+    /// <param name="X">The ReloadedObject X coordinate to convert.</param>
+    /// <returns>
+    /// The grid index.
+    /// </returns>
+    internal static int ReloadedObjectXToGridX(float X)
+    {
+        return (int)((X - 40) / 80f);
+    }
+
+    /// <summary>
+    /// Converts a ReloadedObject Y position to a grid index based on the game's grid spacing.
+    /// </summary>
+    /// <param name="Y">The ReloadedObject Y coordinate to convert.</param>
+    /// <returns>
+    /// The grid index.
+    /// </returns>
+    internal static int ReloadedObjectYToGridY(float Y)
+    {
+        return (int)(Y / 80f) - 1;
+    }
+
     /// <summary>
     /// Gets the local player's item from a multiplayer collection.
     /// </summary>

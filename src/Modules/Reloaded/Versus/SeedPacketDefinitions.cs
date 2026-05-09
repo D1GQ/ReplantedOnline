@@ -292,7 +292,13 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
     internal static (Zombie Zombie, ZombieNetworked ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
     {
-        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType, gridX, gridY), spawnOnNetwork);
+        int truegridX = gridX;
+        if (zombieType == ZombieType.BackupDancer)
+        {
+            truegridX = PvZRUtils.ReloadedObjectXToGridX(gridX);
+        }
+
+        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType, truegridX, gridY), spawnOnNetwork);
     }
 
     /// <summary>
@@ -307,12 +313,13 @@ internal static class SeedPacketDefinitions
     internal static (Zombie Zombie, ZombieNetworked ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
     {
         // Add zombie to the board at the specified position
-        // Use forced X position (9) for certain zombies, otherwise use the provided gridX
-        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes ? 9 : gridX, gridY);
+        bool spawnInBack = spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes || zombieType == ZombieType.BackupDancer;
+        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnInBack ? 9 : gridX, gridY);
 
         bool canRise = !VersusState.IsInCountDown;
-        // If this zombie rises from ground, trigger the rising animation
-        // This makes the zombie emerge from the ground rather than just appearing
+        var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
+        var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
+
         if (spawnType == SpawnType.RiseFromGround)
         {
             if (canRise)
@@ -321,9 +328,6 @@ internal static class SeedPacketDefinitions
                 zombie.mPhaseCounter = 150;
                 Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_DIRT_RISE);
             }
-
-            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-            var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
 
             switch (zombieType)
             {
@@ -349,8 +353,6 @@ internal static class SeedPacketDefinitions
             zombie.mZombiePhase = ZombiePhase.RisingFromGrave;
             zombie.mPhaseCounter = 50;
 
-            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-
             switch (zombieType)
             {
                 case ZombieType.Gravestone:
@@ -364,17 +366,24 @@ internal static class SeedPacketDefinitions
                     break;
             }
         }
+        else if (spawnType is SpawnType.BungeeDropZombie or SpawnType.BungeeDropZombieNoTarget)
+        {
+            switch (zombieType)
+            {
+                case ZombieType.BackupDancer:
+                    zombie.mPosX = gridX;
+                    break;
+                default:
+                    zombie.mPosX = theX - 25;
+                    break;
+            }
+        }
         else if (spawnType == SpawnType.FallFromSky)
         {
             Animations.PlayFallFromSky(zombie, gridY);
 
-            var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-
             switch (zombieType)
             {
-                case ZombieType.Gravestone:
-                    zombie.mPosX = theX - 25;
-                    break;
                 case ZombieType.BackupDancer:
                     zombie.mPosX = gridX;
                     break;
