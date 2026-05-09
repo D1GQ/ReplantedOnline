@@ -101,6 +101,11 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
+        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.China-Overlay.png", 100f));
+        line.color = new(0.2f, 0.9f, 0.8f, 0.5f);
+        line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);
+        line.transform.localScale = new Vector3(100f, 100f, 1f);
+
         _pushBackEventTimer = 30f; // 30s
     }
 
@@ -108,7 +113,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
-        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 682);
 
         if (!ReplantedLobby.AmLobbyHost()) return;
 
