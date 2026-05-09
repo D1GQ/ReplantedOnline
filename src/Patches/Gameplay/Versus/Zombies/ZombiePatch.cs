@@ -6,6 +6,7 @@ using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Gameplay.Versus.Zombies;
@@ -137,7 +138,7 @@ internal static class ZombiePatch
                 {
                     if (gravestone.mZombiePhase == ZombiePhase.ZombieNormal)
                     {
-                        __result.position = new Vector2(-9999, -9999);
+                        __result = RectUtils.NonInteractableRect;
                         break;
                     }
                 }

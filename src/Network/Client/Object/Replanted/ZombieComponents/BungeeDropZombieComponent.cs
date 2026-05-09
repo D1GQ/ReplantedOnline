@@ -5,7 +5,6 @@ using ReplantedOnline.Modules.Versus;
 using ReplantedOnline.Network.Client.Object.Replanted.Components;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Replanted.ZombieComponents;
 
@@ -26,18 +25,16 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
 
         var originalVelX = zombie.mVelX;
         var originalRenderOrder = zombie.RenderOrder;
-        var originalRect = zombie.mZombieRect;
-        var originalAttackRect = zombie.mZombieAttackRect;
 
         // Temporarily hide and make zombie invulnerable
-        zombie.mZombieRect = new Rect(9999, 9999, 0, 0);
-        zombie.mZombieAttackRect = new Rect(9999, 9999, 0, 0);
+        zombie.mZombieRect = zombie.mZombieRect.AsNonInteractable();
+        zombie.mZombieAttackRect = zombie.mZombieAttackRect.AsNonInteractable();
         zombie.mController.gameObject.SetActive(false);
 
         // Spawn bungee zombie
         var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, ZombieNetworked.GridX, ZombieNetworked.GridY, SpawnType.None, false).Zombie;
         bungee.BungeeLiftTarget(); // Make arms close with 
-        bungee.mZombieRect = new Rect(9999, 9999, 0, 0); // Make invulnerable
+        bungee.mZombieRect = RectUtils.NonInteractableRect; // Make invulnerable
 
         // Position zombie under bungee
         var targetX = Instances.GameplayActivity.Board.GridToPixelX(ZombieNetworked.GridX, ZombieNetworked.GridY);
@@ -80,8 +77,8 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.mBungeeOffsetY = 0;
         zombie.RenderOrder = originalRenderOrder;
         zombie.mVelX = originalVelX;
-        zombie.mZombieRect = originalRect;
-        zombie.mZombieAttackRect = originalAttackRect;
+        zombie.mZombieRect = zombie.mZombieRect.AsInteractable();
+        zombie.mZombieAttackRect = zombie.mZombieAttackRect.AsInteractable();
         zombie.UpdateAnimSpeed();
     }
 }
