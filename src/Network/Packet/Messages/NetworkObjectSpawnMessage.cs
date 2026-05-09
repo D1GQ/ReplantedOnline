@@ -1,8 +1,8 @@
 ﻿using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Monos;
+using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Packet.Messages;
 
@@ -46,10 +46,10 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
             throw new Exception($"[NetworkSpawnPacket] Unable to find prefab by GUID: {networkObj.GUID}");
         }
 
-        ReplantedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
+        ReloadedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         networkObj.Serialize(packetWriter, true);
 
-        var count = Math.Min(networkObj.ChildNetworkObjects.Count, ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN - 1);
+        var count = Math.Min(networkObj.ChildNetworkObjects.Count, ReplantedOnlineMod.Constants.Network.MAX_NETWORK_CHILDREN - 1);
         packetWriter.WriteInt(count);
         if (count > 0)
         {
@@ -59,7 +59,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
                 var child = networkObj.ChildNetworkObjects[i];
                 child.OwnerId = networkObj.OwnerId;
                 child.NetworkId = networkObj.NetworkId + nextId;
-                ReplantedLobby.LobbyData.OnNetworkObjectSpawn(child);
+                ReloadedLobby.LobbyData.OnNetworkObjectSpawn(child);
                 child.Serialize(packetWriter, true);
                 nextId++;
             }
@@ -88,7 +88,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
     /// </summary>
     public void DeserializeNetworkObject(NetworkObject networkObj, PacketReader packetReader)
     {
-        ReplantedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
+        ReloadedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
         networkObj.Deserialize(packetReader, true);
         networkObj.gameObject.name = networkObj.GetObjectName();
 
@@ -98,12 +98,12 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
             uint nextId = 1;
             for (int i = 0; i < childCount; i++)
             {
-                if (i >= ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN) break;
+                if (i >= ReplantedOnlineMod.Constants.Network.MAX_NETWORK_CHILDREN) break;
 
                 var child = networkObj.ChildNetworkObjects[i];
                 child.OwnerId = networkObj.OwnerId;
                 child.NetworkId = networkObj.NetworkId + nextId;
-                ReplantedLobby.LobbyData.OnNetworkObjectSpawn(child);
+                ReloadedLobby.LobbyData.OnNetworkObjectSpawn(child);
                 child.Deserialize(packetReader, true);
                 nextId++;
             }

@@ -4,8 +4,8 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Steam;
-using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Structs.Network;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Routing.Transport;
 

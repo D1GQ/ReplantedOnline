@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Packet;
@@ -16,7 +16,7 @@ internal interface IRpc
     /// </summary>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data to process.</param>
-    void Handle(ReplantedClientData sender, PacketReader packetReader);
+    void Handle(ReloadedClientData sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming RPC to the appropriate handler based on the RPC type.
@@ -24,7 +24,7 @@ internal interface IRpc
     /// <param name="rpcType">The type of RPC to handle.</param>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data.</param>
-    internal static void HandleRpc(RpcType rpcType, ReplantedClientData sender, PacketReader packetReader)
+    internal static void HandleRpc(RpcType rpcType, ReloadedClientData sender, PacketReader packetReader)
     {
         var handler = RegisterRpc.GetInstanceFromLookup(rpcType);
         handler?.Handle(sender, packetReader);

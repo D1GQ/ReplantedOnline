@@ -1,8 +1,8 @@
 ﻿using MelonLoader;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
@@ -15,21 +15,21 @@ namespace ReplantedOnline.Network.Client.PacketHandler;
 internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkSpawn(sender, packetReader));
     }
 
-    private static IEnumerator CoWaitForNetworkSpawn(ReplantedClientData sender, PacketReader packetReader)
+    private static IEnumerator CoWaitForNetworkSpawn(ReloadedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var message = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packet);
 
         try
         {
-            while (ReplantedLobby.LobbyData != null)
+            while (ReloadedLobby.LobbyData != null)
             {
-                if (!ReplantedLobby.LobbyData.ReadyForNetworkObjects)
+                if (!ReloadedLobby.LobbyData.ReadyForNetworkObjects)
                 {
                     yield return null;
                     continue;

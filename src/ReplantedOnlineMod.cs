@@ -2,19 +2,21 @@
 using Il2CppInterop.Runtime.Injection;
 using Il2CppSteamworks;
 using MelonLoader;
-using ReplantedOnline.Attributes;
-using ReplantedOnline.Enums;
-using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
+using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Enums.Modded;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Il2cpp;
-using ReplantedOnline.Modules.Panel;
-using ReplantedOnline.Modules.Versus;
-using ReplantedOnline.Monos;
+using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Modules.Unity;
+using ReplantedOnline.MonoScripts.Modded;
+using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Github;
-using ReplantedOnline.Patches.Client;
-using ReplantedOnline.Patches.Other;
+using ReplantedOnline.Patches.Misc;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Reflection;
 using UnityEngine;
@@ -63,7 +65,7 @@ internal class ReplantedOnlineMod : MelonMod
         SeedPacketDefinitions.Initialize();
         ContentManager.Initialize();
         MonoSingleton<MainThreadDispatcher>.CreateInstance();
-        ReplantedLobby.Initialize();
+        ReloadedLobby.Initialize();
     }
 
     public override void OnPreSupportModule()
@@ -101,9 +103,9 @@ internal class ReplantedOnlineMod : MelonMod
         if (sceneName == "Frontend")
         {
             // If the game some how goes to main menu while in the lobby leave it
-            if (ReplantedLobby.AmInLobby())
+            if (ReloadedLobby.AmInLobby())
             {
-                ReplantedLobby.LeaveLobby();
+                ReloadedLobby.LeaveLobby();
             }
 
             if (loaded) return;
@@ -138,21 +140,45 @@ internal class ReplantedOnlineMod : MelonMod
 
     internal static class Constants
     {
-        internal const int DEFAULT_PLAYER_INDEX = -1;
-        internal const int LOCAL_PLAYER_INDEX = 0;
-        internal const int OPPONENT_PLAYER_INDEX = 1;
-        internal const string MOD_VERSION_KEY = "mod_version";
-        internal const string GAME_CODE_KEY = "game_code";
-        internal const int MAX_NETWORK_CHILDREN = 5;
-        internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f; // 60s
-
-        internal static class Production
+        internal static class Network
         {
-            internal const int INITIAL_SKY_RATE = 1200; // 12s
-            internal static readonly (int MIN, int MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (800, 1200); // 8s - 12s
-            internal const int SKY_RATE = 2200; // 22s
-            internal const int PLANT_RATE = 1400; // 14s
-            internal const int GRAVE_RATE = 3400; // 34s
+            internal const int MAX_NETWORK_CHILDREN = 5;
+            internal const string MOD_VERSION_KEY = "mod_version";
+            internal const string GAME_CODE_KEY = "game_code";
+
+            internal static class ObjectStates
+            {
+                internal const string NULL_STATE = "null";
+                internal const string UPDATE_STATE = "update";
+
+                internal const string ZOMBIE_MIND_CONTROLLED_STATE = "mind_controlled";
+                internal const string ZOMBIE_CHEWING_PLANT_STATE = "chewing_plant";
+                internal const string ZOMBIE_MOWED_DOWN_STATE = "mowed_down";
+
+                internal const string GARGANTUAR_SMASH_STATE = "gargantuar_smash";
+                internal const string GARGANTUAR_TARGET_STATE = "gargantuar_target";
+
+                internal const string LADDER_ZOMBIE_PLACED_LADDER = "placed_ladder";
+
+                internal const string CHOMPER_BITE_STATE = "chomper_bite";
+            }
+        }
+
+        internal static class Reloaded
+        {
+            internal const int DEFAULT_PLAYER_INDEX = -1;
+            internal const int LOCAL_PLAYER_INDEX = 0;
+            internal const int OPPONENT_PLAYER_INDEX = 1;
+            internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f; // 60s
+
+            internal static class Production
+            {
+                internal const int INITIAL_SKY_RATE = 1200; // 12s
+                internal static readonly (int MIN, int MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (800, 1200); // 8s - 12s
+                internal const int SKY_RATE = 2200; // 22s
+                internal const int PLANT_RATE = 1400; // 14s
+                internal const int GRAVE_RATE = 3400; // 34s
+            }
         }
     }
 }

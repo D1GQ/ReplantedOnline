@@ -1,5 +1,5 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Packet;
 

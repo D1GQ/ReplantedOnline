@@ -1,12 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules.Versus;
-using ReplantedOnline.Network.Client.Object.Replanted;
+using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
@@ -25,7 +25,7 @@ internal sealed class PushBackZombieRpc : IRpcDispatcher<Zombie>
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         if (sender.AmHost)
         {

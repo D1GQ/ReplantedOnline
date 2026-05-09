@@ -1,0 +1,196 @@
+﻿using HarmonyLib;
+using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Exceptions;
+using ReplantedOnline.Modules.Modded;
+using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities.Modded;
+using ReplantedOnline.Utilities.Unity;
+
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+
+[HarmonyPatch]
+internal static class BoardPatch
+{
+    /// Reworks wave zombie spawning to use RPCs for network synchronization
+    /// Handles zombies spawned during waves
+    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
+    [HarmonyPrefix]
+    private static bool Board_AddZombieInRow_Prefix(ZombieType theZombieType, int theRow, int theFromWave, ref Zombie __result)
+    {
+        // Only intercept during active gameplay in multiplayer
+        if (ReloadedLobby.AmInLobby() && VersusState.IsInGameplay)
+        {
+            // Allow Target zombies (like Target Zombie from I Zombie) to use original logic
+            if (theZombieType is ZombieType.Target) return true;
+
+            // Prevent zombies from spawning when flag zombie is spawned, this is handled in FlagZombiePatch.cs
+            if (theZombieType is ZombieType.Normal or ZombieType.TrafficCone or ZombieType.Pail)
+            {
+                __result = ObjectUtils.CreateReloadedObject<Zombie>();
+                return false;
+            }
+
+            if (!VersusState.AmPlantSide)
+            {
+                throw new SilentPatchException();
+            }
+
+            // Prevent imps from spawning normally, this is handled in GargantuarZombiePatch.cs
+            if (theZombieType is ZombieType.Imp) throw new SilentPatchException();
+
+            // Spawn zombie at column 9 (right side of board) with network synchronization
+            __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 9, theRow, true).Zombie;
+
+            // Prevent VersusMode from handling Bobsled, this is done in BobsledZombiePatch.cs
+            if (theZombieType == ZombieType.Bobsled) throw new SilentPatchException();
+
+            // Skip original method since we handled spawning with network sync
+            return false;
+        }
+
+        return true; // Allow original method in single player or non-gameplay phases
+    }
+
+    private static readonly ExecuteInterval _initLawnMowersInterval = new();
+    [HarmonyPatch(typeof(Board), nameof(Board.InitLawnMowers))]
+    [HarmonyPrefix]
+    private static bool Board_InitLawnMowers_Prefix(Board __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (_initLawnMowersInterval.Execute())
+            {
+                if (VersusState.Arena == ArenaTypes.China)
+                {
+                    if (ReloadedLobby.AmLobbyHost())
+                    {
+                        for (int row = 0; row < __instance.GetNumRows(); row++)
+                        {
+                            SeedPacketDefinitions.SpawnPlant(SeedType.Jalapeno, -1, row, SpawnType.ChinaJalapeno, true);
+                        }
+                    }
+
+                    return false;
+                }
+
+                // Always initialize lawn mowers.
+                if (__instance.m_lawnMowers.Count == 0)
+                {
+                    for (int row = 0; row < __instance.GetNumRows(); row++)
+                    {
+                        var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
+                        PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(CutScene), nameof(CutScene.AddFlowerPots))]
+    [HarmonyPrefix]
+    private static bool CutScene_AddFlowerPots_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Prevent flower pots from spawning, this is handled by the Arena class!
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.DoPlantingEffects))]
+    [HarmonyPrefix]
+    private static bool Board_DoPlantingEffects_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Prevent planting effect and sound playing during countdown
+            if (VersusState.IsInCountDown)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.AddCoin))]
+    [HarmonyPrefix]
+    private static bool Board_BoardAddCoin_Prefix(CoinType theCoinType)
+    {
+        // Only apply these changes when in an online lobby
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (theCoinType is CoinType.Silver or CoinType.Gold or CoinType.Diamond)
+            {
+                return false;
+            }
+
+            if (theCoinType is CoinType.VersusTrophyPlant or CoinType.VersusTrophyZombie)
+            {
+                return false;
+            }
+
+            if (theCoinType == CoinType.Sun && (VersusState.AmZombieSide || VersusState.AmSpectator))
+            {
+                return false; // Don't allow sun to spawn 
+            }
+            else if (theCoinType == CoinType.Brain && (VersusState.AmPlantSide || VersusState.AmSpectator))
+            {
+                return false; // Don't allow brain to spawn 
+            }
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.CanPlantAt))]
+    [HarmonyPostfix]
+    private static void Board_CanPlantAt_Postfix(int theGridX, int theGridY, SeedType theType, ref PlantingReason __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Custom place conditions 
+            if (!SeedPacketDefinitions.CanPlace(theType, theGridX, theGridY))
+            {
+                __result = PlantingReason.NotHere;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.AddGraveStones))]
+    [HarmonyPrefix]
+    private static bool Board_CanAddGraveStoneAt_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Don't spawn gravestones in Night Arena
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.VacuumCoins))]
+    [HarmonyPrefix]
+    private static bool Board_VacuumCoins_Prefix(CoinVacuumStyle vacuumStyle)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Remove ability to collect all coins on the screen!
+            if (vacuumStyle == CoinVacuumStyle.GlobalSunOnly)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

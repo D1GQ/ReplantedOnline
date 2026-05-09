@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Enums;
+﻿using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Structs;
 using System.Reflection;
 

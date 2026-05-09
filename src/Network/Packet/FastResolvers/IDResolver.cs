@@ -1,6 +1,6 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Packet.FastResolvers;
 

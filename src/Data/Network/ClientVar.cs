@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Network.Client;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using System.Globalization;
 
 namespace ReplantedOnline.Data.Network;
@@ -36,22 +36,22 @@ internal sealed class ClientVar<T>
         get
         {
             return (T)Deserialize(
-                ReplantedLobby.NetworkTransport.GetLobbyMemberData(
-                    ReplantedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport.GetLobbyMemberData(
+                    ReloadedLobby.LobbyData.LobbyId,
                     _clientId,
                     _varName),
                 typeof(T));
         }
         set
         {
-            if (ReplantedClientData.LocalClient?.ClientId == _clientId)
+            if (ReloadedClientData.LocalClient?.ClientId == _clientId)
             {
-                ReplantedLobby.NetworkTransport.SetLobbyMemberData(
-                    ReplantedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport.SetLobbyMemberData(
+                    ReloadedLobby.LobbyData.LobbyId,
                     _varName,
                     Serialize(value, typeof(T)));
 
-                ReplantedLobby.LobbyData.UpdateLobbyStates();
+                ReloadedLobby.LobbyData.UpdateLobbyStates();
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Client.PacketHandler;
 internal sealed class RpcPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         var message = Message<RpcMessage>.Instance.Deserialize(packetReader);
         if (!local)

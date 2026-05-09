@@ -32,21 +32,21 @@ internal sealed class LobbyVar<T>
         get
         {
             return (T)Deserialize(
-                ReplantedLobby.NetworkTransport.GetLobbyData(
-                    ReplantedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport.GetLobbyData(
+                    ReloadedLobby.LobbyData.LobbyId,
                     _varName),
                 typeof(T));
         }
         set
         {
-            if (ReplantedLobby.AmLobbyHost())
+            if (ReloadedLobby.AmLobbyHost())
             {
-                ReplantedLobby.NetworkTransport.SetLobbyData(
-                    ReplantedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport.SetLobbyData(
+                    ReloadedLobby.LobbyData.LobbyId,
                     _varName,
                     Serialize(value, typeof(T)));
 
-                ReplantedLobby.LobbyData.UpdateLobbyStates();
+                ReloadedLobby.LobbyData.UpdateLobbyStates();
             }
         }
     }

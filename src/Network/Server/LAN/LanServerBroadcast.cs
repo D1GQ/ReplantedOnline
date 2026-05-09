@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Net.Sockets;

@@ -1,12 +1,12 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules;
-using ReplantedOnline.Monos;
+using ReplantedOnline.Modules.Unity;
+using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client.Object.Component;
-using ReplantedOnline.Network.Client.Object.Replanted;
+using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Client.Object;
 
@@ -84,7 +84,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// Gets whether the local client is the owner of this network object.
     /// Determines if this client has authority to modify the object's state.
     /// </summary>
-    internal bool AmOwner => ReplantedLobby.NetworkTransport.LocalClientId == OwnerId;
+    internal bool AmOwner => ReloadedLobby.NetworkTransport.LocalClientId == OwnerId;
 
     /// <summary>
     /// Gets or sets the Steam ID of the client who owns this network object.

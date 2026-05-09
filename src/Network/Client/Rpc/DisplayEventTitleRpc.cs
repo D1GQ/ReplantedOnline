@@ -1,7 +1,7 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules.Versus;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 
@@ -20,7 +20,7 @@ internal sealed class DisplayEventTitleRpc : IRpcDispatcher<ArenaEvents.EventTit
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         if (sender.AmHost)
         {

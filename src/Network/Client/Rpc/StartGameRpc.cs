@@ -1,14 +1,14 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Managers;
-using ReplantedOnline.Modules;
-using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Managers.Network;
+using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Patches.Gameplay.UI;
+using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Client.Rpc;
@@ -23,12 +23,12 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         packetWriter.WriteEnum(selectionSet);
         NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
-        ReplantedLobby.LobbyData.HasStarted.Value = true;
+        ReloadedLobby.LobbyData.HasStarted.Value = true;
         MatchmakingManager.UpdateLobbyJoinable();
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         // Only process StartGame RPCs from the actual lobby host
         if (sender.AmHost)

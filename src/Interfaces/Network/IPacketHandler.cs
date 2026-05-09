@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Packet;
@@ -19,7 +19,7 @@ internal interface IPacketHandler
     /// <param name="packetReader">The packet reader containing the raw packet data
     /// to be deserialized and processed by the handler.</param>
     /// <param name="local">Whether if this packet is from the local client.</param>
-    void Handle(ReplantedClientData sender, PacketReader packetReader, bool local);
+    void Handle(ReloadedClientData sender, PacketReader packetReader, bool local);
 
     /// <summary>
     /// Dispatches an incoming packet to the appropriate registered handler based on its tag.
@@ -32,7 +32,7 @@ internal interface IPacketHandler
     /// <c>true</c> if a handler was found and successfully processed the packet;
     /// otherwise, <c>false</c> if no handler is registered for the specified tag.
     /// </returns>
-    internal static bool HandlePacket(PacketHandlerType handlerType, ReplantedClientData sender, PacketReader packetReader, bool local)
+    internal static bool HandlePacket(PacketHandlerType handlerType, ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         var dispatcher = RegisterPacketHandler.GetInstanceFromLookup(handlerType);
         if (dispatcher != null)

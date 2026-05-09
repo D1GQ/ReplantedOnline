@@ -1,6 +1,7 @@
 ﻿using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Packet;
+
+namespace ReplantedOnline.Network.Packet.Messages;
 
 /// <summary>
 /// Represents a network message header for invoking Remote Procedure Calls (RPCs).

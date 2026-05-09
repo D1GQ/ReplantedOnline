@@ -2,12 +2,12 @@
 using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules;
-using ReplantedOnline.Modules.Panel;
-using ReplantedOnline.Monos;
+using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Server.LAN;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Routing.Transport;

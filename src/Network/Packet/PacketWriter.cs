@@ -2,7 +2,7 @@
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;

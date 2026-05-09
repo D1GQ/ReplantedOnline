@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;
@@ -14,12 +15,12 @@ namespace ReplantedOnline.Network.Client.PacketHandler;
 internal class ObjectRpcPacketHandler : IPacketHandler
 {
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader, bool local)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkObject(sender, packetReader));
     }
 
-    private static IEnumerator CoWaitForNetworkObject(ReplantedClientData sender, PacketReader packetReader)
+    private static IEnumerator CoWaitForNetworkObject(ReloadedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var message = Message<ObjectRpcMessage>.Instance.Deserialize(packet);
@@ -27,9 +28,9 @@ internal class ObjectRpcPacketHandler : IPacketHandler
 
         try
         {
-            while (ReplantedLobby.LobbyData != null && timeOut < 10f)
+            while (ReloadedLobby.LobbyData != null && timeOut < 10f)
             {
-                if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
+                if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
                     if (!message.IsComponent)
                     {

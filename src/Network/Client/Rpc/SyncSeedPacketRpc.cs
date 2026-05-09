@@ -1,13 +1,13 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Managers;
-using ReplantedOnline.Modules.Instance;
-using ReplantedOnline.Modules.Versus;
+using ReplantedOnline.Managers.Reloaded;
+using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
@@ -25,7 +25,7 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         // Read the seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();
@@ -41,7 +41,7 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
                 seedPacket.mActive = true;
                 seedPacket.mActive = false;
             }
-            seedPacket.WasPlanted(ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX);
+            seedPacket.WasPlanted(ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX);
             seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
             seedPacket.mActive = false;
         }

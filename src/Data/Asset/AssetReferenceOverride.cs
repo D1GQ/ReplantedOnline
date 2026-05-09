@@ -39,7 +39,7 @@ internal sealed class AssetReferenceOverride<T> : IAssetReferenceOverride
         if (_assetReference == null) return;
 
         // If in a lobby override assets
-        if (ReplantedLobby.AmInLobby())
+        if (ReloadedLobby.AmInLobby())
         {
             if (!_assetReference.m_Operation.IsValid())
             {

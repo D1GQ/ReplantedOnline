@@ -11,7 +11,7 @@ internal sealed class NetworkIdPool : IDisposable
 
     internal NetworkIdPool(uint start, uint end)
     {
-        for (uint i = start; i <= end; i += ReplantedOnlineMod.Constants.MAX_NETWORK_CHILDREN)
+        for (uint i = start; i <= end; i += ReplantedOnlineMod.Constants.Network.MAX_NETWORK_CHILDREN)
         {
             _availableIds.Enqueue(i);
         }

@@ -1,9 +1,9 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Managers;
-using ReplantedOnline.Monos;
+using ReplantedOnline.Managers.Network;
+using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Net.Sockets;
@@ -187,7 +187,7 @@ internal sealed class LanServer : IDisposable
         Task.Run(Server.ListenForP2P, Server.P2PCTS.Token);
 
         var actualLocalEndpoint = new IPEndPoint(localIP, localEndpoint.Port);
-        Server.LocalMemberId = new ID(actualLocalEndpoint, Enums.IdType.IPEndPoint);
+        Server.LocalMemberId = new ID(actualLocalEndpoint, IdType.IPEndPoint);
         Server.ServerData.HostId = Server.LocalMemberId;
 
         Server.CreateMember(Server.LocalMemberId, actualLocalEndpoint, playerName);
@@ -229,7 +229,7 @@ internal sealed class LanServer : IDisposable
         var localEndpoint = (IPEndPoint)Server.P2PClient.Client.LocalEndPoint;
         var localIP = GetLocalNetworkIP();
         var actualLocalEndpoint = new IPEndPoint(localIP, localEndpoint.Port);
-        Server.LocalMemberId = new ID(actualLocalEndpoint, Enums.IdType.IPEndPoint);
+        Server.LocalMemberId = new ID(actualLocalEndpoint, IdType.IPEndPoint);
     }
 
     /// <summary>
@@ -528,7 +528,7 @@ internal sealed class LanServer : IDisposable
     private void ProcessServerPacket(byte[] buffer, IPEndPoint remoteEndPoint)
     {
         var packetReader = PacketReader.Get(buffer);
-        var senderId = new ID(remoteEndPoint, Enums.IdType.IPEndPoint);
+        var senderId = new ID(remoteEndPoint, IdType.IPEndPoint);
 
         if (packetReader.GetTag() != PacketHandlerType.Server) return;
 

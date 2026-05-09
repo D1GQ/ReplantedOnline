@@ -1,16 +1,15 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
-using ReplantedOnline.Enums;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules.Panel;
+using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Modded;
 using System.Collections;
 using UnityEngine;
 
@@ -28,9 +27,9 @@ internal static class NetworkDispatcher
     /// <param name="targetId">The ID of the target client to receive the packet.</param>
     internal static void SendNetworkObjectsTo(ID targetId)
     {
-        if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.Count > 0)
+        if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.Count > 0)
         {
-            foreach (var networkObj in ReplantedLobby.LobbyData.NetworkObjectsSpawned.Values)
+            foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
             {
                 if (networkObj.IsOnNetwork && !networkObj.AmChild)
                 {
@@ -54,7 +53,7 @@ internal static class NetworkDispatcher
     internal static void SpawnNetworkObject(NetworkObject networkObj, ID owner)
     {
         networkObj.OwnerId = owner;
-        networkObj.NetworkId = ReplantedLobby.LobbyData.GetNextNetworkId();
+        networkObj.NetworkId = ReloadedLobby.LobbyData.GetNextNetworkId();
         var packet = PacketWriter.Get();
         Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
 
@@ -77,7 +76,7 @@ internal static class NetworkDispatcher
         SendPacket(packet, false, PacketHandlerType.NetworkObjectDespawn, PacketChannel.Main);
         packet.Recycle();
 
-        ReplantedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
+        ReloadedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
     }
 
     /// <summary>
@@ -135,10 +134,10 @@ internal static class NetworkDispatcher
         var packet = PacketWriter.Get();
         Message<RpcHeaderMessage>.Instance.Serialize(tag, payload, packet);
 
-        if (ReplantedLobby.IsPlayerInOurLobby(targetId))
+        if (ReloadedLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            ReplantedLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
+            ReloadedLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
         }
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -158,14 +157,14 @@ internal static class NetworkDispatcher
         Message<RpcHeaderMessage>.Instance.Serialize(tag, payload, packet);
 
         int sentCount = 0;
-        foreach (var client in ReplantedLobby.LobbyData.AllClients.Values)
+        foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
             if (client.AmLocal) continue;
 
-            if (ReplantedLobby.IsPlayerInOurLobby(client.ClientId))
+            if (ReloadedLobby.IsPlayerInOurLobby(client.ClientId))
             {
                 var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-                bool sent = ReplantedLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
+                bool sent = ReloadedLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
                 if (sent) sentCount++;
             }
         }
@@ -175,7 +174,7 @@ internal static class NetworkDispatcher
         if (receiveLocally)
         {
             var rePacket = PacketReader.Get(packet.GetByteBuffer());
-            Streamline(ReplantedClientData.LocalClient, rePacket, true);
+            Streamline(ReloadedClientData.LocalClient, rePacket, true);
         }
 
         packet.Recycle();
@@ -207,13 +206,13 @@ internal static class NetworkDispatcher
     {
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), "Starting...");
 
-        while (ReplantedLobby.AmInLobby())
+        while (ReloadedLobby.AmInLobby())
         {
             try
             {
-                ReplantedLobby.NetworkTransport.Tick(Time.deltaTime);
+                ReloadedLobby.NetworkTransport.Tick(Time.deltaTime);
 
-                foreach (var networkObj in ReplantedLobby.LobbyData?.NetworkObjectsSpawned.Values)
+                foreach (var networkObj in ReloadedLobby.LobbyData?.NetworkObjectsSpawned.Values)
                 {
                     if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                     var packet = PacketWriter.Get();
@@ -223,7 +222,7 @@ internal static class NetworkDispatcher
                 }
 
                 processed = 5;
-                while (ReplantedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
+                while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
                 {
                     if (processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Rpc);
@@ -231,7 +230,7 @@ internal static class NetworkDispatcher
                 }
 
                 processed = 5;
-                while (ReplantedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
+                while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
                 {
                     if (processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Main);
@@ -239,7 +238,7 @@ internal static class NetworkDispatcher
                 }
 
                 processed = 5;
-                while (ReplantedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Buffered))
+                while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Buffered))
                 {
                     if (processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Buffered);
@@ -249,7 +248,7 @@ internal static class NetworkDispatcher
             catch (Exception ex)
             {
                 ReplantedOnlineMod.Logger.Error(typeof(NetworkDispatcher), $"Exception in CoListening: {ex}");
-                ReplantedLobby.LeaveLobby(() =>
+                ReloadedLobby.LeaveLobby(() =>
                 {
                     CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
                 });
@@ -275,7 +274,7 @@ internal static class NetworkDispatcher
 
         try
         {
-            if (ReplantedLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
+            if (ReloadedLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
             {
                 var sender = buffer.ClientId.GetNetClient();
                 ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
@@ -312,7 +311,7 @@ internal static class NetworkDispatcher
     /// <param name="sender">The client that sent the packet.</param>
     /// <param name="packetReader">The packet reader containing the packet data.</param>
     /// <param name="local">Whether if this packet is from the local client.</param>
-    internal static void Streamline(ReplantedClientData sender, PacketReader packetReader, bool local)
+    internal static void Streamline(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         var message = Message<RpcHeaderMessage>.Instance.Deserialize(packetReader);
 
@@ -348,10 +347,10 @@ internal static class NetworkDispatcher
                     break;
                 case PacketHandlerType.RemoveClient:
                     if (local) break;
-                    if (sender.AmHost && !ReplantedLobby.AmLobbyHost())
+                    if (sender.AmHost && !ReloadedLobby.AmLobbyHost())
                     {
                         var reason = packetReader.ReadEnum<BanReasons>();
-                        ReplantedLobby.LeaveLobby(() =>
+                        ReloadedLobby.LeaveLobby(() =>
                         {
                             CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");
                         });
@@ -361,7 +360,7 @@ internal static class NetworkDispatcher
                 case PacketHandlerType.ResetLobby:
                     if (sender.AmHost)
                     {
-                        ReplantedLobby.ResetLobby();
+                        ReloadedLobby.ResetLobby();
                     }
                     break;
                 default:

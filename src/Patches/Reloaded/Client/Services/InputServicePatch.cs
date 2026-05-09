@@ -1,0 +1,22 @@
+﻿using HarmonyLib;
+using Il2CppReloaded.Input;
+using ReplantedOnline.Network.Client;
+
+namespace ReplantedOnline.Patches.Reloaded.Client.Services;
+
+[HarmonyPatch]
+internal static class InputServicePatch
+{
+    [HarmonyPatch(typeof(InputService), nameof(InputService.BeginListeningForGuestInputDevice))]
+    [HarmonyPrefix]
+    private static bool InputService_BeginListeningForGuestInputDevice_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Prevent second local player from being detected
+            return false;
+        }
+
+        return true;
+    }
+}

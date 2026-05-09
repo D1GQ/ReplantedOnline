@@ -1,8 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Client.Object.Replanted;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Network.Client.Object.Reloaded;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Packet.FastResolvers;
 

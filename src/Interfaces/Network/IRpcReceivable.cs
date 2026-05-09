@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Structs;
+﻿using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Interfaces.Network;
 

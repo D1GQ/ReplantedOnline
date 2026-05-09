@@ -1,8 +1,8 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Il2cpp;
 
@@ -22,7 +22,7 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnPlantPlanted(Plant plant, int gridX, int gridY)
     {
-        if (!ReplantedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby()) return;
 
         foreach (var config in RegisterCharacterConfig.Instances)
         {
@@ -44,7 +44,7 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnZombiePlanted(Zombie zombie, int gridX, int gridY)
     {
-        if (!ReplantedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby()) return;
 
         foreach (var config in RegisterCharacterConfig.Instances)
         {

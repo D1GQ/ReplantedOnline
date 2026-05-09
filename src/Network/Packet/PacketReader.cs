@@ -3,9 +3,9 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
-using ReplantedOnline.Utilities.Mod;
+using ReplantedOnline.Utilities.Modded;
 using System.Net;
 using System.Text;
 using UnityEngine;
@@ -99,7 +99,7 @@ internal sealed class PacketReader : IPacket
             return null;
         }
 
-        if (ReplantedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(netId, out var networkObj))
+        if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(netId, out var networkObj))
         {
             return networkObj;
         }

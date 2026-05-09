@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes;
+﻿using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Network.Packet;
 
 namespace ReplantedOnline.Interfaces.Network;

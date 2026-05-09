@@ -1,12 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
@@ -24,7 +24,7 @@ internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         if (sender.Team is PlayerTeam.Plants)
         {

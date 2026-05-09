@@ -1,8 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Versus;
-using ReplantedOnline.Modules.Versus.Gamemodes;
+using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 
 namespace ReplantedOnline.Interfaces.Versus;
 

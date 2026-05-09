@@ -1,11 +1,11 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes;
+using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
-using ReplantedOnline.Patches.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Client.Rpc;
 
@@ -22,7 +22,7 @@ internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
     }
 
     /// <inheritdoc/>
-    public void Handle(ReplantedClientData sender, PacketReader packetReader)
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
     {
         // Read the chosen seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();
@@ -30,6 +30,6 @@ internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
         var theChosenSeed = SeedChooserScreen.GetChosenSeedFromType(seedType);
 
         // Use player index 1 (opposite player) when choosing seed for remote player
-        SeedChooserScreen.ClickedSeedInChooserOriginal(theChosenSeed, ReplantedOnlineMod.Constants.OPPONENT_PLAYER_INDEX);
+        SeedChooserScreen.ClickedSeedInChooserOriginal(theChosenSeed, ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX);
     }
 }

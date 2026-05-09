@@ -1,0 +1,149 @@
+﻿using Il2CppReloaded.Data;
+using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
+using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities.Modded;
+using System.Reflection;
+using UnityEngine;
+
+namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
+
+[RegisterArena]
+internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
+{
+    /// <inheritdoc/>
+    public virtual ArenaTypes Type => ArenaTypes.Roof;
+
+    /// <inheritdoc/>
+    public virtual MusicTune Music => MusicTune.RoofGrazetheroof;
+
+    /// <inheritdoc/>
+    public SpawnType DefaultZombieSpawnType => SpawnType.BungeeDropZombieNoTarget;
+
+    /// <inheritdoc/>
+    public int SeedPacketCount => 7;
+
+    /// <inheritdoc/>
+    public int StartingSeedPacketCount => 2;
+
+    /// <inheritdoc/>
+    public SeedType[] QuickPlayPlants
+    {
+        get
+        {
+            field ??=
+                [SeedType.Sunflower, SeedType.Flowerpot, SeedType.Cabbagepult,
+                SeedType.Potatomine, SeedType.Wallnut, SeedType.Jalapeno,
+                SeedType.Squash];
+            return field;
+        }
+    }
+
+    /// <inheritdoc/>
+    public SeedType[] QuickPlayZombies
+    {
+        get
+        {
+            field ??=
+                [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrafficCone,
+                SeedType.ZombieFootball, SeedType.ZombieCatapult, SeedType.ZombieGargantuar,
+                SeedType.ZombieFlag];
+            return field;
+        }
+    }
+
+    /// <inheritdoc/>
+    public virtual LevelEntryData GetLevelEntryData()
+    {
+        return LevelEntries.GetLevel("Level-AdventureArea5Level2");
+    }
+
+    /// <inheritdoc/>
+    public virtual Sprite GetThumbnail()
+    {
+        return Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofday.png");
+    }
+
+    /// <inheritdoc/>
+    public virtual void SetupVersusLevel(LevelEntryData versusLevelData)
+    {
+        versusLevelData.m_gameArea = GameArea.Roof;
+        versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
+    }
+
+    /// <inheritdoc/>
+    public void InitializeArena(VersusMode versusMode)
+    {
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
+
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+
+            for (int column = 0; column < 3; column++)
+            {
+                for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
+                {
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
+                }
+            }
+
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+        }
+
+        // Add bowling line
+        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f));
+        line.transform.localPosition = new Vector3(0f, -861.1128f, -1f);
+        line.transform.localScale = new Vector3(100f, 100f, 1f);
+        if (!Type.IsArenaAtNight())
+        {
+            line.color = new(0.6f, 0f, 1f, 0.3f);
+        }
+        else
+        {
+            line.color = new(0.8f, 0f, 0f, 0.5f);
+        }
+
+        _pushBackEventTimer = 0f;
+    }
+
+    private float _pushBackEventTimer;
+    /// <inheritdoc/>
+    public void UpdateArena(VersusMode versusMode)
+    {
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 680);
+
+        if (!ReloadedLobby.AmLobbyHost()) return;
+
+        _pushBackEventTimer += Time.deltaTime;
+        if (_pushBackEventTimer >= 90f) // 1m 30s
+        {
+            _pushBackEventTimer = 0f;
+            ArenaEvents.PushBackEvent();
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
+    {
+        if (!Challenge.IsZombieSeedType(seedType) && seedType != SeedType.Flowerpot)
+        {
+            if (Instances.GameplayActivity.Board.GetFlowerPotAt(gridX, gridY) == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
