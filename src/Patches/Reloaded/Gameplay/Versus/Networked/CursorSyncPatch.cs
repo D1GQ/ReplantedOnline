@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Input;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Managers.Reloaded;
@@ -31,10 +32,19 @@ internal static class CursorSyncPatch
 
             if (theCursorType == CursorType.Shovel)
             {
-                var gridX = Instances.GameplayActivity.Board.PixelToGridXKeepOnBoard(x, y);
-                var gridY = Instances.GameplayActivity.Board.PixelToGridYKeepOnBoard(x, y);
+                Plant plant;
+                if (Instances.GameplayActivity.InputService.CurrentControlType == ControlType.MKB)
+                {
+                    var pos = Instances.GameplayActivity.GetMousePosition();
+                    plant = __instance.ToolHitTest((int)pos.x, (int)pos.y, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+                }
+                else
+                {
+                    var gridX = Instances.GameplayActivity.Board.PixelToGridXKeepOnBoard(x, y);
+                    var gridY = Instances.GameplayActivity.Board.PixelToGridYKeepOnBoard(x, y);
+                    plant = __instance.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
+                }
 
-                var plant = __instance.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
                 if (plant != null)
                 {
                     var plantNetworked = plant.GetNetworked();
