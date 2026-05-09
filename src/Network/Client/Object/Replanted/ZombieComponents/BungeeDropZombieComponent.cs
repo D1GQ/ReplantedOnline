@@ -49,7 +49,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         }
 
         // Animate descent
-        while (bungee.mZombiePhase != ZombiePhase.BungeeAtBottom)
+        while (bungee.mZombiePhase is not (ZombiePhase.BungeeAtBottom or ZombiePhase.BungeeRising))
         {
             SeedPacketDefinitions.SetBungeeRenderOrder(bungee);
             zombie.mBungeeOffsetY = -bungee.mAltitude;
