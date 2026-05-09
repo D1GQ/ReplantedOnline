@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers;
 using ReplantedOnline.Modules;
 using ReplantedOnline.Modules.Instance;
@@ -87,24 +86,10 @@ internal static class CursorSyncPatch
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
                         Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
-                    }
-                    else
-                    {
-                        Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
-                    }
 
-                    // This has to be done to prevent Buzzer sound always playing after planting with GamePad
-                    // not sure why the original method doesn't work properly but this is the only way I found to fix it
-                    // Most likely the method calling _onCursorConfirmed
-                    throw new SilentPatchException();
+                        return false;
+                    }
                 }
-
-                Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
-
-                // This has to be done to prevent Buzzer sound always playing after planting with GamePad
-                // not sure why the original method doesn't work properly but this is the only way I found to fix it
-                // Most likely the method calling _onCursorConfirmed
-                throw new SilentPatchException();
             }
         }
 
@@ -150,23 +135,13 @@ internal static class CursorSyncPatch
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
                         Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
-                    }
-                    else
-                    {
-                        Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
-                    }
 
-                    return false;
+                        return false;
+                    }
                 }
-
-                // If planting is not valid, play buzzer sound
-                Instances.GameplayActivity.PlaySample(Sound.SOUND_BUZZER);
-
-                return false;
             }
         }
 
-        // Return true to execute original method (no plant in cursor, normal behavior)
         return true;
     }
 }
