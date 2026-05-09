@@ -30,7 +30,7 @@ internal static class ImageUtils
 
             using var ms = new MemoryStream();
             stream.CopyTo(ms);
-            return LoadSpriteFromBytes(ms.ToArray());
+            return LoadSpriteFromBytes(ms.ToArray(), pixelsPerUnit);
         }
         catch (Exception ex)
         {

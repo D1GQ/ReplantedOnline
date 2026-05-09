@@ -95,6 +95,8 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
+
         if (!ReplantedLobby.AmLobbyHost()) return;
 
         _pushBackEventTimer += Time.deltaTime;

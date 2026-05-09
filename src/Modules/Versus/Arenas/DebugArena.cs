@@ -69,6 +69,8 @@ internal sealed class DebugArena : IArena, IArenaData
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
+
         if (ReplantedLobby.AmLobbyHost())
         {
             if (VersusState.IsInGameplay && !Instances.GameplayActivity.Board.mPaused)

@@ -24,8 +24,6 @@ internal static class VersusModePatch
             IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
             VersusGameplayManager.OnStart();
         }
-
-        __instance.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
     }
 
     private readonly static ExecuteInterval updateInterval = new();

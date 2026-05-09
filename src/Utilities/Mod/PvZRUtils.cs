@@ -7,6 +7,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Instance;
 using ReplantedOnline.Modules.Versus;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace ReplantedOnline.Utilities.Mod;
 
@@ -333,7 +334,7 @@ internal static class PvZRUtils
     /// Create a new bowling line on the current stage.
     /// </summary>
     /// <returns>The SpriteRenderer for the bowling line.</returns>
-    internal static GameObject CreateBowlingLine(Sprite sprite)
+    internal static SpriteRenderer CreateBowlingLine(Sprite sprite)
     {
         if (Instances.GameplayActivity.BackgroundController.m_bowlingLine != null)
         {
@@ -342,11 +343,14 @@ internal static class PvZRUtils
 
         var bowlingLineGo = new GameObject("P_WalnutBowlingLine");
         bowlingLineGo.transform.SetParent(Instances.GameplayActivity.m_boardOffset);
-        bowlingLineGo.transform.localPosition = new(0f, -907.26f, 0f);
+        bowlingLineGo.transform.SetSiblingIndex(0);
+        bowlingLineGo.transform.localPosition = new(0f, -907.26f, -1f);
         bowlingLineGo.transform.localScale = new(97f, 97f, 1f);
         Instances.GameplayActivity.BackgroundController.m_bowlingLine = bowlingLineGo;
         var spriteRenderer = bowlingLineGo.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
-        return bowlingLineGo;
+        var sortingGroup = bowlingLineGo.AddComponent<SortingGroup>();
+        sortingGroup.sortingLayerName = Il2CppReloaded.Constants.SortingLayer.BACKGROUND;
+        return spriteRenderer;
     }
 }

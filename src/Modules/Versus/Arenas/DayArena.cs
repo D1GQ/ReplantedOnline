@@ -53,7 +53,10 @@ internal class DayArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public void UpdateArena(VersusMode versusMode) { }
+    public void UpdateArena(VersusMode versusMode)
+    {
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
+    }
 
     /// <inheritdoc/>
     public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;

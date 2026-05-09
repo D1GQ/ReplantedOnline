@@ -101,6 +101,13 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
+        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roofline.png", 100f));
+        line.transform.localPosition = new Vector3(0f, -848.2733f, -1f);
+        if (Type.IsArenaAtNight())
+        {
+            line.color = new(0.8f, 0.7f, 1f);
+        }
+
         _pushBackEventTimer = 0f;
     }
 
@@ -108,6 +115,8 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 522);
+
         if (!ReplantedLobby.AmLobbyHost()) return;
 
         _pushBackEventTimer += Time.deltaTime;
