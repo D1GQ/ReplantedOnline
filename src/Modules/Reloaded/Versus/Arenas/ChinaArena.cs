@@ -7,7 +7,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
@@ -65,7 +64,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public Sprite GetThumbnail()
     {
-        return Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.China.png");
+        return ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.China.png");
     }
 
     /// <inheritdoc/>
@@ -102,7 +101,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.China-Overlay.png", 100f));
+        var line = PvZRUtils.CreateBowlingLine(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.China-Overlay.png", 100f));
         line.color = new(0.2f, 0.9f, 0.8f, 0.5f);
         line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);

@@ -77,17 +77,29 @@ internal static class ModInfo
     /// <returns>The metadata value, or an empty string if not found.</returns>
     private static string GetAssemblyMetadata(string key)
     {
-        var attribute = Assembly.GetExecutingAssembly()
-            .GetCustomAttributes<AssemblyMetadataAttribute>()
-            .FirstOrDefault(a => a.Key == key);
-
+        var attribute = Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == key);
         return attribute?.Value ?? string.Empty;
     }
 
     /// <summary>
     /// The signature for the mod dll file.
     /// </summary>
-    internal readonly static ModSignature Signature = new();
+    internal static readonly ModSignature Signature = new();
+
+    /// <summary>
+    /// The assembly associated to this mod.
+    /// </summary>
+    internal static Assembly Assembly
+    {
+        get
+        {
+            if (field == null)
+            {
+                field = Assembly.GetExecutingAssembly();
+            }
+            return field;
+        }
+    }
 
     /// <summary>
     /// Contains constants related to Plants vs. Zombies™: Replanted game information.

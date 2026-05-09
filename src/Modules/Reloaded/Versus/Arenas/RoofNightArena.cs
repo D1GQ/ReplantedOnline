@@ -4,7 +4,6 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
@@ -27,7 +26,7 @@ internal sealed class RoofNightArena : RoofArena
     /// <inheritdoc/>
     public override Sprite GetThumbnail()
     {
-        return Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofnight.png");
+        return ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofnight.png");
     }
 
     /// <inheritdoc/>

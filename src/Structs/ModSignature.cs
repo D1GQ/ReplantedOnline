@@ -21,11 +21,10 @@ internal readonly struct ModSignature
 
     public ModSignature()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var location = assembly.Location;
+        var location = ModInfo.Assembly.Location;
         var dllHash = ComputeDllHash(location);
 
-        Signature = BuildAssemblySignature(assembly, dllHash);
+        Signature = BuildAssemblySignature(ModInfo.Assembly, dllHash);
         SignatureHash = ComputeSignatureHash(Signature);
     }
 

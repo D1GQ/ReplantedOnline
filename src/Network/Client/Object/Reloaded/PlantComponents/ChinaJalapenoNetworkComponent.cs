@@ -3,7 +3,6 @@ using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
@@ -22,7 +21,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     internal override void OnInit()
     {
         _awakeTexture = PlantNetworked._Plant.mController.m_meshRenderer.material.mainTexture;
-        _sleepingTexture = Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Jalapeno-Sleeping.png").texture;
+        _sleepingTexture = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Jalapeno-Sleeping.png").texture;
         PlantNetworked._Plant.mSeedType = SeedType.None;
         PlantNetworked._Plant.SetSleeping(true);
         PlantNetworked._Plant.PlayIdleAnim(0);

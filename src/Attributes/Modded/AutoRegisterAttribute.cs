@@ -22,12 +22,7 @@ internal abstract class AutoRegisterAttribute : Attribute
     /// </summary>
     internal static void RegisterAll()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-
-        var types = assembly
-            .GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(AutoRegisterAttribute)) && !t.IsAbstract && t.IsSealed)
-            .ToArray();
+        var types = ModInfo.Assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(AutoRegisterAttribute)) && !t.IsAbstract && t.IsSealed).ToArray();
 
         foreach (var type in types)
         {
@@ -69,11 +64,7 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
     /// <inheritdoc/>
     protected override void RegisterInstances()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-
-        var attributedTypes = assembly.GetTypes()
-            .Where(t => t.GetCustomAttributes(GetType(), false).Any())
-            .Where(t => !t.IsAbstract && !t.IsInterface); // Only instantiable types
+        var attributedTypes = ModInfo.Assembly.GetTypes().Where(t => t.GetCustomAttributes(GetType(), false).Any()).Where(t => !t.IsAbstract && !t.IsInterface);
 
         foreach (var type in attributedTypes)
         {
@@ -141,13 +132,9 @@ internal abstract class AutoRegisterLookupAttribute<T, EnumType>(EnumType enumTy
     /// <inheritdoc/>
     protected override void RegisterInstances()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-
         var attributeType = GetType();
 
-        var attributedTypes = assembly.GetTypes()
-            .Where(t => !t.IsAbstract && !t.IsInterface)
-            .ToArray();
+        var attributedTypes = ModInfo.Assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface).ToArray();
 
         foreach (var type in attributedTypes)
         {

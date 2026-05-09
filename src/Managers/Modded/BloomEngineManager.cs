@@ -4,7 +4,6 @@ using BloomEngine.ModMenu;
 using MelonLoader;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 
 namespace ReplantedOnline.Managers.Modded;
 
@@ -24,7 +23,7 @@ internal static class BloomEngineManager
         BloomConfigs.Init();
 
         var mod = ModMenuService.CreateEntry(replantedOnline);
-        mod.AddIcon(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png"));
+        mod.AddIcon(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png"));
         mod.AddDisplayName(ModInfo.MOD_NAME);
         mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
         mod.AddConfigInputs(BloomConfigs.UseLan, BloomConfigs.ModifyMusic);

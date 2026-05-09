@@ -8,7 +8,6 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
@@ -106,7 +105,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (poolSpriteRenderer != null)
         {
-            var lineSprite = Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Poolline.png", 100f);
+            var lineSprite = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Poolline.png", 100f);
 
             var line = PvZRUtils.CreateBowlingLine(lineSprite, false);
             var mask = line.gameObject.AddComponent<SpriteRendererMask>();

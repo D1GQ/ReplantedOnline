@@ -3,7 +3,6 @@ using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Utilities.Modded;
 using System.Collections;
-using System.Reflection;
 using UnityEngine;
 using static ReplantedOnline.Managers.Modded.BloomEngineManager;
 
@@ -36,7 +35,7 @@ internal static class AudioManager
     {
         MainMenuTheme = GetAudio(MusicFile.MainMusic, MusicTune.TitleCrazyDaveMainTheme);
         MainMenuTheme.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
-        CustomMainMenuTheme = Assembly.GetExecutingAssembly().LoadWavFromResources("ReplantedOnline.Resources.Sounds.CrazyDaveMainTheme-Compressed.wav");
+        CustomMainMenuTheme = ModInfo.Assembly.LoadWavFromResources("ReplantedOnline.Resources.Sounds.CrazyDaveMainTheme-Compressed.wav");
         CustomMainMenuTheme.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
     }
 

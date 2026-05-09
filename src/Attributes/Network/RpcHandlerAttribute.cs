@@ -99,9 +99,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// </summary>
     internal static void Initialize()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-
-        foreach (var type in assembly.GetTypes().Where(type => !type.IsAbstract && typeof(IRpcReceiver).IsAssignableFrom(type)))
+        foreach (var type in ModInfo.Assembly.GetTypes().Where(type => !type.IsAbstract && typeof(IRpcReceiver).IsAssignableFrom(type)))
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {

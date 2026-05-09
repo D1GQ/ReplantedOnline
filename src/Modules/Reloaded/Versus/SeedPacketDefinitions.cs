@@ -10,7 +10,6 @@ using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Utilities.Il2cpp;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
@@ -123,7 +122,7 @@ internal static class SeedPacketDefinitions
         var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
         var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(assetOverride);
-        assetOverride.SetOverride(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
+        assetOverride.SetOverride(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {

@@ -7,7 +7,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
@@ -65,7 +64,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public virtual Sprite GetThumbnail()
     {
-        return Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofday.png");
+        return ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofday.png");
     }
 
     /// <inheritdoc/>
@@ -102,7 +101,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f));
+        var line = PvZRUtils.CreateBowlingLine(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f));
         line.transform.localPosition = new Vector3(0f, -861.1128f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);
         if (!Type.IsArenaAtNight())
