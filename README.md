@@ -34,18 +34,18 @@ ReplantedOnline lets you play Versus mode online. Using direct peer-to-peer conn
 
 Pull requests are welcome. Code structure:
 ### Gameplay
-- `src/Modules/Versus/Configs` — contains configurations for plants/zombies
-- `src/Modules/Versus/Gamemodes` — contains gamemode setup and logic
-- `src/Modules/Versus/Arenas` — contains arena setup and logic
-- `src/Managers/VersusLobbyManager.cs` — handles lobby logic and states
-- `src/Managers/VersusGameplayManager.cs` — handles gameplay logic and states
-- `src/Managers/VersusEndGameManager.cs` — handles endgame logic and states
+- `src/Modules/Reloaded/Versus/Configs` — contains configurations for plants/zombies
+- `src/Modules/Reloaded/Versus/Gamemodes` — contains gamemode setup and logic
+- `src/Modules/Reloaded/Versus/Arenas` — contains arena setup and logic
+- `src/Managers/Reloaded/VersusLobbyManager.cs` — handles lobby logic and states
+- `src/Managers/Reloaded/VersusGameplayManager.cs` — handles gameplay logic and states
+- `src/Managers/Reloaded/VersusEndGameManager.cs` — handles endgame logic and states
 ### Networking - Client
 - `src/Network/Client/ReplantedLobby.cs` — handles steamworks/lan lobbies
 - `src/Network/Client/ReplantedLobbyData.cs` — handles data for the lobby
 - `src/Network/Client/PacketHandler` — contains packet handlers for routed packets
 - `src/Network/Client/RPC` — contains remote procedure call handlers for static rpcs
-- `src/Network/Client/Object/Replanted` — contains network objects, used to sync individual objects
+- `src/Network/Client/Object/Reloaded` — contains network objects, used to sync individual objects
 ### Networking - Server/Packets
 - `src/Network/Routing/Transport` — contains transports for networking
 - `src/Network/Routing/NetworkDispatcher.cs` — handles sending and routing packets to/from transport
