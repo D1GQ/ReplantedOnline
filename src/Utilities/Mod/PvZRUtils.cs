@@ -247,7 +247,7 @@ internal static class PvZRUtils
             lawnMower.mMowerType = LawnMowerType.Roof;
             lawnMower.mMowerState = LawnMowerState.Ready;
         }
-        else if (VersusState.Arena is ArenaTypes.Pool)
+        else if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
         {
             var groundType = lawnMower.mBoard.mPlantRow[row];
             if (groundType == PlantRowType.Pool)
