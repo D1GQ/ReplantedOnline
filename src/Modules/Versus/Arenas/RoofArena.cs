@@ -102,11 +102,16 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roofline.png", 100f));
-        line.transform.localPosition = new Vector3(0f, -848.2733f, -1f);
-        if (Type.IsArenaAtNight())
+        var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f));
+        line.transform.localPosition = new Vector3(0f, -861.1128f, -1f);
+        line.transform.localScale = new Vector3(100f, 100f, 1f);
+        if (!Type.IsArenaAtNight())
         {
-            line.color = new(0.8f, 0.7f, 1f);
+            line.color = new(0.6f, 0f, 1f, 0.3f);
+        }
+        else
+        {
+            line.color = new(0.8f, 0f, 0f, 0.5f);
         }
 
         _pushBackEventTimer = 0f;
@@ -116,7 +121,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
-        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 522);
+        versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 680);
 
         if (!ReplantedLobby.AmLobbyHost()) return;
 
