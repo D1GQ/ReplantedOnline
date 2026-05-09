@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
@@ -89,7 +90,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
 
-            _pushBackEventTimer = 30f; // 30s
+            _pushBackEventTimer.Set(30f); // 30s
         }
 
         // Add bowling line
@@ -135,7 +136,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         }
     }
 
-    private float _pushBackEventTimer;
+    private readonly UnityTimer _pushBackEventTimer = new();
     /// <inheritdoc/>
     public virtual void UpdateArena(VersusMode versusMode)
     {
@@ -143,10 +144,9 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        _pushBackEventTimer += Time.deltaTime;
-        if (_pushBackEventTimer >= 120f) // 2m
+        if (_pushBackEventTimer.HasElapsed(120f)) // 2m
         {
-            _pushBackEventTimer = 0f;
+            _pushBackEventTimer.Set(0f);
             ArenaEvents.PushBackEvent();
         }
     }

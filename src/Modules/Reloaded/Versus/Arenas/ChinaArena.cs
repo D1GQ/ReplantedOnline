@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
@@ -106,10 +107,10 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
         line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);
 
-        _pushBackEventTimer = 30f; // 30s
+        _pushBackEventTimer.Set(30f);
     }
 
-    private float _pushBackEventTimer;
+    private readonly UnityTimer _pushBackEventTimer = new();
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
@@ -117,10 +118,9 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        _pushBackEventTimer += Time.deltaTime;
-        if (_pushBackEventTimer >= 120f) // 2m
+        if (_pushBackEventTimer.HasElapsed(120f)) // 2m
         {
-            _pushBackEventTimer = 0f;
+            _pushBackEventTimer.Set(0f);
             ArenaEvents.PushBackEvent();
         }
     }
