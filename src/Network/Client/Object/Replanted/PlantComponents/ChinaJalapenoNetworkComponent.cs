@@ -25,12 +25,16 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         PlantNetworked._Plant.mX -= 40;
         PlantNetworked._Plant.mController.m_visualOffset = PlantNetworked._Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
         PlantNetworked._Plant.mController.m_shadowController.gameObject.SetActive(false);
-        PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
+
+        _lastHighContrast = !Instances.GameplayActivity.SettingsService.HighContrast;
+        UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
     }
 
     private bool _activated;
     internal override void Update()
     {
+        UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
+
         if (PlantNetworked.AmOwner)
         {
             foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
@@ -60,6 +64,22 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         if (_activated)
         {
             base.Update();
+        }
+    }
+
+    private bool _lastHighContrast;
+    private void UpdateHighContrast(bool useHighContrast)
+    {
+        if (useHighContrast == _lastHighContrast) return;
+        _lastHighContrast = useHighContrast;
+
+        if (useHighContrast)
+        {
+            PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
+        }
+        else
+        {
+            PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
         }
     }
 
