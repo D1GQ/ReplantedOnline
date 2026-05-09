@@ -25,6 +25,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         PlantNetworked._Plant.mX -= 40;
         PlantNetworked._Plant.mController.m_visualOffset = PlantNetworked._Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
         PlantNetworked._Plant.mController.m_shadowController.gameObject.SetActive(false);
+        PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
     }
 
     private bool _activated;
