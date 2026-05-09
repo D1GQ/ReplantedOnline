@@ -62,11 +62,6 @@ internal sealed class DebugArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public void InitializeSeedPacketCooldowns(SeedPacket[] seedPackets)
-    {
-    }
-
-    /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);

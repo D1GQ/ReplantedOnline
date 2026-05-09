@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Utilities.Mod;
@@ -13,6 +14,9 @@ internal sealed class RoofNightArena : RoofArena
 {
     /// <inheritdoc/>
     public override ArenaTypes Type => ArenaTypes.RoofNight;
+
+    /// <inheritdoc/>
+    public override MusicTune Music => MusicTune.NightMoongrains;
 
     /// <inheritdoc/>
     public override LevelEntryData GetLevelEntryData()

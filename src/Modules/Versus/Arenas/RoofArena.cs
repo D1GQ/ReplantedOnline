@@ -19,7 +19,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     public virtual ArenaTypes Type => ArenaTypes.Roof;
 
     /// <inheritdoc/>
-    public MusicTune Music => MusicTune.RoofGrazetheroof;
+    public virtual MusicTune Music => MusicTune.RoofGrazetheroof;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.BungeeDropZombieNoTarget;
