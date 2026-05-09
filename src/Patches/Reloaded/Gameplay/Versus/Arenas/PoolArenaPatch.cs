@@ -5,6 +5,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Il2cpp;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
 
@@ -78,5 +79,44 @@ internal static class PoolArenaPatch
     internal static void SetTargetOriginal(this FogController __instance, int target, TodCurves curveType, float delay = 0f, float duration = 2f, bool ignoreDupeCheck = false)
     {
         throw new NotImplementedException("Reverse Patch Stub");
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.CanTargetPlant))]
+    [HarmonyPostfix]
+    private static void Zombie_CanTargetPlant_Postfix(Zombie __instance, Plant thePlant, ZombieAttackType theAttackType, ref bool __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Fix zombies in pool not finding target
+            if (__instance.mBoard.mPlantRow[__instance.mRow] == PlantRowType.Pool)
+            {
+                var plantOnLawn = __instance.mBoard.GetPlantsOnLawn(PvZRUtils.ReloadedObjectXToGridX(thePlant.X), PvZRUtils.ReloadedObjectYToGridY(thePlant.Y));
+
+                if (plantOnLawn.PumpkinPlant != null)
+                {
+                    if (plantOnLawn.PumpkinPlant == thePlant)
+                    {
+                        __result = true;
+                    }
+
+                    return;
+                }
+
+                if (plantOnLawn.NormalPlant != null)
+                {
+                    if (plantOnLawn.NormalPlant == thePlant)
+                    {
+                        __result = true;
+                    }
+
+                    return;
+                }
+
+                if (plantOnLawn.UnderPlant == thePlant)
+                {
+                    __result = true;
+                }
+            }
+        }
     }
 }
