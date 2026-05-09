@@ -90,7 +90,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
 
-            _pushBackEventTimer.Set(30f); // 30s
+            _pushBackEventTimer.Set(30f);
         }
 
         // Add bowling line
@@ -144,9 +144,9 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        if (_pushBackEventTimer.HasElapsed(120f)) // 2m
+        if (_pushBackEventTimer.HasElapsed(2, 00f))
         {
-            _pushBackEventTimer.Set(0f);
+            _pushBackEventTimer.Reset();
             ArenaEvents.PushBackEvent();
         }
     }

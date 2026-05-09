@@ -118,9 +118,9 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        if (_pushBackEventTimer.HasElapsed(120f)) // 2m
+        if (_pushBackEventTimer.HasElapsed(2, 00f))
         {
-            _pushBackEventTimer.Set(0f);
+            _pushBackEventTimer.Reset();
             ArenaEvents.PushBackEvent();
         }
     }

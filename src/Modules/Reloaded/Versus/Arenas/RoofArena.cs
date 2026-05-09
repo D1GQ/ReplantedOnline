@@ -114,7 +114,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             line.color = new(0.8f, 0f, 0f, 0.5f);
         }
 
-        _pushBackEventTimer.Set(0f);
+        _pushBackEventTimer.Reset();
     }
 
     private readonly UnityTimer _pushBackEventTimer = new();
@@ -125,9 +125,9 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        if (_pushBackEventTimer.HasElapsed(90f)) // 1m 30s
+        if (_pushBackEventTimer.HasElapsed(1, 30f))
         {
-            _pushBackEventTimer.Set(0f);
+            _pushBackEventTimer.Reset();
             ArenaEvents.PushBackEvent();
         }
     }

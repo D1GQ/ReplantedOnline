@@ -16,21 +16,52 @@ public sealed class UnityTimer
     public float AccumulatedTime => Time.time - _startTime;
 
     /// <summary>
-    /// Sets the timer to trigger after a specified duration from now
+    /// Resets the timer to start counting from the current moment
     /// </summary>
-    /// <param name="sDuration">The duration in seconds to wait before HasElapsed returns true</param>
-    public void Set(float sDuration)
+    public void Reset()
     {
-        _startTime = Time.time - sDuration;
+        _startTime = Time.time;
+    }
+
+    /// <summary>
+    /// Sets the timer by skipping forward a specified number of seconds
+    /// </summary>
+    /// <param name="startSeconds">The number of seconds to skip forward</param>
+    public void Set(float startSeconds)
+    {
+        _startTime = Time.time - startSeconds;
+    }
+
+    /// <summary>
+    /// Sets the timer by skipping forward a specified duration (minutes and seconds)
+    /// </summary>
+    /// <param name="startMinutes">The minutes to skip forward</param>
+    /// <param name="startSeconds">The seconds to skip forward (additional to the minutes)</param>
+    public void Set(int startMinutes, float startSeconds)
+    {
+        float totalSeconds = (startMinutes * 60f) + startSeconds;
+        _startTime = Time.time - totalSeconds;
     }
 
     /// <summary>
     /// Checks if the specified duration has elapsed since the timer started
     /// </summary>
-    /// <param name="sDuration">The duration in seconds to check against</param>
+    /// <param name="seconds">The duration in seconds to check against</param>
     /// <returns>True if the accumulated time is greater than or equal to the duration, otherwise false</returns>
-    public bool HasElapsed(float sDuration)
+    public bool HasElapsed(float seconds)
     {
-        return AccumulatedTime >= sDuration;
+        return AccumulatedTime >= seconds;
+    }
+
+    /// <summary>
+    /// Checks if the specified duration (minutes and seconds) has elapsed since the timer started
+    /// </summary>
+    /// <param name="minutes">The minutes portion of the duration</param>
+    /// <param name="seconds">The seconds portion of the duration (additional to the minutes)</param>
+    /// <returns>True if the accumulated time is greater than or equal to the total duration, otherwise false</returns>
+    public bool HasElapsed(int minutes, float seconds)
+    {
+        float totalSeconds = (minutes * 60f) + seconds;
+        return AccumulatedTime >= totalSeconds;
     }
 }
