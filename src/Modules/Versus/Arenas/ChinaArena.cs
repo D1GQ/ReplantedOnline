@@ -101,6 +101,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
+        // Add bowling line
         var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.China-Overlay.png", 100f));
         line.color = new(0.2f, 0.9f, 0.8f, 0.5f);
         line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);

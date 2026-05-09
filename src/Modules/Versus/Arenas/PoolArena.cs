@@ -5,7 +5,10 @@ using ReplantedOnline.Attributes;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Instance;
+using ReplantedOnline.Monos;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Utilities.Mod;
+using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline.Modules.Versus.Arenas;
@@ -88,6 +91,48 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
 
             _pushBackEventTimer = 30f; // 30s
+        }
+
+        // Add bowling line
+        SpriteRenderer poolSpriteRenderer;
+        if (!Type.IsArenaAtNight())
+        {
+            poolSpriteRenderer = versusMode.m_app.BackgroundController.transform.Find("Background/Area3_PoolWater_Overlay")?.GetComponent<SpriteRenderer>();
+        }
+        else
+        {
+            poolSpriteRenderer = versusMode.m_app.BackgroundController.transform.Find("Background/Area4_PoolWater_Overlay")?.GetComponent<SpriteRenderer>();
+        }
+
+        if (poolSpriteRenderer != null)
+        {
+            var lineSprite = Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Poolline.png", 100f);
+
+            var line = PvZRUtils.CreateBowlingLine(lineSprite, false);
+            var mask = line.gameObject.AddComponent<SpriteRendererMask>();
+            mask.SetMask(poolSpriteRenderer);
+            mask.SetInteraction(SpriteMaskInteraction.VisibleOutsideMask);
+            line.transform.localPosition = new Vector3(0f, -1004.427f, -1f);
+            line.transform.localScale = new Vector3(100f, 100f, 1f);
+            line.sortingLayerID = SortingLayer.NameToID(Il2CppReloaded.Constants.SortingLayer.BACKGROUND);
+            line.sortingOrder = 2;
+            if (Type.IsArenaAtNight())
+            {
+                line.color = new(0.8f, 0.7f, 1f);
+            }
+
+            var linePoolOverlayGo = new GameObject("LinePoolOverlay");
+            linePoolOverlayGo.transform.SetParent(line.transform);
+            linePoolOverlayGo.transform.localPosition = Vector3.zero;
+            linePoolOverlayGo.transform.localScale = Vector3.one;
+            var linePoolOverlay = linePoolOverlayGo.AddComponent<SpriteRenderer>();
+            linePoolOverlay.sprite = lineSprite;
+            var maskPoolOverlay = linePoolOverlay.gameObject.AddComponent<SpriteRendererMask>();
+            maskPoolOverlay.SetMask(poolSpriteRenderer);
+            maskPoolOverlay.SetInteraction(SpriteMaskInteraction.VisibleInsideMask);
+            linePoolOverlay.sortingLayerID = SortingLayer.NameToID(Il2CppReloaded.Constants.SortingLayer.BACKGROUND);
+            linePoolOverlay.sortingOrder = 2;
+            linePoolOverlay.color = new(0.3f, 0.3f, 0.3f, 0.2f);
         }
     }
 

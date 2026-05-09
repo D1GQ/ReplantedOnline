@@ -334,7 +334,7 @@ internal static class PvZRUtils
     /// Create a new bowling line on the current stage.
     /// </summary>
     /// <returns>The SpriteRenderer for the bowling line.</returns>
-    internal static SpriteRenderer CreateBowlingLine(Sprite sprite)
+    internal static SpriteRenderer CreateBowlingLine(Sprite sprite, bool addSortingGroup = true)
     {
         if (Instances.GameplayActivity.BackgroundController.m_bowlingLine != null)
         {
@@ -349,8 +349,11 @@ internal static class PvZRUtils
         Instances.GameplayActivity.BackgroundController.m_bowlingLine = bowlingLineGo;
         var spriteRenderer = bowlingLineGo.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
-        var sortingGroup = bowlingLineGo.AddComponent<SortingGroup>();
-        sortingGroup.sortingLayerName = Il2CppReloaded.Constants.SortingLayer.BACKGROUND;
+        if (addSortingGroup)
+        {
+            var sortingGroup = bowlingLineGo.AddComponent<SortingGroup>();
+            sortingGroup.sortingLayerName = Il2CppReloaded.Constants.SortingLayer.BACKGROUND;
+        }
         return spriteRenderer;
     }
 }

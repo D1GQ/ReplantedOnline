@@ -101,6 +101,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
         }
 
+        // Add bowling line
         var line = PvZRUtils.CreateBowlingLine(Assembly.GetExecutingAssembly().LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roofline.png", 100f));
         line.transform.localPosition = new Vector3(0f, -848.2733f, -1f);
         if (Type.IsArenaAtNight())

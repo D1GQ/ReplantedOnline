@@ -116,6 +116,9 @@
 		<Reference Include="Il2Cppspine-unity">
 			<HintPath>References\UnityEngine\Il2Cppspine-unity.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.SpriteMaskModule">
+			<HintPath>References\UnityEngine\UnityEngine.SpriteMaskModule.dll</HintPath>
+		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">
