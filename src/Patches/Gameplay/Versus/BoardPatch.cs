@@ -180,12 +180,15 @@ internal static class BoardPatch
 
     [HarmonyPatch(typeof(Board), nameof(Board.VacuumCoins))]
     [HarmonyPrefix]
-    private static bool Board_VacuumCoins_Prefix()
+    private static bool Board_VacuumCoins_Prefix(CoinVacuumStyle vacuumStyle)
     {
         if (ReplantedLobby.AmInLobby())
         {
             // Remove ability to collect all coins on the screen!
-            return false;
+            if (vacuumStyle == CoinVacuumStyle.GlobalSunOnly)
+            {
+                return false;
+            }
         }
 
         return true;
