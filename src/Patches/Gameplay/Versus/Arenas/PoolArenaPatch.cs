@@ -48,4 +48,35 @@ internal static class PoolArenaPatch
             }
         }
     }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.UpdateFog))]
+    [HarmonyPrefix]
+    private static bool Board_UpdateFog_Prefix()
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(typeof(FogController), nameof(FogController.SetTarget))]
+    [HarmonyPrefix]
+    private static bool FogController_SetTarget_Prefix()
+    {
+        if (ReplantedLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(FogController), nameof(FogController.SetTarget))]
+    internal static void SetTargetOriginal(this FogController __instance, int target, TodCurves curveType, float delay = 0f, float duration = 2f, bool ignoreDupeCheck = false)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

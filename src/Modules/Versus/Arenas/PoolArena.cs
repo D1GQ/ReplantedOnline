@@ -71,7 +71,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public void InitializeArena(VersusMode versusMode)
+    public virtual void InitializeArena(VersusMode versusMode)
     {
         if (ReplantedLobby.AmLobbyHost())
         {
@@ -138,7 +138,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 
     private float _pushBackEventTimer;
     /// <inheritdoc/>
-    public void UpdateArena(VersusMode versusMode)
+    public virtual void UpdateArena(VersusMode versusMode)
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
 
