@@ -43,6 +43,7 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     internal virtual void OnDeath(DeathReason deathReason) { }
 
+    internal bool PosSyncingPaused;
     private float _syncCooldown = 2f;
     private float _lastPos;
     internal override void Update()
@@ -53,6 +54,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     protected void UpdatePositionSync()
     {
         if (ZombieNetworked._Zombie == null) return;
+        if (PosSyncingPaused) return;
 
         if (ZombieNetworked.AmOwner)
         {
@@ -112,6 +114,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     /// <param name="posX">The target X position to interpolate to</param>
     private void LarpPos(float posX)
     {
+        if (PosSyncingPaused) return;
         if (ZombieNetworked._Zombie == null || ZombieNetworked.EnteringHouse || posX < 15f) return;
         if (ZombieNetworked._Zombie.mIceTrapCounter > 0) return;
 
