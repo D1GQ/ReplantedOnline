@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
@@ -65,7 +66,7 @@ internal static class CursorSyncPatch
 
     [HarmonyPatch(typeof(GamepadCursorController), nameof(GamepadCursorController._onCursorConfirmed))]
     [HarmonyPrefix]
-    private static bool GamepadCursorController_OnCursorConfirmed_Prefix(GamepadCursorController __instance)
+    private static void GamepadCursorController_OnCursorConfirmed_Prefix(GamepadCursorController __instance)
     {
         if (ReloadedLobby.AmInLobby())
         {
@@ -97,14 +98,16 @@ internal static class CursorSyncPatch
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
                         Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
 
-                        return false;
+                        // Prevent buzzer sound!
+                        throw new SilentPatchException();
                     }
                 }
+
+                __instance.Board.mApp.PlaySample(Sound.SOUND_BUZZER);
+                // Prevent duplicate buzzer sound!
+                throw new SilentPatchException();
             }
         }
-
-        // Return true to execute original method (no plant in cursor, normal behavior)
-        return true;
     }
 
     // Rework planting seeds to support RPCs
@@ -149,6 +152,10 @@ internal static class CursorSyncPatch
                         return false;
                     }
                 }
+
+                __instance.Board.mApp.PlaySample(Sound.SOUND_BUZZER);
+                // Prevent duplicate buzzer sound!
+                throw new SilentPatchException();
             }
         }
 
