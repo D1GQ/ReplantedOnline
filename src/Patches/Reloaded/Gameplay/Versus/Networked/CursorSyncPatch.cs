@@ -154,4 +154,16 @@ internal static class CursorSyncPatch
 
         return true;
     }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.MouseDownWithPlant))]
+    [HarmonyPrefix]
+    private static bool Board_MouseDownWithPlant_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
