@@ -127,9 +127,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             linePoolOverlayGo.transform.localScale = Vector3.one;
             var linePoolOverlay = linePoolOverlayGo.AddComponent<SpriteRenderer>();
             linePoolOverlay.sprite = lineSprite;
-            var maskPoolOverlay = linePoolOverlay.gameObject.AddComponent<SpriteRendererMask>();
-            maskPoolOverlay.SetMask(poolSpriteRenderer);
-            maskPoolOverlay.SetInteraction(SpriteMaskInteraction.VisibleInsideMask);
+            linePoolOverlay.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             linePoolOverlay.sortingLayerID = SortingLayer.NameToID(Il2CppReloaded.Constants.SortingLayer.BACKGROUND);
             linePoolOverlay.sortingOrder = 2;
             linePoolOverlay.color = new(0.3f, 0.3f, 0.3f, 0.2f);
