@@ -38,15 +38,11 @@ internal class VersusGameplayManager
         }
 
         // Disable inputs for starting countdown 
-        Instances.GameplayActivity.InputService
-            .GetPlayer(ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX)
-            .Player.DeactivateInput();
+        InputManager.SetDeviceActive(false);
 
         Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() => VersusState.IsInGameplay, () =>
         {
-            Instances.GameplayActivity.InputService
-                .GetPlayer(ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX)
-                .Player.ActivateInput();
+            InputManager.SetDeviceActive(true);
         }));
 
         ReloadedLobby.LobbyData.ReadyForNetworkObjects = true;

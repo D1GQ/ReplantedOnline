@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Network;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Packet;
@@ -42,6 +43,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
             Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
             IVersusGamemode.GetCurrentGamemode()?.OnGameModeStart(Instances.GameplayActivity.VersusMode);
             VersusLobbyPatch.HideLobbyBackground();
+            InputManager.SetListeningForNewDevice(false);
         }
         else
         {
