@@ -2,7 +2,6 @@
 
 /// <summary>
 /// Represents a time value with centisecond precision (1/100 second).
-/// Internal storage uses integer centiseconds for performance and accuracy.
 /// </summary>
 internal readonly struct IntTime
 {
