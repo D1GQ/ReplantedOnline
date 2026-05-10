@@ -18,8 +18,13 @@ internal static class Il2CppInteropExceptionLogPatch
 
             if (exceptionLogType == null)
             {
-                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInteropExceptionLog type");
-                return null;
+                exceptionLogType = Type.GetType("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog, MelonLoader");
+
+                if (exceptionLogType == null)
+                {
+                    ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInteropExceptionLog type");
+                    return null;
+                }
             }
 
             var loggerField = exceptionLogType.GetField("_logger",
