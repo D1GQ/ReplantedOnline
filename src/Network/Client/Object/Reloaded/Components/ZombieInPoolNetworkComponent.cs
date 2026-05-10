@@ -1,4 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Utilities.Unity;
+using System.Collections;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
@@ -6,7 +10,13 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 /// <inheritdoc/>
 internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 {
+    private enum ZombieInPoolRpcs : byte
+    {
+        Drown
+    }
+
     private bool _inPool;
+    private bool _isDrowning;
 
     internal override void OnInit()
     {
@@ -62,6 +72,17 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
         if (_inPool)
         {
             zombie.mController.ClipRect(new(-500, -500, 1000, 615));
+
+            if (ZombieNetworked.AmOwner)
+            {
+                if (!_isDrowning && zombie.mZombieType == ZombieType.Imp)
+                {
+                    _isDrowning = true;
+                    SendDrownRpc();
+                    ZombieNetworked.StartCoroutine(CoDrown());
+                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
+                }
+            }
         }
     }
 
@@ -70,5 +91,36 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
         bool typeCheck = ZombieNetworked.ZombieType != ZombieType.Bungee;
         bool phaseCheck = ZombieNetworked._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
         return typeCheck && phaseCheck;
+    }
+
+    private void SendDrownRpc()
+    {
+        SendNetworkComponentRpc(ZombieInPoolRpcs.Drown);
+    }
+
+    [RpcHandler(ZombieInPoolRpcs.Drown)]
+    private void HandleDrownRpc()
+    {
+        if (!_isDrowning)
+        {
+            _isDrowning = true;
+            ZombieNetworked.StartCoroutine(CoDrown());
+        }
+    }
+
+    private IEnumerator CoDrown()
+    {
+        float target = ZombieNetworked._Zombie.mAltitude - 150;
+        while (ZombieNetworked._Zombie.mAltitude > target)
+        {
+            ZombieNetworked._Zombie.mAltitude -= 25f;
+            ZombieNetworked._Zombie.mVelX = 0;
+            ZombieNetworked._Zombie.UpdateAnimSpeed();
+            ZombieNetworked._Zombie.PoolSplash(true);
+            yield return null;
+        }
+        ZombieNetworked.Dead = true;
+        ZombieNetworked._Zombie.DieNoLootOriginal();
+        ZombieNetworked.IsReadyToDespawn = true;
     }
 }

@@ -154,7 +154,9 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         if (Instances.GameplayActivity.Board.mPlantRow[gridY] == PlantRowType.Pool)
         {
-            if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or SeedType.ZombiePogo or SeedType.ZombiePolevaulter or SeedType.ZombieBalloon)
+            if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or
+                SeedType.ZombiePogo or SeedType.ZombiePolevaulter or SeedType.ZombieBalloon or
+                SeedType.ZombieLadder or SeedType.ZombieImp)
             {
                 return false;
             }
