@@ -8,6 +8,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
+using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.Il2cpp;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
@@ -146,13 +147,13 @@ internal static class SeedPacketDefinitions
         SetVersusDefinitionFromBase(SeedType.Blover);
 
         var balloonDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieBalloon);
-        balloonDefinition.m_versusBaseRefreshTime = 2500;
-        balloonDefinition.m_versusSuddenDeathRefreshTime = 1000;
-        balloonDefinition.m_versusCost = 75;
+        balloonDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
+        balloonDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
+        balloonDefinition.m_versusCost = 125;
 
         var impDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieImp);
-        impDefinition.m_versusBaseRefreshTime = 700;
-        impDefinition.m_versusSuddenDeathRefreshTime = 300;
+        impDefinition.m_versusBaseRefreshTime = IntTime.From(15f);
+        impDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
         impDefinition.m_versusCost = 25;
     }
 

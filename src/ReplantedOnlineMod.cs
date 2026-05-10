@@ -17,6 +17,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Misc;
+using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Reflection;
 using UnityEngine;
@@ -169,15 +170,15 @@ internal class ReplantedOnlineMod : MelonMod
             internal const int DEFAULT_PLAYER_INDEX = -1;
             internal const int LOCAL_PLAYER_INDEX = 0;
             internal const int OPPONENT_PLAYER_INDEX = 1;
-            internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f; // 60s
+            internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f;
 
             internal static class Production
             {
-                internal const int INITIAL_SKY_RATE = 1200; // 12s
-                internal static readonly (int MIN, int MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (800, 1200); // 8s - 12s
-                internal const int SKY_RATE = 2200; // 22s
-                internal const int PLANT_RATE = 1400; // 14s
-                internal const int GRAVE_RATE = 3400; // 34s
+                internal static readonly IntTime INITIAL_SKY_RATE = 12f;
+                internal static readonly (IntTime MIN, IntTime MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (8f, 12f);
+                internal static readonly IntTime SKY_RATE = 22f;
+                internal static readonly IntTime PLANT_RATE = 14f;
+                internal static readonly IntTime GRAVE_RATE = 34f;
             }
         }
     }
