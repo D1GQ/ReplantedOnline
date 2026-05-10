@@ -29,6 +29,7 @@ internal sealed class ZombieNetworked : NetworkObject
         TakeDamage,
         Death,
         DieLoot,
+        DragUnder,
         MowDown,
         SetPlantTarget,
         EnteringHouse,
@@ -230,6 +231,30 @@ internal sealed class ZombieNetworked : NetworkObject
             {
                 _Zombie.DieNoLootOriginal();
             }
+        }
+
+        IsReadyToDespawn = true;
+    }
+
+    internal void SendDragUnderRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
+            SendNetworkObjectRpc(ZombieRpcs.DragUnder);
+            DespawnAndDestroyWhenNullOrDead(true);
+        }
+    }
+
+    [RpcHandler(ZombieRpcs.DragUnder)]
+    private void HandleDragUnderRpc()
+    {
+        if (!Dead)
+        {
+            Dead = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
+            _Zombie.DragUnderOriginal();
         }
 
         IsReadyToDespawn = true;

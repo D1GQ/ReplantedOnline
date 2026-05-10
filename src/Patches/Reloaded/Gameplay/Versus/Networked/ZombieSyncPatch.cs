@@ -72,6 +72,27 @@ internal static class ZombieSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DragUnder))]
+    [HarmonyPrefix]
+    private static bool Zombie_DragUnder_Prefix(Zombie __instance)
+    {
+        // Only handle network synchronization if we're in a multiplayer lobby
+        if (ReloadedLobby.AmInLobby())
+        {
+            var netZombie = __instance.GetNetworked();
+            netZombie?.SendDragUnderRpc();
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DragUnder))]
+    internal static void DragUnderOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.MowDown))]
     [HarmonyPrefix]
     private static bool Zombie_MowDown_Prefix(Zombie __instance)
