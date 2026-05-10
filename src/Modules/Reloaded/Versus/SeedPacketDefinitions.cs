@@ -299,7 +299,7 @@ internal static class SeedPacketDefinitions
             truegridX = PvZRUtils.ReloadedObjectXToGridX(gridX);
         }
 
-        return SpawnZombie(zombieType, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombieType, truegridX, gridY), spawnOnNetwork);
+        return SpawnZombie(zombieType, gridX, gridY, GetZombieSpawnType(zombieType, truegridX, gridY), spawnOnNetwork);
     }
 
     /// <summary>
@@ -442,7 +442,7 @@ internal static class SeedPacketDefinitions
     /// <returns>The spawned ZombieNetworked controller object.</returns>
     internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked> callback = null)
     {
-        return SpawnZombieOnNetwork(zombie, gridX, gridY, IArena.GetCurrentArena().GetZombieSpawnType(zombie.mZombieType, gridX, gridY), callback);
+        return SpawnZombieOnNetwork(zombie, gridX, gridY, GetZombieSpawnType(zombie.mZombieType, gridX, gridY), callback);
     }
 
     /// <summary>
@@ -466,6 +466,52 @@ internal static class SeedPacketDefinitions
             callback?.Invoke(net);
         }, VersusState.PlantClientId);
         return networkObj;
+    }
+
+    /// <summary>
+    /// Determines the appropriate spawn type for a given zombie type based on its characteristics.
+    /// </summary>
+    /// <param name="zombieType">The type of zombie to evaluate.</param>
+    /// <param name="gridX">The X grid coordinate.</param>
+    /// <param name="gridY">The Y grid coordinate.</param>
+    /// <returns>
+    /// The spawn type for the zombie:
+    /// </returns>
+    internal static SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
+    {
+        if (zombieType is ZombieType.Target or ZombieType.Bungee)
+        {
+            return SpawnType.None;
+        }
+
+        if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
+        {
+            if (zombieType == ZombieType.Gravestone && VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+            {
+                return SpawnType.FallFromSky;
+            }
+
+            return SpawnType.RiseFromGround;
+        }
+
+        var isDefault = ZombieRisesFromGround(zombieType);
+        var isForceXPos = ZombieSpawnsInBack(zombieType);
+        if (isDefault && !isForceXPos)
+        {
+            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+            {
+                if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
+                {
+                    return SpawnType.RiseFromPool;
+                }
+            }
+
+            return IArena.GetCurrentArena().DefaultZombieSpawnType;
+        }
+        else
+        {
+            return SpawnType.Background;
+        }
     }
 
     /// <summary>
