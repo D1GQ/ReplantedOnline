@@ -1,5 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Utilities.Modded;

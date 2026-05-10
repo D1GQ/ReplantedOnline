@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes.Modded;
+﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
 
 namespace ReplantedOnline.Network.Packet.FastResolvers;

@@ -1,10 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(ZombieType.Ladder)]
 internal sealed class LadderNetworkComponent : ZombieNetworkComponent
 {
     private enum LadderRpcs : byte

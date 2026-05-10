@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
@@ -87,12 +88,14 @@ internal sealed class ZombieNetworked : NetworkObject
 
     public override void OnInit()
     {
-        LogicComponent = ZombieNetworkComponent.AddComponent(this, ZombieType);
-        PoolComponent = AddNetworkComponent<ZombieInPoolNetworkComponent>();
+        LogicComponent = (ZombieNetworkComponent)RegisterNetworkComponent.TryCreateInstance(ZombieType, typeof(ZombieNetworkComponent));
+        AddNetworkComponent(LogicComponent);
+
+        PoolComponent = AddNewNetworkComponent<ZombieInPoolNetworkComponent>();
 
         if (SpawnType is SpawnType.BungeeDropZombie or SpawnType.BungeeDropZombieNoTarget)
         {
-            LogicComponent = AddNetworkComponent<BungeeDropZombieComponent>();
+            LogicComponent = AddNewNetworkComponent<BungeeDropZombieComponent>();
         }
 
         _Zombie.AddNetworkedLookup(this);

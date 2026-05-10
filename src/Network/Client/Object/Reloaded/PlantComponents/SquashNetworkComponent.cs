@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
@@ -9,6 +10,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Squash)]
 internal sealed class SquashNetworkComponent : PlantNetworkComponent
 {
     private enum SquashRpcs : byte

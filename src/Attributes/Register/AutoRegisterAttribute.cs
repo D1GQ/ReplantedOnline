@@ -1,10 +1,9 @@
-﻿using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Interfaces.Network;
+﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace ReplantedOnline.Attributes.Modded;
+namespace ReplantedOnline.Attributes.Register;
 
 /// <summary>
 /// Base attribute class for automatically discovering and registering instances of specific types through reflection.
@@ -12,10 +11,10 @@ namespace ReplantedOnline.Attributes.Modded;
 internal abstract class AutoRegisterAttribute : Attribute
 {
     /// <summary>
-    /// Gets the enum value associated with this attribute, if applicable. Override in derived classes that support enum-based lookup.
+    /// Gets the identifier value associated with this attribute.
     /// </summary>
-    /// <returns>The associated enum value, or null if this attribute doesn't use enum-based lookup.</returns>
-    internal virtual Enum GetLookupEnum() => null;
+    /// <returns>The identifier value for this attribute instance.</returns>
+    internal virtual object GetIdentifier() => null;
 
     /// <summary>
     /// Scans the entire assembly and registers all instances of classes marked with <see cref="AutoRegisterAttribute"/> subclasses.
@@ -26,8 +25,8 @@ internal abstract class AutoRegisterAttribute : Attribute
 
         foreach (var type in types)
         {
-            var attribute = (AutoRegisterAttribute)FormatterServices.GetUninitializedObject(type);
-            attribute.RegisterInstances();
+            var tempAttribute = (AutoRegisterAttribute)FormatterServices.GetUninitializedObject(type);
+            tempAttribute.RegisterInstances();
         }
     }
 
@@ -85,90 +84,6 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
         }
     }
 }
-
-/// <summary>
-/// Provides a base attribute class that extends <see cref="AutoRegisterAttribute{T}"/> with enum-based lookup capabilities.
-/// </summary>
-/// <typeparam name="T">The base type or interface that attributed classes must implement.</typeparam>
-/// <typeparam name="EnumType">The enum type used as a key for instance lookup.</typeparam>
-/// <param name="enumType">The specific enum value to associate with this attribute.</param>
-[AttributeUsage(AttributeTargets.Class)]
-internal abstract class AutoRegisterLookupAttribute<T, EnumType>(EnumType enumType) : AutoRegisterAttribute<T> where T : class where EnumType : Enum
-{
-    /// <summary>
-    /// The enum value associated with instances registered by this attribute.
-    /// </summary>
-    private readonly EnumType _enumType = enumType;
-
-    /// <summary>
-    /// Static dictionary that maps enum values to their corresponding instances for fast lookup.
-    /// </summary>
-    private static readonly Dictionary<EnumType, T> _lookup = [];
-
-    /// <summary>
-    /// Gets the enum value associated with this attribute instance.
-    /// </summary>
-    /// <returns>The <see cref="Enum"/> value stored in this attribute.</returns>
-    internal override Enum GetLookupEnum()
-    {
-        return _enumType;
-    }
-
-    /// <summary>
-    /// Retrieves an instance from the lookup dictionary by its associated enum value.
-    /// </summary>
-    /// <param name="enum">The enum value to look up.</param>
-    /// <returns>The instance associated with the specified enum value, or null if not found.</returns>
-    internal static T GetInstanceFromLookup(EnumType @enum)
-    {
-        if (_lookup.TryGetValue(@enum, out var instanceLookup))
-        {
-            return instanceLookup;
-        }
-
-        return null;
-    }
-
-    /// <inheritdoc/>
-    protected override void RegisterInstances()
-    {
-        var attributeType = GetType();
-
-        var attributedTypes = ModInfo.Assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface).ToArray();
-
-        foreach (var type in attributedTypes)
-        {
-            if (typeof(T).IsAssignableFrom(type))
-            {
-                var attribute = type.GetCustomAttribute(attributeType, false);
-
-                if (attribute is AutoRegisterAttribute autoRegisterAttribute)
-                {
-                    var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
-
-                    EnumType enumValue = (EnumType)autoRegisterAttribute.GetLookupEnum();
-                    if (constructor != null && constructor.Invoke(null) is T instance)
-                    {
-                        _instances.Add(instance);
-                        _lookup[enumValue] = instance;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// <summary>
-/// Registers classes that implement IClientRPC.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IRpc, RpcType>(rpcType) { }
-
-/// <summary>
-/// Registers classes that implement IPacketHandler.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler(PacketHandlerType packetHandlerType) : AutoRegisterLookupAttribute<IPacketHandler, PacketHandlerType>(packetHandlerType) { }
 
 /// <summary>
 /// Registers classes that implement IFastPacketResolver.

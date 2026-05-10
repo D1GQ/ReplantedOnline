@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Attributes.Modded;
+﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Packet;

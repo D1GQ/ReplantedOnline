@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
-using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;

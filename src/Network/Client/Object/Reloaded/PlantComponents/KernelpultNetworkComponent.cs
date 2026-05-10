@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
@@ -6,6 +7,7 @@ using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Kernelpult)]
 internal sealed class KernelpultNetworkComponent : PlantNetworkComponent
 {
     private PlantWeapon _plantWeapon;

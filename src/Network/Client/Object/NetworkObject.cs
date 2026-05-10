@@ -275,25 +275,39 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     }
 
     /// <summary>
-    /// Adds a new network component to this instance's collection of network components.
+    /// Adds a network component to this instance's collection of network components.
     /// </summary>
-    /// <typeparam name="T">The type of  NetworkComponent to create and add.</typeparam>
     [HideFromIl2Cpp]
-    internal T AddNetworkComponent<T>() where T : NetworkComponent
+    internal void AddNetworkComponent(NetworkComponent networkComponent)
+    {
+        var type = networkComponent.GetType();
+        if (_networkComponentsLookup.ContainsKey(type))
+        {
+            throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");
+        }
+
+        networkComponent.NetworkObject = this;
+        networkComponent.Index = NetworkComponents.Count;
+        NetworkComponents.Add(networkComponent);
+        _networkComponentsLookup[type] = networkComponent;
+        networkComponent.Init();
+    }
+
+    /// <summary>
+    /// Creates and adds a new network component to this instance's collection of network components.
+    /// </summary>
+    /// <typeparam name="T">The type of NetworkComponent to create and add.</typeparam>
+    [HideFromIl2Cpp]
+    internal T AddNewNetworkComponent<T>() where T : NetworkComponent
     {
         var type = typeof(T);
-
         if (_networkComponentsLookup.ContainsKey(type))
         {
             throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");
         }
 
         T component = Activator.CreateInstance(typeof(T)) as T;
-        component.NetworkObject = this;
-        component.Index = NetworkComponents.Count;
-        NetworkComponents.Add(component);
-        _networkComponentsLookup[type] = component;
-        component.Init();
+        AddNetworkComponent(component);
         return component;
     }
 

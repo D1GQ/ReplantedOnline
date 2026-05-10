@@ -1,7 +1,5 @@
-﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Enums.Versus;
+﻿using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
-using ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 using ReplantedOnline.Network.Packet;
 using UnityEngine;
 
@@ -11,26 +9,6 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 internal class PlantNetworkComponent : NetworkComponent
 {
     protected PlantNetworked PlantNetworked;
-
-    internal static PlantNetworkComponent AddComponent(PlantNetworked plantNetworked, SeedType seedType)
-    {
-        return seedType switch
-        {
-            SeedType.Squash => plantNetworked.AddNetworkComponent<SquashNetworkComponent>(),
-            SeedType.Chomper => plantNetworked.AddNetworkComponent<ChomperNetworkComponent>(),
-            SeedType.Cactus => plantNetworked.AddNetworkComponent<CactusNetworkComponent>(),
-            SeedType.Magnetshroom => plantNetworked.AddNetworkComponent<MagnetShroomNetworkComponent>(),
-            SeedType.Kernelpult => plantNetworked.AddNetworkComponent<KernelpultNetworkComponent>(),
-            SeedType.Umbrella => plantNetworked.AddNetworkComponent<UmbrellaNetworkComponent>(),
-            SeedType.Potatomine => plantNetworked.AddNetworkComponent<PotatomineNetworkComponent>(),
-            SeedType.Cherrybomb => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
-            SeedType.Jalapeno => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
-            SeedType.Doomshroom => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
-            SeedType.Iceshroom => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
-            SeedType.InstantCoffee => plantNetworked.AddNetworkComponent<PlantSpecialNetworkComponent>(),
-            _ => plantNetworked.AddNetworkComponent<PlantNetworkComponent>(),
-        };
-    }
 
     internal sealed override void Init()
     {

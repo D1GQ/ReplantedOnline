@@ -1,4 +1,6 @@
-﻿using ReplantedOnline.Enums.Versus;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using UnityEngine;
@@ -6,6 +8,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(ZombieType.Target)]
 internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 {
     private Vector3 _lastPos;

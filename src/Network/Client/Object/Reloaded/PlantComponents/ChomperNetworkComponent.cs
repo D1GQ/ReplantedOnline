@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
@@ -7,6 +8,7 @@ using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Chomper)]
 internal sealed class ChomperNetworkComponent : PlantNetworkComponent
 {
     private enum ChomperRpcs : byte

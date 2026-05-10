@@ -1,5 +1,5 @@
 ﻿using MelonLoader;
-using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;

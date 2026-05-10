@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -78,12 +79,13 @@ internal sealed class PlantNetworked : NetworkObject
 
     public override void OnInit()
     {
-        LogicComponent = PlantNetworkComponent.AddComponent(this, SeedType);
+        LogicComponent = (PlantNetworkComponent)RegisterNetworkComponent.TryCreateInstance(SeedType, typeof(PlantNetworkComponent));
+        AddNetworkComponent(LogicComponent);
         _Plant.AddNetworkedLookup(this);
 
         if (SpawnType == SpawnType.ChinaJalapeno)
         {
-            LogicComponent = AddNetworkComponent<ChinaJalapenoNetworkComponent>();
+            LogicComponent = AddNewNetworkComponent<ChinaJalapenoNetworkComponent>();
         }
     }
 

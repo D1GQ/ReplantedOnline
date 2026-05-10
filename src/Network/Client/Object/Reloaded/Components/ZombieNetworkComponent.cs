@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
-using ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -14,24 +13,6 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 internal class ZombieNetworkComponent : NetworkComponent
 {
     protected ZombieNetworked ZombieNetworked;
-
-    internal static ZombieNetworkComponent AddComponent(ZombieNetworked zombieNetworked, ZombieType zombieType)
-    {
-        return zombieType switch
-        {
-            ZombieType.Polevaulter => zombieNetworked.AddNetworkComponent<PoleVaulterNetworkComponent>(),
-            ZombieType.Ladder => zombieNetworked.AddNetworkComponent<LadderNetworkComponent>(),
-            ZombieType.JackInTheBox => zombieNetworked.AddNetworkComponent<JackInTheBoxNetworkComponent>(),
-            ZombieType.Digger => zombieNetworked.AddNetworkComponent<DiggerNetworkComponent>(),
-            ZombieType.Bungee => zombieNetworked.AddNetworkComponent<BungeeNetworkComponent>(),
-            ZombieType.Catapult => zombieNetworked.AddNetworkComponent<CatapultNetworkComponent>(),
-            ZombieType.Bobsled => zombieNetworked.AddNetworkComponent<BobsledNetworkComponent>(),
-            ZombieType.Imp => zombieNetworked.AddNetworkComponent<ImpNetworkComponent>(),
-            ZombieType.Gravestone => zombieNetworked.AddNetworkComponent<GravestoneNetworkComponent>(),
-            ZombieType.Target => zombieNetworked.AddNetworkComponent<TargetNetworkComponent>(),
-            _ => zombieNetworked.AddNetworkComponent<ZombieNetworkComponent>(),
-        };
-    }
 
     internal sealed override void Init()
     {

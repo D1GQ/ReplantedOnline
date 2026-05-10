@@ -1,10 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Umbrella)]
 internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
 {
     private bool _triggerd;

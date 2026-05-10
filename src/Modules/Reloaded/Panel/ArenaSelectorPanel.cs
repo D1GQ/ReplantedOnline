@@ -1,7 +1,7 @@
 ﻿using Il2CppSource.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
-using ReplantedOnline.Attributes.Modded;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;

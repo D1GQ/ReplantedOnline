@@ -1,10 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Potatomine)]
 internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 {
     private enum PotatomineRpcs : byte

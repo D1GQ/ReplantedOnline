@@ -1,8 +1,15 @@
-﻿using ReplantedOnline.Attributes.Network;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(SeedType.Cherrybomb)]
+[RegisterNetworkComponent(SeedType.Jalapeno)]
+[RegisterNetworkComponent(SeedType.Doomshroom)]
+[RegisterNetworkComponent(SeedType.Iceshroom)]
+[RegisterNetworkComponent(SeedType.InstantCoffee)]
 internal class PlantSpecialNetworkComponent : PlantNetworkComponent
 {
     private enum PlantSpecialRpcs : byte

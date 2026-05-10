@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
@@ -8,6 +9,7 @@ using ReplantedOnline.Utilities.Modded;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(ZombieType.JackInTheBox)]
 internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
 {
     private enum JackInTheBoxRpcs : byte

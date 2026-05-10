@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
@@ -6,6 +7,7 @@ using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(ZombieType.Bungee)]
 internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 {
     private enum BungeeRpcs : byte

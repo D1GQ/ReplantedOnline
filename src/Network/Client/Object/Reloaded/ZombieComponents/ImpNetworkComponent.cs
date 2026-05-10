@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
@@ -6,6 +7,7 @@ using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 
 /// <inheritdoc/>
+[RegisterNetworkComponent(ZombieType.Imp)]
 internal sealed class ImpNetworkComponent : ZombieNetworkComponent
 {
     internal float ImpRandomArc;

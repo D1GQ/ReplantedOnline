@@ -2,8 +2,8 @@
 using Il2CppInterop.Runtime.Injection;
 using Il2CppSteamworks;
 using MelonLoader;
-using ReplantedOnline.Attributes.Modded;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Il2cpp;
