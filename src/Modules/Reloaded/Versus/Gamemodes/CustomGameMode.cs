@@ -140,6 +140,8 @@ internal sealed class CustomGamemode : IVersusGamemode
     {
         foreach (var seedPacket in chosenSeeds)
         {
+            if (SeedPacketDefinitions.NoneSeedTypes.Contains(SeedType.None)) continue;
+
             if (!ICharacterConfig.IsAllowedInArena(seedPacket.mSeedType, VersusState.Arena))
             {
                 seedPacket.mSeedState = ChosenSeedState.SeedPacketHidden;

@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Services;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
@@ -9,9 +10,11 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Il2cpp;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -34,7 +37,7 @@ internal static class SeedPacketDefinitions
         SeedType.NumSeedsInChooser,
         SeedType.NumSeedTypes,
         SeedType.LastZombieIndex,
-        SeedType.None,
+        SeedType.None
     ];
 
     /// <summary>
@@ -155,6 +158,13 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusBaseRefreshTime = IntTime.From(15f);
         impDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
         impDefinition.m_versusCost = 25;
+
+        /*
+        var dolphinRiderDefinition = CreatePlantDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
+        dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
+        dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
+        dolphinRiderDefinition.m_versusCost = 200;
+        */
     }
 
     /// <summary>
@@ -171,6 +181,44 @@ internal static class SeedPacketDefinitions
         definition.m_versusSuddenDeathRefreshTime = baseRefreshTime / 2;
         definition.m_versusCost = definition.SeedCost;
         return definition;
+    }
+
+    internal static PlantDefinition CreatePlantDefinition(CustomSeedType customSeedType, string translationName, Sprite sprite)
+    {
+        var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();
+        customPlantDefinition.name = $"CustomPlantDefinition-{translationName}";
+
+        customPlantDefinition.m_seedType = customSeedType;
+        customPlantDefinition.m_animationType = customSeedType;
+        customPlantDefinition.m_plantName = translationName;
+        customPlantDefinition.m_plantToolTip = translationName + "_DESCRIPTION_HEADER";
+        customPlantDefinition.m_defaultSkin = "Normal";
+
+        AssetReferenceSprite imageRef = new($"CustomPlantDefinition:{translationName}");
+        var assetOverride = new AssetReferenceOverride<Sprite>(imageRef);
+        IAssetReferenceOverride.Register(assetOverride);
+        assetOverride.SetOverride(sprite);
+        customPlantDefinition.m_plantImage = imageRef;
+        customPlantDefinition.m_versusImage = imageRef;
+        customPlantDefinition.m_previewSprite = imageRef;
+
+        customPlantDefinition.m_previewSpriteScale = 1f;
+
+        AssetReferenceSprite emptyImageRef = new("");
+        AssetReferenceGameObject emptyGoRef = new("");
+        customPlantDefinition.m_prefab = emptyGoRef;
+        customPlantDefinition.m_preview = emptyGoRef;
+        customPlantDefinition.m_easterEggGameObject = emptyGoRef;
+        customPlantDefinition.m_preorderGameObject = emptyGoRef;
+        customPlantDefinition.m_chinaGameObject = emptyGoRef;
+        customPlantDefinition.m_chinaPlantImage = emptyImageRef;
+        customPlantDefinition.m_chinaPreviewSprite = emptyImageRef;
+        customPlantDefinition.m_decemberGameObject = emptyGoRef;
+
+        var dataLookup = Instances.IDataService.Cast<DataService>().m_plantDataLoader.Cast<DataLookupLoader<SeedType, PlantDefinition>>();
+        dataLookup.m_loadedData.Add(customPlantDefinition);
+        dataLookup.m_lookup.Add(customSeedType, customPlantDefinition);
+        return customPlantDefinition;
     }
 
     /// <summary>
@@ -548,7 +596,7 @@ internal static class SeedPacketDefinitions
     /// <returns>True if the zombie should rise from the ground; false if it should spawn normally.</returns>
     internal static bool ZombieRisesFromGround(ZombieType zombieType)
     {
-        if (zombieType is ZombieType.Bungee or ZombieType.Target or ZombieType.Bobsled)
+        if (zombieType is ZombieType.Bungee or ZombieType.Target or ZombieType.Bobsled or ZombieType.DolphinRider or ZombieType.Snorkel)
         {
             return false;
         }
@@ -568,12 +616,7 @@ internal static class SeedPacketDefinitions
     /// <returns>True if the zombie should spawn at the back of the lawn; false otherwise.</returns>
     internal static bool ZombieSpawnsInBack(ZombieType zombieType)
     {
-        if (zombieType is ZombieType.Bobsled)
-        {
-            return true;
-        }
-
-        if (zombieType is ZombieType.Balloon)
+        if (zombieType is ZombieType.Bobsled or ZombieType.Balloon or ZombieType.DolphinRider or ZombieType.Snorkel)
         {
             return true;
         }

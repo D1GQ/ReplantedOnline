@@ -5,6 +5,7 @@ using Il2CppSource.DataModels;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
@@ -41,6 +42,8 @@ internal static class SeedChooserPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
+            // AddCustomZombiesToChosen();
+
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
             __instance.m_zombieEntriesModel.Clear();
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Count; i++)
@@ -59,9 +62,31 @@ internal static class SeedChooserPatch
         return true;
     }
 
+    private static void AddCustomZombiesToChosen()
+    {
+        var customSeedsToAdd = CustomSeedType.CustomSeedTypes.ToList();
+        foreach (var chosenZombies in Instances.GameplayActivity.SeedChooserScreen.mChosenZombies)
+        {
+            customSeedsToAdd.Remove(chosenZombies.mSeedType);
+        }
+
+        foreach (var customSeedType in customSeedsToAdd)
+        {
+            if (!Challenge.IsZombieSeedType(customSeedType)) continue;
+            if (customSeedType == CustomSeedType.Invalid) continue;
+
+            ChosenSeed chosenSeed = new()
+            {
+                mImitaterType = SeedType.None,
+                mSeedType = customSeedType
+            };
+            Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Add(chosenSeed);
+        }
+    }
+
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.SeedNotAllowedToPick))]
     [HarmonyPostfix]
-    private static void SeedChooserScreen_SeedNotAllowedToPick_Postfix(SeedType theSeedType, ref bool __result)
+    private static void SeedChooserScreen_SeedNotAllowedToPick_Postfix(ref bool __result)
     {
         if (ReloadedLobby.AmInLobby())
         {

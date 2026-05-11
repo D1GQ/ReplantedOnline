@@ -5,6 +5,7 @@ using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs.Reloaded;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
@@ -88,5 +89,28 @@ internal static class VersusModePatch
         }
 
         return true;
+    }
+
+
+    [HarmonyPatch(typeof(Challenge), nameof(Challenge.IsZombieSeedType))]
+    [HarmonyPostfix]
+    private static void Challenge_IsZombieSeedType_Postfix(SeedType theSeedType, ref bool __result)
+    {
+        CustomSeedType customSeedType = theSeedType;
+        if (customSeedType.HasValidZombieType())
+        {
+            __result = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Challenge), nameof(Challenge.IZombieSeedTypeToZombieType))]
+    [HarmonyPostfix]
+    private static void Challenge_IZombieSeedTypeToZombieType_Postfix(SeedType theSeedType, ref ZombieType __result)
+    {
+        CustomSeedType customSeedType = theSeedType;
+        if (customSeedType.HasValidZombieType())
+        {
+            __result = customSeedType;
+        }
     }
 }
