@@ -103,6 +103,8 @@ internal static class VersusModePatch
         }
     }
 
+    // TODO: Need to find out why this is crashing the game 
+    /*
     [HarmonyPatch(typeof(Challenge), nameof(Challenge.IZombieSeedTypeToZombieType))]
     [HarmonyPostfix]
     private static void Challenge_IZombieSeedTypeToZombieType_Postfix(SeedType theSeedType, ref ZombieType __result)
@@ -113,4 +115,5 @@ internal static class VersusModePatch
             __result = customSeedType;
         }
     }
+    */
 }
