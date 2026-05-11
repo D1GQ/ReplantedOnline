@@ -20,6 +20,12 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
+#if DEBUG
+    private static readonly ArenaTypes[] _disabledArenas = [];
+#else
+    private static readonly ArenaTypes[] _disabledArenas = [ArenaTypes.Pool, ArenaTypes.PoolNight];
+#endif
+
     private static GameObject _panel;
     private static Image _preview;
 
@@ -64,14 +70,14 @@ internal static class ArenaSelectorPanel
 
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next();
+                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next(_disabledArenas);
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous();
+                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous(_disabledArenas);
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;

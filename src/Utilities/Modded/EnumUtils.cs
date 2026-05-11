@@ -12,12 +12,25 @@ internal static class EnumUtils
     /// </summary>
     /// <typeparam name="T">The enum type.</typeparam>
     /// <param name="current">The current enum value.</param>
+    /// <param name="skip">Optional collection of enum values to skip.</param>
     /// <returns>The next enum value in the sequence, or the first value if current is the last.</returns>
     /// <exception cref="ArgumentException">Thrown if the type parameter is not an enum.</exception>
-    internal static T Next<T>(this T current) where T : Enum
+    internal static T Next<T>(this T current, IEnumerable<T> skip = null) where T : Enum
     {
-        T[] values = [.. Enum.GetValues(typeof(T)).Cast<T>()];
+        T[] allValues = [.. Enum.GetValues(typeof(T)).Cast<T>()];
+        T[] values = skip != null && skip.Any()
+            ? [.. allValues.Where(v => !skip.Contains(v))]
+            : allValues;
+
+        if (values.Length == 0)
+            throw new InvalidOperationException("No values available after applying skip filter.");
+
         int currentIndex = Array.IndexOf(values, current);
+        if (currentIndex == -1 && skip != null && skip.Contains(current))
+        {
+            return values[0];
+        }
+
         int nextIndex = (currentIndex + 1) % values.Length;
         return values[nextIndex];
     }
@@ -27,12 +40,25 @@ internal static class EnumUtils
     /// </summary>
     /// <typeparam name="T">The enum type.</typeparam>
     /// <param name="current">The current enum value.</param>
+    /// <param name="skip">Optional collection of enum values to skip.</param>
     /// <returns>The previous enum value in the sequence, or the last value if current is the first.</returns>
     /// <exception cref="ArgumentException">Thrown if the type parameter is not an enum.</exception>
-    internal static T Previous<T>(this T current) where T : Enum
+    internal static T Previous<T>(this T current, IEnumerable<T> skip = null) where T : Enum
     {
-        T[] values = [.. Enum.GetValues(typeof(T)).Cast<T>()];
+        T[] allValues = [.. Enum.GetValues(typeof(T)).Cast<T>()];
+        T[] values = skip != null && skip.Any()
+            ? [.. allValues.Where(v => !skip.Contains(v))]
+            : allValues;
+
+        if (values.Length == 0)
+            throw new InvalidOperationException("No values available after applying skip filter.");
+
         int currentIndex = Array.IndexOf(values, current);
+        if (currentIndex == -1 && skip != null && skip.Contains(current))
+        {
+            return values[^1];
+        }
+
         int prevIndex = (currentIndex - 1 + values.Length) % values.Length;
         return values[prevIndex];
     }
