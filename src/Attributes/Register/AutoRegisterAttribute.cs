@@ -102,9 +102,3 @@ internal sealed class RegisterArena : AutoRegisterAttribute<IArena> { }
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterVersusGameMode : AutoRegisterAttribute<IVersusGamemode> { }
-
-/// <summary>
-/// Registers classes that implement ICharacterConfig.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterCharacterConfig : AutoRegisterAttribute<ICharacterConfig> { }

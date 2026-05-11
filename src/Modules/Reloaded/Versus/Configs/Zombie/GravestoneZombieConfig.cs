@@ -6,12 +6,9 @@ using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
 
-[RegisterCharacterConfig]
+[RegisterZombieConfig(ZombieType.Gravestone)]
 internal sealed class GravestoneZombieConfig : IZombieConfig
 {
-    /// <inheritdoc/>
-    public ZombieType Type => ZombieType.Gravestone;
-
     /// <inheritdoc/>
     public void SetArenaDefinition(ZombieDefinition zombieDefinition, ArenaTypes arena) { }
 

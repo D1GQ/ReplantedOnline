@@ -6,7 +6,7 @@ using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
 
-[RegisterCharacterConfig]
+[RegisterZombieConfig(ZombieType.Digger)]
 internal sealed class DiggerZombieConfig : IZombieConfig
 {
     /// <inheritdoc/>

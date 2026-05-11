@@ -24,15 +24,9 @@ internal interface ICharacterConfig
     {
         if (!ReloadedLobby.AmInLobby()) return;
 
-        foreach (var config in RegisterCharacterConfig.Instances)
+        if (RegisterPlantConfig.TryGetInstanceFromLookup(plant.mSeedType, out var config))
         {
-            if (config is IPlantConfig plantConfig)
-            {
-                if (plantConfig.Type == plant.mSeedType)
-                {
-                    plantConfig.OnPlanted(plant, gridX, gridY);
-                }
-            }
+            config.OnPlanted(plant, gridX, gridY);
         }
     }
 
@@ -46,15 +40,9 @@ internal interface ICharacterConfig
     {
         if (!ReloadedLobby.AmInLobby()) return;
 
-        foreach (var config in RegisterCharacterConfig.Instances)
+        if (RegisterZombieConfig.TryGetInstanceFromLookup(zombie.mZombieType, out var config))
         {
-            if (config is IZombieConfig zombieConfig)
-            {
-                if (zombieConfig.Type == zombie.mZombieType)
-                {
-                    zombieConfig.OnPlanted(zombie, gridX, gridY);
-                }
-            }
+            config.OnPlanted(zombie, gridX, gridY);
         }
     }
 
@@ -64,31 +52,19 @@ internal interface ICharacterConfig
     /// </summary>
     internal static void SetArenaDefinitions(ArenaTypes arena)
     {
-        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var plantDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
-            foreach (var config in RegisterCharacterConfig.Instances)
+            if (RegisterPlantConfig.TryGetInstanceFromLookup(plantDefinition.SeedType, out var config))
             {
-                if (config is IZombieConfig zombieConfig)
-                {
-                    if (zombieConfig.Type == zombieDefinition.ZombieType)
-                    {
-                        zombieConfig.SetArenaDefinition(zombieDefinition, arena);
-                    }
-                }
+                config.SetArenaDefinition(plantDefinition, arena);
             }
         }
 
-        foreach (var plantDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
-            foreach (var config in RegisterCharacterConfig.Instances)
+            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieDefinition.ZombieType, out var config))
             {
-                if (config is IPlantConfig plantConfig)
-                {
-                    if (plantConfig.Type == plantDefinition.SeedType)
-                    {
-                        plantConfig.SetArenaDefinition(plantDefinition, arena);
-                    }
-                }
+                config.SetArenaDefinition(zombieDefinition, arena);
             }
         }
     }
@@ -104,39 +80,24 @@ internal interface ICharacterConfig
     /// <returns>True if the seed can be placed at the specified location; false if any matching configuration disallows placement</returns>
     internal static bool CanBePlacedAt(SeedType seedType, ArenaTypes arena, int gridX, int gridY)
     {
-        if (Challenge.IsZombieSeedType(seedType))
+        if (!Challenge.IsZombieSeedType(seedType))
         {
-            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
-
-            foreach (var config in RegisterCharacterConfig.Instances)
+            if (RegisterPlantConfig.TryGetInstanceFromLookup(seedType, out var config))
             {
-                if (config is IZombieConfig zombieConfig)
+                if (!config.CanBePlacedAt(arena, gridX, gridY))
                 {
-                    if (zombieConfig.Type == zombieType)
-                    {
-                        if (!zombieConfig.CanBePlacedAt(arena, gridX, gridY))
-                        {
-                            return false;
-                        }
-
-                        return true;
-                    }
+                    return false;
                 }
             }
         }
-
-        foreach (var config in RegisterCharacterConfig.Instances)
+        else
         {
-            if (config is IPlantConfig plantConfig)
+            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
+            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieType, out var config))
             {
-                if (plantConfig.Type == seedType)
+                if (!config.CanBePlacedAt(arena, gridX, gridY))
                 {
-                    if (!plantConfig.CanBePlacedAt(arena, gridX, gridY))
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return false;
                 }
             }
         }
@@ -152,41 +113,24 @@ internal interface ICharacterConfig
     /// <returns>True if the seed can be used in the arena</returns>
     internal static bool IsAllowedInArena(SeedType seedType, ArenaTypes arena)
     {
-        if (Challenge.IsZombieSeedType(seedType))
+        if (!Challenge.IsZombieSeedType(seedType))
         {
-            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
-
-            foreach (var config in RegisterCharacterConfig.Instances)
+            if (RegisterPlantConfig.TryGetInstanceFromLookup(seedType, out var config))
             {
-                if (config is IZombieConfig zombieConfig)
+                if (!config.IsAllowedInArena(arena))
                 {
-                    if (zombieConfig.Type == zombieType)
-                    {
-                        if (!zombieConfig.IsAllowedInArena(arena))
-                        {
-                            return false;
-                        }
-
-                        return true;
-                    }
+                    return false;
                 }
             }
-
-            return true;
         }
-
-        foreach (var config in RegisterCharacterConfig.Instances)
+        else
         {
-            if (config is IPlantConfig plantConfig)
+            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
+            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieType, out var config))
             {
-                if (plantConfig.Type == seedType)
+                if (!config.IsAllowedInArena(arena))
                 {
-                    if (!plantConfig.IsAllowedInArena(arena))
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return false;
                 }
             }
         }
@@ -198,16 +142,10 @@ internal interface ICharacterConfig
 /// <summary>
 /// Defines the configuration interface for character types in the game.
 /// </summary>
-/// <typeparam name="EnumType">The enum type that identifies the character (e.g., ZombieType, SeedType)</typeparam>
 /// <typeparam name="DefinitionType">The definition type containing character data (e.g., ZombieDefinition, PlantDefinition)</typeparam>
 /// <typeparam name="CharacterType">The runtime character type (e.g., Zombie, Plant)</typeparam>
-internal interface ICharacterConfig<EnumType, DefinitionType, CharacterType> : ICharacterConfig
+internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterConfig
 {
-    /// <summary>
-    /// Gets the specific type identifier for this character configuration.
-    /// </summary>
-    EnumType Type { get; }
-
     /// <summary>
     /// Gets rather if the character definition is allowd to be used in the arena.
     /// </summary>
@@ -243,10 +181,10 @@ internal interface ICharacterConfig<EnumType, DefinitionType, CharacterType> : I
 /// Configuration interface specifically for zombies.
 /// Implements the generic character configuration with zombie-specific types.
 /// </summary>
-internal interface IZombieConfig : ICharacterConfig<ZombieType, ZombieDefinition, Zombie> { }
+internal interface IZombieConfig : ICharacterConfig<ZombieDefinition, Zombie> { }
 
 /// <summary>
 /// Configuration interface specifically for plants.
 /// Implements the generic character configuration with plant-specific types.
 /// </summary>
-internal interface IPlantConfig : ICharacterConfig<SeedType, PlantDefinition, Plant> { }
+internal interface IPlantConfig : ICharacterConfig<PlantDefinition, Plant> { }

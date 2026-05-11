@@ -7,15 +7,13 @@ using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
-[RegisterCharacterConfig]
+[RegisterPlantConfig(SeedType.Scaredyshroom)]
 internal class ScaredyshroomPlantConfig : IPlantConfig
 {
-    public SeedType Type => SeedType.Scaredyshroom;
-
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)
     {
-        plantDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[Type];
+        plantDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[SeedType.Scaredyshroom];
 
         if (arena.IsArenaAtNight())
         {

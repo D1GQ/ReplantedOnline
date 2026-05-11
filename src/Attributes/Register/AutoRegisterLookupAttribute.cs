@@ -1,5 +1,7 @@
-﻿using ReplantedOnline.Enums.Network;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Interfaces.Versus;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes.Register;
@@ -47,6 +49,26 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
         return null;
     }
 
+    /// <summary>
+    /// Attempts to retrieve an instance from the lookup dictionary by its associated identifier.
+    /// </summary>
+    /// <param name="identifier">The identifier value to look up.</param>
+    /// <param name="instance">When this method returns, contains the instance associated with the specified identifier, or <see langword="null"/> if the identifier is not found.</param>
+    /// <returns>
+    /// <see langword="true"/> if the lookup dictionary contains an instance with the specified identifier; otherwise, <see langword="false"/>.
+    /// </returns>
+    internal static bool TryGetInstanceFromLookup(Id identifier, out T instance)
+    {
+        if (_lookup.TryGetValue(identifier, out var instanceLookup))
+        {
+            instance = instanceLookup;
+            return true;
+        }
+
+        instance = null;
+        return false;
+    }
+
     /// <inheritdoc/>
     protected override void RegisterInstances()
     {
@@ -90,3 +112,15 @@ internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterPacketHandler(PacketHandlerType packetHandlerType) : AutoRegisterLookupAttribute<IPacketHandler, PacketHandlerType>(packetHandlerType) { }
+
+/// <summary>
+/// Registers classes that implement IPlantConfig.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<IPlantConfig, SeedType>(seedType) { }
+
+/// <summary>
+/// Registers classes that implement IZombieConfig.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<IZombieConfig, ZombieType>(zombieType) { }
