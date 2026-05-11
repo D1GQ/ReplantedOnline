@@ -20,25 +20,25 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     private bool _isExploding;
     internal override void Update()
     {
-        if (ZombieNetworked._Zombie == null) return;
+        if (Net._Zombie == null) return;
 
-        if (ZombieNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
+            if (Net._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
-                ZombieNetworked.Dead = true;
+                Net.Dead = true;
                 _isExploding = true;
                 SendExplodeRpc();
-                ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
+                Net.DespawnAndDestroyWhenNullOrDead(true);
             }
         }
         else
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
+            if (Net._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
                 if (!_isExploding)
                 {
-                    ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
+                    Net._Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
         }
@@ -51,7 +51,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         int jackInTheBoxCount = 0;
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
         {
-            if (ZombieNetworked._Zombie == zombie) continue;
+            if (Net._Zombie == zombie) continue;
             if (zombie.mZombieType != ZombieType.JackInTheBox) continue;
 
             jackInTheBoxCount++;
@@ -73,8 +73,8 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     private void HandleExplodeRpc()
     {
         _isExploding = true;
-        ZombieNetworked.Dead = true;
-        ZombieNetworked._Zombie.mPhaseCounter = 0;
-        ZombieNetworked.IsReadyToDespawn = true;
+        Net.Dead = true;
+        Net._Zombie.mPhaseCounter = 0;
+        Net.IsReadyToDespawn = true;
     }
 }

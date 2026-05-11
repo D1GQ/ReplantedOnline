@@ -18,19 +18,19 @@ internal static class MagnetshroomPlantPatch
         // Check if we're in an online multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netPlant = __instance.GetNetworked();
+            var plantNetworked = __instance.GetNetworked();
 
-            if (netPlant != null)
+            if (plantNetworked != null)
             {
                 if (VersusState.AmPlantSide)
                 {
                     if (theZombie != null)
                     {
                         // Send network message to tell other players about the magnet shroom target
-                        if (netPlant.Target != theZombie)
+                        if (plantNetworked.Target != theZombie)
                         {
-                            netPlant.Target = theZombie;
-                            netPlant.SendSetZombieTargetRpc(theZombie);
+                            plantNetworked.Target = theZombie;
+                            plantNetworked.SendSetZombieTargetRpc(theZombie);
                         }
                     }
                 }

@@ -10,28 +10,28 @@ internal sealed class PoleVaulterNetworkComponent : ZombieNetworkComponent
 {
     internal override void Update()
     {
-        if (ZombieNetworked._Zombie == null) return;
+        if (Net._Zombie == null) return;
 
-        if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+        if (Net._Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
 
-        if (ZombieNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && ZombieNetworked.Target == null)
+            if (Net._Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && Net.Target == null)
             {
                 // Send target to vault
-                Plant target = ZombieNetworked._Zombie.FindPlantTarget(ZombieAttackType.Vault);
-                ZombieNetworked.SendSetPlantTargetRpc(target);
+                Plant target = Net._Zombie.FindPlantTarget(ZombieAttackType.Vault);
+                Net.SendSetPlantTargetRpc(target);
             }
         }
 
         // Non owner logic is handled in PolevaulterZombiePatch.cs
 
-        if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
+        if (Net._Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
         {
-            ZombieNetworked.Target = null;
+            Net.Target = null;
         }
 
-        if (ZombieNetworked._Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
+        if (Net._Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
         {
             UpdatePositionSync();
         }

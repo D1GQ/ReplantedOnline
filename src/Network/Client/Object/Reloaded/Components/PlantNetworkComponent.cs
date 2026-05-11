@@ -8,11 +8,14 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 /// <inheritdoc/>
 internal class PlantNetworkComponent : NetworkComponent
 {
-    protected PlantNetworked PlantNetworked;
+    /// <summary>
+    /// Gets the NetworkObject that owns this component.
+    /// </summary>
+    protected PlantNetworked Net { get; private set; }
 
     internal sealed override void Init()
     {
-        PlantNetworked = NetworkObject as PlantNetworked;
+        Net = NetObj as PlantNetworked;
         OnInit();
     }
 
@@ -29,33 +32,33 @@ internal class PlantNetworkComponent : NetworkComponent
 
     protected void UpdateHealthSync()
     {
-        if (PlantNetworked._Plant == null) return;
+        if (Net._Plant == null) return;
 
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (!PlantNetworked.Dead && !PlantNetworked._Plant.mDead)
+            if (!Net.Dead && !Net._Plant.mDead)
             {
-                if (_syncHealthCooldown <= 0f && lastSyncPlantHealth != PlantNetworked._Plant.mPlantHealth)
+                if (_syncHealthCooldown <= 0f && lastSyncPlantHealth != Net._Plant.mPlantHealth)
                 {
-                    PlantNetworked.MarkDirty();
+                    Net.MarkDirty();
                     _syncHealthCooldown = 1f;
-                    lastSyncPlantHealth = PlantNetworked._Plant.mPlantHealth;
+                    lastSyncPlantHealth = Net._Plant.mPlantHealth;
                 }
                 _syncHealthCooldown -= Time.deltaTime;
             }
         }
         else
         {
-            if (!PlantNetworked.Dead && !PlantNetworked._Plant.mDead)
+            if (!Net.Dead && !Net._Plant.mDead)
             {
                 if (lastSyncPlantHealth != null)
                 {
-                    PlantNetworked._Plant.mPlantHealth = lastSyncPlantHealth.Value;
+                    Net._Plant.mPlantHealth = lastSyncPlantHealth.Value;
                 }
 
-                if (PlantNetworked._Plant.mPlantHealth < 25)
+                if (Net._Plant.mPlantHealth < 25)
                 {
-                    PlantNetworked._Plant.mPlantHealth = 25;
+                    Net._Plant.mPlantHealth = 25;
                 }
             }
         }
@@ -63,7 +66,7 @@ internal class PlantNetworkComponent : NetworkComponent
 
     internal override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WriteInt(PlantNetworked._Plant.mPlantHealth);
+        packetWriter.WriteInt(Net._Plant.mPlantHealth);
     }
 
     internal override void Deserialize(PacketReader packetReader, bool init)

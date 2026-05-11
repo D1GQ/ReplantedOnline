@@ -20,22 +20,22 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     private bool _isDoingSpecial;
     internal override void Update()
     {
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (!PlantNetworked._Plant.mIsAsleep &&
-                PlantNetworked._Plant.mDoSpecialCountdown < 5)
+            if (!Net._Plant.mIsAsleep &&
+                Net._Plant.mDoSpecialCountdown < 5)
             {
                 if (!_isDoingSpecial)
                 {
                     SendDoSpecialRpc();
-                    PlantNetworked.Dead = true;
-                    PlantNetworked.DespawnAndDestroyWhenDeadOrNull(true);
+                    Net.Dead = true;
+                    Net.DespawnAndDestroyWhenDeadOrNull(true);
                 }
             }
         }
         else
         {
-            PlantNetworked._Plant.mDoSpecialCountdown = int.MaxValue;
+            Net._Plant.mDoSpecialCountdown = int.MaxValue;
         }
     }
 
@@ -56,14 +56,14 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         {
             _isDoingSpecial = true;
             DoSpecial();
-            PlantNetworked.IsReadyToDespawn = true;
+            Net.IsReadyToDespawn = true;
         }
     }
 
     protected virtual void DoSpecial()
     {
-        PlantNetworked.Dead = true;
-        PlantNetworked._Plant.DoSpecial();
+        Net.Dead = true;
+        Net._Plant.DoSpecial();
     }
 
     protected virtual void DoSpecial_PlantSide() { }

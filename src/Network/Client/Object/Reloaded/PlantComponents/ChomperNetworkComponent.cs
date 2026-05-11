@@ -19,9 +19,9 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
     private string _chomperState;
     internal override void Update()
     {
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            string plantStateStr = PlantNetworked._Plant.mState.ToString();
+            string plantStateStr = Net._Plant.mState.ToString();
 
             if (_chomperState != plantStateStr)
             {
@@ -33,32 +33,32 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         {
             if (Enum.TryParse(_chomperState, out PlantState state))
             {
-                if (PlantNetworked._Plant.mState != state)
+                if (Net._Plant.mState != state)
                 {
                     if (state == PlantState.ChomperBiting)
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_BITE.Fps, ReanimLoopType.PlayOnce);
+                        Net._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_BITE.Fps, ReanimLoopType.PlayOnce);
                         _chomperState = PlantState.ChomperBitingMissed.ToString();
                     }
                     else if (state == PlantState.ChomperDigesting)
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_CHEW.Fps, ReanimLoopType.Loop);
+                        Net._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_CHEW.Fps, ReanimLoopType.Loop);
                     }
                     else if (state == PlantState.ChomperSwallowing)
                     {
-                        PlantNetworked._Plant.mState = PlantState.ChomperDigesting;
-                        PlantNetworked._Plant.mStateCountdown = 0;
+                        Net._Plant.mState = PlantState.ChomperDigesting;
+                        Net._Plant.mStateCountdown = 0;
                         return;
                     }
 
-                    PlantNetworked._Plant.mState = state;
-                    PlantNetworked._Plant.mStateCountdown = int.MaxValue;
+                    Net._Plant.mState = state;
+                    Net._Plant.mStateCountdown = int.MaxValue;
                 }
                 else if (state == PlantState.Ready)
                 {
-                    if (!PlantNetworked._Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE.Anim))
+                    if (!Net._Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE.Anim))
                     {
-                        PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_IDLE.Fps, ReanimLoopType.Loop);
+                        Net._Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_IDLE.Fps, ReanimLoopType.Loop);
                     }
                 }
             }

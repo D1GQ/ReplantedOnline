@@ -24,12 +24,12 @@ internal static class PolevaulterZombiePatch
                 if (__instance.mZombiePhase == ZombiePhase.PolevaulterPreVault)
                 {
                     // Wait for plant side to find target to vault
-                    var netZombie = __instance.GetNetworked();
-                    if (netZombie != null)
+                    var zombieNetworked = __instance.GetNetworked();
+                    if (zombieNetworked != null)
                     {
-                        if (netZombie.Target != null)
+                        if (zombieNetworked.Target != null)
                         {
-                            __result = netZombie.Target;
+                            __result = zombieNetworked.Target;
                         }
                         else
                         {

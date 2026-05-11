@@ -14,9 +14,8 @@ internal abstract class NetworkComponent : IRpcReceiver
 {
     /// <summary>
     /// Gets or sets the NetworkObject that owns this component.
-    /// Can only be set once; subsequent assignment attempts are ignored.
     /// </summary>
-    internal NetworkObject NetworkObject
+    internal NetworkObject NetObj
     {
         get;
         set
@@ -29,12 +28,12 @@ internal abstract class NetworkComponent : IRpcReceiver
     /// <summary>
     /// Gets the identifier of the client that owns the parent NetworkObject.
     /// </summary>
-    public ID OwnerId => NetworkObject.OwnerId;
+    public ID OwnerId => NetObj.OwnerId;
 
     /// <summary>
     /// Gets the unique network identifier of the parent NetworkObject.
     /// </summary>
-    public uint NetworkId => NetworkObject.NetworkId;
+    public uint NetworkId => NetObj.NetworkId;
 
     /// <summary>
     /// Gets or sets the index of this component within its parent NetworkObject's component collection.

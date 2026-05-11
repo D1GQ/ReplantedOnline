@@ -14,14 +14,14 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
     internal override void OnEnabled()
     {
         _screamRng = Math.Min(_screamRng, 2);
-        ZombieNetworked.StartCoroutine(CoBungeeDropZombie());
+        Net.StartCoroutine(CoBungeeDropZombie());
     }
 
     private int _screamRng;
 
     private IEnumerator CoBungeeDropZombie()
     {
-        var zombie = ZombieNetworked._Zombie;
+        var zombie = Net._Zombie;
 
         var originalVelX = zombie.mVelX;
         var originalRenderOrder = zombie.RenderOrder;
@@ -32,18 +32,18 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.mController.gameObject.SetActive(false);
 
         // Spawn bungee zombie
-        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, ZombieNetworked.GridX, ZombieNetworked.GridY, SpawnType.None, false).Zombie;
+        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, Net.GridX, Net.GridY, SpawnType.None, false).Zombie;
         bungee.BungeeLiftTarget(); // Make arms close with 
         bungee.mZombieRect = RectUtils.NonInteractableRect; // Make invulnerable
 
         // Position zombie under bungee
         zombie.mController.gameObject.SetActive(true);
 
-        if (ZombieNetworked.SpawnType == SpawnType.BungeeDropZombieNoTarget)
+        if (Net.SpawnType == SpawnType.BungeeDropZombieNoTarget)
         {
             SeedPacketDefinitions.SetBungeeTarget(bungee, false);
             bungee.mZombiePhase = ZombiePhase.BungeeDivingScreaming;
-            bungee.mAltitude = 500 + 100 * ZombieNetworked.GridY;
+            bungee.mAltitude = 500 + 100 * Net.GridY;
         }
 
         // Animate descent
@@ -58,7 +58,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
             yield return null;
         }
 
-        if (ZombieNetworked.SpawnType == SpawnType.BungeeDropZombieNoTarget)
+        if (Net.SpawnType == SpawnType.BungeeDropZombieNoTarget)
         {
             Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_ZOMBIE_FALLING_1);
         }
@@ -66,10 +66,10 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         bungee.mZombiePhase = ZombiePhase.BungeeRising;
 
         // Restore og network component
-        var firstComponent = ZombieNetworked.NetworkComponents.FirstOrDefault();
+        var firstComponent = Net.NetworkComponents.FirstOrDefault();
         if (firstComponent is ZombieNetworkComponent zombieComponent)
         {
-            ZombieNetworked.LogicComponent = zombieComponent;
+            Net.LogicComponent = zombieComponent;
         }
 
         // Restore original zombie state

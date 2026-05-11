@@ -17,8 +17,8 @@ internal class ZombieResolver : IFastPacketResolver<Zombie>
     {
         if (value != null)
         {
-            var netZombie = value.GetNetworked();
-            packetWriter.WriteNetworkObject(netZombie);
+            var zombieNetworked = value.GetNetworked();
+            packetWriter.WriteNetworkObject(zombieNetworked);
         }
         else
         {
@@ -29,10 +29,10 @@ internal class ZombieResolver : IFastPacketResolver<Zombie>
     /// <inheritdoc/>
     public Zombie Deserialize(PacketReader packetReader, Type type)
     {
-        var netZombie = packetReader.ReadNetworkObject<ZombieNetworked>();
-        if (netZombie != null)
+        var zombieNetworked = packetReader.ReadNetworkObject<ZombieNetworked>();
+        if (zombieNetworked != null)
         {
-            return netZombie._Zombie;
+            return zombieNetworked._Zombie;
         }
         else
         {

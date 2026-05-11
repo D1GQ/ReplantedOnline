@@ -28,8 +28,8 @@ internal static class ZombiePatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked();
-                netZombie?.SendEnteringHouseRpc(__instance.mPosX);
+                var zombieNetworked = __instance.GetNetworked();
+                zombieNetworked?.SendEnteringHouseRpc(__instance.mPosX);
                 VersusGameplayManager.EndGame(__instance.mController.transform.position, PlayerTeam.Zombies);
             }
 
@@ -52,25 +52,25 @@ internal static class ZombiePatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            var netZombie = __instance.GetNetworked();
-            if (netZombie == null) return;
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked == null) return;
 
             if (VersusState.AmPlantSide)
             {
                 if (__result != null)
                 {
-                    if (netZombie.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
-                        netZombie.State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE;
-                        netZombie.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE);
+                        zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE;
+                        zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE);
                     }
                 }
                 else
                 {
-                    if (netZombie.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
-                        netZombie.State = null;
-                        netZombie.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE);
+                        zombieNetworked.State = null;
+                        zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE);
                     }
                 }
             }
@@ -79,7 +79,7 @@ internal static class ZombiePatch
                 if (__result != null)
                 {
                     // Push back until plant side starts eating plant
-                    if (netZombie.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         __result = null;
                         __instance.mPosX -= __instance.GetZombieMoveDirection();
@@ -88,7 +88,7 @@ internal static class ZombiePatch
                 else
                 {
                     // Move zombie forward to get first target to start eating on
-                    if (netZombie.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
+                    if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         __instance.mPosX += __instance.GetZombieMoveDirection();
                     }

@@ -18,9 +18,9 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
     private bool _isHigh;
     internal override void Update()
     {
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (PlantNetworked._Plant.mState is PlantState.CactusLow or PlantState.CactusLowering)
+            if (Net._Plant.mState is PlantState.CactusLow or PlantState.CactusLowering)
             {
                 if (_isHigh)
                 {
@@ -28,7 +28,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
                     SendLoweringRpc();
                 }
             }
-            else if (PlantNetworked._Plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
+            else if (Net._Plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
             {
                 if (!_isHigh)
                 {
@@ -41,11 +41,11 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
         {
             if (_isHigh)
             {
-                PlantNetworked._Plant.mState = PlantState.CactusHigh;
+                Net._Plant.mState = PlantState.CactusHigh;
             }
             else
             {
-                PlantNetworked._Plant.mState = PlantState.CactusLow;
+                Net._Plant.mState = PlantState.CactusLow;
             }
         }
 

@@ -41,8 +41,8 @@ internal static class PotatominePlantPatch
         // Check if we're in an online multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netPlant = __instance.GetNetworked();
-            if (netPlant == null) return;
+            var plantNetworked = __instance.GetNetworked();
+            if (plantNetworked == null) return;
 
             if (VersusState.AmPlantSide)
             {
@@ -51,7 +51,7 @@ internal static class PotatominePlantPatch
                 {
                     __result = null;
 
-                    var potatomineComp = netPlant.GetNetworkComponent<PotatomineNetworkComponent>();
+                    var potatomineComp = plantNetworked.GetNetworkComponent<PotatomineNetworkComponent>();
                     if (potatomineComp != null && !potatomineComp.HasExploded)
                     {
                         potatomineComp.ExplodeSynced();

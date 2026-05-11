@@ -23,20 +23,20 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     private bool _jump;
     internal override void Update()
     {
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (PlantNetworked._Plant.mState == PlantState.SquashLook && !_looking)
+            if (Net._Plant.mState == PlantState.SquashLook && !_looking)
             {
                 _looking = true;
-                Zombie target = PlantNetworked._Plant.mBoard.ZombieGet(PlantNetworked._Plant.mTargetZombieID);
-                PlantNetworked.SendSetZombieTargetRpc(target);
+                Zombie target = Net._Plant.mBoard.ZombieGet(Net._Plant.mTargetZombieID);
+                Net.SendSetZombieTargetRpc(target);
                 SendLookRpc();
             }
-            else if (PlantNetworked._Plant.mState == PlantState.SquashPreLaunch && !_jump)
+            else if (Net._Plant.mState == PlantState.SquashPreLaunch && !_jump)
             {
                 _jump = true;
-                Zombie target = PlantNetworked._Plant.mBoard.ZombieGet(PlantNetworked._Plant.mTargetZombieID);
-                PlantNetworked.SendSetZombieTargetRpc(target);
+                Zombie target = Net._Plant.mBoard.ZombieGet(Net._Plant.mTargetZombieID);
+                Net.SendSetZombieTargetRpc(target);
                 SendJumpRpc();
             }
         }
@@ -55,20 +55,20 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
         if (_looking) return;
         _looking = true;
 
-        var target = PlantNetworked.Target;
-        PlantNetworked._Plant.mTargetZombieID = target.DataID;
+        var target = Net.Target;
+        Net._Plant.mTargetZombieID = target.DataID;
 
-        PlantNetworked._Plant.mState = PlantState.SquashLook;
-        PlantNetworked._Plant.mStateCountdown = int.MaxValue;
+        Net._Plant.mState = PlantState.SquashLook;
+        Net._Plant.mStateCountdown = int.MaxValue;
 
         Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_SQUASH_HMM);
-        if (target.mX > PlantNetworked._Plant.mX)
+        if (target.mX > Net._Plant.mX)
         {
-            PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKRIGHT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
+            Net._Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKRIGHT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
         }
         else
         {
-            PlantNetworked._Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKLEFT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
+            Net._Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKLEFT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
         }
     }
 
@@ -83,12 +83,12 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
         if (_jump) return;
         _jump = true;
 
-        var target = PlantNetworked.Target;
-        PlantNetworked._Plant.mTargetZombieID = target.DataID;
+        var target = Net.Target;
+        Net._Plant.mTargetZombieID = target.DataID;
 
-        PlantNetworked._Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
-        PlantNetworked._Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
-        PlantNetworked._Plant.mState = PlantState.SquashLook;
-        PlantNetworked._Plant.mStateCountdown = 0;
+        Net._Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
+        Net._Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
+        Net._Plant.mState = PlantState.SquashLook;
+        Net._Plant.mStateCountdown = 0;
     }
 }

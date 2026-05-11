@@ -21,15 +21,15 @@ internal static class LadderZombiePatch
         {
             if (!VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked();
-                if (netZombie != null)
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
                 {
                     if (__instance.mZombiePhase == ZombiePhase.LadderCarrying)
                     {
                         // Wait for plant side to find target to place ladder
-                        if (netZombie.Target != null)
+                        if (zombieNetworked.Target != null)
                         {
-                            __result = netZombie.Target;
+                            __result = zombieNetworked.Target;
                         }
                         else
                         {

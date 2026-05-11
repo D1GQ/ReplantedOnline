@@ -12,14 +12,14 @@ internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
     private bool _triggerd;
     internal override void Update()
     {
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (PlantNetworked._Plant.mState == PlantState.UmbrellaTriggered && !_triggerd)
+            if (Net._Plant.mState == PlantState.UmbrellaTriggered && !_triggerd)
             {
                 _triggerd = true;
                 SendDoSpecialRpc();
             }
-            else if (PlantNetworked._Plant.mState != PlantState.UmbrellaTriggered)
+            else if (Net._Plant.mState != PlantState.UmbrellaTriggered)
             {
                 _triggerd = false;
             }
@@ -30,6 +30,6 @@ internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
 
     protected override void DoSpecial()
     {
-        PlantNetworked._Plant.DoSpecialOriginal();
+        Net._Plant.DoSpecialOriginal();
     }
 }

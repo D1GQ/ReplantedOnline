@@ -43,12 +43,12 @@ internal static class GargantuarZombiePatch
         {
             if (!VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked();
-                if (netZombie != null)
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
                 {
                     if (__instance.mZombiePhase != ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
+                        if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
                             // If the gargantuar is in synced smashing state, move it forward to find a target
                             if (__result == null)
@@ -57,10 +57,10 @@ internal static class GargantuarZombiePatch
                             }
                             else
                             {
-                                netZombie.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE;
+                                zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE;
                             }
                         }
-                        else if (netZombie.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
+                        else if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
                         {
                             // If the gargantuar is not in synced smashing state, move it backward if target is found
                             if (__result != null)
@@ -73,9 +73,9 @@ internal static class GargantuarZombiePatch
                     else
                     {
                         // If the gargantuar is in smashing phase, clear target state
-                        if (netZombie.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
+                        if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
                         {
-                            netZombie.State = null;
+                            zombieNetworked.State = null;
                         }
                     }
                 }
@@ -99,22 +99,22 @@ internal static class GargantuarZombiePatch
                     return false;
                 }
 
-                var netZombie = __instance.GetNetworked();
-                if (netZombie != null)
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
                 {
                     if (__instance.mZombiePhase == ZombiePhase.GargantuarSmashing)
                     {
-                        if (netZombie.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
+                        if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
-                            netZombie.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE;
-                            netZombie.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
+                            zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE;
+                            zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
                         }
                     }
                     else
                     {
-                        if (netZombie.State != null)
+                        if (zombieNetworked.State != null)
                         {
-                            netZombie.State = null;
+                            zombieNetworked.State = null;
                         }
                     }
                 }

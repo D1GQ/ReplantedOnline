@@ -13,7 +13,7 @@ internal sealed class ImpNetworkComponent : ZombieNetworkComponent
     internal float ImpRandomArc;
     internal override void Update()
     {
-        if (ZombieNetworked._Zombie.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
+        if (Net._Zombie.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
         {
             UpdatePositionSync();
         }
@@ -23,7 +23,7 @@ internal sealed class ImpNetworkComponent : ZombieNetworkComponent
     {
         if (init)
         {
-            GargantuarZombiePatch.ImpSerialize(ZombieNetworked, packetWriter);
+            GargantuarZombiePatch.ImpSerialize(Net, packetWriter);
         }
 
         base.Serialize(packetWriter, init);
@@ -33,7 +33,7 @@ internal sealed class ImpNetworkComponent : ZombieNetworkComponent
     {
         if (init)
         {
-            GargantuarZombiePatch.ImpDeserialize(ZombieNetworked, packetReader);
+            GargantuarZombiePatch.ImpDeserialize(Net, packetReader);
         }
 
         base.Deserialize(packetReader, init);

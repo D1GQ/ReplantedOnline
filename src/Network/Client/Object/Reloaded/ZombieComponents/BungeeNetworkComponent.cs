@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
@@ -20,13 +20,13 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private bool _isTakingPlant;
     internal override void Update()
     {
-        if (ZombieNetworked._Zombie == null) return;
+        if (Net._Zombie == null) return;
 
-        SeedPacketDefinitions.SetBungeeRenderOrder(ZombieNetworked._Zombie);
+        SeedPacketDefinitions.SetBungeeRenderOrder(Net._Zombie);
 
-        if (ZombieNetworked.AmOwner)
+        if (Net.AmOwner)
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
+            if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
             {
                 if (!_isDiving)
                 {
@@ -34,35 +34,35 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                     SendDiveRpc();
                 }
             }
-            else if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
-                if (ZombieNetworked._Zombie.mPhaseCounter < 10 && !_isTakingPlant)
+                if (Net._Zombie.mPhaseCounter < 10 && !_isTakingPlant)
                 {
                     _isTakingPlant = true;
                     SendTakePlantRpc();
-                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
+                    Net.DespawnAndDestroyWhenNullOrDead(true);
                 }
             }
         }
         else
         {
-            if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
+            if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
             {
                 if (!_isDiving)
                 {
-                    ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
+                    Net._Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (ZombieNetworked._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
                 if (!_isTakingPlant)
                 {
-                    ZombieNetworked._Zombie.mPhaseCounter = int.MaxValue;
+                    Net._Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (ZombieNetworked._Zombie.mAltitude > 500 && !ZombieNetworked.IsReadyToDespawn)
+            else if (Net._Zombie.mAltitude > 500 && !Net.IsReadyToDespawn)
             {
-                ZombieNetworked.IsReadyToDespawn = true;
+                Net.IsReadyToDespawn = true;
             }
         }
     }
@@ -76,7 +76,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleDiveRpc()
     {
         _isDiving = true;
-        ZombieNetworked._Zombie.mPhaseCounter = 0;
+        Net._Zombie.mPhaseCounter = 0;
     }
 
     private void SendTakePlantRpc()
@@ -88,6 +88,6 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleTakePlantRpc()
     {
         _isTakingPlant = true;
-        ZombieNetworked._Zombie.mPhaseCounter = 0;
+        Net._Zombie.mPhaseCounter = 0;
     }
 }

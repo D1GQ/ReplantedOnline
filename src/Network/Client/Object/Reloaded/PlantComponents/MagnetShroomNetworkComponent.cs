@@ -11,12 +11,12 @@ internal sealed class MagnetShroomNetworkComponent : PlantNetworkComponent
 {
     internal override void Update()
     {
-        if (!PlantNetworked.AmOwner)
+        if (!Net.AmOwner)
         {
-            if (PlantNetworked.Target != null)
+            if (Net.Target != null)
             {
-                PlantNetworked._Plant.MagnetShroomAttactItemOriginal(PlantNetworked.Target);
-                PlantNetworked.Target = null;
+                Net._Plant.MagnetShroomAttactItemOriginal(Net.Target);
+                Net.Target = null;
             }
         }
     }

@@ -17,8 +17,8 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 
     internal override void OnDeath(DeathReason deathReason)
     {
-        Instances.GameplayActivity.Board.m_vsGravestones.Remove(ZombieNetworked._Zombie);
-        ZombieNetworked._Zombie.mGraveX = 0;
-        ZombieNetworked._Zombie.mGraveY = 0;
+        Instances.GameplayActivity.Board.m_vsGravestones.Remove(Net._Zombie);
+        Net._Zombie.mGraveX = 0;
+        Net._Zombie.mGraveY = 0;
     }
 }

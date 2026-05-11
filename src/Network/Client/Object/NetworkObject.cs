@@ -286,7 +286,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
             throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");
         }
 
-        networkComponent.NetworkObject = this;
+        networkComponent.NetObj = this;
         networkComponent.Index = NetworkComponents.Count;
         NetworkComponents.Add(networkComponent);
         _networkComponentsLookup[type] = networkComponent;

@@ -16,8 +16,8 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netZombie = __instance.GetNetworked();
-            netZombie?.SendDeathRpc(theDamageFlags);
+            var zombieNetworked = __instance.GetNetworked();
+            zombieNetworked?.SendDeathRpc(theDamageFlags);
         }
 
         return true;
@@ -37,8 +37,8 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netZombie = __instance.GetNetworked();
-            netZombie?.SendDieLootRpc(true);
+            var zombieNetworked = __instance.GetNetworked();
+            zombieNetworked?.SendDieLootRpc(true);
         }
 
         return true;
@@ -58,8 +58,8 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netZombie = __instance.GetNetworked();
-            netZombie?.SendDieLootRpc(false);
+            var zombieNetworked = __instance.GetNetworked();
+            zombieNetworked?.SendDieLootRpc(false);
         }
 
         return true;
@@ -79,8 +79,8 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            var netZombie = __instance.GetNetworked();
-            netZombie?.SendDragUnderRpc();
+            var zombieNetworked = __instance.GetNetworked();
+            zombieNetworked?.SendDragUnderRpc();
         }
 
         return true;
@@ -229,8 +229,8 @@ internal static class ZombieSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                var netZombie = __instance.GetNetworked();
-                netZombie?.SendMindControlledRpc();
+                var zombieNetworked = __instance.GetNetworked();
+                zombieNetworked?.SendMindControlledRpc();
 
                 return true;
             }

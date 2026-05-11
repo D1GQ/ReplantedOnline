@@ -25,13 +25,13 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
             return;
         }
 
-        var groundType = ZombieNetworked._Zombie.mBoard.mPlantRow[ZombieNetworked._Zombie.mRow];
+        var groundType = Net._Zombie.mBoard.mPlantRow[Net._Zombie.mRow];
         if (groundType == PlantRowType.Pool)
         {
-            ZombieNetworked._Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
+            Net._Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
 
             // remove arms overlay to appear over the water
-            ZombieNetworked._Zombie.mController.SetImageOverride("whitewater", string.Empty);
+            Net._Zombie.mController.SetImageOverride("whitewater", string.Empty);
         }
     }
 
@@ -42,7 +42,7 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
             return;
         }
 
-        var zombie = ZombieNetworked._Zombie;
+        var zombie = Net._Zombie;
         if (zombie == null) return;
         if (zombie.mBoard == null) return;
 
@@ -73,14 +73,14 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
         {
             zombie.mController.ClipRect(new(-500, -500, 1000, 615));
 
-            if (ZombieNetworked.AmOwner)
+            if (Net.AmOwner)
             {
                 if (!_isDrowning && zombie.mZombieType == ZombieType.Imp)
                 {
                     _isDrowning = true;
                     SendDrownRpc();
-                    ZombieNetworked.StartCoroutine(CoDrown());
-                    ZombieNetworked.DespawnAndDestroyWhenNullOrDead(true);
+                    Net.StartCoroutine(CoDrown());
+                    Net.DespawnAndDestroyWhenNullOrDead(true);
                 }
             }
         }
@@ -88,8 +88,8 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 
     private bool CanGoInWater()
     {
-        bool typeCheck = ZombieNetworked.ZombieType != ZombieType.Bungee;
-        bool phaseCheck = ZombieNetworked._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
+        bool typeCheck = Net.ZombieType != ZombieType.Bungee;
+        bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
         return typeCheck && phaseCheck;
     }
 
@@ -104,23 +104,23 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
         if (!_isDrowning)
         {
             _isDrowning = true;
-            ZombieNetworked.StartCoroutine(CoDrown());
+            Net.StartCoroutine(CoDrown());
         }
     }
 
     private IEnumerator CoDrown()
     {
-        float target = ZombieNetworked._Zombie.mAltitude - 150;
-        while (ZombieNetworked._Zombie.mAltitude > target)
+        float target = Net._Zombie.mAltitude - 150;
+        while (Net._Zombie.mAltitude > target)
         {
-            ZombieNetworked._Zombie.mAltitude -= 25f;
-            ZombieNetworked._Zombie.mVelX = 0;
-            ZombieNetworked._Zombie.UpdateAnimSpeed();
-            ZombieNetworked._Zombie.PoolSplash(true);
+            Net._Zombie.mAltitude -= 25f;
+            Net._Zombie.mVelX = 0;
+            Net._Zombie.UpdateAnimSpeed();
+            Net._Zombie.PoolSplash(true);
             yield return null;
         }
-        ZombieNetworked.Dead = true;
-        ZombieNetworked._Zombie.DieNoLootOriginal();
-        ZombieNetworked.IsReadyToDespawn = true;
+        Net.Dead = true;
+        Net._Zombie.DieNoLootOriginal();
+        Net.IsReadyToDespawn = true;
     }
 }

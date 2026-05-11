@@ -20,16 +20,16 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
     internal override void OnInit()
     {
-        _awakeTexture = PlantNetworked._Plant.mController.m_meshRenderer.material.mainTexture;
+        _awakeTexture = Net._Plant.mController.m_meshRenderer.material.mainTexture;
         _sleepingTexture = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Jalapeno-Sleeping.png").texture;
-        PlantNetworked._Plant.mSeedType = SeedType.None;
-        PlantNetworked._Plant.SetSleeping(true);
-        PlantNetworked._Plant.PlayIdleAnim(0);
-        PlantNetworked._Plant.mPlantHealth = int.MaxValue;
-        PlantNetworked._Plant.mPlantMaxHealth = int.MaxValue;
-        PlantNetworked._Plant.mX -= 40;
-        PlantNetworked._Plant.mController.m_visualOffset = PlantNetworked._Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
-        PlantNetworked._Plant.mController.m_shadowController.gameObject.SetActive(false);
+        Net._Plant.mSeedType = SeedType.None;
+        Net._Plant.SetSleeping(true);
+        Net._Plant.PlayIdleAnim(0);
+        Net._Plant.mPlantHealth = int.MaxValue;
+        Net._Plant.mPlantMaxHealth = int.MaxValue;
+        Net._Plant.mX -= 40;
+        Net._Plant.mController.m_visualOffset = Net._Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
+        Net._Plant.mController.m_shadowController.gameObject.SetActive(false);
 
         _lastHighContrast = !Instances.GameplayActivity.SettingsService.HighContrast;
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
@@ -40,20 +40,20 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     {
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
 
-        if (PlantNetworked.AmOwner)
+        if (Net.AmOwner)
         {
             foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
             {
-                if (zombie.mRow != PlantNetworked.GridY) continue;
+                if (zombie.mRow != Net.GridY) continue;
                 if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                 if (zombie.IsDeadOrDying()) continue;
 
-                if (PlantNetworked._Plant.mX + 100 >= zombie.mX)
+                if (Net._Plant.mX + 100 >= zombie.mX)
                 {
                     if (!_activated)
                     {
-                        PlantNetworked._Plant.mSeedType = SeedType.Jalapeno;
-                        PlantNetworked._Plant.SetSleeping(false);
+                        Net._Plant.mSeedType = SeedType.Jalapeno;
+                        Net._Plant.SetSleeping(false);
                         SendActivateRpc();
                     }
 
@@ -68,13 +68,13 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (_activated)
         {
-            PlantNetworked._Plant.mController.m_meshRenderer.material.mainTexture = _awakeTexture;
+            Net._Plant.mController.m_meshRenderer.material.mainTexture = _awakeTexture;
             base.Update();
         }
         else
         {
-            PlantNetworked._Plant.mBlinkCountdown = 100;
-            PlantNetworked._Plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
+            Net._Plant.mBlinkCountdown = 100;
+            Net._Plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
         }
     }
 
@@ -86,11 +86,11 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (useHighContrast)
         {
-            PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
+            Net._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
         }
         else
         {
-            PlantNetworked._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
+            Net._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
         }
     }
 
@@ -109,8 +109,8 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         if (!_activated)
         {
             _activated = true;
-            PlantNetworked._Plant.mSeedType = SeedType.Jalapeno;
-            PlantNetworked._Plant.SetSleeping(false);
+            Net._Plant.mSeedType = SeedType.Jalapeno;
+            Net._Plant.SetSleeping(false);
         }
     }
 
@@ -118,7 +118,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     {
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
         {
-            if (zombie.mRow != PlantNetworked.GridY) continue;
+            if (zombie.mRow != Net.GridY) continue;
             if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
             if (zombie.IsDeadOrDying()) continue;
             if (zombie.mVelX <= 0f) continue;

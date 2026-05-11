@@ -17,8 +17,8 @@ internal class PlantResolver : IFastPacketResolver<Plant>
     {
         if (value != null)
         {
-            var netPlant = value.GetNetworked();
-            packetWriter.WriteNetworkObject(netPlant);
+            var plantNetworked = value.GetNetworked();
+            packetWriter.WriteNetworkObject(plantNetworked);
         }
         else
         {
@@ -29,10 +29,10 @@ internal class PlantResolver : IFastPacketResolver<Plant>
     /// <inheritdoc/>
     public Plant Deserialize(PacketReader packetReader, Type type)
     {
-        var netPlant = packetReader.ReadNetworkObject<PlantNetworked>();
-        if (netPlant != null)
+        var plantNetworked = packetReader.ReadNetworkObject<PlantNetworked>();
+        if (plantNetworked != null)
         {
-            return netPlant._Plant;
+            return plantNetworked._Plant;
         }
         else
         {
