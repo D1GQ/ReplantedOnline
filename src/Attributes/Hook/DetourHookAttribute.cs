@@ -16,6 +16,7 @@ internal sealed class DetourHookAttribute : Attribute
         TargetType = null;
         MethodName = string.Empty;
         ParameterTypes = null;
+        GenericArguments = null;
     }
 
     /// <summary>
@@ -28,6 +29,7 @@ internal sealed class DetourHookAttribute : Attribute
         TargetType = type;
         MethodName = methodName;
         ParameterTypes = null;
+        GenericArguments = null;
     }
 
     /// <summary>
@@ -40,6 +42,22 @@ internal sealed class DetourHookAttribute : Attribute
     {
         TargetType = type;
         MethodName = methodName;
+        ParameterTypes = parameterTypes;
+        GenericArguments = null;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DetourHookAttribute"/> class for a generic method.
+    /// </summary>
+    /// <param name="type">The type that contains the target method to be hooked.</param>
+    /// <param name="methodName">The name of the target method to be hooked.</param>
+    /// <param name="parameterTypes">The parameter types of the specific overload to target.</param>
+    /// <param name="genericArguments">The generic type arguments to instantiate the generic method.</param>
+    internal DetourHookAttribute(Type type, string methodName, Type[] parameterTypes, Type[] genericArguments)
+    {
+        TargetType = type;
+        MethodName = methodName;
+        GenericArguments = genericArguments;
         ParameterTypes = parameterTypes;
     }
 
@@ -62,6 +80,11 @@ internal sealed class DetourHookAttribute : Attribute
     /// Gets the parameter types of the specific overload to target. If null, any overload with matching name will be used.
     /// </summary>
     internal readonly Type[] ParameterTypes;
+
+    /// <summary>
+    /// Gets the generic type arguments for the target method if it's generic.
+    /// </summary>
+    internal readonly Type[] GenericArguments;
 
     /// <summary>
     /// The hook instance used to intercept the target method.
@@ -96,21 +119,82 @@ internal sealed class DetourHookAttribute : Attribute
     /// <exception cref="InvalidOperationException">Thrown if <see cref="TargetType"/> or <see cref="MethodName"/> are null or empty.</exception>
     private void Install(MethodInfo hookMethod)
     {
-        MethodInfo target;
+        MethodInfo target = GetTargetMethod();
+
+        // Validate return type compatibility for generic methods
+        ValidateReturnType(target, hookMethod);
+
+        _hook = new MonoMod.RuntimeDetour.Hook(target, hookMethod);
+    }
+
+    /// <summary>
+    /// Gets the target method with proper handling for generic methods.
+    /// </summary>
+    /// <returns>The target method info.</returns>
+    private MethodInfo GetTargetMethod()
+    {
+        var methods = TargetType.GetMethods(BindingFlag)
+            .Where(m => m.Name == MethodName)
+            .ToList();
+
+        if (methods.Count == 0)
+            throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName}");
 
         if (ParameterTypes != null && ParameterTypes.Length > 0)
         {
-            // Target a specific overload by parameter types
-            target = TargetType.GetMethod(MethodName, BindingFlag, null, ParameterTypes, null)
-                ?? throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName} with specified parameter types: {string.Join(", ", ParameterTypes.Select(t => t.Name))}");
-        }
-        else
-        {
-            // Fall back to original behavior - find any method with matching name
-            target = TargetType.GetMethod(MethodName, BindingFlag)
-                ?? throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName}");
+            methods = [.. methods.Where(m =>
+            {
+                var parameters = m.GetParameters();
+                if (parameters.Length != ParameterTypes.Length)
+                    return false;
+
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    // Check if parameter types match
+                    if (parameters[i].ParameterType != ParameterTypes[i])
+                        return false;
+                }
+                return true;
+            })];
         }
 
-        _hook = new MonoMod.RuntimeDetour.Hook(target, hookMethod);
+        if (methods.Count == 0)
+        {
+            string paramInfo = ParameterTypes != null ?
+                $" with parameter types: {string.Join(", ", ParameterTypes.Select(t => t.Name))}" : "";
+            throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName}{paramInfo}");
+        }
+
+        if (GenericArguments != null && GenericArguments.Length > 0)
+        {
+            var genericMethod = methods.FirstOrDefault(m => m.IsGenericMethodDefinition);
+
+            return genericMethod == null
+                ? throw new Exception($"Method {TargetType.FullName}.{MethodName} is not generic")
+                : genericMethod.MakeGenericMethod(GenericArguments);
+        }
+        else if (methods.Count > 1)
+        {
+            throw new Exception($"Multiple overloads found for {TargetType.FullName}.{MethodName}. Please specify parameter types or generic arguments.");
+        }
+
+        return methods.First();
+    }
+
+    /// <summary>
+    /// Validates that the hook method's return type is compatible with the target method.
+    /// </summary>
+    /// <param name="target">The target method.</param>
+    /// <param name="hook">The hook method.</param>
+    /// <exception cref="InvalidOperationException">Thrown when return types don't match.</exception>
+    private static void ValidateReturnType(MethodInfo target, MethodInfo hook)
+    {
+        if (target.ReturnType != hook.ReturnType)
+        {
+            throw new InvalidOperationException(
+                $"Return type mismatch for hook of {target.DeclaringType?.Name}.{target.Name}(): " +
+                $"Expected {target.ReturnType}, got {hook.ReturnType}"
+            );
+        }
     }
 }
