@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Injection;
 using Il2CppSteamworks;
 using MelonLoader;
+using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Modded;
@@ -36,6 +37,7 @@ internal class ReplantedOnlineMod : MelonMod
         File.WriteAllText("steam_appid.txt", ((uint)AppIds.PVZ_Replanted).ToString());
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
+        DetourHookAttribute.InstallAll();
         AutoRegisterAttribute.RegisterAll();
         RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();

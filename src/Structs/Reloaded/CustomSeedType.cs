@@ -32,6 +32,18 @@ internal readonly struct CustomSeedType
     internal static CustomSeedType Snorkel { get; } = new(20000, ZombieType.Snorkel, ReanimationType.Snorkel);
 
     /// <summary>
+    /// Checks if a <see cref="SeedType"/> is a CustomSeedType.
+    /// </summary>
+    /// <param name="seedType">The <see cref="SeedType"/> to check.</param>
+    /// <returns>
+    /// <c>true</c> if the <see cref="SeedType"/> is custom <see cref="ZombieType.Invalid"/>; otherwise, <c>false</c>.
+    /// </returns>
+    internal static bool IsCustomSeedType(SeedType seedType)
+    {
+        return _lookup.ContainsKey(seedType);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CustomSeedType"/> struct.
     /// </summary>
     /// <param name="id">The unique identifier for the custom seed type.</param>
