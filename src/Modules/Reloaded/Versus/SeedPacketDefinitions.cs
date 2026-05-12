@@ -7,6 +7,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Structs;
@@ -124,9 +125,9 @@ internal static class SeedPacketDefinitions
     {
         // Replace seed packet icon for hidden seed packet
         var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
-        var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
-        IAssetReferenceOverride.Register(assetOverride);
-        assetOverride.SetOverride(ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacket);
+        var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
+        IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
+        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
@@ -142,9 +143,6 @@ internal static class SeedPacketDefinitions
                 zombieDefinition.m_versusBodyHealth = 270;
             }
         }
-
-        var zombieGravestoneDef = Instances.IDataService.GetPlantDefinition(SeedType.ZombieGravestone);
-        zombieGravestoneDef.m_previewSpriteScale = 1.30f;
 
         SetVersusDefinitionFromBase(SeedType.Flowerpot, 0.5f);
         SetVersusDefinitionFromBase(SeedType.Lilypad, 0.5f);

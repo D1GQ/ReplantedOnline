@@ -162,7 +162,7 @@ internal static class ReplantedOnlineAssets
         /// </summary>
         internal static class SeedPacket
         {
-            internal static Sprite HiddenSeedPacket
+            internal static Sprite HiddenSeedPacketIcon
             {
                 get
                 {
