@@ -143,6 +143,9 @@ internal static class SeedPacketDefinitions
             }
         }
 
+        var zombieGravestoneDef = Instances.IDataService.GetPlantDefinition(SeedType.ZombieGravestone);
+        zombieGravestoneDef.m_previewSpriteScale = 1.30f;
+
         SetVersusDefinitionFromBase(SeedType.Flowerpot, 0.5f);
         SetVersusDefinitionFromBase(SeedType.Lilypad, 0.5f);
         SetVersusDefinitionFromBase(SeedType.Tanglekelp);

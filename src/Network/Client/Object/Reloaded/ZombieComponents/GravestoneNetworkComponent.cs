@@ -25,6 +25,10 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
         {
             Net._Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;
         }
+
+        Net._Zombie.mController.m_scale = new(1.15f, 1.15f);
+        Net._Zombie.mController.m_visualOffset = new(125f, -335, 0f);
+        Net._Zombie.mController.m_shadowController.m_shadowImageOffset = new(-150f, -50.5f, 0f);
     }
 
     internal override void OnDeath(DeathReason deathReason)
