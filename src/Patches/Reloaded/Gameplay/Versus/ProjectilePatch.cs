@@ -64,7 +64,7 @@ internal static class ProjectilePatch
                 {
                     if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                     if (zombie.IsDeadOrDying()) continue;
-                    if (zombie.mPosX > theZombie.mPosX + 50) continue;
+                    if (zombie.mPosX > theZombie.mPosX + 75) continue;
 
                     if (zombie.mRow == theZombie.mRow)
                     {
