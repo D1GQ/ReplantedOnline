@@ -23,6 +23,6 @@ internal sealed class GravestoneZombieConfig : IZombieConfig
     {
         // Fix rendering order
         zombie.RenderOrder -= 100 + 5 * (gridY + 1);
-        zombie.mZombieRect = new(60f, 75f, zombie.mZombieRect.width, zombie.mZombieRect.height);
+        zombie.mZombieRect = new(50f, 50f, zombie.mZombieRect.width, zombie.mZombieRect.height);
     }
 }

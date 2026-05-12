@@ -68,12 +68,9 @@ internal static class SunAndBrainProductionPatch
         {
             if (VersusState.AmZombieSide)
             {
-                // 100 is a magic number used to mark gravestone spawning brains
-                if (__instance.mZombiePhase is not ((ZombiePhase)100 or (ZombiePhase)101)) return;
-
-                if (__instance.mZombiePhase == (ZombiePhase)100)
+                if (__instance.mZombiePhase == ZombiePhase.ZombieNormal)
                 {
-                    __instance.mZombiePhase = (ZombiePhase)101;
+                    __instance.mZombiePhase = (ZombiePhase)100;
                     __instance.mPhaseCounter = VersusGameplayManager.GetInitPlantOrGraveRate();
                     return;
                 }
