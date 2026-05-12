@@ -168,7 +168,7 @@ internal static class ReplantedOnlineAssets
                 {
                     if (field == null)
                     {
-                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png");
+                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seedpacket.png");
                     }
 
                     return field;
