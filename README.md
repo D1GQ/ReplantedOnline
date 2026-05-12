@@ -23,16 +23,76 @@ A P2P multiplayer mod for **Plants vs. Zombies: Replanted** on Steam.
 
 ---
 
-ReplantedOnline lets you play Versus mode online. Using direct peer-to-peer connections, so you don't need to use Parsec!
+## About
 
-## Requirements
+ReplantedOnline lets you play Versus mode online using direct peer-to-peer connections, so you don't need to use Parsec.
 
-- [MelonLoader](https://github.com/LavaGang/MelonLoader)
+> You must own a legitimate Steam copy of Plants vs. Zombies: Replanted to use this mod.
+
+---
+
+## Installation Requirements
+
+- [MelonLoader v0.7.2](https://github.com/LavaGang/MelonLoader/releases/tag/v0.7.2)
 - [BloomEngine](https://gamebanana.com/mods/640948)
 
-## Want to help out?
+Launch the game once after installing MelonLoader so required assemblies are generated.
 
-Pull requests are welcome. Code structure:
+---
+
+## Compiling
+
+### Development Requirements
+
+- [Microsoft Visual Studio](https://visualstudio.microsoft.com/)
+- .NET SDK 8.0.102+
+- .NET desktop development tools
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/D1GQ/ReplantedOnline.git
+cd ReplantedOnline
+```
+
+### Setup References
+
+Run the reference setup script:
+
+```bat
+setup_references.bat
+```
+
+When prompted, enter your game's `MelonLoader` directory.
+
+Example:
+
+```text
+C:\Program Files (x86)\Steam\steamapps\common\PVZ Replanted\MelonLoader
+```
+
+After references are installed, run:
+
+```bat
+setup_dependencies.bat
+```
+
+This downloads required external dependencies automatically.
+
+### Build
+
+Open:
+
+```text
+ReplantedOnline.sln
+```
+
+in Visual Studio and build the solution in `Release` configuration.
+
+---
+
+## Project Structure
+
 ### Gameplay
 - `src/Modules/Reloaded/Versus/Configs` — contains configurations for plants/zombies
 - `src/Modules/Reloaded/Versus/Gamemodes` — contains gamemode setup and logic
@@ -40,28 +100,42 @@ Pull requests are welcome. Code structure:
 - `src/Managers/Reloaded/VersusLobbyManager.cs` — handles lobby logic and states
 - `src/Managers/Reloaded/VersusGameplayManager.cs` — handles gameplay logic and states
 - `src/Managers/Reloaded/VersusEndGameManager.cs` — handles endgame logic and states
-### Networking - Client
-- `src/Network/Client/ReplantedLobby.cs` — handles steamworks/lan lobbies
-- `src/Network/Client/ReplantedLobbyData.cs` — handles data for the lobby
+
+### Networking
+#### Client
+- `src/Network/Client/ReplantedLobby.cs` — handles Steamworks/LAN lobbies
+- `src/Network/Client/ReplantedLobbyData.cs` — handles lobby data
 - `src/Network/Client/PacketHandler` — contains packet handlers for routed packets
-- `src/Network/Client/RPC` — contains remote procedure call handlers for static rpcs
-- `src/Network/Client/Object/Reloaded` — contains network objects, used to sync individual objects
-### Networking - Server/Packets
-- `src/Network/Routing/Transport` — contains transports for networking
-- `src/Network/Routing/NetworkDispatcher.cs` — handles sending and routing packets to/from transport
-- `src/Network/Server/LAN` — contains lan server to test locally
+- `src/Network/Client/RPC` — contains remote procedure call handlers for static RPCs
+- `src/Network/Client/Object/Reloaded` — contains synced network objects
+
+#### Server / Transport
+- `src/Network/Routing/Transport` — contains networking transports
+- `src/Network/Routing/NetworkDispatcher.cs` — handles packet routing and dispatching
+- `src/Network/Server/LAN` — contains LAN testing server logic
+
+#### Serialization
 - `src/Network/Packet/PacketWriter.cs` — handles binary serialization
 - `src/Network/Packet/PacketReader.cs` — handles binary deserialization
-- `src/Network/Packet/Messages` — contains packet messages for serialization and deserialization
-- `src/Network/Packet/FastResolvers` — contains resolvers for non type serialization and deserialization
+- `src/Network/Packet/Messages` — contains serialized packet message types
+- `src/Network/Packet/FastResolvers` — contains fast serialization resolvers
 
-Fork the repo, make a branch, and send a PR.
+---
 
-## Reporting Issues!
-Please report any bugs or issues you encounter in [Issues](https://github.com/D1GQ/ReplantedOnline/issues) to help improve the mod!
+## Reporting Issues
 
-## Contacts
+Please report bugs or issues here:
+
+https://github.com/D1GQ/ReplantedOnline/issues
+
+---
+
+## Contact
+
 replantedonlineofficial@gmail.com
 
+---
+
 ## Disclaimer
-**ReplantedOnline** is a unofficial modification of **Plants vs. Zombies: Replanted** and is not affiliated with **PopCap Games** or **Electronic Arts**.
+
+**ReplantedOnline** is an unofficial modification of **Plants vs. Zombies: Replanted** and is not affiliated with **PopCap Games** or **Electronic Arts**.
