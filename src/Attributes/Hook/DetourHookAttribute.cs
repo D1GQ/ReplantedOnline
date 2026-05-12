@@ -15,6 +15,7 @@ internal sealed class DetourHookAttribute : Attribute
     {
         TargetType = null;
         MethodName = string.Empty;
+        ParameterTypes = null;
     }
 
     /// <summary>
@@ -26,6 +27,20 @@ internal sealed class DetourHookAttribute : Attribute
     {
         TargetType = type;
         MethodName = methodName;
+        ParameterTypes = null;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DetourHookAttribute"/> class with the specified target method and parameter types.
+    /// </summary>
+    /// <param name="type">The type that contains the target method to be hooked.</param>
+    /// <param name="methodName">The name of the target method to be hooked.</param>
+    /// <param name="parameterTypes">The parameter types of the specific overload to target.</param>
+    internal DetourHookAttribute(Type type, string methodName, Type[] parameterTypes)
+    {
+        TargetType = type;
+        MethodName = methodName;
+        ParameterTypes = parameterTypes;
     }
 
     /// <summary>
@@ -42,6 +57,11 @@ internal sealed class DetourHookAttribute : Attribute
     /// Gets the name of the target method to be hooked.
     /// </summary>
     internal readonly string MethodName;
+
+    /// <summary>
+    /// Gets the parameter types of the specific overload to target. If null, any overload with matching name will be used.
+    /// </summary>
+    internal readonly Type[] ParameterTypes;
 
     /// <summary>
     /// The hook instance used to intercept the target method.
@@ -76,8 +96,21 @@ internal sealed class DetourHookAttribute : Attribute
     /// <exception cref="InvalidOperationException">Thrown if <see cref="TargetType"/> or <see cref="MethodName"/> are null or empty.</exception>
     private void Install(MethodInfo hookMethod)
     {
-        var target = TargetType.GetMethod(MethodName, BindingFlag)
-            ?? throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName}");
+        MethodInfo target;
+
+        if (ParameterTypes != null && ParameterTypes.Length > 0)
+        {
+            // Target a specific overload by parameter types
+            target = TargetType.GetMethod(MethodName, BindingFlag, null, ParameterTypes, null)
+                ?? throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName} with specified parameter types: {string.Join(", ", ParameterTypes.Select(t => t.Name))}");
+        }
+        else
+        {
+            // Fall back to original behavior - find any method with matching name
+            target = TargetType.GetMethod(MethodName, BindingFlag)
+                ?? throw new Exception($"Failed to find target method: {TargetType.FullName}.{MethodName}");
+        }
+
         _hook = new MonoMod.RuntimeDetour.Hook(target, hookMethod);
     }
 }

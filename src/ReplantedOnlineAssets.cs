@@ -8,6 +8,8 @@ namespace ReplantedOnline;
 /// </summary>
 internal static class ReplantedOnlineAssets
 {
+    internal const string CUSTOM_ASSET_REF_GUID_PREFIX = "replant-online:";
+
     /// <summary>
     /// Contains all custom sprite assets.
     /// </summary>

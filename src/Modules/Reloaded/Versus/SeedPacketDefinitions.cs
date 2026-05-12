@@ -194,13 +194,13 @@ internal static class SeedPacketDefinitions
         customPlantDefinition.m_plantToolTip = translationName + "_DESCRIPTION_HEADER";
         customPlantDefinition.m_defaultSkin = "Normal";
 
-        AssetReferenceSprite imageRef = new($"CustomPlantDefinition:{translationName}");
-        var assetOverride = new AssetReferenceOverride<Sprite>(imageRef);
+        CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}");
+        var assetOverride = new AssetReferenceOverride<Sprite>(imageRef.Asset);
         IAssetReferenceOverride.Register(assetOverride);
         assetOverride.SetOverride(sprite);
-        customPlantDefinition.m_plantImage = imageRef;
-        customPlantDefinition.m_versusImage = imageRef;
-        customPlantDefinition.m_previewSprite = imageRef;
+        customPlantDefinition.m_plantImage = imageRef.Asset;
+        customPlantDefinition.m_versusImage = imageRef.Asset;
+        customPlantDefinition.m_previewSprite = imageRef.Asset;
 
         customPlantDefinition.m_previewSpriteScale = 1f;
 

@@ -42,7 +42,7 @@ internal static class SeedChooserPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            // AddCustomZombiesToChosen();
+            AddCustomZombiesToChosen();
 
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
             __instance.m_zombieEntriesModel.Clear();
@@ -77,10 +77,40 @@ internal static class SeedChooserPatch
 
             ChosenSeed chosenSeed = new()
             {
+                mSeedState = ChosenSeedState.SeedInChooser,
                 mImitaterType = SeedType.None,
                 mSeedType = customSeedType
             };
             Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Add(chosenSeed);
+        }
+
+        RepositionAllZombieSeeds();
+    }
+
+    static void RepositionAllZombieSeeds()
+    {
+        var screen = Instances.GameplayActivity.SeedChooserScreen;
+        var seeds = screen.mChosenZombies;
+        bool has7Rows = screen.Has7Rows();
+
+        for (int i = 0; i < seeds.Count; i++)
+        {
+            var seed = seeds[i];
+
+            int row = i >> 3;
+            int col = i & 7;
+
+            if (!has7Rows)
+                seed.mX = row * 0x49 + 0x80;
+            else
+                seed.mX = row * 0x46 + 0x7b;
+
+            seed.mY = col * 0x35 + 0x16;
+
+            seed.mStartX = seed.mX;
+            seed.mStartY = seed.mY;
+            seed.mEndX = seed.mX;
+            seed.mEndY = seed.mY;
         }
     }
 
@@ -92,5 +122,33 @@ internal static class SeedChooserPatch
         {
             __result = false;
         }
+    }
+
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.GetChosenSeedFromType))]
+    [HarmonyPrefix]
+    private static bool SeedChooserScreen_GetChosenSeedFromType_Prefix(SeedChooserScreen __instance, SeedType theSeedType, ref ChosenSeed __result)
+    {
+        // Bypass hardcoded index range check to allow CustomSeedType!
+
+        foreach (var chosenSeed in __instance.mChosenSeeds)
+        {
+            if (chosenSeed.mSeedType == theSeedType)
+            {
+                __result = chosenSeed;
+                return false;
+            }
+        }
+
+        foreach (var chosenZombie in __instance.mChosenZombies)
+        {
+            if (chosenZombie.mSeedType == theSeedType)
+            {
+                __result = chosenZombie;
+                return false;
+            }
+        }
+
+        __result = null;
+        return false;
     }
 }

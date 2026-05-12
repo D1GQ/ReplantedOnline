@@ -52,7 +52,7 @@ internal static class MatchmakingPatch
 
     [HarmonyPatch(typeof(ISteamMatchmaking), nameof(ISteamMatchmaking.GetNumLobbyMembers))]
     [HarmonyPrefix]
-    private static bool GetNumLobbyMembers_Prefix(SteamId steamIDLobby, ref int __result)
+    private static bool ISteamMatchmaking_GetNumLobbyMembers_Prefix(SteamId steamIDLobby, ref int __result)
     {
         if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return true;
 
@@ -71,7 +71,7 @@ internal static class MatchmakingPatch
 
     [HarmonyPatch(typeof(ISteamMatchmaking), nameof(ISteamMatchmaking.GetLobbyMemberByIndex))]
     [HarmonyPrefix]
-    private static bool GetLobbyMemberByIndex_Prefix(SteamId steamIDLobby, int iMember, ref SteamId __result)
+    private static bool ISteamMatchmaking_GetLobbyMemberByIndex_Prefix(SteamId steamIDLobby, int iMember, ref SteamId __result)
     {
         if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return true;
 
@@ -96,7 +96,7 @@ internal static class MatchmakingPatch
 
     [HarmonyPatch(typeof(ISteamMatchmaking), nameof(ISteamMatchmaking.SetLobbyMemberLimit))]
     [HarmonyPrefix]
-    private static void SetLobbyMemberLimit_Prefix(SteamId steamIDLobby, ref int cMaxMembers)
+    private static void ISteamMatchmaking_SetLobbyMemberLimit_Prefix(SteamId steamIDLobby, ref int cMaxMembers)
     {
         if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return;
 
