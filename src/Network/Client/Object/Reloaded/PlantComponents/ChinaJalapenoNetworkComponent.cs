@@ -38,6 +38,8 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     private bool _activated;
     internal override void Update()
     {
+        if (Net._Plant.mController == null) return;
+
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
 
         if (Net.AmOwner)

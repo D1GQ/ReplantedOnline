@@ -19,7 +19,7 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 
     internal override void Update()
     {
-        // Do not sync position
+        if (Net._Zombie.mController == null) return;
 
         if (Net._Zombie.mBoard.StageHasNoGrass())
         {
