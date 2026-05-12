@@ -83,7 +83,10 @@ internal static class SeedPacketDefinitions
         SeedType.Flowerpot,
         SeedType.Lilypad,
         SeedType.Marigold,
-        SeedType.Plantern
+        SeedType.Plantern,
+
+        // Zombies
+        SeedType.ZombieBalloon
     ];
 
     /// <summary>
