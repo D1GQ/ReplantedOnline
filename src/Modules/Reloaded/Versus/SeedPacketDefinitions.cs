@@ -126,7 +126,7 @@ internal static class SeedPacketDefinitions
         var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
         var assetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(assetOverride);
-        assetOverride.SetOverride(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
+        assetOverride.SetOverride(ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacket);
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {

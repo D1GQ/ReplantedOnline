@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2CppTekly.PanelViews;
-using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +25,7 @@ internal static class TitleScreenPatch
                     logo.gameObject.DestroyAllImageLocalizers();
                     UnityEngine.Object.Destroy(logo);
                     screen.gameObject.DestroyAllImageLocalizers();
-                    screen.sprite = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Promo-Logo-Compressed.png");
+                    screen.sprite = ReplantedOnlineAssets.Sprites.PromoCompressed;
                 }
 
                 var loadingRect = splash.Find("Canvas/LoadBar/LoadBarAnimationParent")?.GetComponentInChildren<RectTransform>(true);

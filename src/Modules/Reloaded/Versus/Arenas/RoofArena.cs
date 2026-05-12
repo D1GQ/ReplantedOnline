@@ -65,7 +65,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public virtual Sprite GetThumbnail()
     {
-        return ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofday.png");
+        return ReplantedOnlineAssets.Sprites.Arena.RoofDayThumbnail;
     }
 
     /// <inheritdoc/>
@@ -102,7 +102,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        var line = PvZRUtils.CreateBowlingLine(ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f));
+        var line = PvZRUtils.CreateBowlingLine(ReplantedOnlineAssets.Sprites.Arena.RoofBowlingline);
         line.transform.localPosition = new Vector3(0f, -861.1128f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);
         if (!Type.IsArenaAtNight())
