@@ -25,7 +25,7 @@ internal static class ProjectilePatch
             // This is a direct fix to Fumeshroom OP piercing logic
             foreach (var gravestone in __instance.mBoard.m_vsGravestones)
             {
-                // Check if Gravestone is in the same row of zombie 
+                if (gravestone == __instance) continue;
                 if (gravestone.mRow != __instance.mRow) continue;
 
                 // Check if Gravestone is in front of zombie
@@ -39,6 +39,13 @@ internal static class ProjectilePatch
                 }
             }
         }
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetZombieRect))]
+    private static Rect GetZombieRectOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
     }
 
     [HarmonyPatch(typeof(Projectile), nameof(Projectile.IsZombieHitBySplash))]
@@ -64,7 +71,9 @@ internal static class ProjectilePatch
                 {
                     if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                     if (zombie.IsDeadOrDying()) continue;
-                    if (zombie.mPosX > theZombie.mPosX + 75) continue;
+                    var zombieRect = zombie.GetZombieRectOriginal();
+                    zombieRect.m_Width += 25;
+                    if (!theZombie.GetZombieRectOriginal().Overlaps(zombieRect)) continue;
 
                     if (zombie.mRow == theZombie.mRow)
                     {
@@ -131,7 +140,9 @@ internal static class ProjectilePatch
                 {
                     if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                     if (zombie.mRow != __instance.mRow) continue;
-                    if (zombie.mPosX > __instance.mPosX + 50) continue;
+                    var zombieRect = zombie.GetZombieRectOriginal();
+                    zombieRect.m_Width += 25;
+                    if (!__result.GetZombieRectOriginal().Overlaps(zombieRect)) continue;
 
                     zombiePriority.Compare(zombie, -zombie.mPosX);
                 }
