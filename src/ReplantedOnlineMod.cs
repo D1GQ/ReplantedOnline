@@ -35,6 +35,7 @@ internal class ReplantedOnlineMod : MelonMod
         File.WriteAllText("steam_appid.txt", ((uint)AppIds.PVZ_Replanted).ToString());
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
+        Il2CppInteropExceptionLogPatch.Patch();
         DetourHookAttribute.InstallAll();
         NativeDetourHook.InstallAll();
         AutoRegisterAttribute.RegisterAll();

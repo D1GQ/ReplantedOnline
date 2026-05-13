@@ -7,24 +7,18 @@ namespace ReplantedOnline.Patches.Misc;
 
 internal static class Il2CppInteropExceptionLogPatch
 {
-    // Store MelonLoader's internal Il2CppInterop logger
     private static readonly MelonLogger.Instance _logger = GetIl2CppInteropLogger();
 
     private static MelonLogger.Instance GetIl2CppInteropLogger()
     {
         try
         {
-            var exceptionLogType = Type.GetType("MelonLoader.Fixes.Il2CppInteropExceptionLog, MelonLoader");
+            var exceptionLogType = Type.GetType("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog, MelonLoader");
 
             if (exceptionLogType == null)
             {
-                exceptionLogType = Type.GetType("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog, MelonLoader");
-
-                if (exceptionLogType == null)
-                {
-                    ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInteropExceptionLog type");
-                    return null;
-                }
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find Il2CppInteropExceptionLog type");
+                return null;
             }
 
             var loggerField = exceptionLogType.GetField("_logger",
@@ -53,18 +47,16 @@ internal static class Il2CppInteropExceptionLogPatch
         }
     }
 
-    internal static void Patch(HarmonyLib.Harmony Harmony)
+    internal static void Patch()
     {
-        // First remove MelonLoader's patch, then add our own
-        UnpatchMelonLoaderExceptionLog(Harmony);
-        InstallExceptionLog(Harmony);
+        UnpatchMelonLoaderExceptionLog(ReplantedOnlineMod.harmony);
+        InstallExceptionLog(ReplantedOnlineMod.harmony);
     }
 
     private static void UnpatchMelonLoaderExceptionLog(HarmonyLib.Harmony Harmony)
     {
         try
         {
-            // Find the Il2CppInterop.HarmonySupport assembly that contains the original method
             var harmonySupportAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "Il2CppInterop.HarmonySupport");
 
@@ -74,7 +66,6 @@ internal static class Il2CppInteropExceptionLogPatch
                 return;
             }
 
-            // Get the type that contains the original ReportException method
             var detourMethodPatcherType = harmonySupportAssembly.GetType("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher");
             if (detourMethodPatcherType == null)
             {
@@ -82,7 +73,6 @@ internal static class Il2CppInteropExceptionLogPatch
                 return;
             }
 
-            // Get the original ReportException method
             var reportException = detourMethodPatcherType.GetMethod("ReportException",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -92,23 +82,14 @@ internal static class Il2CppInteropExceptionLogPatch
                 return;
             }
 
-            // Find MelonLoader's patch method that they applied to ReportException
-            var melonPatch = HarmonyLib.AccessTools.Method("MelonLoader.Fixes.Il2CppInteropExceptionLog:ReportException_Prefix");
+            var melonPatch = HarmonyLib.AccessTools.Method("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog:ReportException_Prefix");
 
             if (melonPatch == null)
             {
-                // Fallback to namespace on newer versions
-                melonPatch = HarmonyLib.AccessTools.Method("MelonLoader.Fixes.Il2CppInterop.Il2CppInteropExceptionLog:ReportException_Prefix");
-
-                if (melonPatch == null)
-                {
-                    ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find MelonLoader's ReportException_Prefix");
-
-                    return;
-                }
+                ReplantedOnlineMod.Logger.Error(typeof(Il2CppInteropExceptionLogPatch), "Could not find MelonLoader's ReportException_Prefix");
+                return;
             }
 
-            // Remove MelonLoader's patch from the original method
             Harmony.Unpatch(reportException, melonPatch);
         }
         catch (Exception ex)
@@ -143,7 +124,7 @@ internal static class Il2CppInteropExceptionLogPatch
 
     private static bool OurReportException_Prefix(Exception __0)
     {
-        // If it's SilentException, do nothing (suppress the log)
+        // If it's SilentException, do nothing!
         if (__0 is SilentPatchException)
         {
             return false;
