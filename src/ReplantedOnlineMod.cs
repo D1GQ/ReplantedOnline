@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Il2CppInterop.Runtime.Injection;
+﻿using Il2CppInterop.Runtime.Injection;
 using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Attributes.Hook;
@@ -20,7 +19,6 @@ using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Misc;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.MelonLoader;
-using System.Reflection;
 using UnityEngine;
 
 namespace ReplantedOnline;
@@ -69,26 +67,6 @@ internal class ReplantedOnlineMod : MelonMod
         ContentManager.Initialize();
         MonoSingleton<MainThreadDispatcher>.CreateInstance();
         ReloadedLobby.Initialize();
-    }
-
-    public override void OnPreSupportModule()
-    {
-        // Fix Reverse Patches crashing the game
-        // Special thanks to https://github.com/RaptorRush135 for the fix
-        // https://github.com/LavaGang/MelonLoader/issues/1003
-        // https://github.com/LavaGang/MelonLoader/pull/1106
-        MethodInfo badPatch = AccessTools.Method("MelonLoader.Fixes.InstancePatchFix:PatchMethod")
-            ?? AccessTools.Method("MelonLoader.Fixes.Harmony.InstancePatchFix:PatchMethod");
-
-        if (badPatch == null)
-        {
-            return;
-        }
-
-        HarmonyInstance.Unpatch(AccessTools.Method("HarmonyLib.PatchFunctions:ReversePatch"), badPatch);
-        HarmonyInstance.Unpatch(AccessTools.Method("HarmonyLib.HarmonyMethod:ImportMethod"), badPatch);
-
-        Il2CppInteropExceptionLogPatch.Patch(HarmonyInstance);
     }
 
     public override void OnUpdate()
