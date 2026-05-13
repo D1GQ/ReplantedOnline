@@ -36,11 +36,17 @@ internal static class ModInfo
     internal const string MOD_RELEASE_INFO = "13";
 
     /// <summary>
+    /// The hotfix number for hotfix releases.
+    /// </summary>
+    internal const string HOTFIX_NUM = "1";
+
+    /// <summary>
     /// The formatted version string of the mod using semantic versioning.
-    /// Format: vMajor.Minor.Patch-prereleaseNumber.
     /// </summary>
 #if DEBUG
     internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-debug-{MOD_RELEASE}{MOD_RELEASE_INFO}";
+#elif HOTFIX
+    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-hotfix{HOTFIX_NUM}";
 #else
     internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #endif

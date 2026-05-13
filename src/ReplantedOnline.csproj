@@ -13,6 +13,7 @@
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Configurations>Debug;Release;Hotfix</Configurations>
 	</PropertyGroup>
 
 	<!-- Build Metadata -->
