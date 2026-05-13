@@ -87,11 +87,6 @@ internal sealed class DetourHookAttribute : Attribute
     internal readonly Type[] GenericArguments;
 
     /// <summary>
-    /// The hook instance used to intercept the target method.
-    /// </summary>
-    private MonoMod.RuntimeDetour.Hook _hook;
-
-    /// <summary>
     /// Installs all method hooks defined in the current assembly.
     /// </summary>
     /// <exception cref="Exception">Thrown when a target method cannot be found for a hook.</exception>
@@ -124,7 +119,7 @@ internal sealed class DetourHookAttribute : Attribute
         // Validate return type compatibility for generic methods
         ValidateReturnType(target, hookMethod);
 
-        _hook = new MonoMod.RuntimeDetour.Hook(target, hookMethod);
+        new MonoMod.RuntimeDetour.Hook(target, hookMethod);
     }
 
     /// <summary>

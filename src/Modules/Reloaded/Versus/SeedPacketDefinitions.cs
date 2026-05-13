@@ -164,7 +164,7 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusCost = 25;
 
         /*
-        var dolphinRiderDefinition = CreatePlantDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seed-Packet.png"));
+        var dolphinRiderDefinition = CreatePlantDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacketIcon);
         dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
         dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
         dolphinRiderDefinition.m_versusCost = 200;
@@ -198,13 +198,11 @@ internal static class SeedPacketDefinitions
         customPlantDefinition.m_plantToolTip = translationName + "_DESCRIPTION_HEADER";
         customPlantDefinition.m_defaultSkin = "Normal";
 
-        CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}");
-        var assetOverride = new AssetReferenceOverride<Sprite>(imageRef.Asset);
-        IAssetReferenceOverride.Register(assetOverride);
-        assetOverride.SetOverride(sprite);
-        customPlantDefinition.m_plantImage = imageRef.Asset;
-        customPlantDefinition.m_versusImage = imageRef.Asset;
-        customPlantDefinition.m_previewSprite = imageRef.Asset;
+        CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}", sprite);
+        CustomAssetReference.Register(imageRef);
+        customPlantDefinition.m_plantImage = imageRef.AssetRef;
+        customPlantDefinition.m_versusImage = imageRef.AssetRef;
+        customPlantDefinition.m_previewSprite = imageRef.AssetRef;
 
         customPlantDefinition.m_previewSpriteScale = 1f;
 

@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime.InteropTypes;
+﻿using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.InteropTypes;
 
 namespace ReplantedOnline.Utilities.Il2cpp;
 
@@ -163,5 +164,21 @@ internal static class Il2CppExtensions
     {
         typeCast = value.TryCast<T>();
         return typeCast != null;
+    }
+
+    /// <summary>
+    /// Determines whether the specified IL2CPP class type is a subclass of the specified base class type.
+    /// </summary>
+    /// <param name="typePtr">The pointer to the IL2CPP class type to check. Can be IntPtr.Zero.</param>
+    /// <param name="baseTypePtr">The pointer to the base IL2CPP class type to compare against.</param>
+    /// <returns>
+    /// <c>true</c> if <paramref name="typePtr"/> is the same as or a subclass of <paramref name="baseTypePtr"/>; 
+    /// <c>false</c> if <paramref name="typePtr"/> is <see cref="IntPtr.Zero"/> or not a subclass of <paramref name="baseTypePtr"/>.
+    /// </returns>
+    internal static bool IsSubclassOf(this IntPtr typePtr, IntPtr baseTypePtr)
+    {
+        if (typePtr == IntPtr.Zero) return false;
+        if (typePtr == baseTypePtr) return true;
+        return IL2CPP.il2cpp_class_get_parent(typePtr).IsSubclassOf(baseTypePtr);
     }
 }

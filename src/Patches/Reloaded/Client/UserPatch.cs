@@ -13,4 +13,13 @@ internal static class UserPatch
         // Force enable coop mode for online play
         __result = true;
     }
+
+    [HarmonyPatch(typeof(UserService), nameof(UserService.IsUnlocked))]
+    [HarmonyPrefix]
+    private static bool UserService_IsUnlocked_Prefix(ref bool __result)
+    {
+        // Bypass hardcoded index range check to allow CustomSeedType!
+        __result = true;
+        return false;
+    }
 }

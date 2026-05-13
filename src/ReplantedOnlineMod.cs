@@ -36,6 +36,7 @@ internal class ReplantedOnlineMod : MelonMod
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
         DetourHookAttribute.InstallAll();
+        NativeDetourHook.InstallAll();
         AutoRegisterAttribute.RegisterAll();
         RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();
