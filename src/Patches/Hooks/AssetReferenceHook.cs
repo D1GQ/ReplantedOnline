@@ -24,10 +24,10 @@ internal static class AssetReferenceHook
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate IntPtr LoadAssetAsyncDelegate(IntPtr @this, IntPtr keyPtr, Il2CppMethodInfo* methodInfo);
+    private unsafe delegate IntPtr AddressablesLoadAssetAsync(IntPtr klassPtr, IntPtr keyPtr, Il2CppMethodInfo* methodInfo);
 
-    [NativeDetourHook<LoadAssetAsyncDelegate>(typeof(Addressables), nameof(Addressables.LoadAssetAsync), [typeof(Il2CppSystem.Object)], [typeof(UnityEngine.Object)])]
-    private static unsafe IntPtr Addressables_LoadAssetAsync_Hook(IntPtr @this, IntPtr keyPtr, Il2CppMethodInfo* methodInfo)
+    [NativeDetourHook<AddressablesLoadAssetAsync>(typeof(AssetReference), nameof(AssetReference.LoadAssetAsync), [], [typeof(UnityEngine.Object)])]
+    private static unsafe IntPtr Addressables_LoadAssetAsync_Hook(IntPtr klassPtr, IntPtr keyPtr, Il2CppMethodInfo* methodInfo)
     {
         var keyClassPtr = IL2CPP.il2cpp_object_get_class(keyPtr);
 
@@ -44,7 +44,7 @@ internal static class AssetReferenceHook
 
         if (assetGuid == null)
         {
-            return NativeDetourHook<LoadAssetAsyncDelegate>.Orig(@this, keyPtr, methodInfo);
+            return NativeDetourHook<AddressablesLoadAssetAsync>.Orig(klassPtr, keyPtr, methodInfo);
         }
 
         var customReference = CustomAssetReference.GetByGuid(assetGuid);
@@ -58,6 +58,6 @@ internal static class AssetReferenceHook
             }
         }
 
-        return NativeDetourHook<LoadAssetAsyncDelegate>.Orig(@this, keyPtr, methodInfo);
+        return NativeDetourHook<AddressablesLoadAssetAsync>.Orig(klassPtr, keyPtr, methodInfo);
     }
 }

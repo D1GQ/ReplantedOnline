@@ -5,7 +5,7 @@ namespace ReplantedOnline.Attributes.Hook;
 /// <summary>
 /// Represents an attribute that marks a class or method as a detour hook for another method.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 internal sealed class DetourHookAttribute : Attribute
 {
     /// <summary>

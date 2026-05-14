@@ -9,7 +9,7 @@ namespace ReplantedOnline.Attributes.Hook;
 /// <summary>
 /// Abstract base attribute for creating native detour hooks that intercept IL2CPP method calls.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 internal class NativeDetourHook : Attribute
 {
     /// <summary>

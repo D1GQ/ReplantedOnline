@@ -49,7 +49,7 @@ internal abstract class CustomAssetReference
     /// Loads the asset associated with this custom reference asynchronously.
     /// </summary>
     /// <returns>An AsyncOperationHandle representing the asset load operation.</returns>
-    internal abstract AsyncOperationHandle<UnityEngine.Object> LoadAssetAsync();
+    internal abstract AsyncOperationHandle LoadAssetAsync();
 
     /// <summary>
     /// Determines whether the given asset reference is a custom runtime asset reference
@@ -74,9 +74,9 @@ internal sealed class CustomAssetReference<T> : CustomAssetReference where T : A
     private readonly UnityEngine.Object _asset;
 
     /// <summary>
-    /// The typed asset reference instance created with the custom prefixed GUID.
+    /// Gets the typed asset reference instance created with the custom prefixed GUID.
     /// </summary>
-    internal readonly T AssetRef;
+    internal T AssetRef { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the CustomAssetReference class with a custom GUID prefix.
@@ -94,7 +94,7 @@ internal sealed class CustomAssetReference<T> : CustomAssetReference where T : A
     /// Loads the asset associated with this custom reference.
     /// </summary>
     /// <returns>A completed AsyncOperationHandle containing the cached UnityEngine.Object.</returns>
-    internal override AsyncOperationHandle<UnityEngine.Object> LoadAssetAsync()
+    internal override AsyncOperationHandle LoadAssetAsync()
     {
         return Addressables.ResourceManager.CreateCompletedOperation(_asset, "");
     }
