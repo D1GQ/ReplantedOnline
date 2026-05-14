@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
+using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
@@ -20,8 +21,8 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded;
 
 /// <summary>
 /// Represents a networked zombie on the board, handling synchronization of zombie state
-/// across connected clients including health, position, and follower relationships.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal sealed class ZombieNetworked : NetworkObject
 {
     private enum ZombieRpcs : byte

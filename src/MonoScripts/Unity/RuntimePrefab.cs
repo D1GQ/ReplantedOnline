@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using MelonLoader;
 using ReplantedOnline.Modules.Unity;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace ReplantedOnline.MonoScripts.Unity;
 /// Abstract base class for creating and managing runtime prefabs in Unity.
 /// Provides functionality for creating, cloning, and tracking prefabs at runtime.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal abstract class RuntimePrefab : MonoBehaviour
 {
     /// <summary>

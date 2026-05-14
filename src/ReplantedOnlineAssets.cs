@@ -174,6 +174,32 @@ internal static class ReplantedOnlineAssets
                     return field;
                 }
             }
+
+            internal static Sprite DolphinriderSeedPacketIcon
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Dolphinrider-Seedpacket.png");
+                    }
+
+                    return field;
+                }
+            }
+
+            internal static Sprite SnorkelSeedPacketIcon
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Snorkel-Seedpacket.png");
+                    }
+
+                    return field;
+                }
+            }
         }
     }
 

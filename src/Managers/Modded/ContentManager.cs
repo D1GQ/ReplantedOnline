@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Utilities.Il2cpp;
+using ReplantedOnline.Utilities.Il2Cpp;
 
 namespace ReplantedOnline.Managers.Modded;
 

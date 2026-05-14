@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS0162
 
 using Il2CppSteamworks;
+using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
@@ -13,6 +14,7 @@ namespace ReplantedOnline.MonoScripts.Modded;
 /// <summary>
 /// Displays mod information on the screen.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal sealed class InfoDisplay : MonoBehaviour
 {
     internal static bool DebugEnabled { get; private set; }

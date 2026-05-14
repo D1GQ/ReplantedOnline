@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppReloaded.Gameplay;
+using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
@@ -18,8 +19,8 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded;
 
 /// <summary>
 /// Represents a networked plant on the board, handling synchronization of plant state
-/// across connected clients including plant type, position, and imitater type.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal sealed class PlantNetworked : NetworkObject
 {
     private enum PlantRpcs : byte

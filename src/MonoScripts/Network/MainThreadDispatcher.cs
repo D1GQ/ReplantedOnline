@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Interfaces.Data;
+﻿using MelonLoader;
+using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace ReplantedOnline.MonoScripts.Network;
 /// Handles execution of actions on the Unity main thread.
 /// Useful for invoking Unity API calls from background threads.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal class MainThreadDispatcher : MonoBehaviour
 {
     private readonly Queue<Action> _executionQueue = new();

@@ -6,7 +6,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Utilities.Il2cpp;
+using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Modules.Reloaded;

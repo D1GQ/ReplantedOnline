@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using MelonLoader;
+using UnityEngine;
 
 namespace ReplantedOnline.MonoScripts.Unity;
 
 /// <summary>
 /// Manages a sprite mask that follows a target SpriteRenderer and applies masking to another SpriteRenderer.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal sealed class SpriteRendererMask : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;

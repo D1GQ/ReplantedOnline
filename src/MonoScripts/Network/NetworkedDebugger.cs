@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using MelonLoader;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
@@ -7,6 +8,7 @@ using UnityEngine;
 
 namespace ReplantedOnline.MonoScripts.Network;
 
+[RegisterTypeInIl2Cpp]
 internal sealed class NetworkedDebugger : MonoBehaviour
 {
     private NetworkObject _instance;

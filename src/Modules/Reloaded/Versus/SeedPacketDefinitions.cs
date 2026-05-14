@@ -1,6 +1,5 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
-using Il2CppReloaded.Services;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
@@ -11,11 +10,9 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Structs.Reloaded;
-using ReplantedOnline.Utilities.Il2cpp;
+using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -164,7 +161,7 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusCost = 25;
 
         /*
-        var dolphinRiderDefinition = CreatePlantDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacketIcon);
+        var dolphinRiderDefinition = CustomPlantDefinition.CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ReplantedOnlineAssets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
         dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
         dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
         dolphinRiderDefinition.m_versusCost = 200;
@@ -185,42 +182,6 @@ internal static class SeedPacketDefinitions
         definition.m_versusSuddenDeathRefreshTime = baseRefreshTime / 2;
         definition.m_versusCost = definition.SeedCost;
         return definition;
-    }
-
-    internal static PlantDefinition CreatePlantDefinition(CustomSeedType customSeedType, string translationName, Sprite sprite)
-    {
-        var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();
-        customPlantDefinition.name = $"CustomPlantDefinition-{translationName}";
-
-        customPlantDefinition.m_seedType = customSeedType;
-        customPlantDefinition.m_animationType = customSeedType;
-        customPlantDefinition.m_plantName = translationName;
-        customPlantDefinition.m_plantToolTip = translationName + "_DESCRIPTION_HEADER";
-        customPlantDefinition.m_defaultSkin = "Normal";
-
-        CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}", sprite);
-        CustomAssetReference.Register(imageRef);
-        customPlantDefinition.m_plantImage = imageRef.AssetRef;
-        customPlantDefinition.m_versusImage = imageRef.AssetRef;
-        customPlantDefinition.m_previewSprite = imageRef.AssetRef;
-
-        customPlantDefinition.m_previewSpriteScale = 1f;
-
-        AssetReferenceSprite emptyImageRef = new("");
-        AssetReferenceGameObject emptyGoRef = new("");
-        customPlantDefinition.m_prefab = emptyGoRef;
-        customPlantDefinition.m_preview = emptyGoRef;
-        customPlantDefinition.m_easterEggGameObject = emptyGoRef;
-        customPlantDefinition.m_preorderGameObject = emptyGoRef;
-        customPlantDefinition.m_chinaGameObject = emptyGoRef;
-        customPlantDefinition.m_chinaPlantImage = emptyImageRef;
-        customPlantDefinition.m_chinaPreviewSprite = emptyImageRef;
-        customPlantDefinition.m_decemberGameObject = emptyGoRef;
-
-        var dataLookup = Instances.IDataService.Cast<DataService>().m_plantDataLoader.Cast<DataLookupLoader<SeedType, PlantDefinition>>();
-        dataLookup.m_loadedData.Add(customPlantDefinition);
-        dataLookup.m_lookup.Add(customSeedType, customPlantDefinition);
-        return customPlantDefinition;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using MelonLoader;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Unity;
@@ -14,6 +15,7 @@ namespace ReplantedOnline.Network.Client.Object;
 /// Abstract Base class for all network-synchronized objects in ReplantedOnline.
 /// Provides core functionality for ownership, synchronization, and remote procedure calls.
 /// </summary>
+[RegisterTypeInIl2Cpp]
 internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcReceiver
 {
     /// <summary>

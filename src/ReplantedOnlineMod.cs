@@ -1,5 +1,4 @@
-﻿using Il2CppInterop.Runtime.Injection;
-using Il2CppSteamworks;
+﻿using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
@@ -18,7 +17,6 @@ using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Misc;
 using ReplantedOnline.Structs;
-using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
 
 namespace ReplantedOnline;
@@ -39,7 +37,6 @@ internal class ReplantedOnlineMod : MelonMod
         DetourHookAttribute.InstallAll();
         NativeDetourHook.InstallAll();
         AutoRegisterAttribute.RegisterAll();
-        RegisterAllMonoBehavioursInAssembly();
         Il2cppEnumeratorWrapper.Register();
         NetworkObject.SetupPrefabs();
         RpcHandlerAttribute.Initialize();
@@ -94,30 +91,6 @@ internal class ReplantedOnlineMod : MelonMod
             if (loaded) return;
             loaded = true;
             OnInitializeMainMenu();
-        }
-    }
-
-    /// <summary>
-    /// Registers all MonoBehaviour-derived types in the current assembly with IL2CPP for interop support.
-    /// </summary>
-    internal void RegisterAllMonoBehavioursInAssembly()
-    {
-        var assembly = MelonAssembly.Assembly;
-
-        var monoBehaviourTypes = assembly.GetTypes()
-            .Where(type => type.IsSubclassOf(typeof(MonoBehaviour)) && !type.IsAbstract)
-            .OrderBy(type => type.Name);
-
-        foreach (var type in monoBehaviourTypes)
-        {
-            try
-            {
-                ClassInjector.RegisterTypeInIl2Cpp(type);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(typeof(ReplantedOnlineMod), $"Failed to register MonoBehaviour: {type.FullName}\n{ex}");
-            }
         }
     }
 
