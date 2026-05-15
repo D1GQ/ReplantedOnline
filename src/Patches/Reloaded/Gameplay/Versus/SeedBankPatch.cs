@@ -2,9 +2,12 @@
 using Il2CppReloaded;
 using Il2CppReloaded.DataModels;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.TreeStateActivities;
+using Il2CppSource.Controllers;
 using Il2CppTekly.DataModels.Models;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
@@ -79,6 +82,28 @@ internal static class SeedBankPatch
         if (__instance.gameObject.name == "SeedBackground")
         {
             __instance.enabled = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(GameplayActivity), nameof(GameplayActivity.CreatePreviewController), [typeof(SeedType), typeof(ReloadedObject)])]
+    [HarmonyPostfix]
+    private static void GameplayActivity_CreatePreviewController_Postfix(GameplayActivity __instance, SeedType seedType, ref PreviewController __result)
+    {
+        CustomSeedType customSeedType = seedType;
+        if (customSeedType.IsValid())
+        {
+            if (!customSeedType.HasValidZombieType())
+            {
+                __result.Set(seedType);
+            }
+            else
+            {
+                ZombieType zombieType = customSeedType;
+
+                __result.Set(zombieType);
+            }
+
+            __result.m_visualOffset = __instance.m_dataService.GetPlantDefinition(seedType).PreviewSpriteOffset;
         }
     }
 }

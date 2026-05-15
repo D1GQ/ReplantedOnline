@@ -18,6 +18,8 @@ internal static class PoolArenaPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
+            if (__instance.mZombieType is ZombieType.DolphinRider or ZombieType.Snorkel) return true;
+
             // All logic is remade in ZombieInPoolNetworkComponent.cs
             return false;
         }

@@ -56,6 +56,7 @@ internal static class CustomPlantDefinition
 
             customPlantDefinition.m_previewSprite = zombieAlmanac.EntryThumbnail;
             customPlantDefinition.m_previewSpriteScale = 1f;
+            customPlantDefinition.m_previewSpriteOffset = new(115f, -184f);
 
             customPlantDefinition.m_plantToolTip =
                 ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX + (int)(SeedType)customSeedType;
