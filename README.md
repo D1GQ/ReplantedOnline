@@ -1,31 +1,32 @@
-# Replanted Online
-
-A P2P multiplayer mod for **Plants vs. Zombies: Replanted** on Steam.
+<h1 align="center">Replanted Online</h1>
+<h3 align="center">A P2P multiplayer mod for <b>Plants vs. Zombies: Replanted<b> on Steam.</h3>
 
 ---
 
 <img width="2560" height="1440" alt="PVZR-Online-Promo" src="/assets/PVZR-Online-Promo-Logo.png" />
 
-<table>
-  <tr>
-    <td>
-      <a href="https://gamebanana.com/wips/96467">
-        <img src="https://img.shields.io/badge/GameBanana-Visit-orange?logo=gamebanana&logoColor=white&style=for-the-badge" width="300" height="50">
-      </a>
-    </td>
-    <td>
-      <a href="https://discord.gg/9PN4gxHC4B">
-        <img src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge" width="250" height="50">
-      </a>
-    </td>
-  </tr>
-</table>
+<div align="center">
+  <table>
+    <tr>
+      <td>
+        <a href="https://gamebanana.com/wips/96467">
+          <img src="https://img.shields.io/badge/GameBanana-Visit-orange?logo=gamebanana&logoColor=white&style=for-the-badge" width="300" height="50">
+        </a>
+      </td>
+      <td>
+        <a href="https://discord.gg/9PN4gxHC4B">
+          <img src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge" width="250" height="50">
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
 ## About
 
-ReplantedOnline lets you play Versus mode online using direct peer-to-peer connections, so you don't need to use Parsec.
+Replanted Online adds balance changes and lets you play Versus Mode using direct peer-to-peer connections, so you don't need to use Parsec or Steam Remote Play!
 
 > You must own a legitimate Steam copy of Plants vs. Zombies: Replanted to use this mod.
 
@@ -119,6 +120,22 @@ in Visual Studio and build the solution in `Release` configuration.
 - `src/Network/Packet/PacketReader.cs` — handles binary deserialization
 - `src/Network/Packet/Messages` — contains serialized packet message types
 - `src/Network/Packet/FastResolvers` — contains fast serialization resolvers
+
+### Harmony Patches
+#### Other
+- `src/Patches/Reloaded/Client` - contains patches for local client code for replanted
+- `src/Patches/Steam` - contains patches for steam client
+- `src/Patches/Misc` - contains miscellaneous patches
+#### Versus
+- `src/Patches/Reloaded/Gameplay` - contains patches for versus gameplay related code
+- `src/Patches/Reloaded/Gameplay/UI` - contains patches for versus ui related code
+- `src/Patches/Reloaded/Gameplay/Versus` - contains patches for versus logic related code
+- `src/Patches/Reloaded/Gameplay/Networked` - contains patches for syncing versus logic across the network
+- `src/Patches/Reloaded/Gameplay/Plants` - contains patches for syncing specific plant logic across the network
+- `src/Patches/Reloaded/Gameplay/Zombies` - contains patches for syncing specific zombie logic across the network
+- `src/Patches/Reloaded/Gameplay/Arenas` - contains patches for arena specific logic
+#### Hooks
+- `src/Patches/Hooks` - contains hooks for code harmony has trouble patching
 
 ---
 
