@@ -1,11 +1,9 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
-using MelonLoader;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Structs.Reloaded;
-using ReplantedOnline.Utilities.Il2Cpp;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -14,11 +12,8 @@ namespace ReplantedOnline.Modules.Reloaded;
 /// <summary>
 /// Represents a custom plant definition that can be registered.
 /// </summary>
-[RegisterTypeInIl2Cpp]
-internal class CustomPlantDefinition : PlantDefinition
+internal static class CustomPlantDefinition
 {
-    private bool _isZombie;
-
     /// <summary>
     /// Creates a zombie seed packet definition for a custom seed type.
     /// </summary>
@@ -26,32 +21,31 @@ internal class CustomPlantDefinition : PlantDefinition
     /// <param name="translationName">The base name used for localization and asset identification.</param>
     /// <param name="sprite">The sprite image to use for the plant's visual representation.</param>
     /// <returns>
-    /// A new <see cref="CustomPlantDefinition"/> instance configured as a zombie seed packet,
+    /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.
     /// </returns>
-    internal static CustomPlantDefinition CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationName, Sprite sprite)
+    internal static PlantDefinition CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationName, Sprite sprite)
     {
         if (!customSeedType.HasValidZombieType())
         {
             return null;
         }
 
-        var customPlantDefinition = CreateInstance<CustomPlantDefinition>();
+        var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();
         customPlantDefinition.name = $"CustomPlantDefinition-{translationName}";
-        customPlantDefinition._isZombie = true;
 
         customPlantDefinition.m_seedType = customSeedType;
         customPlantDefinition.m_animationType = customSeedType;
-        Il2CppExtensions.AssignIl2CppStringToField(customPlantDefinition, nameof(customPlantDefinition.m_plantName), translationName + "_ZOMBIE");
-        Il2CppExtensions.AssignIl2CppStringToField(customPlantDefinition, nameof(customPlantDefinition.m_plantToolTip), translationName + "_ZOMBIE");
-        Il2CppExtensions.AssignIl2CppStringToField(customPlantDefinition, nameof(customPlantDefinition.m_defaultSkin), "Normal");
+        customPlantDefinition.m_plantName = translationName + "_ZOMBIE";
+        customPlantDefinition.m_plantToolTip = translationName + "_ZOMBIE";
+        customPlantDefinition.m_defaultSkin = "Normal";
 
         CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}", sprite);
         CustomAssetReference.Register(imageRef);
         customPlantDefinition.m_plantImage = imageRef.AssetRef;
         customPlantDefinition.m_versusImage = imageRef.AssetRef;
-
-        customPlantDefinition.m_previewSpriteScale = 1f;
+        customPlantDefinition.m_previewSprite = Instances.IDataService.GetZombieDefinition(customSeedType).PreviewSprite;
+        customPlantDefinition.m_previewSpriteOffset = Instances.IDataService.GetZombieDefinition(customSeedType).PreviewSpriteOffset;
 
         AssetReferenceSprite emptyImageRef = new("");
         AssetReferenceGameObject emptyGoRef = new("");

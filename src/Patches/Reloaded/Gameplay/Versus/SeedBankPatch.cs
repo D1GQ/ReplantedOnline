@@ -1,5 +1,8 @@
 ﻿using HarmonyLib;
+using Il2CppReloaded;
+using Il2CppReloaded.DataModels;
 using Il2CppReloaded.Gameplay;
+using Il2CppTekly.DataModels.Models;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Client;
 
@@ -39,5 +42,43 @@ internal static class SeedBankPatch
         }
 
         return false;
+    }
+
+    [HarmonyPatch(typeof(SeedBankDataModel), nameof(SeedBankDataModel.UpdateEntries))]
+    [HarmonyPostfix]
+    private static void SeedBankDataModel_UpdateEntries_Postfix(SeedBankDataModel __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Fix custom seed packets not being selectable on keyboard and mouse
+            var refList = __instance.m_entriesModel.Models.Cast<Il2CppSystem.Collections.Generic.List<ModelReference>>();
+            foreach (var modelRef in refList)
+            {
+                var seedBankEntry = modelRef.Model.Cast<SeedBankEntryModel>();
+                var trigger = new Il2CppTekly.Common.Observables.Triggerable<ButtonModel>();
+                seedBankEntry.m_activateButtonModel.m_activated = trigger;
+                trigger.Subscribe((Action<ButtonModel>)(buttom =>
+                {
+                    if (__instance.SeedBankPlayerIndex != ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX) return;
+                    if (!seedBankEntry.CanAfford()) return;
+                    if (!seedBankEntry.m_seedPacket.CanPickUp()) return;
+                    seedBankEntry.m_seedPacket.mBoard.RefreshSeedPacketFromCursor(__instance.SeedBankPlayerIndex);
+                    seedBankEntry.m_seedPacket.mBoard.ClearCursor(false, __instance.SeedBankPlayerIndex);
+                    seedBankEntry.m_seedPacket.Activated(__instance.SeedBankPlayerIndex, false);
+                    seedBankEntry.m_seedPacket.mFlashReady = false;
+                }));
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ButtonAudio), nameof(ButtonAudio.OnEnable))]
+    [HarmonyPostfix]
+    private static void ButtonAudio_OnEnable_Postfix(ButtonAudio __instance)
+    {
+        // Remove duplicate seedpacket sound 
+        if (__instance.gameObject.name == "SeedBackground")
+        {
+            __instance.enabled = false;
+        }
     }
 }

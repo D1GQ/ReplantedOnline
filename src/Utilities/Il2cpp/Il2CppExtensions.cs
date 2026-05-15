@@ -181,31 +181,4 @@ internal static class Il2CppExtensions
         if (typePtr == baseTypePtr) return true;
         return IL2CPP.il2cpp_class_get_parent(typePtr).IsSubclassOf(baseTypePtr);
     }
-
-    /// <summary>
-    /// Cache for storing Il2Cpp string pointers to avoid duplicate string creation.
-    /// </summary>
-    private static readonly Dictionary<string, IntPtr> stringCache = [];
-
-    /// <summary>
-    /// Assigns a managed string to an Il2Cpp object field, caching the Il2Cpp string for reuse.
-    /// </summary>
-    /// <param name="il2cppObject">The target Il2Cpp object whose field will be set.</param>
-    /// <param name="fieldName">The name of the field to assign the string to.</param>
-    /// <param name="str">The managed string value to assign.</param>
-    public static unsafe void AssignIl2CppStringToField(Il2CppSystem.Object il2cppObject, string fieldName, string str)
-    {
-        if (!stringCache.TryGetValue(str, out var ptr))
-        {
-            ptr = IL2CPP.il2cpp_string_new(str);
-            IL2CPP.il2cpp_gchandle_new(ptr, true);
-            stringCache[str] = ptr;
-        }
-
-        IntPtr objPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(il2cppObject);
-        IntPtr klass = IL2CPP.il2cpp_object_get_class(objPtr);
-        IntPtr field = IL2CPP.GetIl2CppField(klass, fieldName);
-        uint offset = IL2CPP.il2cpp_field_get_offset(field);
-        IL2CPP.il2cpp_gc_wbarrier_set_field(objPtr, objPtr + (int)offset, ptr);
-    }
 }
