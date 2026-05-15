@@ -26,7 +26,7 @@
 
 ## About
 
-ReplantedOnline lets you play Versus mode online using direct peer-to-peer connections, so you don't need to use Parsec.
+Replanted Online adds balance changes and lets you play Versus Mode using direct peer-to-peer connections, so you don't need to use Parsec or Steam Remote Play!
 
 > You must own a legitimate Steam copy of Plants vs. Zombies: Replanted to use this mod.
 
