@@ -8,7 +8,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 /// <inheritdoc/>
-internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
+internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 {
     private enum ZombieInPoolRpcs : byte
     {
@@ -88,7 +88,7 @@ internal class ZombieInPoolNetworkComponent : ZombieNetworkComponent
 
     private bool CanGoInWater()
     {
-        bool typeCheck = Net.ZombieType != ZombieType.Bungee;
+        bool typeCheck = Net.ZombieType is not (ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
         bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
         return typeCheck && phaseCheck;
     }

@@ -15,21 +15,42 @@ internal readonly struct CustomSeedType
 
     private static readonly Dictionary<SeedType, CustomSeedType> _lookup = [];
 
+    /// <summary>
+    /// Contains constant seed type values used for custom seed type definitions.
+    /// </summary>
+    internal static class ReloadedSeedTypes
+    {
+        /// <summary>
+        /// Represents an invalid seed type value used as a sentinel.
+        /// </summary>
+        internal const SeedType InvalidSeedType = (SeedType)int.MinValue;
+
+        /// <summary>
+        /// The base seed type value for the Dolphin Rider zombie.
+        /// </summary>
+        internal const SeedType DolphinRiderSeedType = (SeedType)10000;
+
+        /// <summary>
+        /// The base seed type value for the Snorkel zombie.
+        /// </summary>
+        internal const SeedType SnorkelSeedType = (SeedType)20000;
+    }
+
     // Custom SeedTypes
     /// <summary>
     /// Represents an invalid or uninitialized custom seed type.
     /// </summary>
-    internal static CustomSeedType Invalid { get; } = new(int.MinValue);
+    internal static CustomSeedType Invalid { get; } = new(ReloadedSeedTypes.InvalidSeedType);
 
     /// <summary>
     /// Custom seed type for the Dolphin Rider zombie.
     /// </summary>
-    internal static CustomSeedType DolphinRider { get; } = new(10000, ZombieType.DolphinRider, ReanimationType.ZombieDolphinrider);
+    internal static CustomSeedType DolphinRider { get; } = new(ReloadedSeedTypes.DolphinRiderSeedType, ZombieType.DolphinRider, ReanimationType.ZombieDolphinrider);
 
     /// <summary>
     /// Custom seed type for the Snorkel zombie.
     /// </summary>
-    internal static CustomSeedType Snorkel { get; } = new(20000, ZombieType.Snorkel, ReanimationType.Snorkel);
+    internal static CustomSeedType Snorkel { get; } = new(ReloadedSeedTypes.SnorkelSeedType, ZombieType.Snorkel, ReanimationType.Snorkel);
 
     /// <summary>
     /// Checks if a <see cref="SeedType"/> is a CustomSeedType.
@@ -46,20 +67,31 @@ internal readonly struct CustomSeedType
     /// <summary>
     /// Initializes a new instance of the <see cref="CustomSeedType"/> struct.
     /// </summary>
-    /// <param name="id">The unique identifier for the custom seed type.</param>
+    /// <param name="seedType">The base seed type for the custom seed type.</param>
     /// <param name="zombieType">The associated zombie type. Defaults to <see cref="ZombieType.Invalid"/>.</param>
     /// <param name="reanimationType">The associated reanimation type. Defaults to <see cref="ReanimationType.None"/>.</param>
-    internal CustomSeedType(int id, ZombieType zombieType = ZombieType.Invalid, ReanimationType reanimationType = ReanimationType.None)
+    internal CustomSeedType(SeedType seedType, ZombieType zombieType = ZombieType.Invalid, ReanimationType reanimationType = ReanimationType.None)
     {
-        _id = id;
+        _id = (int)seedType;
         _zombieType = zombieType;
         _reanimationType = reanimationType;
-        _lookup[(SeedType)id] = this;
+        _lookup[seedType] = this;
     }
 
     private readonly int _id;
     private readonly ZombieType _zombieType;
     private readonly ReanimationType _reanimationType;
+
+    /// <summary>
+    /// Determines whether this custom seed type is not invalid.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the custom seed type is not <see cref="Invalid"/>; otherwise, <c>false</c>.
+    /// </returns>
+    internal bool IsValid()
+    {
+        return this != Invalid;
+    }
 
     /// <summary>
     /// Determines whether this custom seed type has a valid associated zombie type.
@@ -129,6 +161,16 @@ internal readonly struct CustomSeedType
     public static implicit operator ReanimationType(CustomSeedType customSeedType)
     {
         return customSeedType._reanimationType;
+    }
+
+    /// <summary>
+    /// Explicitly converts a <see cref="CustomSeedType"/> to a <see cref="int"/>.
+    /// </summary>
+    /// <param name="customSeedType">The custom seed type to convert.</param>
+    /// <returns>The seed type representation of the custom seed type's identifier.</returns>
+    public static implicit operator int(CustomSeedType customSeedType)
+    {
+        return customSeedType._id;
     }
 
     /// <summary>

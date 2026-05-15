@@ -169,7 +169,7 @@ internal sealed class NativeDetourHook<TDelegate> : NativeDetourHook where TDele
         attachMethod.Invoke(nativeHook, null);
 
         // Store the original trampoline for external use
-        var trampolineProperty = nativeHookType.GetProperty(nameof(NativeHook<Delegate>.Trampoline))
+        var trampolineProperty = nativeHookType.GetProperty(nameof(NativeHook<>.Trampoline))
             ?? throw new Exception("Failed to find NativeHook.Trampoline property");
 
         var trampoline = trampolineProperty.GetValue(nativeHook);

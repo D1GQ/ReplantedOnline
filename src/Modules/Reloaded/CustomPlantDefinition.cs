@@ -4,6 +4,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Structs.Reloaded;
+using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -18,34 +19,49 @@ internal static class CustomPlantDefinition
     /// Creates a zombie seed packet definition for a custom seed type.
     /// </summary>
     /// <param name="customSeedType">The custom seed type that must have a valid zombie type configured.</param>
-    /// <param name="translationName">The base name used for localization and asset identification.</param>
-    /// <param name="sprite">The sprite image to use for the plant's visual representation.</param>
+    /// <param name="name">The base name used for localization and asset identification.</param>
+    /// <param name="seedPacketSprite">The sprite image to use for the zombies seedpacket icom.</param>
     /// <returns>
     /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.
     /// </returns>
-    internal static PlantDefinition CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationName, Sprite sprite)
+    internal static PlantDefinition CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string name, Sprite seedPacketSprite)
     {
         if (!customSeedType.HasValidZombieType())
         {
             return null;
         }
 
+        string translationName = name.ToUpper().Replace(' ', '_');
+        string nameTrim = name.ToUpper().Replace(" ", "");
+
         var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();
-        customPlantDefinition.name = $"CustomPlantDefinition-{translationName}";
+        customPlantDefinition.name = $"CustomPlantDefinition-{nameTrim}";
 
         customPlantDefinition.m_seedType = customSeedType;
         customPlantDefinition.m_animationType = customSeedType;
         customPlantDefinition.m_plantName = translationName + "_ZOMBIE";
-        customPlantDefinition.m_plantToolTip = translationName + "_ZOMBIE";
         customPlantDefinition.m_defaultSkin = "Normal";
 
-        CustomAssetReference<AssetReferenceSprite> imageRef = new($"CustomPlantDefinition:{translationName}", sprite);
-        CustomAssetReference.Register(imageRef);
-        customPlantDefinition.m_plantImage = imageRef.AssetRef;
-        customPlantDefinition.m_versusImage = imageRef.AssetRef;
-        customPlantDefinition.m_previewSprite = Instances.IDataService.GetZombieDefinition(customSeedType).PreviewSprite;
-        customPlantDefinition.m_previewSpriteOffset = Instances.IDataService.GetZombieDefinition(customSeedType).PreviewSpriteOffset;
+        CustomAssetReference<AssetReferenceSprite> seedPacketImageAsset = new($"CustomPlantDefinition:{nameTrim}-SeedPacketIcon", seedPacketSprite);
+        CustomAssetReference.Register(seedPacketImageAsset);
+        customPlantDefinition.m_plantImage = seedPacketImageAsset.AssetRef;
+        customPlantDefinition.m_versusImage = seedPacketImageAsset.AssetRef;
+
+
+        var zombieAlmanacData = Instances.IDataService.ZombieAlmanacData.Cast<Il2CppSystem.Collections.Generic.List<AlmanacEntryData>>();
+        foreach (var zombieAlmanac in zombieAlmanacData)
+        {
+            if (zombieAlmanac.ZombieType != customSeedType) continue;
+
+            customPlantDefinition.m_previewSprite = zombieAlmanac.EntryThumbnail;
+            customPlantDefinition.m_previewSpriteScale = 1f;
+
+            customPlantDefinition.m_plantToolTip =
+                ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX + (int)(SeedType)customSeedType;
+
+            break;
+        }
 
         AssetReferenceSprite emptyImageRef = new("");
         AssetReferenceGameObject emptyGoRef = new("");
@@ -62,5 +78,28 @@ internal static class CustomPlantDefinition
         dataLookup.m_loadedData.Add(customPlantDefinition);
         dataLookup.m_lookup.Add(customSeedType, customPlantDefinition);
         return customPlantDefinition;
+    }
+
+    internal static bool TryGetAlmanacDescription(CustomSeedType customSeedType, out string description)
+    {
+        var almanacDataList = Instances.IDataService.Cast<DataService>().m_almanacDataLoader.Cast<DataCategorizedLoader<AlmanacEntryType, AlmanacEntryData>>().Data;
+        foreach (var almanacData in almanacDataList)
+        {
+            if (!customSeedType.HasValidZombieType())
+            {
+                if (almanacData.SeedType != customSeedType) continue;
+            }
+            else
+            {
+                if (almanacData.ZombieType != customSeedType) continue;
+            }
+
+            description = StringUtils.RemoveHtmlText(almanacData.EntryDescription.Split("\n").First());
+
+            return true;
+        }
+
+        description = string.Empty;
+        return false;
     }
 }

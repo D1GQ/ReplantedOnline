@@ -151,13 +151,60 @@ internal static class BoardPatch
         return true;
     }
 
+
+    [HarmonyPatch(typeof(Board), nameof(Board.CanPlantAt))]
+    [HarmonyPrefix]
+    private static bool Board_CanPlantAt_Prefix(Board __instance, int theGridX, int theGridY, SeedType theType, ref PlantingReason __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Recreate zombie placement restrictions
+            if (Challenge.IsZombieSeedType(theType))
+            {
+                if (theType == SeedType.ZombieBungee)
+                {
+                    if (theGridX < 6)
+                    {
+                        __result = PlantingReason.Ok;
+                        return false;
+                    }
+                    else
+                    {
+                        __result = PlantingReason.NotHere;
+                        return false;
+                    }
+                }
+
+                if (theGridX < 6)
+                {
+                    __result = PlantingReason.NotHere;
+                    return false;
+                }
+
+                if (theType == SeedType.ZombieGravestone)
+                {
+                    if (__instance.GetVSGravestoneAt(theGridX, theGridY) != null)
+                    {
+                        __result = PlantingReason.NotHere;
+                        return false;
+                    }
+                }
+
+                __result = PlantingReason.Ok;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Board), nameof(Board.CanPlantAt))]
     [HarmonyPostfix]
     private static void Board_CanPlantAt_Postfix(int theGridX, int theGridY, SeedType theType, ref PlantingReason __result)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            // Custom place conditions 
+            // Custom placement restrictions
             if (!SeedPacketDefinitions.CanPlace(theType, theGridX, theGridY))
             {
                 __result = PlantingReason.NotHere;

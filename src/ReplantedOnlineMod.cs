@@ -126,6 +126,7 @@ internal class ReplantedOnlineMod : MelonMod
             internal const int LOCAL_PLAYER_INDEX = 0;
             internal const int OPPONENT_PLAYER_INDEX = 1;
             internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f;
+            internal const string REDIRECT_ALMANAC_PREFIX = "ALMANAC-REDIRECT:";
 
             internal static class Production
             {

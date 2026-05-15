@@ -10,6 +10,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
@@ -160,12 +161,19 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
         impDefinition.m_versusCost = 25;
 
-        /*
-        var dolphinRiderDefinition = CustomPlantDefinition.CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER", ReplantedOnlineAssets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
+        var snorkelDefinition = CustomPlantDefinition
+            .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "Snorkel",
+            ReplantedOnlineAssets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
+        snorkelDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
+        snorkelDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(12f);
+        snorkelDefinition.m_versusCost = 100;
+
+        var dolphinRiderDefinition = CustomPlantDefinition
+            .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "Dolphin Rider",
+            ReplantedOnlineAssets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
         dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
         dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
-        dolphinRiderDefinition.m_versusCost = 200;
-        */
+        dolphinRiderDefinition.m_versusCost = 150;
     }
 
     /// <summary>
