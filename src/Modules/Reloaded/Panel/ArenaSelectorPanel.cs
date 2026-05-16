@@ -20,11 +20,7 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
-#if DEBUG
     private static readonly ArenaTypes[] _disabledArenas = [];
-#else
-    private static readonly ArenaTypes[] _disabledArenas = [ArenaTypes.Pool, ArenaTypes.PoolNight];
-#endif
 
     private static GameObject _panel;
     private static Image _preview;
