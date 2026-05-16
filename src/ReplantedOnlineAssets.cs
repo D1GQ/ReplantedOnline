@@ -155,6 +155,19 @@ internal static class ReplantedOnlineAssets
                     return field;
                 }
             }
+
+            internal static Sprite GravestonePool
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Gravestone-Pool.png");
+                    }
+
+                    return field;
+                }
+            }
         }
 
         /// <summary>

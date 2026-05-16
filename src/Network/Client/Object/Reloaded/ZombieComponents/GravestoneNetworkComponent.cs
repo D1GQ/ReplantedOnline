@@ -12,9 +12,11 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 {
     private Texture _dirtlessTexture;
+    private Texture _poolTexture;
     internal override void OnInit()
     {
         _dirtlessTexture = ReplantedOnlineAssets.Sprites.Character.GravestoneDirtless.texture;
+        _poolTexture = ReplantedOnlineAssets.Sprites.Character.GravestonePool.texture;
     }
 
     internal override void Update()
@@ -24,6 +26,14 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
         if (Net._Zombie.mBoard.StageHasNoGrass())
         {
             Net._Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;
+        }
+
+        if (Net._Zombie.mBoard.IsPoolSquare(Net.GridX, Net.GridY))
+        {
+            Net._Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _poolTexture;
+            Net._Zombie.mController.m_shadowController.gameObject.SetActive(false);
+            Net._Zombie.mController.ClipRect(new(-500, -500, 1000, 615));
+            Net._Zombie.mAltitude = -2;
         }
 
         Net._Zombie.mController.m_scale = new(1.15f, 1.15f);

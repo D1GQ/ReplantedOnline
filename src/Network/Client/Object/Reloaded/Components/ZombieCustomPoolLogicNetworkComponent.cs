@@ -95,7 +95,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     private bool CanGoInWater()
     {
-        bool typeCheck = Net.ZombieType is not (ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
+        bool typeCheck = Net.ZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
         bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
         return typeCheck && phaseCheck && Net._Zombie.mController?.gameObject.active == true;
