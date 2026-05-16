@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -51,6 +52,8 @@ internal static class GargantuarZombiePatch
                         if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
                             // If the gargantuar is in synced smashing state, move it forward to find a target
+                            zombieNetworked.LogicComponent.PosSyncingPaused = true;
+                            zombieNetworked.LogicComponent.StopLarpPos();
                             if (__result == null)
                             {
                                 __instance.mPosX += __instance.GetZombieMoveDirection();
@@ -75,6 +78,7 @@ internal static class GargantuarZombiePatch
                         // If the gargantuar is in smashing phase, clear target state
                         if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
                         {
+                            zombieNetworked.LogicComponent.PosSyncingPaused = false;
                             zombieNetworked.State = null;
                         }
                     }
@@ -161,13 +165,13 @@ internal static class GargantuarZombiePatch
     private static void HandleImpThrown(Zombie gargantuar)
     {
         // Create the Imp zombie
-        Zombie imp = gargantuar.mBoard.AddZombieInRowOriginal(ZombieType.Imp, gargantuar.mRow, gargantuar.mFromWave, false);
+        Zombie imp = SeedPacketDefinitions.SpawnZombie(ZombieType.Imp, 9, gargantuar.mRow, SpawnType.None, false).Zombie;
 
         // Link the imp to the Gargantuar for synchronization
         imp.mRelatedZombieID = gargantuar.DataID;
 
         SetupImp(gargantuar, imp);
-        SeedPacketDefinitions.SpawnZombieOnNetwork(imp, 20, 0); // spawn imp on network off screen for plant side to sync the throw
+        SeedPacketDefinitions.SpawnZombieOnNetwork(imp, 20, 0, SpawnType.None); // spawn imp on network off screen for plant side to sync the throw
     }
 
     private static void SetupImp(Zombie gargantuar, Zombie imp)

@@ -46,6 +46,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         var zombie = Net._Zombie;
         if (zombie == null) return;
         if (zombie.mBoard == null) return;
+        if (zombie.mController == null) return;
 
         int leftGrid = zombie.mBoard.PixelToGridX(zombie.mPosX + 75f, zombie.mRow);
         int rightGrid = zombie.mBoard.PixelToGridX(zombie.mPosX + 45f, zombie.mRow);
@@ -95,8 +96,9 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
     private bool CanGoInWater()
     {
         bool typeCheck = Net.ZombieType is not (ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
-        bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping);
-        return typeCheck && phaseCheck;
+        bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
+            or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
+        return typeCheck && phaseCheck && Net._Zombie.mController?.gameObject.active == true;
     }
 
     private void SendDrownRpc()
