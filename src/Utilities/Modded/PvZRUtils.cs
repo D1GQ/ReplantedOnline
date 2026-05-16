@@ -134,7 +134,7 @@ internal static class PvZRUtils
     /// </returns>
     internal static float GetZombieMoveDirection(this Zombie zombie)
     {
-        float speed = zombie.mVelX + 0.30f;
+        float speed = zombie.mVelX + 0.75f;
 
         if (!zombie.IsWalkingBackwards())
         {

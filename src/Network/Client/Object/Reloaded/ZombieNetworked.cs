@@ -72,6 +72,11 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    /// <summary>
+    /// The current event state the zombie is in.
+    /// </summary>
+    internal EventState Event;
+
     internal ZombieCustomPoolLogicNetworkComponent PoolComponent;
     internal ZombieNetworkComponent LogicComponent;
     internal bool EnteringHouse;

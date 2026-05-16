@@ -58,7 +58,8 @@ internal static class ArenaEvents
     internal static readonly ZombiePhase[] PushBackEventIgnoreZombiePhase =
     [
         ZombiePhase.RisingFromGrave, ZombiePhase.BalloonPopping, ZombiePhase.BalloonFlying,
-        ZombiePhase.PolevaulterInVault
+        ZombiePhase.BalloonPopping, ZombiePhase.PolevaulterInVault, ZombiePhase.DolphinIntoPool,
+        ZombiePhase.DolphinRiding, ZombiePhase.DolphinInJump, ZombiePhase.SnorkelWalkingInPool
     ];
 
     /// <summary>
@@ -128,6 +129,7 @@ internal static class ArenaEvents
         var zombieNetworked = zombie.GetNetworked();
         if (zombieNetworked != null)
         {
+            zombieNetworked.Event = EventState.PushBack;
             zombieNetworked.LogicComponent.PosSyncingPaused = true;
             zombieNetworked.LogicComponent.StopLarpPos();
 
@@ -158,5 +160,6 @@ internal static class ArenaEvents
         zombie.mPosX = endX;
         zombie.mPosY = originalY;
         zombieNetworked.LogicComponent.PosSyncingPaused = false;
+        zombieNetworked.Event = EventState.None;
     }
 }

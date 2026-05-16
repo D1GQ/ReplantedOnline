@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -52,6 +53,11 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         bool onPoolRight = zombie.mBoard.IsPoolSquare(rightGrid, zombie.mRow);
         bool onPool = onPoolLeft && onPoolRight;
 
+        if (Net.Event == EventState.PushBack)
+        {
+            onPool = false;
+        }
+
         if (!_inPool && onPool && zombie.mPosX < 680f)
         {
             _inPool = true;
@@ -75,7 +81,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
             if (Net.AmOwner)
             {
-                if (!_isDrowning && zombie.mZombieType == ZombieType.Imp)
+                if (!_isDrowning && zombie.mZombieType == ZombieType.Imp && zombie.mZombiePhase == ZombiePhase.ZombieNormal)
                 {
                     _isDrowning = true;
                     SendDrownRpc();
