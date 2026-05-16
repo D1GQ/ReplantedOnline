@@ -8,6 +8,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -38,8 +39,8 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.Sunflower, SeedType.Lilypad, SeedType.Peashooter,
-                SeedType.Potatomine, SeedType.Wallnut, SeedType.Jalapeno,
-                SeedType.Squash];
+                SeedType.Squash, SeedType.Wallnut, SeedType.Jalapeno,
+                SeedType.Tanglekelp];
             return field;
         }
     }
@@ -51,7 +52,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrashCan,
-                SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, SeedType.ZombieFootball,
+                SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, CustomSeedType.DolphinRider,
                 SeedType.ZombieFlag];
             return field;
         }
