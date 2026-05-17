@@ -133,4 +133,20 @@ internal static class ModInfo
         /// </summary>
         internal const string BLOOM_ENGINE_NAME = "BloomEngine";
     }
+
+    /// <summary>
+    /// Contains constants related to the DiscordRPC optional dependency.
+    /// </summary>
+    internal static class DiscordRPC
+    {
+        /// <summary>
+        /// Name for DiscordRPC.
+        /// </summary>
+        internal const string DISCORD_RPC_NAME = "DiscordRPC";
+
+        /// <summary>
+        /// The link for the github page.
+        /// </summary>
+        internal const string GITHUB = "https://github.com/Lachee/discord-rpc-csharp";
+    }
 }

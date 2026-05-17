@@ -6,6 +6,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Il2cpp;
+using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -30,6 +31,7 @@ internal class ReplantedOnlineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
+        DependencyResolver.Initialize();
         File.WriteAllText("steam_appid.txt", ((uint)AppIds.PVZ_Replanted).ToString());
         harmony.PatchAll();
         DebugLoggerPatch.Patch();
@@ -44,6 +46,7 @@ internal class ReplantedOnlineMod : MelonMod
         MonoSingleton<InfoDisplay>.CreateInstance();
         MonoSingleton<GithubAPI>.CreateInstance();
         AudioManager.Initialize();
+        DiscordManager.Initialize();
         Application.runInBackground = true;
     }
 
@@ -72,7 +75,13 @@ internal class ReplantedOnlineMod : MelonMod
     {
         if (!loaded) return;
 
+        DiscordManager.Update();
         LobbyCodePanel.ValidateText();
+    }
+
+    public override void OnApplicationQuit()
+    {
+        DiscordManager.Dispose();
     }
 
     // Delayed initialized for BootStrap sequence...

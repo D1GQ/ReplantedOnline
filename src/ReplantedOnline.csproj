@@ -70,6 +70,9 @@
 		<Reference Include="BloomEngine">
 			<HintPath>References\Dependencies\BloomEngine.dll</HintPath>
 		</Reference>
+		<Reference Include="DiscordRPC">
+			<HintPath>Resources\EmbeddedAssemblies\Discord\DiscordRPC.dll</HintPath>
+		</Reference>
 
 		<!-- Unity Engine -->
 		<Reference Include="UnityEngine">

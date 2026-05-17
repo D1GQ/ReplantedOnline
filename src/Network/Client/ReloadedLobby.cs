@@ -35,7 +35,7 @@ internal static class ReloadedLobby
     /// </summary>
     internal static INetworkTransport NetworkTransport { get; private set; }
 
-    private static int lastTransportMode = -1;
+    internal static int lastTransportMode = -1;
 
     /// <summary>
     /// Sets the network transport mode based on the provided mode index.
