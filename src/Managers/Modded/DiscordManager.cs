@@ -1,5 +1,6 @@
 ﻿using DiscordRPC;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
 using UnityEngine.SceneManagement;
@@ -37,6 +38,7 @@ internal static class DiscordManager
     }
 
     private static string _details = string.Empty;
+    private static string _state = string.Empty;
     private static DateTime? _time;
 
     /// <summary>
@@ -54,10 +56,15 @@ internal static class DiscordManager
             if (sceneName == "Frontend")
             {
                 _details = "Main Menu";
+                _state = string.Empty;
             }
             else if (sceneName == "Gameplay")
             {
-                _details = "Gameplay";
+                if (Instances.GameplayActivity?.Board?.mLevelEntryData != null)
+                {
+                    _details = "Gameplay";
+                    _state = Instances.GameplayActivity.Board.mLevelEntryData.FullLevelName;
+                }
             }
         }
         else
@@ -71,31 +78,37 @@ internal static class DiscordManager
             switch (VersusState.VersusPhase)
             {
                 case VersusPhase.PickSides:
-                    _details += "Versus In Lobby";
+                    _details += "Versus Mode";
+                    _state = "In Lobby";
                     break;
                 case VersusPhase.ChoosePlantPacket:
                 case VersusPhase.ChooseZombiePacket:
-                    _details += "Versus Choosing Seeds";
+                    _details += "Versus Mode";
+                    _state = "Choosing Seeds";
                     break;
                 case VersusPhase.Gameplay:
                     _details += "Versus Mode";
+                    _state = string.Empty;
                     _richPresence.Type = ActivityType.Competing;
                     break;
                 case VersusPhase.SuddenDeath:
                     _details += "Sudden Death!";
+                    _state = string.Empty;
                     _richPresence.Type = ActivityType.Competing;
                     break;
                 case VersusPhase.PlantsWin:
                 case VersusPhase.ZombiesWin:
-                    _details += "Versus Results";
+                    _details += "Versus Mode";
+                    _state = "Results";
                     break;
             }
         }
 
-        if (_details != _richPresence.Details)
+        if (_details != _richPresence.Details || _state != _richPresence.State)
         {
             SetTime();
             _richPresence.Details = _details;
+            _richPresence.State = _state;
             _richPresence.Timestamps.Start = _time;
             _client.SetPresence(_richPresence);
         }
