@@ -46,6 +46,8 @@ internal static class DiscordManager
     {
         if (!_init) return;
 
+        _richPresence.Type = ActivityType.Playing;
+
         if (!ReloadedLobby.AmInLobby())
         {
             var sceneName = SceneManager.GetActiveScene().name;
@@ -76,10 +78,12 @@ internal static class DiscordManager
                     _details += "Versus Choosing Seeds";
                     break;
                 case VersusPhase.Gameplay:
-                    _details += "Versus Gameplay";
+                    _details += "Versus Mode";
+                    _richPresence.Type = ActivityType.Competing;
                     break;
                 case VersusPhase.SuddenDeath:
-                    _details += "Versus Sudden Death";
+                    _details += "Sudden Death!";
+                    _richPresence.Type = ActivityType.Competing;
                     break;
                 case VersusPhase.PlantsWin:
                 case VersusPhase.ZombiesWin:

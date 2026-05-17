@@ -67,6 +67,12 @@ internal static class StartMultiplayerButtonPatch
     [HarmonyPrefix]
     private static bool StartMultiplayerButton_OnButtonClicked_Prefix(StartMultiplayerButton __instance)
     {
+        if (ReplantedOnlineMod.HasUnauthorizedMod(out var mod))
+        {
+            CustomPopupPanel.Show("Unauthorized Mod", $"Remove {mod.Info.Name} {mod.Info.Version}\nfor a fair environment!");
+            return false;
+        }
+
         // Determine if this is the Host button or Join button
         if (__instance.gameObject.name != "CoopVS_VS_Button")
         {
@@ -87,8 +93,6 @@ internal static class StartMultiplayerButtonPatch
             }
         }
 
-        // Return false to prevent the original method from running
-        // This replaces the default multiplayer behavior with custom online functionality
         return false;
     }
 }

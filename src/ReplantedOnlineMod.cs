@@ -103,6 +103,27 @@ internal class ReplantedOnlineMod : MelonMod
         }
     }
 
+    private static readonly string[] _authorizedMods = [ModInfo.MOD_NAME, ModInfo.BloomEngine.BLOOM_ENGINE_NAME];
+    internal static bool HasUnauthorizedMod(out MelonMod melonMod)
+    {
+#if DEBUG
+        melonMod = null;
+        return false;
+#endif
+
+        foreach (var mod in RegisteredMelons)
+        {
+            if (!_authorizedMods.Contains(mod.Info.Name))
+            {
+                melonMod = mod;
+                return true;
+            }
+        }
+
+        melonMod = null;
+        return false;
+    }
+
     internal static class Constants
     {
         internal static class Network
