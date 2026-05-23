@@ -178,6 +178,11 @@ internal sealed class ReloadedLobbyData : IDisposable
     }
 
     /// <summary>
+    /// Indicates whether the lobby is joinable.
+    /// </summary>
+    internal LobbyVar<bool> LobbyJoinable { get; } = new(nameof(LobbyJoinable), true);
+
+    /// <summary>
     /// Indicates whether the lobby is currently in the process of restarting.
     /// </summary>
     internal LobbyVar<bool> LobbyRestarting { get; } = new(nameof(LobbyRestarting), false);
@@ -217,6 +222,7 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal void InitializeData()
     {
+        LobbyJoinable.Value = true;
         LobbyRestarting.Value = false;
         PickingSides.Value = false;
         HasStarted.Value = false;

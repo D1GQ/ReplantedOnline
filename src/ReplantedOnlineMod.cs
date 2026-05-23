@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Managers.Modded;
+using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Il2cpp;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded;
@@ -69,6 +70,7 @@ internal class ReplantedOnlineMod : MelonMod
         ContentManager.Initialize();
         MonoSingleton<MainThreadDispatcher>.CreateInstance();
         ReloadedLobby.Initialize();
+        DiscordManager.ReadyToJoin();
     }
 
     public override void OnUpdate()

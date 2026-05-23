@@ -186,10 +186,14 @@ internal static class MatchmakingManager
 
         if (@override != null)
         {
+            ReloadedLobby.LobbyData.LobbyJoinable.Value = @override.Value;
             ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, @override.Value);
+            return;
         }
 
-        ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, !ReloadedLobby.LobbyData.HasStarted.Value);
+        bool canJoin = !ReloadedLobby.LobbyData.HasStarted.Value;
+        ReloadedLobby.LobbyData.LobbyJoinable.Value = canJoin;
+        ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, canJoin);
     }
 
     /// <summary>

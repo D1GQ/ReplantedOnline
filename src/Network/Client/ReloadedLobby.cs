@@ -23,7 +23,7 @@ namespace ReplantedOnline.Network.Client;
 /// </summary>
 internal static class ReloadedLobby
 {
-    private const int MAX_LOBBY_SIZE = 2;
+    internal const int MAX_LOBBY_SIZE = 2;
 
     /// <summary>
     /// The LobbyData of the current lobby the player is in, or null if not in a lobby.
@@ -143,6 +143,7 @@ internal static class ReloadedLobby
     {
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Restarting the lobby");
         ReloadedClientData.LocalClient?.Ready.Value = false;
+        DiscordManager.OnLobbyRestart();
         VersusLobbyManager.ResetPlayerInput();
         InputManager.SetListeningForNewDevice(true);
         LobbyData.UnsetAllTeams();
@@ -196,6 +197,7 @@ internal static class ReloadedLobby
         Transitions.ToMainMenu(callback);
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
+        DiscordManager.OnLeftLobby();
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Successfully left lobby");
     }
 
@@ -230,6 +232,8 @@ internal static class ReloadedLobby
         });
 
         ProcessMemberList();
+
+        DiscordManager.OnJoinLobby();
 
         int memberCount = GetLobbyMemberCount();
 
