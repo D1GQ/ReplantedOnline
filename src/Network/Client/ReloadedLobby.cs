@@ -7,6 +7,7 @@ using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
 using ReplantedOnline.Network.Routing.Transport;

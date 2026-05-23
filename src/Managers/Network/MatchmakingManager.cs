@@ -29,7 +29,7 @@ internal static class MatchmakingManager
     internal static readonly int CODE_LENGTH = 6;
 
     /// <summary>
-    /// Find lobby by gamecode
+    /// Find lobby by Game Code.
     /// </summary>
     /// <param name="gameCode"></param>
     internal static void SearchSteamLobbyByGameCode(string gameCode)
