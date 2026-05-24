@@ -4,7 +4,7 @@ using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
 
-namespace ReplantedOnline.MonoScripts.Network;
+namespace ReplantedOnline.MonoScripts.Unity;
 
 /// <summary>
 /// Handles execution of actions on the Unity main thread.

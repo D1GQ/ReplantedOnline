@@ -5,6 +5,7 @@ using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client;
 using UnityEngine.SceneManagement;
 
@@ -88,20 +89,23 @@ internal static class DiscordManager
     /// <param name="args">The join message containing the secret/game code.</param>
     private static void OnJoin(object sender, JoinMessage args)
     {
-        _discordLobbySecret = DiscordLobbySecret.Deserialize(args.Secret);
-        if (_discordLobbySecret == null)
+        MainThreadDispatcher.Execute(() =>
         {
-            CustomPopupPanel.Show("Disconnected", $"Failed to read secret!");
-            return;
-        }
+            _discordLobbySecret = DiscordLobbySecret.Deserialize(args.Secret);
+            if (_discordLobbySecret == null)
+            {
+                CustomPopupPanel.Show("Disconnected", $"Failed to read secret!");
+                return;
+            }
 
-        if (_discordLobbySecret.VersionFormatted != ModInfo.MOD_VERSION_FORMATTED)
-        {
-            CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{_discordLobbySecret.VersionFormatted}");
-            return;
-        }
+            if (_discordLobbySecret.VersionFormatted != ModInfo.MOD_VERSION_FORMATTED)
+            {
+                CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{_discordLobbySecret.VersionFormatted}");
+                return;
+            }
 
-        MatchmakingManager.SearchSteamLobbyByGameCode(_discordLobbySecret.GameCode);
+            MatchmakingManager.SearchSteamLobbyByGameCode(_discordLobbySecret.GameCode);
+        });
     }
 
     /// <summary>
