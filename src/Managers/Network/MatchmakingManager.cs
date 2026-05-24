@@ -5,6 +5,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
@@ -188,12 +189,14 @@ internal static class MatchmakingManager
         {
             ReloadedLobby.LobbyData.LobbyJoinable.Value = @override.Value;
             ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, @override.Value);
+            DiscordManager.SetJoinable(@override.Value);
             return;
         }
 
         bool canJoin = !ReloadedLobby.LobbyData.HasStarted.Value;
         ReloadedLobby.LobbyData.LobbyJoinable.Value = canJoin;
         ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, canJoin);
+        DiscordManager.SetJoinable(canJoin);
     }
 
     /// <summary>

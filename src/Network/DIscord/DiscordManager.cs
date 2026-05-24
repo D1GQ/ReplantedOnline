@@ -117,6 +117,7 @@ internal static class DiscordManager
     {
         bool accept = ReloadedLobby.LobbyData.LobbyJoinable.Value;
         _client.Respond(args, accept);
+        _dirty = !_dirty && accept;
     }
 
     /// <summary>
@@ -130,7 +131,7 @@ internal static class DiscordManager
             if (size != _lastPartySize)
             {
                 _lastPartySize = size;
-                _client.UpdatePartySize(size);
+                _presence.Party.Size = size;
                 _dirty = true;
             }
         }
@@ -289,6 +290,24 @@ internal static class DiscordManager
     {
         _presence.Party.ID = string.Empty;
         _presence.Secrets.Join = string.Empty;
+        _client.SetPresence(_presence);
+        _client.Invoke();
+    }
+
+    /// <summary>
+    /// Called when a lobby privacy is getting set.
+    /// </summary>
+    internal static void SetJoinable(bool canJoin)
+    {
+        if (canJoin)
+        {
+            _presence.Party.Privacy = Party.PrivacySetting.Public;
+        }
+        else
+        {
+            _presence.Party.Privacy = Party.PrivacySetting.Private;
+        }
+
         _client.SetPresence(_presence);
         _client.Invoke();
     }
