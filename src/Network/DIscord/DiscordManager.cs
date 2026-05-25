@@ -131,8 +131,7 @@ internal static class DiscordManager
             if (size != _lastPartySize)
             {
                 _lastPartySize = size;
-                _presence.Party.Size = size;
-                _dirty = true;
+                _client.UpdatePartySize(size);
             }
         }
 
@@ -319,6 +318,8 @@ internal static class DiscordManager
     {
         if (!_init) return;
 
+        _client.OnJoin -= OnJoin;
+        _client.OnJoinRequested -= OnJoinRequested;
         _client.ClearPresence();
         _client.Dispose();
         _init = false;

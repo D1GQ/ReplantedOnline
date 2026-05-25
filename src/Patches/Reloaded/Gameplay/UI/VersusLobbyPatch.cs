@@ -80,7 +80,7 @@ internal static class VersusLobbyPatch
                 // Non-host players wait for host to choose
                 VsSideChooser.RemoveSelectionButtons(); // Remove all selection buttons
 
-                InteractableBlocker?.transform?.localScale = new(10f, 10f, 10f); // Block all input as host
+                InteractableBlocker?.transform?.localScale = new(10f, 10f, 10f); // Block all input as non host
 
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerTop")?.gameObject?.SetActive(false);
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
