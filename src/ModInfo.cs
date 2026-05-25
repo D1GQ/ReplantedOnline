@@ -38,7 +38,7 @@ internal static class ModInfo
     /// <summary>
     /// The hotfix number for hotfix releases.
     /// </summary>
-    internal const string HOTFIX_NUM = "1";
+    internal const string HOTFIX_NUM = "0";
 
     /// <summary>
     /// The formatted version string of the mod using semantic versioning.
