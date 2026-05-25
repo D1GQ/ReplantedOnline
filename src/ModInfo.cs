@@ -1,6 +1,5 @@
 ﻿using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Structs;
-using System.Reflection;
 
 namespace ReplantedOnline;
 
@@ -33,7 +32,7 @@ internal static class ModInfo
     /// <summary>
     /// The number of the release.
     /// </summary>
-    internal const string MOD_RELEASE_INFO = "13";
+    internal const string MOD_RELEASE_INFO = "14";
 
     /// <summary>
     /// The hotfix number for hotfix releases.
