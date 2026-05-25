@@ -20,7 +20,7 @@ internal static class AudioManager
         MelonCoroutines.Start(WaitForAppCore(() =>
         {
             CatchAudio();
-            OnModifyMusic(BloomConfigs.ModifyMusic.Value, false);
+            OnModifyMusic(BloomConfigs.ModifyMusicConfig.Value, false);
         }));
     }
 

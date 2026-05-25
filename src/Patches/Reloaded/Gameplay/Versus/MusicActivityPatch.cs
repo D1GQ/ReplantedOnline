@@ -29,7 +29,7 @@ internal static class MusicActivityPatch
         if (__instance.name == "StartMatch")
         {
             // Check if in multiplayer lobby and music modification is enabled
-            if (ReloadedLobby.AmInLobby() && BloomConfigs.ModifyMusic.Value)
+            if (ReloadedLobby.AmInLobby() && BloomConfigs.ModifyMusicConfig.Value)
             {
                 // Save original music tune to state
                 __state = __instance.m_musicTune;

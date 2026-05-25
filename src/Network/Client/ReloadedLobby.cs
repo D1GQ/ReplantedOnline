@@ -36,26 +36,29 @@ internal static class ReloadedLobby
     /// </summary>
     internal static INetworkTransport NetworkTransport { get; private set; }
 
-    internal static int lastTransportMode = -1;
+    /// <summary>
+    /// Gets the current transport mode being used for network communication.
+    /// </summary>
+    internal static TransportMode TransportMode { get; private set; } = (TransportMode)int.MinValue;
 
     /// <summary>
-    /// Sets the network transport mode based on the provided mode index.
+    /// Sets the network transport mode based on the provided mode.
     /// </summary>
-    /// <param name="mode"></param>
-    internal static void SetTransportMode(int mode)
+    /// <param name="mode">The transport mode to set.</param>
+    internal static void SetTransportMode(TransportMode mode)
     {
-        if (lastTransportMode == mode) return;
+        if (TransportMode == mode) return;
 
         NetworkTransport?.Dispose();
         NetworkTransport = null;
 
         switch (mode)
         {
-            case 0:
+            case TransportMode.Steam:
                 NetworkTransport = new SteamTransport();
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to Steam");
                 break;
-            case 1:
+            case TransportMode.Lan:
                 NetworkTransport = new LanTransport();
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to LAN");
                 break;
@@ -65,7 +68,7 @@ internal static class ReloadedLobby
                 break;
         }
 
-        lastTransportMode = mode;
+        TransportMode = mode;
     }
 
     /// <summary>
@@ -75,8 +78,8 @@ internal static class ReloadedLobby
     {
         InitializeSteam();
         InitializeLan();
+        SetTransportMode(BloomEngineManager.BloomConfigs.TransportModeConfig.Value);
 
-        SetTransportMode(BloomEngineManager.BloomConfigs.UseLan.Value ? 1 : 0);
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Initialized");
     }
 

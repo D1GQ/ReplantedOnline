@@ -2,19 +2,18 @@
 using BloomEngine.Config.Inputs;
 using BloomEngine.ModMenu;
 using MelonLoader;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Client;
 
 namespace ReplantedOnline.Managers.Modded;
 
 /// <summary>
-/// Handles initialization and configuration bridging between
-/// MelonPreferences and BloomEngine configuration menus.
+/// Manages integration with BloomEngine.
 /// </summary>
 internal static class BloomEngineManager
 {
     /// <summary>
-    /// Initializes BloomEngine menu integration and registers
-    /// the mod's configuration UI.
+    /// Initializes BloomEngine features.
     /// </summary>
     /// <param name="replantedOnline">The active MelonMod instance.</param>
     internal static void InitializeBloom(MelonMod replantedOnline)
@@ -25,51 +24,40 @@ internal static class BloomEngineManager
         mod.AddIcon(ReplantedOnlineAssets.Sprites.ModIcon);
         mod.AddDisplayName(ModInfo.MOD_NAME);
         mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
-        mod.AddConfigInputs(BloomConfigs.UseLan, BloomConfigs.ModifyMusic);
+        mod.AddConfigInputs(BloomConfigs.TransportModeConfig, BloomConfigs.ModifyMusicConfig);
         mod.Register();
     }
 
     /// <summary>
-    /// BloomEngine-facing configuration definitions.
+    /// Holds BloomEngine config fields and related initialization logic.
     /// </summary>
     internal static class BloomConfigs
     {
-        internal static BoolConfigInput ModifyMusic;
-        internal static BoolConfigInput UseLan;
+        internal static BoolConfigInput ModifyMusicConfig;
+        internal static EnumConfigInput<TransportMode> TransportModeConfig;
 
         /// <summary>
-        /// Initializes BloomEngine config fields and syncs values
-        /// with MelonPreferences.
+        /// Initializes BloomEngine config fields and related event handlers.
         /// </summary>
         internal static void Init()
         {
             var ModifyMusicConfig =
-            ModifyMusic = ConfigService.CreateBool(
+            BloomConfigs.ModifyMusicConfig = ConfigService.CreateBool(
                 "Modify Music",
                 "Modifies music tracks.",
                 true
             );
-            ModifyMusic.OnValueChanged += @bool =>
+            BloomConfigs.ModifyMusicConfig.OnValueChanged += @bool =>
             {
                 AudioManager.OnModifyMusic(@bool, true);
             };
 
-            UseLan = ConfigService.CreateBool(
-                "(LAN) Mode",
-                "Bypass Steam servers and connect directly via local network for Testing.",
-                false
+            TransportModeConfig = ConfigService.CreateEnum(
+                "Transport Mode",
+                "Choose what network transport to use when hosting a lobby.",
+                TransportMode.Steam
             );
-            UseLan.OnValueChanged += @bool =>
-            {
-                if (@bool)
-                {
-                    ReloadedLobby.SetTransportMode(1);
-                }
-                else
-                {
-                    ReloadedLobby.SetTransportMode(0);
-                }
-            };
+            TransportModeConfig.OnValueChanged += ReloadedLobby.SetTransportMode;
         }
     }
 }
