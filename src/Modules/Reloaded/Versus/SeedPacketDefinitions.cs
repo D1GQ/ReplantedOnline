@@ -383,7 +383,6 @@ internal static class SeedPacketDefinitions
                     var whiteWaterEffect = WhiteWaterEffect.Create(zombie.mController, false);
                     whiteWaterEffect.transform.localPosition = new(15f, -5f, 0f);
                     whiteWaterEffect.transform.localScale = new(0.8f, 1f, 1f);
-                    whiteWaterEffect.transform.localEulerAngles = new(-0f, 0f, 356.1458f);
                     zombie.mController.StartCoroutine(CoroutineUtils.WaitForConditionWithTimeout(() => zombie.mZombiePhase != ZombiePhase.RisingFromGrave, 5f, () =>
                     {
                         whiteWaterEffect.gameObject.SetActive(true);

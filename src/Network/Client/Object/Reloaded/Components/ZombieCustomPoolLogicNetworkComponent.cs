@@ -38,9 +38,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             Net._Zombie.mController.SetImageOverride("whitewater", string.Empty);
         }
 
-        _whiteWaterEffect = WhiteWaterEffect.Create(Net._Zombie.mController, false);
-        _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
-        _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+        _whiteWaterEffect ??= WhiteWaterEffect.Create(Net._Zombie.mController, false);
     }
 
     internal override void Update()
@@ -83,10 +81,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             _inPool = false;
         }
 
-        _whiteWaterEffect?.gameObject.SetActive(_inPool &&
-            !zombie.mDead &&
-            zombie.mZombiePhase != ZombiePhase.RisingFromGrave &&
-            zombie.mAltitude < -35f);
+        UpdateWhiteWaterEffect();
 
         if (_inPool)
         {
@@ -103,6 +98,60 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 }
             }
         }
+    }
+
+    private void UpdateWhiteWaterEffect()
+    {
+        if (_whiteWaterEffect == null) return;
+
+        var zombie = Net._Zombie;
+        var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && zombie.mAltitude < -35f;
+        _whiteWaterEffect.gameObject.SetActive(active);
+
+        switch (Net.ZombieType)
+        {
+            case ZombieType.TrashCan:
+                if (Net._Zombie.mShieldType != ShieldType.None)
+                {
+                    _whiteWaterEffect.transform.localPosition = new(-15f, 110f, 0f);
+                    _whiteWaterEffect.transform.localScale = new(1.05f, 1f, 1f);
+                    return;
+                }
+                break;
+            case ZombieType.Door:
+                if (Net._Zombie.mShieldType != ShieldType.None)
+                {
+                    _whiteWaterEffect.transform.localPosition = new(-25f, 110f, 0f);
+                    _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
+                    return;
+                }
+                break;
+            case ZombieType.Newspaper:
+                if (Net._Zombie.mShieldType != ShieldType.None)
+                {
+                    _whiteWaterEffect.transform.localPosition = new(-30f, 114f, 0f);
+                    _whiteWaterEffect.transform.localScale = new(1.2f, 1f, 1f);
+                }
+                else
+                {
+                    _whiteWaterEffect.transform.localPosition = new(-20f, 114f, 0f);
+                    _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
+                }
+                return;
+            case ZombieType.JackInTheBox:
+                _whiteWaterEffect.transform.localPosition = new(-5.9f, 114f, 0f);
+                _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+                return;
+            case ZombieType.Football:
+                _whiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
+                _whiteWaterEffect.transform.localScale = new(1.25f, 1f, 1f);
+                return;
+            default:
+                break;
+        }
+
+        _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
+        _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
     }
 
     private bool CanGoInWater()
