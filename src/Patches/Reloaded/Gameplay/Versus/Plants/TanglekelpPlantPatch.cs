@@ -26,9 +26,12 @@ internal static class TanglekelpPlantPatch
                     Zombie targetZombie = null;
                     foreach (var zombie in __instance.mBoard.GetZombies())
                     {
+                        if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                         if (__instance.mRow != zombie.mRow) continue;
 
-                        if (PvZRUtils.ReloadedObjectXToGridX(zombie.mPosX) == PvZRUtils.ReloadedObjectXToGridX(__instance.mX))
+                        var plantAttackRect = __instance.GetPlantAttackRect(PlantWeapon.Primary);
+                        var zombieRect = zombie.GetZombieRect();
+                        if (Common.GetRectOverlap(ref plantAttackRect, ref zombieRect) > 0)
                         {
                             targetZombie = zombie;
                             break;
