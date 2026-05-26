@@ -214,6 +214,39 @@ internal static class ReplantedOnlineAssets
                 }
             }
         }
+
+        internal static class WhiteWaterSpriteSheet
+        {
+            internal static Texture2D Sheet
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        field = ModInfo.Assembly.LoadTextureFromResources("ReplantedOnline.Resources.Images.Characters.White-Water.png");
+                    }
+
+                    return field;
+                }
+            }
+
+            internal static Sprite[] Sprites
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        List<Sprite> list = [];
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 1)));
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 2)));
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 3)));
+                        field = [.. list];
+                    }
+
+                    return field;
+                }
+            }
+        }
     }
 
     /// <summary>

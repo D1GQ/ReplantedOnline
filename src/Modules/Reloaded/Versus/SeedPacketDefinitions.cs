@@ -6,6 +6,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
@@ -13,6 +14,7 @@ using ReplantedOnline.Structs;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
+using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 using static Il2CppReloaded.Constants;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
@@ -378,6 +380,14 @@ internal static class SeedPacketDefinitions
                 case ZombieType.Gravestone:
                     zombie.mPosX = theX - 25;
                     zombie.PoolSplash(true);
+                    var whiteWaterEffect = WhiteWaterEffect.Create(zombie.mController, false);
+                    whiteWaterEffect.transform.localPosition = new(15f, -5f, 0f);
+                    whiteWaterEffect.transform.localScale = new(0.8f, 1f, 1f);
+                    whiteWaterEffect.transform.localEulerAngles = new(-0f, 0f, 356.1458f);
+                    zombie.mController.StartCoroutine(CoroutineUtils.WaitForConditionWithTimeout(() => zombie.mZombiePhase != ZombiePhase.RisingFromGrave, 5f, () =>
+                    {
+                        whiteWaterEffect.gameObject.SetActive(true);
+                    }));
                     break;
                 case ZombieType.BackupDancer:
                     zombie.mPosX = gridX;

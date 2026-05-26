@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -19,6 +20,8 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
     private bool _inPool;
     private bool _isDrowning;
 
+    private WhiteWaterEffect _whiteWaterEffect;
+
     internal override void OnInit()
     {
         if (!CanGoInWater())
@@ -34,6 +37,10 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             // remove arms overlay to appear over the water
             Net._Zombie.mController.SetImageOverride("whitewater", string.Empty);
         }
+
+        _whiteWaterEffect = WhiteWaterEffect.Create(Net._Zombie.mController, false);
+        _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
+        _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
     }
 
     internal override void Update()
@@ -75,6 +82,11 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white;
             _inPool = false;
         }
+
+        _whiteWaterEffect?.gameObject.SetActive(_inPool &&
+            !zombie.mDead &&
+            zombie.mZombiePhase != ZombiePhase.RisingFromGrave &&
+            zombie.mAltitude < -35f);
 
         if (_inPool)
         {
