@@ -149,6 +149,34 @@ internal static class GargantuarZombiePatch
         return true;
     }
 
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DragUnder))]
+    [HarmonyPrefix]
+    private static bool Zombie_DragUnder_Prefix(Zombie __instance)
+    {
+        if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return true;
+
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Make Tanglekelp act like every other insta on Gargantuar
+            if (__instance.mBodyHealth > 1800)
+            {
+                __instance.TakeDamage(1800, DamageFlags.HitsShieldAndBody);
+                foreach (var plant in __instance.mBoard.GetPlants())
+                {
+                    if (plant.mSeedType != SeedType.Tanglekelp) continue;
+
+                    if (plant.mTargetZombieID == __instance.DataID)
+                    {
+                        plant.mTargetZombieID = ZombieID.Null;
+                    }
+                }
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static void HandleGargantuarThrow(Zombie gargantuar)
     {
         gargantuar.mZombiePhase = ZombiePhase.GargantuarThrowing;
