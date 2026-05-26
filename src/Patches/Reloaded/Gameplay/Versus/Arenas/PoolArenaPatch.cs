@@ -1,10 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
@@ -25,31 +23,6 @@ internal static class PoolArenaPatch
         }
 
         return true;
-    }
-
-
-    [HarmonyPatch(typeof(ReloadedCharacterController), nameof(ReloadedCharacterController.ShouldTriggerTimedEvent))]
-    [HarmonyPostfix]
-    private static void ReloadedCharacterController_ShouldTriggerTimedEvent_Postfix(ReloadedCharacterController __instance, ref bool __result)
-    {
-        if (ReloadedLobby.AmInLobby())
-        {
-            // Remove running particles
-            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
-            {
-                if (__instance.Il2CppTryCast<ZombieController>(out var zombieController))
-                {
-                    var zombie = zombieController.m_zombie;
-                    if (zombie != null && zombie.mZombieType is ZombieType.Football or ZombieType.Polevaulter)
-                    {
-                        if (zombie.mBoard.mPlantRow[zombie.mRow] == PlantRowType.Pool)
-                        {
-                            __result = false;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     [HarmonyPatch(typeof(Board), nameof(Board.UpdateFog))]
@@ -118,6 +91,29 @@ internal static class PoolArenaPatch
                 {
                     __result = true;
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(GameplayActivity), nameof(GameplayActivity.AddTodParticle), [typeof(float), typeof(float), typeof(int), typeof(ParticleEffect)])]
+    [HarmonyPrefix]
+    private static void GameplayActivity_AddTodParticle_Prefix(GameplayActivity __instance, float theY, ref ParticleEffect theEffect, ref TodParticleSystem __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (!__instance.Board.StageHasPool()) return;
+
+            if (PvZRUtils.ReloadedObjectYToGridY(theY) is 2 or 3)
+            {
+                theEffect = theEffect switch
+                {
+                    ParticleEffect.ZombieHead => ParticleEffect.ZombieHeadPool,
+                    ParticleEffect.MoweredZombieArm => ParticleEffect.NumParticles,
+                    ParticleEffect.ZombieArm => ParticleEffect.NumParticles,
+                    ParticleEffect.ZombieArmRetro => ParticleEffect.NumParticles,
+                    ParticleEffect.DustFoot => ParticleEffect.NumParticles,
+                    _ => theEffect
+                };
             }
         }
     }
