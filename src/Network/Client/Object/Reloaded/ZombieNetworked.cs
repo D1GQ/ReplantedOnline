@@ -47,10 +47,12 @@ internal sealed class ZombieNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Plant Target { get; set; }
 
+    internal DynamicWeakReference<Zombie> _z = new();
+
     /// <summary>
     /// The underlying zombie instance that this networked object represents.
     /// </summary>
-    internal Zombie _Zombie;
+    internal Zombie _Zombie => _z.Value;
 
     /// <summary>
     /// The type of zombie this networked object represents when spawning.
@@ -459,7 +461,8 @@ internal sealed class ZombieNetworked : NetworkObject
             SpawnType = packetReader.ReadEnum<SpawnType>();
             ZombieType = packetReader.ReadEnum<ZombieType>();
 
-            _Zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false).Zombie;
+            var zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false).Zombie;
+            _z.SetTarget(() => zombie?.mController?.m_zombie);
 
             OnInit();
 

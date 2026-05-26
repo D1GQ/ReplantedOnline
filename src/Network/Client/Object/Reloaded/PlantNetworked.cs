@@ -4,6 +4,7 @@ using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.MonoScripts.Network;
@@ -39,10 +40,12 @@ internal sealed class PlantNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Zombie Target { get; set; }
 
+    internal DynamicWeakReference<Plant> _p = new();
+
     /// <summary>
     /// The underlying plant instance that this networked object represents.
     /// </summary>
-    internal Plant _Plant;
+    internal Plant _Plant => _p.Value;
 
     /// <summary>
     /// The type of seed used to plant this plant when spawning.
@@ -280,7 +283,8 @@ internal sealed class PlantNetworked : NetworkObject
             SpawnType = packetReader.ReadEnum<SpawnType>();
             SeedType = packetReader.ReadEnum<SeedType>();
 
-            _Plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;
+            var plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;
+            _p.SetTarget(() => plant?.mController?.m_plant);
 
             OnInit();
 
