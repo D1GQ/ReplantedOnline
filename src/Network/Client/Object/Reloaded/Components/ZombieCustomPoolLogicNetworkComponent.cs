@@ -1,14 +1,10 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
-using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
@@ -22,13 +18,9 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     private bool _inPool;
     private bool _isDrowning;
-    private SortingGroup _fogSortingGroup;
 
     internal override void OnInit()
     {
-        _fogSortingGroup = Net._Zombie.mController.Renderer.gameObject.AddComponent<SortingGroup>();
-        _fogSortingGroup.sortingLayerName = Il2CppReloaded.Constants.SortingLayer.UI_OVERLAY;
-
         if (!CanGoInWater())
         {
             return;
@@ -46,22 +38,6 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     internal override void Update()
     {
-        if (VersusState.AmZombieSide &&
-            VersusState.Arena == ArenaTypes.PoolNight &&
-            !Net.ZombieType.IsGravestoneOrTarget() &&
-            Net._Zombie.mController.transform.position.x <
-                Instances.GameplayActivity.BackgroundController.FogController.transform.position.x)
-        {
-            // Render over fog
-            _fogSortingGroup.enabled = true;
-            _fogSortingGroup.sortingOrder = (Net._Zombie.mRenderOrder % 10000) + 10000;
-        }
-        else
-        {
-            _fogSortingGroup.enabled = false;
-            _fogSortingGroup.sortingOrder = 0;
-        }
-
         if (!CanGoInWater())
         {
             return;
