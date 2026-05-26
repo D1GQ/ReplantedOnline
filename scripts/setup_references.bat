@@ -5,6 +5,9 @@ chcp 65001 >nul
 REM Define list of subdirectories to search in the MelonLoader folder
 set "SEARCH_DIRS=Il2CppAssemblies net6"
 
+REM Define list of paths to ignore (relative paths from project root)
+set "IGNORE_PATHS=References\Dependencies\ Resources\EmbeddedAssemblies\"
+
 REM Determine project location
 set "PROJECT_ROOT=%cd%"
 set "PROJECT_FILE="
@@ -48,9 +51,12 @@ echo.
 echo Scanning project references...
 echo.
 
+set /a TOTAL=0
 set /a EXISTS=0
 set /a COPIED=0
 set /a MISSING=0
+set /a FAILED=0
+set /a IGNORED=0
 
 REM Parse the project file for HintPaths
 for /f "tokens=*" %%A in ('type "!PROJECT_FILE!" ^| findstr /c:"<HintPath>"') do (
@@ -66,19 +72,34 @@ for /f "tokens=*" %%A in ('type "!PROJECT_FILE!" ^| findstr /c:"<HintPath>"') do
     set "HINT_PATH=!HINT_PATH:"=!"
     
     if not "!HINT_PATH!"=="" (
-        call :process_reference "!HINT_PATH!"
+        REM Check if this path should be ignored
+        set "SKIP=0"
+        
+        REM Check References\Dependencies\
+        echo !HINT_PATH! | findstr /i "References\\Dependencies\\" >nul
+        if !errorlevel! equ 0 set "SKIP=1"
+        
+        REM Check Resources\EmbeddedAssemblies\
+        echo !HINT_PATH! | findstr /i "Resources\\EmbeddedAssemblies\\" >nul
+        if !errorlevel! equ 0 set "SKIP=1"
+        
+        if !SKIP! equ 1 (
+            set /a IGNORED+=1
+        ) else (
+            set /a TOTAL+=1
+            call :process_reference "!HINT_PATH!"
+        )
     )
 )
 
 echo.
-echo ================================
-echo Summary:
-echo !EXISTS! DLLs already present
-echo !COPIED! DLLs copied from game
-echo !MISSING! DLLs still missing
-echo ================================
-echo.
-pause
+echo ====== REFERENCE SUMMARY ======
+echo Total references processed: !TOTAL!
+echo Already present: !EXISTS!
+echo Copied from game: !COPIED!
+echo Failed to copy: !FAILED!
+echo Missing in game: !MISSING!
+echo ===============================
 exit /b
 
 :process_reference
@@ -87,7 +108,7 @@ set "HINT_PATH=%~1"
 REM Check if DLL already exists at the HintPath location
 if exist "!PROJECT_ROOT!\!ROOT!!HINT_PATH!" (
     set /a EXISTS+=1
-    echo EXISTS: !HINT_PATH!
+    echo [EXISTS] !HINT_PATH!
     goto :eof
 )
 
@@ -95,7 +116,7 @@ REM Extract just the DLL filename
 for %%F in ("!HINT_PATH!") do set "DLL_NAME=%%~nxF"
 set "DLL_NAME=!DLL_NAME!"
 
-echo MISSING: !DLL_NAME! (expected: !HINT_PATH!)
+echo [MISSING] !DLL_NAME! (expected: !HINT_PATH!)
 
 REM Search for DLL in the game folder using the search directories list
 set "SOURCE_DLL="
@@ -115,7 +136,7 @@ if exist "!GAME_DLLS_PATH!\!DLL_NAME!" (
 
 :found_dll
 if not "!SOURCE_DLL!"=="" (
-    echo   FOUND in game: !SOURCE_DLL!
+    echo   [FOUND] in game: !SOURCE_DLL!
     
     REM Create target directory if it doesn't exist
     for %%D in ("!PROJECT_ROOT!\!ROOT!!HINT_PATH!") do (
@@ -132,15 +153,15 @@ if not "!SOURCE_DLL!"=="" (
     copy /y "!SOURCE_DLL!" "!TARGET_PATH!" >nul
     
     if errorlevel 1 (
-        echo   FAILED to copy to: !TARGET_PATH!
+        echo   [FAILED] Could not copy to: !TARGET_PATH!
+        set /a FAILED+=1
     ) else (
-        echo   COPIED to: !TARGET_PATH!
+        echo   [COPIED] to: !TARGET_PATH!
         set /a COPIED+=1
     )
 ) else (
-    echo   NOT FOUND in game folder
+    echo   [NOT FOUND] in game folder
     set /a MISSING+=1
 )
-
 echo.
 goto :eof
