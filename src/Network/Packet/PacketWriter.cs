@@ -276,7 +276,7 @@ internal sealed class PacketWriter : IPacket
     /// </summary>
     internal void EncryptBuffer()
     {
-        _data.InsertRange(0, BitConverter.GetBytes(ModInfo.Signature.SignatureHash));
-        ModInfo.Signature.ScrambleBytes(CollectionsMarshal.AsSpan(_data));
+        _data.InsertRange(0, BitConverter.GetBytes(ModInfo.ModSignature.SignatureHash));
+        ModInfo.ModSignature.ScrambleBytes(CollectionsMarshal.AsSpan(_data));
     }
 }

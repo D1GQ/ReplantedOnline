@@ -349,7 +349,7 @@ internal sealed class PacketReader : IPacket
     internal uint UnencryptBuffer()
     {
         Span<byte> span = _data.AsSpan(_position);
-        ModInfo.Signature.ScrambleBytes(span);
+        ModInfo.ModSignature.ScrambleBytes(span);
 
         if (_position + 4 > _data.Length)
         {

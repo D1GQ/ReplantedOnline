@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Security.Cryptography;
 
 namespace ReplantedOnline.Structs;
 
@@ -21,112 +19,16 @@ internal readonly struct ModSignature
 
     public ModSignature()
     {
-        var location = ModInfo.Assembly.Location;
-        var dllHash = ComputeDllHash(location);
+        var assemblyBytes = File.ReadAllBytes(ModInfo.Assembly.Location);
 
-        Signature = BuildAssemblySignature(ModInfo.Assembly, dllHash);
-        SignatureHash = ComputeSignatureHash(Signature);
-    }
-
-    private static byte[] ComputeDllHash(string filePath)
-    {
         using var sha256 = SHA256.Create();
-        using var stream = File.OpenRead(filePath);
-        return sha256.ComputeHash(stream);
+        var hash = sha256.ComputeHash(assemblyBytes);
+
+        Signature = BitConverter.ToUInt32(hash, 0);
+        SignatureHash = GenerateSignatureHash(Signature);
     }
 
-    private static uint BuildAssemblySignature(Assembly assembly, byte[] dllHash)
-    {
-        uint signature = 0;
-
-        foreach (byte b in dllHash)
-        {
-            signature ^= (uint)(b << 24);
-            signature = RotateLeft(signature, 3);
-            signature ^= (uint)(b << 16);
-            signature = RotateLeft(signature, 3);
-            signature ^= (uint)(b << 8);
-            signature = RotateLeft(signature, 3);
-            signature ^= b;
-            signature = RotateLeft(signature, 5);
-        }
-
-        foreach (var type in assembly.GetTypes().OrderBy(type => type.FullName))
-        {
-            signature ^= HashString(type.FullName ?? type.Name);
-            signature = RotateLeft(signature, 5);
-
-            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                                   BindingFlags.Instance | BindingFlags.Static).
-                                                   OrderBy(method => method.Name))
-            {
-                signature ^= HashString(method.Name);
-                signature = RotateLeft(signature, 3);
-
-                foreach (var param in method.GetParameters())
-                {
-                    signature ^= HashString(param.ParameterType.Name);
-                    signature = RotateLeft(signature, 2);
-                }
-            }
-
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic |
-                                                 BindingFlags.Instance | BindingFlags.Static).
-                                                 OrderBy(field => field.Name))
-            {
-                signature ^= HashString(field.Name);
-                signature = RotateLeft(signature, 7);
-            }
-
-            foreach (var prop in type.GetProperties().OrderBy(prop => prop.Name))
-            {
-                signature ^= HashString(prop.Name);
-                signature = RotateLeft(signature, 4);
-            }
-        }
-
-        signature ^= HashString(assembly.FullName);
-        signature = RotateLeft(signature, 11);
-        signature ^= HashString(assembly.GetName().Version?.ToString() ?? "0.0.0.0");
-
-        signature ^= (uint)(dllHash.Length * 2654435761);
-        signature = RotateLeft(signature, 13);
-
-        foreach (byte b in dllHash)
-        {
-            signature ^= (uint)(b << 24);
-            signature = RotateLeft(signature, 3);
-            signature ^= (uint)(b << 16);
-            signature = RotateLeft(signature, 3);
-            signature ^= (uint)(b << 8);
-            signature = RotateLeft(signature, 3);
-            signature ^= b;
-            signature = RotateLeft(signature, 5);
-        }
-
-        return signature;
-    }
-
-    private static uint HashString(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return 0;
-
-        uint hash = 2166136261;
-        foreach (byte b in Encoding.UTF8.GetBytes(input))
-        {
-            hash ^= b;
-            hash *= 16777619;
-        }
-        return hash;
-    }
-
-    private static uint RotateLeft(uint value, int bits)
-    {
-        return (value << bits) | (value >> (32 - bits));
-    }
-
-    private static uint ComputeSignatureHash(uint signature)
+    private static uint GenerateSignatureHash(uint signature)
     {
         using var sha256 = SHA256.Create();
         var bytes = BitConverter.GetBytes(signature);

@@ -90,7 +90,7 @@ internal static class ModInfo
     /// <summary>
     /// The signature for the mod dll file.
     /// </summary>
-    internal static readonly ModSignature Signature = new();
+    internal static readonly ModSignature ModSignature = new();
 
     /// <summary>
     /// The assembly associated to this mod.

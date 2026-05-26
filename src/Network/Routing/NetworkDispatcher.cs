@@ -315,11 +315,11 @@ internal static class NetworkDispatcher
     {
         var message = Message<RpcHeaderMessage>.Instance.Deserialize(packetReader);
 
-        if (message.SignatureHash != ModInfo.Signature.SignatureHash)
+        if (message.SignatureHash != ModInfo.ModSignature.SignatureHash)
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.Signature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
             packetReader.Recycle();

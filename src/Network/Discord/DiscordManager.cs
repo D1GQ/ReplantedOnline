@@ -93,9 +93,15 @@ internal static class DiscordManager
         MainThreadDispatcher.Execute(() =>
         {
             _discordLobbySecret = DiscordLobbySecret.Deserialize(args.Secret);
-            if (_discordLobbySecret == null)
+            if (_discordLobbySecret.FormatError)
             {
                 CustomPopupPanel.Show("Disconnected", $"Failed to read secret!");
+                return;
+            }
+
+            if (_discordLobbySecret.ModSignatureHash != ModInfo.ModSignature.SignatureHash)
+            {
+                CustomPopupPanel.Show("Disconnected", $"Failed to read secret due to hash!");
                 return;
             }
 
@@ -274,6 +280,7 @@ internal static class DiscordManager
         _presence.Party.ID = Secrets.CreateFriendlySecret(new());
         _discordLobbySecret = new DiscordLobbySecret()
         {
+            ModSignatureHash = ModInfo.ModSignature.SignatureHash,
             VersionFormatted = ModInfo.MOD_VERSION_FORMATTED,
             GameCode = ReloadedLobby.GetCurrentLobbyGameCode()
         };

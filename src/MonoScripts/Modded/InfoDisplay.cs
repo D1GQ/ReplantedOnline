@@ -139,7 +139,7 @@ internal sealed class InfoDisplay : MonoBehaviour
             sb.AppendLine($" Debug Logger: True");
         }
 
-        sb.AppendLine($" Mod Signature: {ModInfo.Signature.SignatureHash}");
+        sb.AppendLine($" Mod Signature: {ModInfo.ModSignature.SignatureHash}");
 
         sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
 
