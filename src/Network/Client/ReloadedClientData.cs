@@ -72,6 +72,27 @@ internal sealed class ReloadedClientData
     internal PlayerTeam Team;
 
     /// <summary>
+    /// Gets the 1-based index of this client within the lobby's client list.
+    /// </summary>
+    /// <returns>
+    /// The 1-based index of this client if found; otherwise, <see cref="byte.MaxValue"/>.
+    /// </returns>
+    internal byte GetClientIndex()
+    {
+        byte index = 1;
+        foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
+        {
+            if (client == this)
+            {
+                return index;
+            }
+            index++;
+        }
+
+        return byte.MaxValue;
+    }
+
+    /// <summary>
     /// Gets the plants NetClient
     /// </summary>
     internal static ReloadedClientData GetPlantClient()

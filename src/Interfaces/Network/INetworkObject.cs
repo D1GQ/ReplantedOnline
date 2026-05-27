@@ -26,7 +26,7 @@ internal interface INetworkObject
     /// Gets the unique network identifier for this network object instance.
     /// Used to reference this specific object across all connected clients.
     /// </summary>
-    uint NetworkId { get; }
+    NetworkIdentifier NetworkId { get; }
 
     /// <summary>
     /// Gets the Client ID of the client who owns and controls this network object.

@@ -16,5 +16,5 @@ internal interface IRpcReceiver
     /// <summary>
     /// Gets the unique network identifier for this object within the network.
     /// </summary>
-    uint NetworkId { get; }
+    NetworkIdentifier NetworkId { get; }
 }

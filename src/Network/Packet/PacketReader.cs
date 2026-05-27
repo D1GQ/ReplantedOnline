@@ -87,6 +87,14 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
+    /// Reads an NetworkId from the packet.
+    /// </summary>
+    internal NetworkIdentifier ReadNetworkId()
+    {
+        return NetworkIdentifier.Get(ReadUInt());
+    }
+
+    /// <summary>
     /// Reads a NetworkObject from the packet
     /// </summary>
     /// <returns>The decoded NetworkObject value.</returns>
@@ -99,7 +107,7 @@ internal sealed class PacketReader : IPacket
             return null;
         }
 
-        if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(netId, out var networkObj))
+        if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(NetworkIdentifier.Get(netId), out var networkObj))
         {
             return networkObj;
         }

@@ -33,7 +33,7 @@ internal abstract class NetworkComponent : IRpcReceiver
     /// <summary>
     /// Gets the unique network identifier of the parent NetworkObject.
     /// </summary>
-    public uint NetworkId => NetObj.NetworkId;
+    public NetworkIdentifier NetworkId => NetObj.NetworkId;
 
     /// <summary>
     /// Gets or sets the index of this component within its parent NetworkObject's component collection.

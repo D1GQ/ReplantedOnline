@@ -109,7 +109,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// Gets or sets the unique network identifier for this object.
     /// Used to reference this specific object across all connected clients.
     /// </summary>
-    public uint NetworkId { get; set; } = 0;
+    public NetworkIdentifier NetworkId { get; set; } = NetworkIdentifier.Null;
 
     /// <summary>
     /// Gets or sets the dirty bits flag indicating modified properties.

@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Packet.Messages;
 
@@ -15,7 +16,7 @@ internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMe
     /// <summary>
     /// Gets the unique network identifier assigned to the spawned object.
     /// </summary>
-    public uint NetworkId { get; private init; }
+    public NetworkIdentifier NetworkId { get; private init; }
 
     /// <summary>
     /// Gets the bit field indicating which properties have been modified since the last reset or synchronization.
@@ -31,7 +32,7 @@ internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMe
     /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
     public void Serialize(INetworkObject networkObj, bool init, PacketWriter packetWriter)
     {
-        packetWriter.WriteUInt(networkObj.NetworkId);
+        packetWriter.WriteNetworkId(networkObj.NetworkId);
         packetWriter.WriteUInt(networkObj.DirtyBits);
         packetWriter.WriteBool(init);
         networkObj.Serialize(packetWriter, init);
@@ -47,7 +48,7 @@ internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMe
     {
         NetworkObjectSyncMessage message = new()
         {
-            NetworkId = packetReader.ReadUInt(),
+            NetworkId = packetReader.ReadNetworkId(),
             DirtyBits = packetReader.ReadUInt(),
             Init = packetReader.ReadBool()
         };

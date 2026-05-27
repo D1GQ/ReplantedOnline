@@ -84,13 +84,22 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Writes an NetworkId to the packet.
+    /// </summary>
+    /// <param name="networkId">The NetworkId value to write.</param>
+    internal void WriteNetworkId(NetworkIdentifier networkId)
+    {
+        WriteUInt(networkId.Id);
+    }
+
+    /// <summary>
     /// Writes an NetworkObject.
     /// </summary>
     internal void WriteNetworkObject(NetworkObject networkObj)
     {
         if (networkObj != null)
         {
-            WriteUInt(networkObj.NetworkId);
+            WriteUInt(networkObj.NetworkId.Id);
         }
         else
         {

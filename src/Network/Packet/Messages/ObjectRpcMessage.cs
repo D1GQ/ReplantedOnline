@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object.Component;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Packet.Messages;
 
@@ -11,7 +12,7 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
     /// <summary>
     /// Gets the unique network identifier of the target network object.
     /// </summary>
-    public uint NetworkId { get; private init; }
+    public NetworkIdentifier NetworkId { get; private init; }
 
     /// <summary>
     /// Gets the identifier of the RPC method to invoke on the target object.
@@ -38,7 +39,7 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     public void Serialize(IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter)
     {
-        packetWriter.WriteUInt(rpcReceiver.NetworkId);
+        packetWriter.WriteNetworkId(rpcReceiver.NetworkId);
         packetWriter.WriteByte(rpcId);
         if (rpcReceiver is NetworkComponent component)
         {
@@ -58,7 +59,7 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
     /// <returns>A new NetworkObjectRpcMessage instance with deserialized data.</returns>
     public ObjectRpcMessage Deserialize(PacketReader packetReader)
     {
-        uint networkId = packetReader.ReadUInt(); ;
+        NetworkIdentifier networkId = packetReader.ReadNetworkId();
         byte rpcId = packetReader.ReadByte();
         bool isComponent = packetReader.ReadBool();
 

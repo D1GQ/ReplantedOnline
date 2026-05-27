@@ -51,17 +51,13 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Gets or sets the dictionary of all network objects spawned.
     /// </summary>
-    internal Dictionary<uint, NetworkObject> NetworkObjectsSpawned = [];
+    internal Dictionary<NetworkIdentifier, NetworkObject> NetworkObjectsSpawned = [];
 
     /// <summary>
-    /// Network class Id pool for the host client
+    /// Network class Id pool.
     /// </summary>
-    internal NetworkIdPool NetworkIdPoolHost = new(0, 100000);
+    internal NetworkIdentifierPool NetworkIdPool = new();
 
-    /// <summary>
-    /// Network class Id pool for the non host client
-    /// </summary>
-    internal NetworkIdPool NetworkIdPoolNonHost = new(200000, 300000);
 
     /// <summary>
     /// Processes the current list of lobby members, adding new clients and removing disconnected ones.
@@ -106,15 +102,6 @@ internal sealed class ReloadedLobbyData : IDisposable
     }
 
     /// <summary>
-    /// Gets the next available network ID for spawning network objects
-    /// </summary>
-    /// <returns>
-    /// The next available network ID, starting from 0 for hosts and 100000 for clients
-    /// to ensure ID separation between host and client spawned objects
-    /// </returns>
-    internal uint GetNextNetworkId() => ReloadedLobby.AmLobbyHost() ? NetworkIdPoolHost.GetUnusedId() : NetworkIdPoolNonHost.GetUnusedId();
-
-    /// <summary>
     /// Handles the spawning of a network object by adding it to the collection of spawned objects
     /// </summary>
     /// <param name="networkObj">The network object to spawn.</param>
@@ -139,13 +126,13 @@ internal sealed class ReloadedLobbyData : IDisposable
         networkObj.IsOnNetwork = false;
         networkObj.OnDespawn();
         networkObj.OwnerId = ID.Null;
-        networkObj.NetworkId = 0;
 
         if (!networkObj.AmChild)
         {
-            ReloadedLobby.LobbyData.NetworkIdPoolHost.ReleaseId(networkObj.NetworkId);
-            ReloadedLobby.LobbyData.NetworkIdPoolNonHost.ReleaseId(networkObj.NetworkId);
+            ReloadedLobby.LobbyData.NetworkIdPool.Free(networkObj.NetworkId);
         }
+
+        networkObj.NetworkId = NetworkIdentifier.Null;
     }
 
     /// <summary>
@@ -171,8 +158,7 @@ internal sealed class ReloadedLobbyData : IDisposable
             NetworkObjectsSpawned.Remove(kvp.Key);
             if (!child)
             {
-                NetworkIdPoolHost.ReleaseId(kvp.Key);
-                NetworkIdPoolNonHost.ReleaseId(kvp.Key);
+                NetworkIdPool.Free(kvp.Key);
             }
         }
     }
@@ -222,6 +208,8 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal void InitializeData()
     {
+        NetworkIdPool?.Dispose();
+        NetworkIdPool = new();
         LobbyJoinable.Value = true;
         LobbyRestarting.Value = false;
         PickingSides.Value = false;
@@ -297,7 +285,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         AllClients?.Clear();
         NetworkObjectsSpawned?.Clear();
         LobbyCode = null;
-        NetworkIdPoolHost?.Dispose();
-        NetworkIdPoolNonHost?.Dispose();
+        NetworkIdPool?.Dispose();
+        NetworkIdPool = null;
     }
 }
