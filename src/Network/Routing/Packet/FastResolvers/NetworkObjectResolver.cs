@@ -2,7 +2,7 @@
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object;
 
-namespace ReplantedOnline.Network.Packet.FastResolvers;
+namespace ReplantedOnline.Network.Routing.Packet.FastResolvers;
 
 [RegisterFastPacketResolver]
 internal class NetworkObjectResolver : IFastPacketResolver<NetworkObject>

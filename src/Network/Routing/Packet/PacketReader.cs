@@ -10,7 +10,7 @@ using System.Net;
 using System.Text;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Routing.Packet;
 
 /// <summary>
 /// Provides a pooled packet reader for efficient network packet parsing.

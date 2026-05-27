@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Routing.Packet;
 
 /// <summary>
 /// Provides a pooled packet writer for efficient network packet construction.

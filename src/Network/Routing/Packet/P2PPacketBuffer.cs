@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet;
+namespace ReplantedOnline.Network.Routing.Packet;
 
 /// <summary>
 /// Provides a pooled buffer for P2P network packets, handling packet data storage and memory management.

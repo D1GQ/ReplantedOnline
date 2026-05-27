@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a network message for despawning network objects across clients.

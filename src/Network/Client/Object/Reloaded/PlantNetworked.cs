@@ -11,7 +11,7 @@ using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;

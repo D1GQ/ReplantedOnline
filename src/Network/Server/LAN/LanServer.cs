@@ -2,7 +2,7 @@
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Managers.Network;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;

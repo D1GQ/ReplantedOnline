@@ -1,12 +1,12 @@
 ﻿using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a network message header for invoking Remote Procedure Calls (RPCs).
 /// </summary>
-internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHandlerType, PacketWriter>
+internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, PacketHandlerType, PacketWriter>
 {
     /// <summary>
     /// Gets the packet handler type of message this header contains.
@@ -39,11 +39,11 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
     /// </summary>
     /// <param name="packetReader">The packet reader positioned at the start of a header message.</param>
     /// <returns>A new HeaderMessage instance with deserialized data.</returns>
-    public RpcHeaderMessage Deserialize(PacketReader packetReader)
+    public PacketHeaderMessage Deserialize(PacketReader packetReader)
     {
         uint signatureHash = packetReader.UnencryptBuffer();
         PacketHandlerType tag = packetReader.GetTag();
-        RpcHeaderMessage message = new()
+        PacketHeaderMessage message = new()
         {
             HandlerType = tag,
             SignatureHash = signatureHash

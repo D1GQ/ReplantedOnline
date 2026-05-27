@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Provides a singleton instance accessor for message types.

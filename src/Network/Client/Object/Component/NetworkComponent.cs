@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Client.Object.Component;

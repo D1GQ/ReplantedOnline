@@ -4,7 +4,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Network.Packet.FastResolvers;
+namespace ReplantedOnline.Network.Routing.Packet.FastResolvers;
 
 [RegisterFastPacketResolver]
 internal class PlantResolver : IFastPacketResolver<Plant>

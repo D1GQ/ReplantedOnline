@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on a global handler.

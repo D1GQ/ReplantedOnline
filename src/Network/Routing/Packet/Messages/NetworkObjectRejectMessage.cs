@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a message for rejecting a network object spawn request from a client.

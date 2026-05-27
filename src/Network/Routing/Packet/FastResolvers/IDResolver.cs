@@ -2,7 +2,7 @@
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.FastResolvers;
+namespace ReplantedOnline.Network.Routing.Packet.FastResolvers;
 
 [RegisterFastPacketResolver]
 internal class IDResolver : IFastPacketResolver<ID>

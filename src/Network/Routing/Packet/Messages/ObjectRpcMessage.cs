@@ -2,7 +2,7 @@
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on IRpcReceivers.

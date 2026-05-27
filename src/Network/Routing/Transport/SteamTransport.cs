@@ -2,7 +2,7 @@
 using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;

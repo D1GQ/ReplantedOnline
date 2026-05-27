@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
 
-namespace ReplantedOnline.Network.Packet.FastResolvers;
+namespace ReplantedOnline.Network.Routing.Packet.FastResolvers;
 
 [RegisterFastPacketResolver]
 internal class PacketWriterResolver : IFastPacketResolver<IPacket>

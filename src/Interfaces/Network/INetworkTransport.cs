@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Interfaces.Network;

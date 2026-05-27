@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes.Network;

@@ -2,7 +2,7 @@
 using ReplantedOnline.Interfaces.Network;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Packet.FastResolvers;
+namespace ReplantedOnline.Network.Routing.Packet.FastResolvers;
 
 [RegisterFastPacketResolver]
 internal class IntResolver : IFastPacketResolver<int>

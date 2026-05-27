@@ -7,8 +7,8 @@ using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
-using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.MelonLoader;
 

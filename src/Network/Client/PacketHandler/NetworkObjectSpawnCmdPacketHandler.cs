@@ -5,9 +5,9 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Network.Client.Object.Reloaded;
-using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.Packet.Messages;
 using ReplantedOnline.Network.Routing;
+using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Routing.Packet.Messages;
 using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Client.PacketHandler;

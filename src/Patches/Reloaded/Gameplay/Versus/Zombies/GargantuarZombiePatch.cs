@@ -8,7 +8,7 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;

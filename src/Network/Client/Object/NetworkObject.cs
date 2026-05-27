@@ -5,8 +5,8 @@ using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Client.Object.Component;
 using ReplantedOnline.Network.Client.Object.Reloaded;
-using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Routing;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Client.Object;

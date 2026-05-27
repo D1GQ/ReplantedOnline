@@ -2,7 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;

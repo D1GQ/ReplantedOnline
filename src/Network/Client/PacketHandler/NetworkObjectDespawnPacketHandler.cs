@@ -2,8 +2,8 @@
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Routing.Packet.Messages;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Collections;
 

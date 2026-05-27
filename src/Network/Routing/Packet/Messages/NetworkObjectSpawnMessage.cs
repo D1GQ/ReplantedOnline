@@ -4,7 +4,7 @@ using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a message for spawning network objects across clients.

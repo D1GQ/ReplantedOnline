@@ -5,8 +5,8 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Network.Packet;
-using ReplantedOnline.Network.Packet.Messages;
+using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Routing.Packet.Messages;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using ReplantedOnline.Utilities.Modded;
@@ -156,7 +156,7 @@ internal static class NetworkDispatcher
         if (targetId.GetNetClient().AmLocal) return;
 
         var packet = PacketWriter.Get();
-        Message<RpcHeaderMessage>.Instance.Serialize(tag, payload, packet);
+        Message<PacketHeaderMessage>.Instance.Serialize(tag, payload, packet);
 
         if (ReloadedLobby.IsPlayerInOurLobby(targetId))
         {
@@ -179,7 +179,7 @@ internal static class NetworkDispatcher
     internal static void SendPacket(PacketWriter payload, bool receiveLocally, PacketHandlerType tag, PacketChannel packetChannel, params ID[] ignoredClientIds)
     {
         var packet = PacketWriter.Get();
-        Message<RpcHeaderMessage>.Instance.Serialize(tag, payload, packet);
+        Message<PacketHeaderMessage>.Instance.Serialize(tag, payload, packet);
 
         int sentCount = 0;
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
@@ -339,7 +339,7 @@ internal static class NetworkDispatcher
     /// <param name="local">Whether if this packet is from the local client.</param>
     internal static void Streamline(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        var message = Message<RpcHeaderMessage>.Instance.Deserialize(packetReader);
+        var message = Message<PacketHeaderMessage>.Instance.Deserialize(packetReader);
 
         if (message.SignatureHash != ModInfo.ModSignature.SignatureHash)
         {

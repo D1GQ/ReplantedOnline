@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Structs.Network;
 
-namespace ReplantedOnline.Network.Packet.Messages;
+namespace ReplantedOnline.Network.Routing.Packet.Messages;
 
 /// <summary>
 /// Represents a message used to synchronize the state of a networked object across clients, including its network

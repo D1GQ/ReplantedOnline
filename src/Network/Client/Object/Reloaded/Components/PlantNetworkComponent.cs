@@ -1,6 +1,6 @@
 ﻿using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Network.Client.Object.Component;
-using ReplantedOnline.Network.Packet;
+using ReplantedOnline.Network.Routing.Packet;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
