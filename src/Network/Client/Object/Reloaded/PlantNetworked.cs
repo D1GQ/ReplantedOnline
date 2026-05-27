@@ -262,10 +262,10 @@ internal sealed class PlantNetworked : NetworkObject
         if (init)
         {
             // Set spawn info
+            packetWriter.WriteEnum(SeedType);
+            packetWriter.WriteEnum(SpawnType);
             packetWriter.WriteInt(GridX);
             packetWriter.WriteInt(GridY);
-            packetWriter.WriteEnum(SpawnType);
-            packetWriter.WriteEnum(SeedType);
 
             LogicComponent.Serialize(packetWriter, init);
 
@@ -288,10 +288,10 @@ internal sealed class PlantNetworked : NetworkObject
         if (init)
         {
             // Read spawn info
+            SeedType = packetReader.ReadEnum<SeedType>();
+            SpawnType = packetReader.ReadEnum<SpawnType>();
             GridX = packetReader.ReadInt();
             GridY = packetReader.ReadInt();
-            SpawnType = packetReader.ReadEnum<SpawnType>();
-            SeedType = packetReader.ReadEnum<SeedType>();
 
             var plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;
             _p.SetTarget(() => plant?.mController?.m_plant);

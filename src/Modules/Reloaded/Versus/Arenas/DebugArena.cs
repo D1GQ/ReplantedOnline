@@ -80,25 +80,23 @@ internal sealed class DebugArena : IArena, IArenaData
                     VersusGameplayManager.EndGame(Instances.GameplayActivity.m_boardOffset.position, PlayerTeam.Zombies);
                 }
             }
-        }
 
-        if (!VersusState.AmPlantSide) return;
+            if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
+            {
+                Mode = Mode.Next();
+                SetMode();
+            }
 
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
-        {
-            Mode = Mode.Next();
-            SetMode();
-        }
+            if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
+            {
+                Mode = Mode.Previous();
+                SetMode();
+            }
 
-        if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
-        {
-            Mode = Mode.Previous();
-            SetMode();
-        }
-
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame)
-        {
-            SetMode();
+            if (Keyboard.current.downArrowKey.wasPressedThisFrame)
+            {
+                SetMode();
+            }
         }
     }
 
@@ -107,7 +105,7 @@ internal sealed class DebugArena : IArena, IArenaData
 
     private void SetMode()
     {
-        if (!VersusState.AmPlantSide) return;
+        if (!ReloadedLobby.AmLobbyHost()) return;
 
         foreach (var networkobject in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
         {

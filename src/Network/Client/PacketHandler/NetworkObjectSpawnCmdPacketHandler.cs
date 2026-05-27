@@ -1,6 +1,10 @@
-﻿using ReplantedOnline.Attributes.Register;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Network.Client.Object;
+using ReplantedOnline.Network.Client.Object.Reloaded;
 using ReplantedOnline.Network.Packet;
 using ReplantedOnline.Network.Packet.Messages;
 using ReplantedOnline.Network.Routing;
@@ -19,7 +23,7 @@ internal sealed class NetworkObjectSpawnCmdPacketHandler : IPacketHandler
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var message = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packet);
 
-        if (Validate(sender, message))
+        if (Validate(sender, message, packet))
         {
             NetworkDispatcher.SendPacket(PacketWriter.Get(packetReader.GetByteBuffer()), true, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main, sender.ClientId);
             ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacketHandler), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
@@ -30,11 +34,37 @@ internal sealed class NetworkObjectSpawnCmdPacketHandler : IPacketHandler
         }
     }
 
-    private static bool Validate(ReloadedClientData sender, NetworkObjectSpawnMessage message)
+    private static bool Validate(ReloadedClientData sender, NetworkObjectSpawnMessage message, PacketReader packet)
     {
         if (sender.GetClientIndex() != message.NetworkId.ClientIndex)
         {
             return false;
+        }
+
+        if (NetworkObject.NetworkPrefabs.TryGetValue(message.PrefabId, out var prefab))
+        {
+            if (sender.Team is PlayerTeam.Plants)
+            {
+                if (prefab is ZombieNetworked)
+                {
+                    ZombieType zombieType = packet.ReadEnum<ZombieType>();
+                    if (zombieType is not (ZombieType.Imp or ZombieType.BackupDancer))
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (sender.Team is PlayerTeam.Zombies)
+            {
+                if (prefab is PlantNetworked)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         return true;

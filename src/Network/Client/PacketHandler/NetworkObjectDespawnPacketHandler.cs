@@ -29,7 +29,7 @@ internal sealed class NetworkObjectDespawnPacketHandler : IPacketHandler
             {
                 if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
                 {
-                    if (networkObj.OwnerId == sender.ClientId)
+                    if (networkObj.OwnerId == sender.ClientId || sender.AmHost)
                     {
                         if (!networkObj.AmChild)
                         {

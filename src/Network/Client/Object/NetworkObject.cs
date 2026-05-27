@@ -378,7 +378,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
     public void DespawnAndDestroy(bool waitToBeReady = false)
     {
-        if (!AmOwner || AmChild) return;
+        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild) return;
 
         Despawn(waitToBeReady);
         Destroy(gameObject);
@@ -391,7 +391,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
     public void Despawn(bool waitToBeReady = false)
     {
-        if (!AmOwner || AmChild) return;
+        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild) return;
 
         if (IsOnNetwork)
         {

@@ -23,7 +23,7 @@ internal static class FlagZombiePatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            if (ReloadedLobby.AmLobbyHost())
+            if (VersusState.AmZombieSide)
             {
                 if (spawnInterval.Execute())
                 {
