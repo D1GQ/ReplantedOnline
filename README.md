@@ -56,29 +56,20 @@ git clone https://github.com/D1GQ/ReplantedOnline.git
 cd ReplantedOnline
 ```
 
-### Setup References
+### Setup
 
-Run the reference setup script:
+Run the setup script to automatically configure all required dependencies:
 
 ```bat
-setup_references.bat
+setup.bat
 ```
 
-When prompted, enter your game's `MelonLoader` directory.
+When prompted, enter your game's MelonLoader directory.
 
 Example:
-
 ```text
 C:\Program Files (x86)\Steam\steamapps\common\PVZ Replanted\MelonLoader
 ```
-
-After references are installed, run:
-
-```bat
-setup_dependencies.bat
-```
-
-This downloads required external dependencies automatically.
 
 ### Build
 
