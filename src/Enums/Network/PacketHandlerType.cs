@@ -2,7 +2,6 @@
 
 /// <summary>
 /// Identifies the type of network packet for proper routing and handling.
-/// Used to distinguish between different packet categories in the networking system.
 /// </summary>
 internal enum PacketHandlerType
 {
@@ -32,9 +31,19 @@ internal enum PacketHandlerType
     Rpc,
 
     /// <summary>
-    /// Packet used for spawning a network object.
+    /// Packet used for requesting host to spawn a network object.
+    /// </summary>
+    NetworkObjectSpawnCmd,
+
+    /// <summary>
+    /// Packet used for host to spawn a network object.
     /// </summary>
     NetworkObjectSpawn,
+
+    /// <summary>
+    /// Packet used for host rejecting network objects spawn request.
+    /// </summary>
+    NetworkObjectReject,
 
     /// <summary>
     /// Packet used for despawning a network object.

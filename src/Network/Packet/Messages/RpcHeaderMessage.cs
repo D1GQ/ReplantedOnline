@@ -11,7 +11,7 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
     /// <summary>
     /// Gets the packet handler type of message this header contains.
     /// </summary>
-    public PacketHandlerType handlerType { get; private init; }
+    public PacketHandlerType HandlerType { get; private init; }
 
     /// <summary>
     /// Gets the signature hash used for validating message integrity and origin.
@@ -45,7 +45,7 @@ internal readonly struct RpcHeaderMessage : IMessage<RpcHeaderMessage, PacketHan
         PacketHandlerType tag = packetReader.GetTag();
         RpcHeaderMessage message = new()
         {
-            handlerType = tag,
+            HandlerType = tag,
             SignatureHash = signatureHash
         };
 

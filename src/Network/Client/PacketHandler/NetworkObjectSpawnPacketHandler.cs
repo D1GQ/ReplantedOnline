@@ -17,6 +17,8 @@ internal sealed class NetworkObjectSpawnPacketHandler : IPacketHandler
     /// <inheritdoc/>
     public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
+        if (!sender.AmHost) return;
+
         MelonCoroutines.Start(CoWaitForNetworkSpawn(sender, packetReader));
     }
 

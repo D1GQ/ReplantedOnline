@@ -123,6 +123,16 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
+    public override void OnRejected()
+    {
+        if (_Zombie == null) return;
+
+        if (!_Zombie.mDead)
+        {
+            _Zombie.DieNoLootOriginal();
+        }
+    }
+
     public override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();

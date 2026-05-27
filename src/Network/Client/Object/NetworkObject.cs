@@ -192,6 +192,11 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     }
 
     /// <summary>
+    /// Called when the network object has been rejected by host.
+    /// </summary>
+    public virtual void OnRejected() { }
+
+    /// <summary>
     /// Called when the network object is being despawned/removed on the client side.
     /// </summary>
     public virtual void OnDespawn() { }

@@ -106,6 +106,16 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
+    public override void OnRejected()
+    {
+        if (_Plant == null) return;
+
+        if (!_Plant.mDead)
+        {
+            _Plant?.DieOriginal();
+        }
+    }
+
     public override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();

@@ -58,7 +58,31 @@ internal static class NetworkDispatcher
         Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packet);
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
-        SendPacket(packet, false, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main);
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            SendPacket(packet, false, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main);
+        }
+        else
+        {
+            SendPacketTo(ReloadedLobby.LobbyData.HostId, packet, PacketHandlerType.NetworkObjectSpawnCmd, PacketChannel.Main);
+        }
+        packet.Recycle();
+    }
+
+    /// <summary>
+    /// Rejects a network object spawn request and notifies the requesting client.
+    /// </summary>
+    /// <param name="networkId">The network identifier of the object being rejected.</param>
+    /// <param name="owner">The ID of the owner who requested the spawn.</param>
+    internal static void RejectNetworkObject(NetworkIdentifier networkId, ID owner)
+    {
+        if (owner.GetNetClient().AmLocal) return;
+
+        var packet = PacketWriter.Get();
+        Message<NetworkObjectRejectMessage>.Instance.Serialize(networkId, packet);
+
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Reject Network Object with ID: {networkId}, Owner: {owner}");
+        SendPacketTo(owner, packet, PacketHandlerType.NetworkObjectReject, PacketChannel.Main);
         packet.Recycle();
     }
 
@@ -151,7 +175,8 @@ internal static class NetworkDispatcher
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    internal static void SendPacket(PacketWriter payload, bool receiveLocally, PacketHandlerType tag, PacketChannel packetChannel)
+    /// <param name="ignoredClientIds">Optional array of client IDs that should not receive this packet.</param>
+    internal static void SendPacket(PacketWriter payload, bool receiveLocally, PacketHandlerType tag, PacketChannel packetChannel, params ID[] ignoredClientIds)
     {
         var packet = PacketWriter.Get();
         Message<RpcHeaderMessage>.Instance.Serialize(tag, payload, packet);
@@ -160,6 +185,7 @@ internal static class NetworkDispatcher
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
             if (client.AmLocal) continue;
+            if (ignoredClientIds.Contains(client.ClientId)) continue;
 
             if (ReloadedLobby.IsPlayerInOurLobby(client.ClientId))
             {
@@ -319,7 +345,7 @@ internal static class NetworkDispatcher
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
             packetReader.Recycle();
@@ -328,12 +354,12 @@ internal static class NetworkDispatcher
 
         if (!local)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.handlerType} packet from {sender?.Name ?? "Unknown"}");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.HandlerType} packet from {sender?.Name ?? "Unknown"}");
         }
 
         try
         {
-            switch (message.handlerType)
+            switch (message.HandlerType)
             {
                 case PacketHandlerType.None:
                     if (!local)
@@ -364,9 +390,9 @@ internal static class NetworkDispatcher
                     }
                     break;
                 default:
-                    if (!IPacketHandler.HandlePacket(message.handlerType, sender, packetReader, local))
+                    if (!IPacketHandler.HandlePacket(message.HandlerType, sender, packetReader, local))
                     {
-                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Unknown packet tag: {message.handlerType}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Unknown packet tag: {message.HandlerType}");
                     }
                     break;
             }
