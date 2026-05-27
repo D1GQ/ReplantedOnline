@@ -83,6 +83,11 @@ internal class ReplantedOnlineMod : MelonMod
 
     public override void OnApplicationQuit()
     {
+        if (ReloadedLobby.AmInLobby())
+        {
+            ReloadedLobby.LeaveLobby();
+        }
+
         DiscordManager.Dispose();
     }
 
