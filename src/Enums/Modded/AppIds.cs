@@ -6,7 +6,13 @@
 internal enum AppIds : uint
 {
     /// <summary>
-    /// Steam App ID for the Plants vs. Zombies: Replanted.
+    /// Steam App ID for Plants vs. Zombies: Replanted.
     /// </summary>
-    PVZ_Replanted = 3654560,
+    Replanted = 3654560,
+
+    /// <summary>
+    /// Steam App ID for Space Wars.
+    /// True value is 480, the higher value is to have a lower order in the config menu!
+    /// </summary>
+    SpaceWars = 999999999
 }
