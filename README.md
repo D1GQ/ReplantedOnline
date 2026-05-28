@@ -107,10 +107,10 @@ in Visual Studio and build the solution in `Release` configuration.
 - `src/Network/Server/LAN` — contains LAN testing server logic
 
 #### Serialization
-- `src/Network/Packet/PacketWriter.cs` — handles binary serialization
-- `src/Network/Packet/PacketReader.cs` — handles binary deserialization
-- `src/Network/Packet/Messages` — contains serialized packet message types
-- `src/Network/Packet/FastResolvers` — contains fast serialization resolvers
+- `src/Network/Routing/Packet/PacketWriter.cs` — handles binary serialization
+- `src/Network/Routing/Packet/PacketReader.cs` — handles binary deserialization
+- `src/Network/Routing/Packet/Messages` — contains serialized packet message types
+- `src/Network/Routing/Packet/FastResolvers` — contains fast serialization resolvers
 
 ### Harmony Patches
 #### Other
