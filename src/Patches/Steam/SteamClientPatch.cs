@@ -42,7 +42,7 @@ internal static class SteamClientPatch
 
         try
         {
-            if (appId == AppIds.SpaceWars)
+            if (appId == AppIds.Spacewar)
             {
                 appId = (AppIds)480;
             }

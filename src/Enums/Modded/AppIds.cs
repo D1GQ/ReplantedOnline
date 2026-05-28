@@ -11,8 +11,8 @@ internal enum AppIds : uint
     Replanted = 3654560,
 
     /// <summary>
-    /// Steam App ID for Space Wars.
+    /// Steam App ID for Spacewar.
     /// True value is 480, the higher value is to have a lower order in the config menu!
     /// </summary>
-    SpaceWars = 999999999
+    Spacewar = 999999999
 }
