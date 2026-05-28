@@ -47,10 +47,10 @@ internal static class Il2CppInteropExceptionLogPatch
         }
     }
 
-    internal static void Patch()
+    internal static void Patch(HarmonyLib.Harmony harmony)
     {
-        UnpatchMelonLoaderExceptionLog(ReplantedOnlineMod.harmony);
-        InstallExceptionLog(ReplantedOnlineMod.harmony);
+        UnpatchMelonLoaderExceptionLog(harmony);
+        InstallExceptionLog(harmony);
     }
 
     private static void UnpatchMelonLoaderExceptionLog(HarmonyLib.Harmony Harmony)

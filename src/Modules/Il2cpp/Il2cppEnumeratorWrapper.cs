@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Injection;
+using MelonLoader;
 using System.Collections;
 
 namespace ReplantedOnline.Modules.Il2cpp;
@@ -7,21 +8,9 @@ namespace ReplantedOnline.Modules.Il2cpp;
 /// A wrapper that converts a managed IEnumerator to an Il2Cpp IEnumerator for interop compatibility.
 /// Handles type conversion and exception logging for coroutines.
 /// </summary>
+[RegisterTypeInIl2CppWithInterfaces(typeof(Il2CppSystem.Collections.IEnumerator))]
 internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
 {
-    /// <summary>
-    /// Registers this wrapper type with Il2Cpp for runtime injection.
-    /// Must be called before any instances are created.
-    /// </summary>
-    internal static void Register()
-    {
-        ClassInjector.RegisterTypeInIl2Cpp<Il2cppEnumeratorWrapper>(new()
-        {
-            LogSuccess = true,
-            Interfaces = new Type[] { typeof(Il2CppSystem.Collections.IEnumerator) }
-        });
-    }
-
     private readonly IEnumerator enumerator;
 
     /// <summary>

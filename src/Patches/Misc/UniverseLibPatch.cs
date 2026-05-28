@@ -6,14 +6,14 @@ namespace ReplantedOnline.Patches.Misc;
 [HarmonyPatch]
 internal static class UniverseLibPatch
 {
-    internal static void Patch()
+    internal static void Patch(HarmonyLib.Harmony harmony)
     {
         // Fix constant "Memory Access Violations" on older versions of Unity Explorer!
         var loadMethod = AccessTools.Method("UniverseLib.AssetBundle:LoadFromMemory", [typeof(byte[]), typeof(uint)]);
 
         var prefixMethod = AccessTools.Method(typeof(UniverseLibPatch), nameof(AssetBundle_LoadFromMemory_Prefix));
 
-        ReplantedOnlineMod.harmony.Patch(loadMethod, prefix: new HarmonyMethod(prefixMethod));
+        harmony.Patch(loadMethod, prefix: new HarmonyMethod(prefixMethod));
     }
 
     private static bool AssetBundle_LoadFromMemory_Prefix(byte[] binary, uint crc, ref object __result)

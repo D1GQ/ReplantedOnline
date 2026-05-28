@@ -3,7 +3,6 @@ using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Managers.Modded;
-using ReplantedOnline.Modules.Il2cpp;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
@@ -17,56 +16,114 @@ using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Misc;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
 
 namespace ReplantedOnline;
 
 internal class ReplantedOnlineMod : MelonMod
 {
-    internal static HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
+    private static readonly HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
 
     internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""));
     internal static MelonLogger.Instance DebugLogger { get; } = new(ModInfo.MOD_NAME.Replace(" ", "") + "Debug");
 
+    internal static bool LoadFailed { get; private set; }
+
+    internal ReplantedOnlineMod()
+    {
+        bool hasVer = false;
+        foreach (var ver in ModInfo.Replanted.SUPPORTED_VERSIONS.Split(", "))
+        {
+            if (Application.version == ver)
+            {
+                hasVer = true;
+                break;
+            }
+
+            if (ver.EndsWith("*") && Application.version.StartsWith(ver[..^1]))
+            {
+                hasVer = true;
+                break;
+            }
+        }
+
+        if (!hasVer)
+        {
+            Logger.Error(typeof(ReplantedOnlineMod), $"Plants vs. Zombies: Replanted v{Application.version} does not support Replanted Online v{ModInfo.MOD_VERSION_FORMATTED}");
+            LoadFailed = true;
+        }
+    }
+
     public override void OnInitializeMelon()
     {
-        DependencyResolver.Initialize();
-        harmony.PatchAll();
-        DebugLoggerPatch.Patch();
-        Il2CppInteropExceptionLogPatch.Patch();
-        DetourHookAttribute.InstallAll();
-        NativeDetourHook.InstallAll();
-        AutoRegisterAttribute.RegisterAll();
-        Il2cppEnumeratorWrapper.Register();
-        NetworkObject.SetupPrefabs();
-        RpcHandlerAttribute.Initialize();
-        BloomEngineManager.InitializeBloom(this);
-        MonoSingleton<InfoDisplay>.CreateInstance();
-        MonoSingleton<GithubAPI>.CreateInstance();
-        AudioManager.Initialize();
-        DiscordManager.Initialize();
-        Application.runInBackground = true;
+        if (LoadFailed == true) return;
+
+        try
+        {
+            DependencyResolver.Initialize();
+            harmony.PatchAll();
+            DebugLoggerPatch.Patch(harmony);
+            Il2CppInteropExceptionLogPatch.Patch(harmony);
+            DetourHookAttribute.InstallAll();
+            NativeDetourHook.InstallAll();
+            AutoRegisterAttribute.RegisterAll();
+            NetworkObject.InitializePrefabs();
+            RpcHandlerAttribute.Initialize();
+            BloomEngineManager.InitializeBloom(this);
+            MonoSingleton<InfoDisplay>.CreateInstance();
+            MonoSingleton<GithubAPI>.CreateInstance();
+            AudioManager.Initialize();
+            DiscordManager.Initialize();
+            Application.runInBackground = true;
+        }
+        catch (Exception ex)
+        {
+            LoadFailed = true;
+            Logger.BigError(typeof(ReplantedOnlineMod), ex.ToString());
+        }
     }
 
     public override void OnLateInitializeMelon()
     {
+        if (LoadFailed == true) return;
+
         // Fix constant "Memory Access Violations" on older versions of Unity Explorer!
         // I personally prefer using this older version because it allows to access custom classes https://github.com/sinai-dev/UnityExplorer
-        UniverseLibPatch.Patch();
+        try
+        {
+            UniverseLibPatch.Patch(harmony);
+        }
+        catch (Exception ex)
+        {
+            LoadFailed = true;
+            Logger.BigError(typeof(ReplantedOnlineMod), ex.ToString());
+        }
     }
 
     private static void OnInitializeMainMenu()
     {
-        LevelEntries.Initialize();
-        SeedPacketDefinitions.Initialize();
-        ContentManager.Initialize();
-        MonoSingleton<MainThreadDispatcher>.CreateInstance();
-        ReloadedLobby.Initialize();
-        DiscordManager.ReadyToJoin();
+        if (LoadFailed == true) return;
+
+        try
+        {
+            LevelEntries.Initialize();
+            SeedPacketDefinitions.Initialize();
+            ContentManager.Initialize();
+            MonoSingleton<MainThreadDispatcher>.CreateInstance();
+            ReloadedLobby.Initialize();
+            DiscordManager.ReadyToJoin();
+        }
+        catch (Exception ex)
+        {
+            LoadFailed = true;
+            Logger.BigError(typeof(ReplantedOnlineMod), ex.ToString());
+        }
     }
 
     public override void OnUpdate()
     {
+        if (LoadFailed == true) return;
         if (!loaded) return;
 
         DiscordManager.Update();

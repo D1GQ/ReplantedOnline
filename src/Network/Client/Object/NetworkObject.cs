@@ -404,7 +404,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// This method sets up predefined prefab templates that can be instantiated and synchronized
     /// between clients during multiplayer sessions.
     /// </summary>
-    internal static void SetupPrefabs()
+    internal static void InitializePrefabs()
     {
         CreateNetworkPrefab<PlantNetworked>(1);
         CreateNetworkPrefab<ZombieNetworked>(2);

@@ -12,13 +12,13 @@ internal static class DebugLoggerPatch
         // AccessTools.Method(typeof(CharacterAnimationController), nameof(CharacterAnimationController.PlayAnimation)),
     ];
 
-    internal static void Patch()
+    internal static void Patch(HarmonyLib.Harmony harmony)
     {
         foreach (var method in Targets)
         {
             if (method != null)
             {
-                ReplantedOnlineMod.harmony.Patch(method, postfix: new HarmonyMethod(typeof(DebugLoggerPatch), nameof(Postfix)));
+                harmony.Patch(method, postfix: new HarmonyMethod(typeof(DebugLoggerPatch), nameof(Postfix)));
             }
         }
     }

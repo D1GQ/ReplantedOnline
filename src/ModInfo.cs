@@ -110,7 +110,7 @@ internal static class ModInfo
     /// <summary>
     /// Contains constants related to Plants vs. Zombies™: Replanted game information.
     /// </summary>
-    internal static class PVZR
+    internal static class Replanted
     {
         /// <summary>
         /// The name of the company that developed the game.
@@ -121,6 +121,11 @@ internal static class ModInfo
         /// The official name of the game.
         /// </summary>
         internal const string GAME = "PvZ Replanted";
+
+        /// <summary>
+        /// The current supported versions, separate by ",".
+        /// </summary>
+        internal const string SUPPORTED_VERSIONS = "1.5.1*";
     }
 
     /// <summary>
