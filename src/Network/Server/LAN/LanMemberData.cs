@@ -60,7 +60,7 @@ internal sealed class LanMemberData
     /// <param name="packetWriter">The packet writer to write to.</param>
     internal void SerializeData(PacketWriter packetWriter)
     {
-        packetWriter.WriteInt(Data.Count);
+        packetWriter.WritePackedInt(Data.Count);
         foreach (var data in Data)
         {
             packetWriter.WriteString(data.Key);
@@ -75,7 +75,7 @@ internal sealed class LanMemberData
     internal void DeserializeData(PacketReader packetReader)
     {
         Dictionary<string, string> data = [];
-        int dataCount = packetReader.ReadInt();
+        int dataCount = packetReader.ReadPackedInt();
         for (int i = 0; i < dataCount; i++)
         {
             string key = packetReader.ReadString();

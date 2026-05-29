@@ -69,7 +69,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         if (init) return;
 
-        packetWriter.WriteInt(Net._Zombie.mRow);
+        packetWriter.WritePackedInt(Net._Zombie.mRow);
         packetWriter.WriteFloat(Net._Zombie.mVelX);
         packetWriter.WriteFloat(Net._Zombie.mPosX);
     }
@@ -80,7 +80,7 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         if (!Net.AmOwner)
         {
-            Net._Zombie.mRow = packetReader.ReadInt();
+            Net._Zombie.mRow = packetReader.ReadPackedInt();
             Net._Zombie.mVelX = packetReader.ReadFloat();
             Net._Zombie.UpdateAnimSpeed();
             var posX = packetReader.ReadFloat();

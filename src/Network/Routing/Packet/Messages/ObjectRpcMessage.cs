@@ -44,7 +44,7 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
         if (rpcReceiver is NetworkComponent component)
         {
             packetWriter.WriteBool(true);
-            packetWriter.WriteInt(component.Index);
+            packetWriter.WritePackedInt(component.Index);
         }
         else
         {
@@ -65,7 +65,7 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
 
         int componentIndex;
         if (isComponent)
-            componentIndex = packetReader.ReadInt();
+            componentIndex = packetReader.ReadPackedInt();
         else
             componentIndex = -1;
 

@@ -19,7 +19,7 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(seedType);
-        packetWriter.WriteInt(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets.First(packet => packet.mPacketType == seedType).Index);
+        packetWriter.WritePackedInt(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets.First(packet => packet.mPacketType == seedType).Index);
         NetworkDispatcher.SendRpc(RpcType.SyncSeedPacket, packetWriter);
         packetWriter.Recycle();
     }
@@ -29,7 +29,7 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
     {
         // Read the seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();
-        var seedIndex = packetReader.ReadInt();
+        var seedIndex = packetReader.ReadPackedInt();
         if (Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count < seedIndex) return;
         var seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[seedIndex];
 

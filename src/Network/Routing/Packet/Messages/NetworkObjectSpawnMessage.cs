@@ -50,7 +50,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
         networkObj.Serialize(packetWriter, true);
 
         var count = Math.Min(networkObj.ChildNetworkObjects.Count, ReplantedOnlineMod.Constants.Network.MAX_NETWORK_CHILDREN - 1);
-        packetWriter.WriteInt(count);
+        packetWriter.WritePackedInt(count);
         if (count > 0)
         {
             var nextId = networkObj.NetworkId;
@@ -92,7 +92,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
         networkObj.Deserialize(packetReader, true);
         networkObj.gameObject.name = networkObj.GetObjectName();
 
-        int childCount = packetReader.ReadInt();
+        int childCount = packetReader.ReadPackedInt();
         if (childCount > 0)
         {
             var nextId = networkObj.NetworkId;

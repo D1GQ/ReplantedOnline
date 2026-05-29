@@ -175,6 +175,37 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Writes a 4-byte signed integer to the packet using 7-bit packed encoding (LEB128).
+    /// </summary>
+    /// <param name="value">The integer value to write.</param>
+    internal void WritePackedInt(int value)
+    {
+        if (value < 0)
+            throw new ArgumentException("Use WriteInt() for negative values");
+
+        WritePackedUInt((uint)value);
+    }
+
+    /// <summary>
+    /// Writes a 4-byte unsigned integer to the packet using 7-bit packed encoding (LEB128).
+    /// </summary>
+    /// <param name="value">The unsigned integer value to write.</param>
+    internal void WritePackedUInt(uint value)
+    {
+        do
+        {
+            byte b = (byte)(value & 0xFF);
+            if (value >= 0x80)
+            {
+                b |= 0x80;
+            }
+
+            WriteByte(b);
+            value >>= 7;
+        } while (value > 0);
+    }
+
+    /// <summary>
     /// Writes a 4-byte floating-point value to the packet.
     /// </summary>
     /// <param name="value">The float value to write.</param>
@@ -207,7 +238,7 @@ internal sealed class PacketWriter : IPacket
     /// <param name="bytes">The byte array to write.</param>
     internal void WriteBytes(byte[] bytes)
     {
-        WriteInt(bytes.Length);
+        WritePackedInt(bytes.Length);
         _data.AddRange(bytes);
     }
 

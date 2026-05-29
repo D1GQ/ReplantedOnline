@@ -140,7 +140,7 @@ internal sealed class LanServerData : IDisposable
         string hostAddress = HostAddress?.ToString() ?? "127.0.0.1";
         packetWriter.WriteString(hostAddress);
 
-        packetWriter.WriteInt(Data.Count);
+        packetWriter.WritePackedInt(Data.Count);
         foreach (var data in Data)
         {
             packetWriter.WriteString(data.Key);
@@ -165,7 +165,7 @@ internal sealed class LanServerData : IDisposable
         }
 
         Dictionary<string, string> data = [];
-        int dataCount = packetReader.ReadInt();
+        int dataCount = packetReader.ReadPackedInt();
         for (int i = 0; i < dataCount; i++)
         {
             string key = packetReader.ReadString();

@@ -213,6 +213,49 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
+    /// Reads a variable-length 32-bit signed integer encoded with 7-bit packing (LEB128).
+    /// </summary>
+    /// <returns>The decoded signed integer value.</returns>
+    /// <exception cref="InvalidDataException">Thrown when the encoded length exceeds the remaining packet data.</exception>
+    public int ReadPackedInt()
+    {
+        return (int)ReadPackedUInt();
+    }
+
+    /// <summary>
+    /// Reads a variable-length 32-bit unsigned integer encoded with 7-bit packing (LEB128).
+    /// </summary>
+    /// <returns>The decoded unsigned integer value.</returns>
+    /// <exception cref="InvalidDataException">Thrown when the encoded length exceeds the remaining packet data.</exception>
+    public uint ReadPackedUInt()
+    {
+        bool readMore = true;
+        int shift = 0;
+        uint output = 0;
+
+        while (readMore)
+        {
+            if (Remaining < 1) throw new InvalidDataException($"Read length is longer than message length.");
+
+            byte b = ReadByte();
+            if (b >= 0x80)
+            {
+                readMore = true;
+                b ^= 0x80;
+            }
+            else
+            {
+                readMore = false;
+            }
+
+            output |= (uint)(b << shift);
+            shift += 7;
+        }
+
+        return output;
+    }
+
+    /// <summary>
     /// Reads a 4-byte floating-point value from the packet.
     /// </summary>
     /// <returns>The float value.</returns>
@@ -260,7 +303,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read the byte array.</exception>
     internal byte[] ReadBytes()
     {
-        int length = ReadInt();
+        int length = ReadPackedInt();
         if (_position + length > _data.Length)
             throw new IndexOutOfRangeException("Not enough data to read bytes");
 

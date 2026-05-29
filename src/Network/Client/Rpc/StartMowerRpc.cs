@@ -17,7 +17,7 @@ internal sealed class StartMowerRpc : IRpcDispatcher<LawnMower>
     public void Send(LawnMower lawnMower)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteInt(lawnMower.DataID);
+        packetWriter.WritePackedInt(lawnMower.DataID);
         NetworkDispatcher.SendRpc(RpcType.StartMower, packetWriter);
         packetWriter.Recycle();
     }
@@ -27,7 +27,7 @@ internal sealed class StartMowerRpc : IRpcDispatcher<LawnMower>
     {
         if (sender.Team == PlayerTeam.Plants)
         {
-            var id = packetReader.ReadInt();
+            var id = packetReader.ReadPackedInt();
             var lawnMower = Instances.GameplayActivity.Board.m_lawnMowers.DataArrayGet(id);
 
             try

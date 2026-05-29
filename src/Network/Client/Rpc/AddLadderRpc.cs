@@ -17,8 +17,8 @@ internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
     public void Send(int theGridX, int theGridY)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteInt(theGridX);
-        packetWriter.WriteInt(theGridY);
+        packetWriter.WritePackedInt(theGridX);
+        packetWriter.WritePackedInt(theGridY);
         NetworkDispatcher.SendRpc(RpcType.AddLadder, packetWriter);
         packetWriter.Recycle();
     }
@@ -28,8 +28,8 @@ internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
     {
         if (sender.Team is PlayerTeam.Plants)
         {
-            int gridX = packetReader.ReadInt();
-            int gridY = packetReader.ReadInt();
+            int gridX = packetReader.ReadPackedInt();
+            int gridY = packetReader.ReadPackedInt();
             if (Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any) != null &&
                 Instances.GameplayActivity.Board.GetLadderAt(gridX, gridY) == null)
             {

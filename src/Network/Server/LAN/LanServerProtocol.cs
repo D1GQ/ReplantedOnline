@@ -114,7 +114,7 @@ internal static class LanServerProtocol
     /// <param name="members">Dictionary of all connected members.</param>
     internal static void SerializeSyncMembers(PacketWriter packetWriter, Dictionary<ID, LanMemberData> members)
     {
-        packetWriter.WriteInt(members.Count);
+        packetWriter.WritePackedInt(members.Count);
         foreach (var member in members.Values)
         {
             member.Serialize(packetWriter, true);
@@ -128,7 +128,7 @@ internal static class LanServerProtocol
     /// <returns>A dictionary of all synchronized members.</returns>
     internal static Dictionary<ID, LanMemberData> DeserializeSyncMembers(PacketReader packetReader)
     {
-        int memberCount = packetReader.ReadInt();
+        int memberCount = packetReader.ReadPackedInt();
         var members = new Dictionary<ID, LanMemberData>();
 
         for (int i = 0; i < memberCount; i++)
