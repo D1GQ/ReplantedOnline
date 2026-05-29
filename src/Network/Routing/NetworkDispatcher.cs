@@ -206,7 +206,7 @@ internal static class NetworkDispatcher
         packet.Recycle();
     }
 
-    private static object listeningToken;
+    private static object ListeningToken;
 
     /// <summary>
     /// Starts the network packet listening coroutine.
@@ -214,15 +214,15 @@ internal static class NetworkDispatcher
     /// </summary>
     internal static void StartListening()
     {
-        if (listeningToken != null)
+        if (ListeningToken != null)
         {
-            MelonCoroutines.Stop(listeningToken);
+            MelonCoroutines.Stop(ListeningToken);
         }
 
-        listeningToken = MelonCoroutines.Start(CoListening());
+        ListeningToken = MelonCoroutines.Start(CoListening());
     }
 
-    private static int processed;
+    private static int Processed;
 
     /// <summary>
     /// Coroutine that handles network packet processing with per-frame limits.
@@ -247,28 +247,28 @@ internal static class NetworkDispatcher
                     packet.Recycle();
                 }
 
-                processed = 5;
+                Processed = 5;
                 while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
                 {
-                    if (processed <= 0) break;
+                    if (Processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Rpc);
-                    processed--;
+                    Processed--;
                 }
 
-                processed = 5;
+                Processed = 5;
                 while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
                 {
-                    if (processed <= 0) break;
+                    if (Processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Main);
-                    processed--;
+                    Processed--;
                 }
 
-                processed = 5;
+                Processed = 5;
                 while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Buffered))
                 {
-                    if (processed <= 0) break;
+                    if (Processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Buffered);
-                    processed--;
+                    Processed--;
                 }
             }
             catch (Exception ex)
@@ -278,7 +278,7 @@ internal static class NetworkDispatcher
                 {
                     CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
                 });
-                listeningToken = null;
+                ListeningToken = null;
                 yield break;
             }
 
@@ -287,7 +287,7 @@ internal static class NetworkDispatcher
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), "Stoping...");
 
-        listeningToken = null;
+        ListeningToken = null;
     }
 
     /// <summary>

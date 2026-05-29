@@ -15,7 +15,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
 {
     private readonly Id _identifier = identifier;
 
-    private static readonly Dictionary<Id, Type> _typeLookup = [];
+    private static readonly Dictionary<Id, Type> TypeLookup = [];
 
     /// <summary>
     /// Gets the unique identifier associated with this factory attribute instance.
@@ -41,7 +41,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
     /// </returns>
     internal static T TryCreateInstance(Id identifier, Type fallback = null)
     {
-        if (_typeLookup.TryGetValue(identifier, out var type))
+        if (TypeLookup.TryGetValue(identifier, out var type))
         {
             if (typeof(T).IsAssignableFrom(type))
             {
@@ -78,7 +78,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
                     if (attribute is AutoRegisterAttribute autoRegisterAttribute)
                     {
                         Id identifierValue = (Id)autoRegisterAttribute.GetIdentifier();
-                        _typeLookup[identifierValue] = type;
+                        TypeLookup[identifierValue] = type;
                     }
                 }
             }

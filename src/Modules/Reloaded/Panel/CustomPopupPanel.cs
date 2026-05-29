@@ -11,11 +11,11 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class CustomPopupPanel
 {
-    private static PanelView _panel;
-    private static TextMeshProUGUI _header;
-    private static TextMeshProUGUI _subText;
-    private static TextMeshProUGUI _label;
-    private static bool _hasInit;
+    private static PanelView Panel;
+    private static TextMeshProUGUI HeaderText;
+    private static TextMeshProUGUI Text;
+    private static TextMeshProUGUI LabelText;
+    private static bool HasInit;
 
     /// <summary>
     /// Initializes the popup system by creating a custom popup panel from an existing template.
@@ -23,30 +23,30 @@ internal static class CustomPopupPanel
     /// <param name="globalPanels">The PanelViewContainer that contains the base panel template to clone from.</param>
     internal static void Init(PanelViewContainer globalPanels)
     {
-        if (_hasInit) return;
-        _hasInit = true;
+        if (HasInit) return;
+        HasInit = true;
 
-        _panel = UnityEngine.Object.Instantiate(globalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true), globalPanels.transform);
-        _panel.name = "P_PopUpReplantedOnline";
-        _panel.m_id = "rPopup";
-        _panel.gameObject.DestroyAllTextLocalizers();
+        Panel = UnityEngine.Object.Instantiate(globalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true), globalPanels.transform);
+        Panel.name = "P_PopUpReplantedOnline";
+        Panel.m_id = "rPopup";
+        Panel.gameObject.DestroyAllTextLocalizers();
 
         // Find and store reference to the header text component
-        _header = _panel.transform.Find("Canvas/Layout/Center/Window/HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
-        _header.gameObject.DestroyAllBinders();
+        HeaderText = Panel.transform.Find("Canvas/Layout/Center/Window/HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
+        HeaderText.gameObject.DestroyAllBinders();
 
         // Find and store reference to the subheading text component
-        _subText = _panel.transform.Find("Canvas/Layout/Center/Window/SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
-        _subText.gameObject.DestroyAllBinders();
+        Text = Panel.transform.Find("Canvas/Layout/Center/Window/SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
+        Text.gameObject.DestroyAllBinders();
 
         // Find the OK button in the panel hierarchy
-        var button = _panel.transform.Find("Canvas/Layout/Center/Window/Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
+        var button = Panel.transform.Find("Canvas/Layout/Center/Window/Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
         button.gameObject.DestroyAllBinders();
         button.gameObject.SetActive(true);
 
         // Find and store reference to the button's label text
-        _label = button.transform.Find("Label").GetComponentInChildren<TextMeshProUGUI>(true);
-        _label.SetText(string.Empty);
+        LabelText = button.transform.Find("Label").GetComponentInChildren<TextMeshProUGUI>(true);
+        LabelText.SetText(string.Empty);
 
         // Set up new click handler for the button
         button.onClick = new();
@@ -63,9 +63,9 @@ internal static class CustomPopupPanel
     /// <param name="label">The text to display on the button. If empty, defaults to "Ok" when shown.</param>
     internal static void SetButtonLabel(string label)
     {
-        if (!_hasInit) return;
+        if (!HasInit) return;
 
-        _label?.SetText(label);
+        LabelText?.SetText(label);
     }
 
     /// <summary>
@@ -75,15 +75,15 @@ internal static class CustomPopupPanel
     /// <param name="text">The body/subtext content of the popup message.</param>
     internal static void Show(string header, string text)
     {
-        if (!_hasInit) return;
+        if (!HasInit) return;
 
-        if (_label?.text == string.Empty)
+        if (LabelText?.text == string.Empty)
         {
-            _label?.SetText("Ok");
+            LabelText?.SetText("Ok");
         }
-        _panel?.gameObject?.SetActive(true);
-        _header?.SetText(header);
-        _subText?.SetText(text);
+        Panel?.gameObject?.SetActive(true);
+        HeaderText?.SetText(header);
+        Text?.SetText(text);
     }
 
     /// <summary>
@@ -91,10 +91,10 @@ internal static class CustomPopupPanel
     /// </summary>
     internal static void Hide()
     {
-        if (!_hasInit) return;
+        if (!HasInit) return;
 
-        _panel?.gameObject.SetActive(false);
-        _header?.SetText(string.Empty);
-        _subText?.SetText(string.Empty);
+        Panel?.gameObject.SetActive(false);
+        HeaderText?.SetText(string.Empty);
+        Text?.SetText(string.Empty);
     }
 }

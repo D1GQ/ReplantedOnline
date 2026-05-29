@@ -17,7 +17,7 @@ namespace ReplantedOnline.Modules.Reloaded;
 /// </summary>
 internal static class LevelEntries
 {
-    private static readonly Dictionary<string, LevelEntryData> _levelNameLookup = [];
+    private static readonly Dictionary<string, LevelEntryData> LevelNameLookup = [];
 
     /// <summary>
     /// Initializes the level cache by finding all LevelEntryData objects in the game resources.
@@ -27,7 +27,7 @@ internal static class LevelEntries
     {
         foreach (var level in Instances.IDataService.AllLevelsData.EnumerateIl2CppReadonlyList())
         {
-            _levelNameLookup[level.name] = level;
+            LevelNameLookup[level.name] = level;
         }
     }
 
@@ -40,7 +40,7 @@ internal static class LevelEntries
     /// </returns>
     internal static LevelEntryData GetLevel(string name)
     {
-        if (_levelNameLookup.TryGetValue(name, out var levelData))
+        if (LevelNameLookup.TryGetValue(name, out var levelData))
         {
             return levelData;
         }

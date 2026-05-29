@@ -5,7 +5,7 @@
 /// </summary>
 internal interface IAssetReferenceOverride
 {
-    private static readonly List<IAssetReferenceOverride> customAssetReferences = [];
+    private static readonly List<IAssetReferenceOverride> CustomAssetReferences = [];
 
     /// <summary>
     /// Registers a custom asset reference override.
@@ -13,9 +13,9 @@ internal interface IAssetReferenceOverride
     /// <param name="customAssetReference">The override instance to register.</param>
     internal static void Register(IAssetReferenceOverride customAssetReference)
     {
-        if (!customAssetReferences.Contains(customAssetReference))
+        if (!CustomAssetReferences.Contains(customAssetReference))
         {
-            customAssetReferences.Add(customAssetReference);
+            CustomAssetReferences.Add(customAssetReference);
         }
     }
 
@@ -24,7 +24,7 @@ internal interface IAssetReferenceOverride
     /// </summary>
     internal static void UpdateAllOverrides()
     {
-        foreach (var customAssetReference in customAssetReferences)
+        foreach (var customAssetReference in CustomAssetReferences)
         {
             customAssetReference.UpdateOverride();
         }

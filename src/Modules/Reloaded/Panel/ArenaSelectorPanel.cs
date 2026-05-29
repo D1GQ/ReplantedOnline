@@ -20,10 +20,10 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
-    private static readonly ArenaTypes[] _disabledArenas = [];
+    private static readonly ArenaTypes[] DisabledArenas = [];
 
-    private static GameObject _panel;
-    private static Image _preview;
+    private static GameObject Panel;
+    private static Image Preview;
 
     /// <summary>
     /// Creates the arena selector panel by cloning an existing plant panel and configuring it for arena selection.
@@ -31,7 +31,7 @@ internal static class ArenaSelectorPanel
     /// <param name="VsSideChooser">The PanelView component from the VS side chooser UI, used as a parent container.</param>
     internal static void Create(PanelView VsSideChooser)
     {
-        if (_panel != null) return;
+        if (Panel != null) return;
 
         // Find the center panel within the VsSideChooser to use as a parent for the arena selector panel
         var VsPanels = VsSideChooser.transform.Find("Canvas/Layout/Center").gameObject;
@@ -39,26 +39,26 @@ internal static class ArenaSelectorPanel
 
         // Clone the existing plant panel from the almanac and use it as the base for the arena selector panel
         GameObject plantPanel = Instances.GlobalPanels.GetPanel("almanac").transform.Find("Canvas/Layout/Center/Panel/PlantPanel").gameObject;
-        _panel = UnityEngine.Object.Instantiate(plantPanel, VsPanels.transform);
-        _panel.name = "ArenaPanel";
-        GameObject viewPlantsButton = _panel.transform.Find("ViewPlantsButton").gameObject;
+        Panel = UnityEngine.Object.Instantiate(plantPanel, VsPanels.transform);
+        Panel.name = "ArenaPanel";
+        GameObject viewPlantsButton = Panel.transform.Find("ViewPlantsButton").gameObject;
         if (viewPlantsButton != null)
         {
             UnityEngine.Object.Destroy(viewPlantsButton);
         }
 
         // Position and scale the arena selector panel appropriately within the UI
-        _panel.transform.localPosition = new Vector3(0f, 780f, 0f);
-        _panel.transform.localScale = Vector3.one * 0.5f;
-        _panel.transform.SetSiblingIndex(2);
+        Panel.transform.localPosition = new Vector3(0f, 780f, 0f);
+        Panel.transform.localScale = Vector3.one * 0.5f;
+        Panel.transform.SetSiblingIndex(2);
 
         // Set up the preview image by replacing the existing RawImage component with a new Image component, and configure its position and scale
-        var previewObj = _panel.transform.Find("Sunflower").gameObject;
+        var previewObj = Panel.transform.Find("Sunflower").gameObject;
         previewObj.RemoveComponent<RawImage>(true);
-        _preview = previewObj.AddComponent<Image>();
-        _preview.gameObject.name = "ArenaPreview";
-        _preview.transform.localPosition = new Vector3(-14f, 5f, 0f);
-        _preview.transform.localScale = new Vector3(3.3f, 2f, 2f);
+        Preview = previewObj.AddComponent<Image>();
+        Preview.gameObject.name = "ArenaPreview";
+        Preview.transform.localPosition = new Vector3(-14f, 5f, 0f);
+        Preview.transform.localScale = new Vector3(3.3f, 2f, 2f);
 
         if (ReloadedLobby.AmLobbyHost())
         {
@@ -66,14 +66,14 @@ internal static class ArenaSelectorPanel
 
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next(_disabledArenas);
+                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next(DisabledArenas);
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
             forward.transform.localScale = Vector3.one * 0.8f;
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous(_disabledArenas);
+                ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous(DisabledArenas);
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
             back.transform.localScale = Vector3.one * 0.8f;
@@ -94,7 +94,7 @@ internal static class ArenaSelectorPanel
     private static Button CreateButton(PanelView VsSideChooser, string name, Action action)
     {
         var prefab = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/QuickPlay");
-        var button = UnityEngine.Object.Instantiate(prefab, _panel.transform)?.GetComponent<Button>();
+        var button = UnityEngine.Object.Instantiate(prefab, Panel.transform)?.GetComponent<Button>();
         if (button != null)
         {
             var text = button.transform.Find("ButtonText")?.GetComponent<TextMeshProUGUI>();
@@ -157,12 +157,12 @@ internal static class ArenaSelectorPanel
     /// <param name="arenaType">The arena type (Day or Night) to display a preview for.</param>
     internal static void SetPreview(ArenaTypes arenaType)
     {
-        if (_panel == null || _preview == null) return;
+        if (Panel == null || Preview == null) return;
 
         var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
         if (arena != null && arena is IArenaData data)
         {
-            _preview.sprite = data.GetThumbnail();
+            Preview.sprite = data.GetThumbnail();
         }
     }
 }

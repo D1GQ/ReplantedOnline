@@ -23,7 +23,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
     /// <summary>
     /// Static dictionary that maps identifier values to their corresponding instances for fast lookup.
     /// </summary>
-    private static readonly Dictionary<Id, T> _lookup = [];
+    private static readonly Dictionary<Id, T> InstanceLookup = [];
 
     /// <summary>
     /// Gets the identifier associated with this attribute instance for lookup purposes.
@@ -41,7 +41,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
     /// <returns>The instance associated with the specified identifier, or null if not found.</returns>
     internal static T GetInstanceFromLookup(Id identifier)
     {
-        if (_lookup.TryGetValue(identifier, out var instanceLookup))
+        if (InstanceLookup.TryGetValue(identifier, out var instanceLookup))
         {
             return instanceLookup;
         }
@@ -59,7 +59,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
     /// </returns>
     internal static bool TryGetInstanceFromLookup(Id identifier, out T instance)
     {
-        if (_lookup.TryGetValue(identifier, out var instanceLookup))
+        if (InstanceLookup.TryGetValue(identifier, out var instanceLookup))
         {
             instance = instanceLookup;
             return true;
@@ -92,7 +92,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
                         if (constructor != null && constructor.Invoke(null) is T instance)
                         {
                             _instances.Add(instance);
-                            _lookup[identifierValue] = instance;
+                            InstanceLookup[identifierValue] = instance;
                         }
                     }
                 }

@@ -30,65 +30,65 @@ internal static class DiscordManager
     /// <summary>
     /// The Discord RPC client instance.
     /// </summary>
-    private static DiscordRpcClient _client;
+    private static DiscordRpcClient Client;
 
     /// <summary>
     /// The current Rich Presence data.
     /// </summary>
-    private static RichPresence _presence;
+    private static RichPresence Presence;
 
     /// <summary>
     /// The current presence details text.
     /// </summary>
-    private static string _details = string.Empty;
+    private static string Details = string.Empty;
 
     /// <summary>
     /// The current presence state text.
     /// </summary>
-    private static string _state = string.Empty;
+    private static string State = string.Empty;
 
     /// <summary>
     /// The start time for the current activity.
     /// </summary>
-    private static DateTime? _activityStartTime;
+    private static DateTime? ActivityStartTime;
 
     /// <summary>
     /// Indicates whether the menu timestamp should be used.
     /// </summary>
-    private static bool _menuTimestamp = true;
+    private static bool MenuTimestamp = true;
 
     /// <summary>
     /// The last recorded party size to avoid unnecessary updates.
     /// </summary>
-    private static int _lastPartySize = -1;
+    private static int LastPartySize = -1;
 
     /// <summary>
     /// Indicates whether the Discord client has been initialized.
     /// </summary>
-    private static bool _initialized;
+    private static bool Initialized;
 
     /// <summary>
     /// Indicates whether the presence data has changed and needs to be pushed.
     /// </summary>
-    private static bool _dirty;
+    private static bool Dirty;
 
     /// <summary>
     /// Initializes the Discord RPC client and sets up the initial presence.
     /// </summary>
     internal static void Initialize()
     {
-        if (_initialized) return;
+        if (Initialized) return;
 
-        _client = new DiscordRpcClient(DiscordAppId);
+        Client = new DiscordRpcClient(DiscordAppId);
 
-        _client.RegisterUriScheme();
+        Client.RegisterUriScheme();
 
-        _client.OnJoin += OnJoin;
-        _client.OnJoinRequested += OnJoinRequested;
+        Client.OnJoin += OnJoin;
+        Client.OnJoinRequested += OnJoinRequested;
 
-        _client.Initialize();
+        Client.Initialize();
 
-        _presence = new RichPresence
+        Presence = new RichPresence
         {
             Type = ActivityType.Playing,
             Details = "Loading Screen",
@@ -114,7 +114,7 @@ internal static class DiscordManager
 
         PushPresence();
 
-        _initialized = true;
+        Initialized = true;
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ internal static class DiscordManager
     /// </summary>
     internal static void ReadyToJoin()
     {
-        _client.Subscribe(EventType.Join | EventType.JoinRequest);
+        Client.Subscribe(EventType.Join | EventType.JoinRequest);
     }
 
     /// <summary>
@@ -130,15 +130,15 @@ internal static class DiscordManager
     /// </summary>
     internal static void Update()
     {
-        if (!_initialized) return;
+        if (!Initialized) return;
 
         UpdatePartySize();
         UpdateActivity();
 
-        if (_dirty)
+        if (Dirty)
         {
             PushPresence();
-            _dirty = false;
+            Dirty = false;
         }
     }
 
@@ -148,14 +148,14 @@ internal static class DiscordManager
     private static void UpdatePartySize()
     {
         if (!ReloadedLobby.AmInLobby()) return;
-        if (!_presence.HasParty()) return;
+        if (!Presence.HasParty()) return;
 
         int size = ReloadedLobby.GetLobbyMemberCount();
-        if (size == _lastPartySize) return;
+        if (size == LastPartySize) return;
 
-        _lastPartySize = size;
-        _presence.Party.Size = size;
-        _dirty = true;
+        LastPartySize = size;
+        Presence.Party.Size = size;
+        Dirty = true;
     }
 
     /// <summary>
@@ -165,22 +165,22 @@ internal static class DiscordManager
     {
         GetActivity(out string details, out string state, out ActivityType type);
 
-        if (_details == details && _state == state && _presence.Type == type)
+        if (Details == details && State == state && Presence.Type == type)
         {
             return;
         }
 
-        _details = details;
-        _state = state;
+        Details = details;
+        State = state;
 
         UpdateTimestamp(details);
 
-        _presence.Details = details;
-        _presence.State = state;
-        _presence.Type = type;
-        _presence.Timestamps.Start = _activityStartTime;
+        Presence.Details = details;
+        Presence.State = state;
+        Presence.Type = type;
+        Presence.Timestamps.Start = ActivityStartTime;
 
-        _dirty = true;
+        Dirty = true;
     }
 
     /// <summary>
@@ -262,11 +262,11 @@ internal static class DiscordManager
     {
         bool menuState = details is "Loading Screen" or "Main Menu";
 
-        if (_menuTimestamp == menuState) return;
+        if (MenuTimestamp == menuState) return;
 
-        _menuTimestamp = menuState;
+        MenuTimestamp = menuState;
 
-        _activityStartTime = menuState ? StartTime : DateTime.UtcNow;
+        ActivityStartTime = menuState ? StartTime : DateTime.UtcNow;
     }
 
     /// <summary>
@@ -274,8 +274,8 @@ internal static class DiscordManager
     /// </summary>
     private static void PushPresence()
     {
-        _client.SetPresence(_presence);
-        _client.Invoke();
+        Client.SetPresence(Presence);
+        Client.Invoke();
     }
 
     /// <summary>
@@ -320,10 +320,10 @@ internal static class DiscordManager
     private static void OnJoinRequested(object sender, JoinRequestMessage args)
     {
         bool accept = ReloadedLobby.LobbyData.LobbyJoinable.Value;
-        _client.Respond(args, accept);
+        Client.Respond(args, accept);
         if (accept)
         {
-            _dirty = true;
+            Dirty = true;
         }
     }
 
@@ -334,8 +334,8 @@ internal static class DiscordManager
     {
         if (ReloadedLobby.TransportMode == TransportMode.Lan) return;
 
-        _presence.Party.ID = Secrets.CreateFriendlySecret(new());
-        _dirty = true;
+        Presence.Party.ID = Secrets.CreateFriendlySecret(new());
+        Dirty = true;
     }
 
     /// <summary>
@@ -345,7 +345,7 @@ internal static class DiscordManager
     {
         if (ReloadedLobby.TransportMode == TransportMode.Lan) return;
 
-        _presence.Party.ID = Secrets.CreateFriendlySecret(new());
+        Presence.Party.ID = Secrets.CreateFriendlySecret(new());
 
         DiscordLobbySecret secret = new()
         {
@@ -354,10 +354,10 @@ internal static class DiscordManager
             GameCode = ReloadedLobby.GetCurrentLobbyGameCode()
         };
 
-        _presence.Secrets.Join = secret.Serialize();
+        Presence.Secrets.Join = secret.Serialize();
 
-        _lastPartySize = -1;
-        _dirty = true;
+        LastPartySize = -1;
+        Dirty = true;
     }
 
     /// <summary>
@@ -365,9 +365,9 @@ internal static class DiscordManager
     /// </summary>
     internal static void OnLeftLobby()
     {
-        _presence.Party.ID = string.Empty;
-        _presence.Secrets.Join = string.Empty;
-        _dirty = true;
+        Presence.Party.ID = string.Empty;
+        Presence.Secrets.Join = string.Empty;
+        Dirty = true;
     }
 
     /// <summary>
@@ -376,8 +376,8 @@ internal static class DiscordManager
     /// <param name="canJoin">True if the lobby should be joinable, false otherwise.</param>
     internal static void SetJoinable(bool canJoin)
     {
-        _presence.Party.Privacy = canJoin ? Party.PrivacySetting.Public : Party.PrivacySetting.Private;
-        _dirty = true;
+        Presence.Party.Privacy = canJoin ? Party.PrivacySetting.Public : Party.PrivacySetting.Private;
+        Dirty = true;
     }
 
     /// <summary>
@@ -385,14 +385,14 @@ internal static class DiscordManager
     /// </summary>
     internal static void Dispose()
     {
-        if (!_initialized) return;
+        if (!Initialized) return;
 
-        _client.OnJoin -= OnJoin;
-        _client.OnJoinRequested -= OnJoinRequested;
+        Client.OnJoin -= OnJoin;
+        Client.OnJoinRequested -= OnJoinRequested;
 
-        _client.ClearPresence();
-        _client.Dispose();
+        Client.ClearPresence();
+        Client.Dispose();
 
-        _initialized = false;
+        Initialized = false;
     }
 }

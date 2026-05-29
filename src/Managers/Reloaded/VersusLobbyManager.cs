@@ -23,26 +23,26 @@ namespace ReplantedOnline.Managers.Reloaded;
 internal static class VersusLobbyManager
 {
     // UI text components for displaying player names on each team
-    private static TextMeshProUGUI zombiePlayer1;
-    private static TextMeshProUGUI zombiePlayer2;
-    private static TextMeshProUGUI plantPlayer1;
-    private static TextMeshProUGUI plantPlayer2;
-    private static TextMeshProUGUI playerList;
-    private static TextMeshProUGUI pickSides;
+    private static TextMeshProUGUI ZombiePlayer1;
+    private static TextMeshProUGUI ZombiePlayer2;
+    private static TextMeshProUGUI PlantPlayer1;
+    private static TextMeshProUGUI PlantPlayer2;
+    private static TextMeshProUGUI PlayerList;
+    private static TextMeshProUGUI PickSides;
 
-    private static EventTrigger lobbyCodeHeaderTrigger;
+    private static EventTrigger LobbyCodeHeaderTrigger;
     private static string DefaultHeaderText => ReloadedLobby.NetworkTransport is LanTransport ?
         "LAN Mode" : $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
-    private static bool copyingLobbyCode = false;
+    private static bool CopyingLobbyCode = false;
 
     /// <summary>
     /// Determines whether all required UI components are initialized and ready for use.
     /// </summary>
     internal static bool IsUIReady()
     {
-        return zombiePlayer1 != null && zombiePlayer2 != null &&
-               plantPlayer1 != null && plantPlayer2 != null &&
-               playerList != null && pickSides != null;
+        return ZombiePlayer1 != null && ZombiePlayer2 != null &&
+               PlantPlayer1 != null && PlantPlayer2 != null &&
+               PlayerList != null && PickSides != null;
     }
 
     /// <summary>
@@ -56,36 +56,36 @@ internal static class VersusLobbyManager
 
         // Find and cache the zombie team player name text components
         // Using GetComponentInChildren with includeInactive = true to find components even if parent objects are disabled
-        zombiePlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        zombiePlayer1.gameObject.DestroyAllTextLocalizers();
-        zombiePlayer1.enableAutoSizing = false;
-        zombiePlayer1.fontSize = 100f;
-        zombiePlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        zombiePlayer2.gameObject.DestroyAllTextLocalizers();
-        zombiePlayer2.enableAutoSizing = false;
-        zombiePlayer2.fontSize = 100f;
+        ZombiePlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        ZombiePlayer1.gameObject.DestroyAllTextLocalizers();
+        ZombiePlayer1.enableAutoSizing = false;
+        ZombiePlayer1.fontSize = 100f;
+        ZombiePlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        ZombiePlayer2.gameObject.DestroyAllTextLocalizers();
+        ZombiePlayer2.enableAutoSizing = false;
+        ZombiePlayer2.fontSize = 100f;
 
         // Find and cache the plant team player name text components
-        plantPlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        plantPlayer1.gameObject.DestroyAllTextLocalizers();
-        plantPlayer1.enableAutoSizing = false;
-        plantPlayer1.fontSize = 100f;
-        plantPlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        plantPlayer2.gameObject.DestroyAllTextLocalizers();
-        plantPlayer2.enableAutoSizing = false;
-        plantPlayer2.fontSize = 100f;
+        PlantPlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        PlantPlayer1.gameObject.DestroyAllTextLocalizers();
+        PlantPlayer1.enableAutoSizing = false;
+        PlantPlayer1.fontSize = 100f;
+        PlantPlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        PlantPlayer2.gameObject.DestroyAllTextLocalizers();
+        PlantPlayer2.enableAutoSizing = false;
+        PlantPlayer2.fontSize = 100f;
 
-        playerList = UnityEngine.Object.Instantiate(plantPlayer1, vsPanelView.transform.Find($"Canvas/Layout/Center/Panel"));
-        playerList.gameObject.DestroyAllTextLocalizers();
-        playerList.transform.localPosition = new Vector3(-15f, 0f, 0f);
-        playerList.gameObject.name = "PlayerList";
-        playerList.color = Color.white;
+        PlayerList = UnityEngine.Object.Instantiate(PlantPlayer1, vsPanelView.transform.Find($"Canvas/Layout/Center/Panel"));
+        PlayerList.gameObject.DestroyAllTextLocalizers();
+        PlayerList.transform.localPosition = new Vector3(-15f, 0f, 0f);
+        PlayerList.gameObject.name = "PlayerList";
+        PlayerList.color = Color.white;
 
-        pickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        pickSides.gameObject.DestroyAllTextLocalizers();
+        PickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        PickSides.gameObject.DestroyAllTextLocalizers();
 
         // Add event trigger to header for copying the lobby code to clipboard
-        lobbyCodeHeaderTrigger = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header").gameObject.AddComponent<EventTrigger>();
+        LobbyCodeHeaderTrigger = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header").gameObject.AddComponent<EventTrigger>();
     }
 
     /// <summary>
@@ -111,28 +111,28 @@ internal static class VersusLobbyManager
             {
                 if (client.AmHost)
                 {
-                    plantPlayer1?.SetText(client.Name);
+                    PlantPlayer1?.SetText(client.Name);
                 }
                 else
                 {
-                    plantPlayer2?.SetText(client.Name);
+                    PlantPlayer2?.SetText(client.Name);
                 }
             }
             else if (client.Team is PlayerTeam.Zombies)
             {
                 if (client.AmHost)
                 {
-                    zombiePlayer1?.SetText(client.Name);
+                    ZombiePlayer1?.SetText(client.Name);
                 }
                 else
                 {
-                    zombiePlayer2?.SetText(client.Name);
+                    ZombiePlayer2?.SetText(client.Name);
                 }
             }
         }
 
         // Player list
-        playerList?.SetText(string.Empty);
+        PlayerList?.SetText(string.Empty);
         var notPlaying = ReloadedLobby.LobbyData.AllClients.Values.Where(client => client.Team is PlayerTeam.None or PlayerTeam.Spectators);
         if (!notPlaying.Any()) return;
 
@@ -150,7 +150,7 @@ internal static class VersusLobbyManager
             listBuilder.Append(displayName).AppendLine();
         }
 
-        playerList?.SetText(listBuilder.ToString());
+        PlayerList?.SetText(listBuilder.ToString());
     }
 
     /// <summary>
@@ -180,29 +180,29 @@ internal static class VersusLobbyManager
     private static void ResetAllText()
     {
         // Shows the lobby code in the header and resets the header UI events
-        pickSides?.SetText(DefaultHeaderText);
+        PickSides?.SetText(DefaultHeaderText);
         UpdateHeaderEvents();
 
         // Clear all text content
-        if (zombiePlayer1 != null)
+        if (ZombiePlayer1 != null)
         {
-            zombiePlayer1.SetText(string.Empty);
-            zombiePlayer1.gameObject.SetActive(true);
+            ZombiePlayer1.SetText(string.Empty);
+            ZombiePlayer1.gameObject.SetActive(true);
         }
-        if (zombiePlayer2 != null)
+        if (ZombiePlayer2 != null)
         {
-            zombiePlayer2.SetText(string.Empty);
-            zombiePlayer2.gameObject.SetActive(true);
+            ZombiePlayer2.SetText(string.Empty);
+            ZombiePlayer2.gameObject.SetActive(true);
         }
-        if (plantPlayer1 != null)
+        if (PlantPlayer1 != null)
         {
-            plantPlayer1.SetText(string.Empty);
-            plantPlayer1.gameObject.SetActive(true);
+            PlantPlayer1.SetText(string.Empty);
+            PlantPlayer1.gameObject.SetActive(true);
         }
-        if (plantPlayer2 != null)
+        if (PlantPlayer2 != null)
         {
-            plantPlayer2.SetText(string.Empty);
-            plantPlayer2.gameObject.SetActive(true);
+            PlantPlayer2.SetText(string.Empty);
+            PlantPlayer2.gameObject.SetActive(true);
         }
     }
 
@@ -212,9 +212,9 @@ internal static class VersusLobbyManager
     private static void UpdateHeaderEvents()
     {
         if (ReloadedLobby.NetworkTransport is LanTransport) return;
-        if (lobbyCodeHeaderTrigger == null) return;
+        if (LobbyCodeHeaderTrigger == null) return;
 
-        EventTrigger trigger = lobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
+        EventTrigger trigger = LobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
         if (trigger != null)
         {
             trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
@@ -223,9 +223,9 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerEnter = new() { eventID = EventTriggerType.PointerEnter };
             pointerEnter.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode)
+                if (!CopyingLobbyCode)
                 {
-                    pickSides?.SetText($"Click to Copy");
+                    PickSides?.SetText($"Click to Copy");
                     Instances.GameplayActivity.SoundSystem.PlaySample(Sound.SOUND_BLEEP);
                 }
             }));
@@ -235,7 +235,7 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerExit = new() { eventID = EventTriggerType.PointerExit };
             pointerExit.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode) pickSides?.SetText(DefaultHeaderText);
+                if (!CopyingLobbyCode) PickSides?.SetText(DefaultHeaderText);
             }));
             trigger.triggers.Add(pointerExit);
 
@@ -243,7 +243,7 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerClick = new() { eventID = EventTriggerType.PointerClick };
             pointerClick.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!copyingLobbyCode) Instances.GameplayActivity.StartCoroutine(CoCopyLobbyCode());
+                if (!CopyingLobbyCode) Instances.GameplayActivity.StartCoroutine(CoCopyLobbyCode());
             }));
             trigger.triggers.Add(pointerClick);
         }
@@ -251,15 +251,15 @@ internal static class VersusLobbyManager
 
     private static IEnumerator CoCopyLobbyCode()
     {
-        copyingLobbyCode = true;
+        CopyingLobbyCode = true;
         GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
         Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
-        pickSides?.SetText($"Copied to Clipboard!");
+        PickSides?.SetText($"Copied to Clipboard!");
 
         yield return new WaitForSeconds(1f);
 
-        pickSides?.SetText(DefaultHeaderText);
-        copyingLobbyCode = false;
+        PickSides?.SetText(DefaultHeaderText);
+        CopyingLobbyCode = false;
     }
 
     /// <summary>

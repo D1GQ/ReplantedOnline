@@ -16,10 +16,10 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class LobbyCodePanel
 {
-    private static PanelView _lobbyCodePanel;
-    private static ReloadedInputField _reloadedInputField;
-    private static string lastText = string.Empty;
-    private static bool _hasInit;
+    private static PanelView Panel;
+    private static ReloadedInputField InputField;
+    private static string LastText = string.Empty;
+    private static bool HasInit;
 
     /// <summary>
     /// Initializes the lobby code panel by cloning a template panel and setting up all UI components.
@@ -27,40 +27,40 @@ internal static class LobbyCodePanel
     /// <param name="usersRenamePanel">The template panel view to clone for creating the lobby code panel.</param>
     internal static void Init(PanelView usersRenamePanel)
     {
-        if (_hasInit) return;
-        _hasInit = true;
+        if (HasInit) return;
+        HasInit = true;
 
-        _lobbyCodePanel = UnityEngine.Object.Instantiate(usersRenamePanel, Instances.GlobalPanels.transform);
-        _lobbyCodePanel.m_id = "joinLobbyCode";
-        _lobbyCodePanel.name = "P_Join_LobbyCode";
+        Panel = UnityEngine.Object.Instantiate(usersRenamePanel, Instances.GlobalPanels.transform);
+        Panel.m_id = "joinLobbyCode";
+        Panel.name = "P_Join_LobbyCode";
 
         // Remove existing text localization components
-        _lobbyCodePanel.m_id = "I_LobbyCodePanel";
-        _lobbyCodePanel.gameObject.DestroyAllTextLocalizers();
+        Panel.m_id = "I_LobbyCodePanel";
+        Panel.gameObject.DestroyAllTextLocalizers();
 
         // Get reference to the input field and set up validation
-        _reloadedInputField = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true);
-        if (_reloadedInputField != null)
+        InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true);
+        if (InputField != null)
         {
-            _reloadedInputField.characterLimit = MatchmakingManager.CODE_LENGTH;
-            _reloadedInputField.onValueChanged = null;
+            InputField.characterLimit = MatchmakingManager.CODE_LENGTH;
+            InputField.onValueChanged = null;
         }
 
         // Update all text elements in the panel
-        var headerText = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/HeaderText")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        var headerText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/HeaderText")?.GetComponentInChildren<TextMeshProUGUI>(true);
         headerText?.SetText("Join Lobby");
 
-        var subheadingText = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/SubheadingText")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        var subheadingText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/SubheadingText")?.GetComponentInChildren<TextMeshProUGUI>(true);
         subheadingText?.SetText("Please enter lobby code:");
 
-        var placeholderText = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField/Text Area/Placeholder")?.GetComponentInChildren<TextMeshProUGUI>(true);
+        var placeholderText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField/Text Area/Placeholder")?.GetComponentInChildren<TextMeshProUGUI>(true);
         placeholderText?.SetText("Enter code...");
 
         // Set up OK button to search for lobby with entered code
-        var okButton = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK")?.GetComponentInChildren<Button>(true);
+        var okButton = Panel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK")?.GetComponentInChildren<Button>(true);
         if (okButton != null)
         {
-            var okButtonBinder = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK")?.GetComponentInChildren<UnityButtonBinder>(true);
+            var okButtonBinder = Panel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK")?.GetComponentInChildren<UnityButtonBinder>(true);
             if (okButtonBinder != null)
             {
                 UnityEngine.Object.Destroy(okButtonBinder);
@@ -69,10 +69,10 @@ internal static class LobbyCodePanel
             okButton.onClick = new();
             okButton.onClick.AddListener(() =>
             {
-                if (_reloadedInputField != null && _reloadedInputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
+                if (InputField != null && InputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
                 {
-                    _lobbyCodePanel.gameObject.SetActive(false);
-                    string gameCode = _reloadedInputField.m_Text.ToUpper();
+                    Panel.gameObject.SetActive(false);
+                    string gameCode = InputField.m_Text.ToUpper();
                     SteamClientPatch.TrySetTempApp(MatchmakingManager.GetGameCodePostfixType(gameCode));
                     MatchmakingManager.SearchSteamLobbyByGameCode(gameCode);
                 }
@@ -84,10 +84,10 @@ internal static class LobbyCodePanel
         }
 
         // Set up Cancel button to simply close the panel
-        var cancelButton = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_Cancel")?.GetComponentInChildren<Button>(true);
+        var cancelButton = Panel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_Cancel")?.GetComponentInChildren<Button>(true);
         if (cancelButton != null)
         {
-            var cancelButtonBinder = _lobbyCodePanel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_Cancel")?.GetComponentInChildren<UnityButtonBinder>(true);
+            var cancelButtonBinder = Panel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_Cancel")?.GetComponentInChildren<UnityButtonBinder>(true);
             if (cancelButtonBinder != null)
             {
                 UnityEngine.Object.Destroy(cancelButtonBinder);
@@ -96,7 +96,7 @@ internal static class LobbyCodePanel
             cancelButton.onClick = new();
             cancelButton.onClick.AddListener((Action)(() =>
             {
-                _lobbyCodePanel.gameObject.SetActive(false);
+                Panel.gameObject.SetActive(false);
             }));
         }
     }
@@ -106,8 +106,8 @@ internal static class LobbyCodePanel
     /// </summary>
     internal static void Show()
     {
-        _lobbyCodePanel?.gameObject.SetActive(true);
-        _reloadedInputField?.SetText(string.Empty, false);
+        Panel?.gameObject.SetActive(true);
+        InputField?.SetText(string.Empty, false);
     }
 
     /// <summary>
@@ -115,16 +115,16 @@ internal static class LobbyCodePanel
     /// </summary>
     internal static void ValidateText()
     {
-        if (_reloadedInputField != null)
+        if (InputField != null)
         {
-            if (_reloadedInputField.text != lastText)
+            if (InputField.text != LastText)
             {
-                string currentText = _reloadedInputField.text;
+                string currentText = InputField.text;
                 string cleanValue = new([.. currentText.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
 
-                _reloadedInputField?.SetText(cleanValue, false);
-                _reloadedInputField?.ForceLabelUpdate();
-                lastText = _reloadedInputField.text;
+                InputField?.SetText(cleanValue, false);
+                InputField?.ForceLabelUpdate();
+                LastText = InputField.text;
             }
         }
     }

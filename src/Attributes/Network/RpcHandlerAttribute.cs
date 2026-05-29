@@ -67,7 +67,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// </summary>
     internal bool OwnerCheck { get; }
 
-    private static readonly Dictionary<Type, Dictionary<byte, RpcMethodInfo>> _handlers = [];
+    private static readonly Dictionary<Type, Dictionary<byte, RpcMethodInfo>> Handlers = [];
 
     /// <summary>
     /// Internal container for cached RPC method reflection information.
@@ -106,10 +106,10 @@ internal sealed class RpcHandlerAttribute : Attribute
                 var attr = method.GetCustomAttribute<RpcHandlerAttribute>();
                 if (attr != null)
                 {
-                    if (!_handlers.ContainsKey(type))
-                        _handlers[type] = [];
+                    if (!Handlers.ContainsKey(type))
+                        Handlers[type] = [];
 
-                    _handlers[type][attr.RpcId] = new RpcMethodInfo
+                    Handlers[type][attr.RpcId] = new RpcMethodInfo
                     {
                         Method = method,
                         OwnerCheck = attr.OwnerCheck
@@ -131,7 +131,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     {
         var type = networkIdentifier.GetType();
 
-        if (!_handlers.TryGetValue(type, out var methods))
+        if (!Handlers.TryGetValue(type, out var methods))
             return;
 
         if (!methods.TryGetValue(rpcId, out var rpcMethodInfo))

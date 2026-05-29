@@ -35,7 +35,7 @@ internal abstract class JsonObject
 /// <typeparam name="T">The type of the JSON object that derives from this class.</typeparam>
 internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
 {
-    private static readonly T _uninitializedObject = (T)FormatterServices.GetUninitializedObject(typeof(T));
+    private static readonly T UninitializedObject = (T)FormatterServices.GetUninitializedObject(typeof(T));
 
     /// <summary>
     /// Serializes the specified object to a JSON string using its instance Serialize method.
@@ -54,7 +54,7 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// <returns>A deserialized object of type <typeparamref name="T"/>, or null if deserialization fails or the input is invalid.</returns>
     internal static T DeserializeObject(string json)
     {
-        return _uninitializedObject.Deserialize(json);
+        return UninitializedObject.Deserialize(json);
     }
 
     /// <summary>

@@ -11,7 +11,7 @@ internal abstract class CustomAssetReference
     /// <summary>
     /// Stores all registered custom asset references keyed by their full GUID
     /// </summary>
-    private static readonly Dictionary<string, CustomAssetReference> _customAssetReferences = [];
+    private static readonly Dictionary<string, CustomAssetReference> CustomAssetReferences = [];
 
     /// <summary>
     /// The full GUID of this custom asset reference, including the custom prefix.
@@ -24,9 +24,9 @@ internal abstract class CustomAssetReference
     /// <param name="customAssetReference">The custom asset reference to register.</param>
     internal static void Register(CustomAssetReference customAssetReference)
     {
-        if (!_customAssetReferences.ContainsKey(customAssetReference._guid))
+        if (!CustomAssetReferences.ContainsKey(customAssetReference._guid))
         {
-            _customAssetReferences[customAssetReference._guid] = customAssetReference;
+            CustomAssetReferences[customAssetReference._guid] = customAssetReference;
         }
     }
 
@@ -37,7 +37,7 @@ internal abstract class CustomAssetReference
     /// <returns>The matching CustomAssetReference if found; otherwise, null.</returns>
     internal static CustomAssetReference GetByGuid(string guid)
     {
-        if (_customAssetReferences.TryGetValue(guid, out var asset))
+        if (CustomAssetReferences.TryGetValue(guid, out var asset))
         {
             return asset;
         }
