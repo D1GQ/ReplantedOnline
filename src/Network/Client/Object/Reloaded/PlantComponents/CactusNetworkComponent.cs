@@ -20,7 +20,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
     {
         if (Net.AmOwner)
         {
-            if (Net._Plant.mState is PlantState.CactusLow or PlantState.CactusLowering)
+            if (Net.Plant.mState is PlantState.CactusLow or PlantState.CactusLowering)
             {
                 if (_isHigh)
                 {
@@ -28,7 +28,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
                     SendLoweringRpc();
                 }
             }
-            else if (Net._Plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
+            else if (Net.Plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
             {
                 if (!_isHigh)
                 {
@@ -41,11 +41,11 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
         {
             if (_isHigh)
             {
-                Net._Plant.mState = PlantState.CactusHigh;
+                Net.Plant.mState = PlantState.CactusHigh;
             }
             else
             {
-                Net._Plant.mState = PlantState.CactusLow;
+                Net.Plant.mState = PlantState.CactusLow;
             }
         }
 

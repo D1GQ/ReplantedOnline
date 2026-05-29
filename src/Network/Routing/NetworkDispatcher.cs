@@ -124,22 +124,22 @@ internal static class NetworkDispatcher
     }
 
     /// <summary>
-    /// Sends an RPC (Remote Procedure Call) to a specific IRpcReceiver instance across all clients.
+    /// Sends an RPC (Remote Procedure Call) to a specific INetworkIdentifier instance across all clients.
     /// </summary>
-    /// <param name="rpcReceiver">The targetIRpcReceiver instance to receive the RPC.</param>
+    /// <param name="networkIdentifier">The target INetworkIdentifier instance to receive the RPC.</param>
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="payload">The packet writer containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpcReceiver(IRpcReceiver rpcReceiver, byte rpcId, PacketWriter payload = null, bool receiveLocally = false)
+    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, PacketWriter payload = null, bool receiveLocally = false)
     {
         var packet = PacketWriter.Get();
-        Message<ObjectRpcMessage>.Instance.Serialize(rpcReceiver, rpcId, packet);
+        Message<ObjectRpcMessage>.Instance.Serialize(networkIdentifier, rpcId, packet);
         if (payload != null)
         {
             packet.WritePacketToBuffer(payload);
         }
 
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Object RPC: {rpcId} for NetworkId: {rpcReceiver.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
         SendPacket(packet, receiveLocally, PacketHandlerType.ObjectRpc, PacketChannel.Rpc);
         packet.Recycle();
     }

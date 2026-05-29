@@ -18,7 +18,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
     private bool _isWakingup = true;
     internal override void Update()
     {
-        if (Net._Plant.mState == PlantState.Notready)
+        if (Net.Plant.mState == PlantState.Notready)
         {
             UpdateSleeping();
         }
@@ -32,7 +32,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
         {
             if (_isWakingup)
             {
-                if (Net._Plant.mStateCountdown < 5)
+                if (Net.Plant.mStateCountdown < 5)
                 {
                     _isWakingup = false;
                     SendWakeupRpc();
@@ -43,7 +43,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
         {
             if (_isWakingup)
             {
-                Net._Plant.mStateCountdown = int.MaxValue;
+                Net.Plant.mStateCountdown = int.MaxValue;
             }
         }
     }
@@ -57,7 +57,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
     private void HandleWakeupRpc()
     {
         _isWakingup = false;
-        Net._Plant.mStateCountdown = 0;
+        Net.Plant.mStateCountdown = 0;
     }
 
     internal void ExplodeSynced()

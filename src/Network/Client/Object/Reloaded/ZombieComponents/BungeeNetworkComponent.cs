@@ -20,13 +20,13 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private bool _isTakingPlant;
     internal override void Update()
     {
-        if (Net._Zombie == null) return;
+        if (Net.Zombie == null) return;
 
-        SeedPacketDefinitions.SetBungeeRenderOrder(Net._Zombie);
+        SeedPacketDefinitions.SetBungeeRenderOrder(Net.Zombie);
 
         if (Net.AmOwner)
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
             {
                 if (!_isDiving)
                 {
@@ -34,9 +34,9 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                     SendDiveRpc();
                 }
             }
-            else if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
-                if (Net._Zombie.mPhaseCounter < 10 && !_isTakingPlant)
+                if (Net.Zombie.mPhaseCounter < 10 && !_isTakingPlant)
                 {
                     _isTakingPlant = true;
                     SendTakePlantRpc();
@@ -46,21 +46,21 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
             {
                 if (!_isDiving)
                 {
-                    Net._Zombie.mPhaseCounter = int.MaxValue;
+                    Net.Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (Net._Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
                 if (!_isTakingPlant)
                 {
-                    Net._Zombie.mPhaseCounter = int.MaxValue;
+                    Net.Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (Net._Zombie.mAltitude > 500 && !Net.IsReadyToDespawn)
+            else if (Net.Zombie.mAltitude > 500 && !Net.IsReadyToDespawn)
             {
                 Net.IsReadyToDespawn = true;
             }
@@ -76,7 +76,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleDiveRpc()
     {
         _isDiving = true;
-        Net._Zombie.mPhaseCounter = 0;
+        Net.Zombie.mPhaseCounter = 0;
     }
 
     private void SendTakePlantRpc()
@@ -88,6 +88,6 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleTakePlantRpc()
     {
         _isTakingPlant = true;
-        Net._Zombie.mPhaseCounter = 0;
+        Net.Zombie.mPhaseCounter = 0;
     }
 }

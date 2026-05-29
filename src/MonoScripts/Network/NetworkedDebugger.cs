@@ -125,7 +125,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     [HideFromIl2Cpp]
     private void DebugZombie(ZombieNetworked zombieNetworked)
     {
-        var zombie = zombieNetworked._Zombie;
+        var zombie = zombieNetworked.Zombie;
 
         bool isDead = zombie == null || zombie.mDead;
 
@@ -161,7 +161,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     [HideFromIl2Cpp]
     private void DebugPlant(PlantNetworked plantNetworked)
     {
-        var plant = plantNetworked._Plant;
+        var plant = plantNetworked.Plant;
 
         bool isDead = plant == null || plant.mDead;
 

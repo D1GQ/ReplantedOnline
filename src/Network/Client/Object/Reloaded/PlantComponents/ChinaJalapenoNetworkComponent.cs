@@ -20,16 +20,16 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
     internal override void OnInit()
     {
-        _awakeTexture = Net._Plant.mController.m_meshRenderer.material.mainTexture;
+        _awakeTexture = Net.Plant.mController.m_meshRenderer.material.mainTexture;
         _sleepingTexture = ReplantedOnlineAssets.Sprites.Character.JalapenoSleeping.texture;
-        Net._Plant.mSeedType = SeedType.None;
-        Net._Plant.SetSleeping(true);
-        Net._Plant.PlayIdleAnim(0);
-        Net._Plant.mPlantHealth = int.MaxValue;
-        Net._Plant.mPlantMaxHealth = int.MaxValue;
-        Net._Plant.mX -= 40;
-        Net._Plant.mController.m_visualOffset = Net._Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
-        Net._Plant.mController.m_shadowController.gameObject.SetActive(false);
+        Net.Plant.mSeedType = SeedType.None;
+        Net.Plant.SetSleeping(true);
+        Net.Plant.PlayIdleAnim(0);
+        Net.Plant.mPlantHealth = int.MaxValue;
+        Net.Plant.mPlantMaxHealth = int.MaxValue;
+        Net.Plant.mX -= 40;
+        Net.Plant.mController.m_visualOffset = Net.Plant.mController.m_visualOffset + new Vector3(100f, 0f, 0f);
+        Net.Plant.mController.m_shadowController.gameObject.SetActive(false);
 
         _lastHighContrast = !Instances.GameplayActivity.SettingsService.HighContrast;
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
@@ -38,7 +38,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     private bool _activated;
     internal override void Update()
     {
-        if (Net._Plant.mController == null) return;
+        if (Net.Plant.mController == null) return;
 
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
 
@@ -50,12 +50,12 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
                 if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                 if (zombie.IsDeadOrDying()) continue;
 
-                if (Net._Plant.mX + 100 >= zombie.mX)
+                if (Net.Plant.mX + 100 >= zombie.mX)
                 {
                     if (!_activated)
                     {
-                        Net._Plant.mSeedType = SeedType.Jalapeno;
-                        Net._Plant.SetSleeping(false);
+                        Net.Plant.mSeedType = SeedType.Jalapeno;
+                        Net.Plant.SetSleeping(false);
                         SendActivateRpc();
                     }
 
@@ -70,13 +70,13 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (_activated)
         {
-            Net._Plant.mController.m_meshRenderer.material.mainTexture = _awakeTexture;
+            Net.Plant.mController.m_meshRenderer.material.mainTexture = _awakeTexture;
             base.Update();
         }
         else
         {
-            Net._Plant.mBlinkCountdown = 100;
-            Net._Plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
+            Net.Plant.mBlinkCountdown = 100;
+            Net.Plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
         }
     }
 
@@ -88,11 +88,11 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (useHighContrast)
         {
-            Net._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
+            Net.Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
         }
         else
         {
-            Net._Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
+            Net.Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
         }
     }
 
@@ -111,8 +111,8 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         if (!_activated)
         {
             _activated = true;
-            Net._Plant.mSeedType = SeedType.Jalapeno;
-            Net._Plant.SetSleeping(false);
+            Net.Plant.mSeedType = SeedType.Jalapeno;
+            Net.Plant.SetSleeping(false);
         }
     }
 

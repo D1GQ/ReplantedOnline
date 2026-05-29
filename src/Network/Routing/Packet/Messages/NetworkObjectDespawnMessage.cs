@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Routing.Packet.Messages;
@@ -6,7 +7,7 @@ namespace ReplantedOnline.Network.Routing.Packet.Messages;
 /// <summary>
 /// Represents a network message for despawning network objects across clients.
 /// </summary>
-internal readonly struct NetworkObjectDespawnMessage : IMessage<NetworkObjectDespawnMessage, INetworkObject, bool>
+internal readonly struct NetworkObjectDespawnMessage : IMessage<NetworkObjectDespawnMessage, NetworkObject, bool>
 {
     /// <summary>
     /// Gets the unique network identifier assigned to the spawned object.
@@ -24,7 +25,7 @@ internal readonly struct NetworkObjectDespawnMessage : IMessage<NetworkObjectDes
     /// <param name="networkObj">The network object instance to serialize.</param>
     /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
-    public void Serialize(INetworkObject networkObj, bool waitToBeReady, PacketWriter packetWriter)
+    public void Serialize(NetworkObject networkObj, bool waitToBeReady, PacketWriter packetWriter)
     {
         packetWriter.WriteNetworkId(networkObj.NetworkId);
         packetWriter.WriteBool(waitToBeReady);

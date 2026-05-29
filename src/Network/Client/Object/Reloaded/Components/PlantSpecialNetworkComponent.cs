@@ -22,8 +22,8 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     {
         if (Net.AmOwner)
         {
-            if (!Net._Plant.mIsAsleep &&
-                Net._Plant.mDoSpecialCountdown < 5)
+            if (!Net.Plant.mIsAsleep &&
+                Net.Plant.mDoSpecialCountdown < 5)
             {
                 if (!_isDoingSpecial)
                 {
@@ -35,7 +35,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         }
         else
         {
-            Net._Plant.mDoSpecialCountdown = int.MaxValue;
+            Net.Plant.mDoSpecialCountdown = int.MaxValue;
         }
     }
 
@@ -63,7 +63,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     protected virtual void DoSpecial()
     {
         Net.Dead = true;
-        Net._Plant.DoSpecial();
+        Net.Plant.DoSpecial();
     }
 
     protected virtual void DoSpecial_PlantSide() { }

@@ -21,7 +21,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
 
     private IEnumerator CoBungeeDropZombie()
     {
-        var zombie = Net._Zombie;
+        var zombie = Net.Zombie;
 
         var originalVelX = zombie.mVelX;
         var originalRenderOrder = zombie.RenderOrder;

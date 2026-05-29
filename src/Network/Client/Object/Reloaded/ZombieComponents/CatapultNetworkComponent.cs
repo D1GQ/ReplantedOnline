@@ -20,24 +20,24 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     private int _lastSummonCounter;
     internal override void Update()
     {
-        if (Net._Zombie == null) return;
+        if (Net.Zombie == null) return;
 
         if (Net.AmOwner)
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.ZombieNormal && !_driving)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal && !_driving)
             {
                 _driving = true;
                 Net.Target = null;
                 SendDriveRpc();
             }
-            else if (Net._Zombie.mZombiePhase == ZombiePhase.CatapultLaunching && !ReadyToFire)
+            else if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching && !ReadyToFire)
             {
                 _driving = false;
                 ReadyToFire = true;
-                Plant plant = Net._Zombie.FindCatapultTarget();
-                SendReadyToFireRpc(plant, Net._Zombie.mSummonCounter);
+                Plant plant = Net.Zombie.FindCatapultTarget();
+                SendReadyToFireRpc(plant, Net.Zombie.mSummonCounter);
             }
-            else if (Net._Zombie.mZombiePhase == ZombiePhase.CatapultReloading)
+            else if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultReloading)
             {
                 ReadyToFire = false;
             }
@@ -47,24 +47,24 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
             if (_driving)
             {
                 _driving = false;
-                Net._Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
-                Net._Zombie.mPhaseCounter = 0;
-                Net._Zombie.mTargetPlantID = PlantID.Null;
+                Net.Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
+                Net.Zombie.mPhaseCounter = 0;
+                Net.Zombie.mTargetPlantID = PlantID.Null;
             }
             else if (ReadyToFire)
             {
                 ReadyToFire = false;
-                Net._Zombie.mPhaseCounter = 300;
-                Net._Zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
-                Net._Zombie.PlayZombieReanim("anim_shoot", ReanimLoopType.PlayOnce, 20, 24f);
+                Net.Zombie.mPhaseCounter = 300;
+                Net.Zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
+                Net.Zombie.PlayZombieReanim("anim_shoot", ReanimLoopType.PlayOnce, 20, 24f);
             }
 
-            if (Net._Zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
             {
-                if (Net._Zombie.mPhaseCounter <= 160f)
+                if (Net.Zombie.mPhaseCounter <= 160f)
                 {
-                    Net._Zombie.mZombiePhase = ZombiePhase.CatapultReloading;
-                    Net._Zombie.mPhaseCounter = int.MaxValue;
+                    Net.Zombie.mZombiePhase = ZombiePhase.CatapultReloading;
+                    Net.Zombie.mPhaseCounter = int.MaxValue;
                     Net.Target = null;
                 }
             }
@@ -95,7 +95,7 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     {
         Net.Target = target;
         _lastSummonCounter = summonCounter;
-        Net._Zombie.mSummonCounter = summonCounter;
+        Net.Zombie.mSummonCounter = summonCounter;
         ReadyToFire = true;
     }
 }

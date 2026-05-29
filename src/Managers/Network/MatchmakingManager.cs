@@ -255,17 +255,14 @@ internal static class MatchmakingManager
     /// </summary>
     /// <param name="random">The random number generator to use for selecting the postfix character.</param>
     /// <returns>A character that identifies the application type (Replanted or Spacewar).</returns>
-    internal static char GetGameCodePostfix(Random random)
+    private static char GetGameCodePostfix(Random random)
     {
-        switch (BloomEngineManager.BloomConfigs.AppServerConfig.Value)
+        return BloomEngineManager.BloomConfigs.AppServerConfig.Value switch
         {
-            case AppIds.Replanted:
-                return CODE_REPLANTED_POSTFIX_CHARS[random.Next(CODE_REPLANTED_POSTFIX_CHARS.Length)];
-            case AppIds.Spacewar:
-                return CODE_SPACEWAR_POSTFIX_CHARS[random.Next(CODE_SPACEWAR_POSTFIX_CHARS.Length)];
-            default:
-                return CODE_CHARS.Last();
-        }
+            AppIds.Replanted => CODE_REPLANTED_POSTFIX_CHARS[random.Next(CODE_REPLANTED_POSTFIX_CHARS.Length)],
+            AppIds.Spacewar => CODE_SPACEWAR_POSTFIX_CHARS[random.Next(CODE_SPACEWAR_POSTFIX_CHARS.Length)],
+            _ => CODE_CHARS.Last(),
+        };
     }
 
     /// <summary>

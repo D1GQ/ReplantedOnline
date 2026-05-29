@@ -268,7 +268,7 @@ internal static class GargantuarZombiePatch
     // Serialization and deserialization for the imp to sync the throw across the network
     internal static void ImpSerialize(ZombieNetworked impNetworked, PacketWriter packetWriter)
     {
-        Zombie gargantuar = impNetworked._Zombie.mBoard.ZombieGet(impNetworked._Zombie.mRelatedZombieID);
+        Zombie gargantuar = impNetworked.Zombie.mBoard.ZombieGet(impNetworked.Zombie.mRelatedZombieID);
 
         if (gargantuar != null)
         {
@@ -286,13 +286,13 @@ internal static class GargantuarZombiePatch
 
     internal static void ImpDeserialize(ZombieNetworked impNetworked, PacketReader packetReader)
     {
-        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?._Zombie;
+        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?.Zombie;
 
         var impComp = impNetworked.GetNetworkComponent<ImpNetworkComponent>();
         impComp.ImpRandomArc = packetReader.ReadFloat();
 
         // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
-        gargantuar?.mRelatedZombieID = impNetworked._Zombie.DataID;
+        gargantuar?.mRelatedZombieID = impNetworked.Zombie.DataID;
     }
 
     // Waits for the Gargantuar's throw animation to reach the point where the imp is thrown before executing the callback

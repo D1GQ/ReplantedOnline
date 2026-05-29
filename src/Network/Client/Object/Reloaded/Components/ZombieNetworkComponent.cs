@@ -37,18 +37,18 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     protected void UpdatePositionSync()
     {
-        if (Net._Zombie == null) return;
+        if (Net.Zombie == null) return;
         if (PosSyncingPaused) return;
 
         if (Net.AmOwner)
         {
-            if (!Net._Zombie.mDead)
+            if (!Net.Zombie.mDead)
             {
-                if (_syncCooldown <= 0f && _lastPos != Net._Zombie.mPosX)
+                if (_syncCooldown <= 0f && _lastPos != Net.Zombie.mPosX)
                 {
                     Net.MarkDirty();
                     _syncCooldown = 2f;
-                    _lastPos = Net._Zombie.mPosX;
+                    _lastPos = Net.Zombie.mPosX;
                 }
                 _syncCooldown -= Time.deltaTime;
             }
@@ -57,32 +57,32 @@ internal class ZombieNetworkComponent : NetworkComponent
         {
             if (!Net.EnteringHouse)
             {
-                if (Net._Zombie.mPosX <= 0f)
+                if (Net.Zombie.mPosX <= 0f)
                 {
-                    Net._Zombie.mPosX = 0f;
+                    Net.Zombie.mPosX = 0f;
                 }
             }
         }
     }
 
-    internal override void Serialize(PacketWriter packetWriter, bool init)
+    public override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init) return;
 
-        packetWriter.WritePackedInt(Net._Zombie.mRow);
-        packetWriter.WriteFloat(Net._Zombie.mVelX);
-        packetWriter.WriteFloat(Net._Zombie.mPosX);
+        packetWriter.WritePackedInt(Net.Zombie.mRow);
+        packetWriter.WriteFloat(Net.Zombie.mVelX);
+        packetWriter.WriteFloat(Net.Zombie.mPosX);
     }
 
-    internal override void Deserialize(PacketReader packetReader, bool init)
+    public override void Deserialize(PacketReader packetReader, bool init)
     {
         if (init) return;
 
         if (!Net.AmOwner)
         {
-            Net._Zombie.mRow = packetReader.ReadPackedInt();
-            Net._Zombie.mVelX = packetReader.ReadFloat();
-            Net._Zombie.UpdateAnimSpeed();
+            Net.Zombie.mRow = packetReader.ReadPackedInt();
+            Net.Zombie.mVelX = packetReader.ReadFloat();
+            Net.Zombie.UpdateAnimSpeed();
             var posX = packetReader.ReadFloat();
             LastSyncPosX = posX;
             LarpPos(posX);
@@ -99,14 +99,14 @@ internal class ZombieNetworkComponent : NetworkComponent
     private void LarpPos(float posX)
     {
         if (PosSyncingPaused) return;
-        if (Net._Zombie == null || Net.EnteringHouse || posX < 15f) return;
-        if (Net._Zombie.mIceTrapCounter > 0) return;
+        if (Net.Zombie == null || Net.EnteringHouse || posX < 15f) return;
+        if (Net.Zombie.mIceTrapCounter > 0) return;
 
-        float currentX = Net._Zombie.mPosX;
+        float currentX = Net.Zombie.mPosX;
         float distance = Mathf.Abs(currentX - posX);
 
         // Calculate threshold based on velocity (0.5 seconds of movement)
-        float threshold = Mathf.Abs(Net._Zombie.mVelX) * 0.3f;
+        float threshold = Mathf.Abs(Net.Zombie.mVelX) * 0.3f;
         threshold = Mathf.Clamp(threshold, 10f, 50f);
 
         if (distance > threshold)
@@ -114,13 +114,13 @@ internal class ZombieNetworkComponent : NetworkComponent
             // Stop existing interpolation
             StopLarpPos();
 
-            if (distance < 100f && Net._Zombie.mZombieType != ZombieType.Pogo)
+            if (distance < 100f && Net.Zombie.mZombieType != ZombieType.Pogo)
             {
                 _larpCoroutine = Net.StartCoroutine(CoLarpPos(posX));
             }
             else
             {
-                Net._Zombie.mPosX = posX;
+                Net.Zombie.mPosX = posX;
             }
         }
     }
@@ -145,13 +145,13 @@ internal class ZombieNetworkComponent : NetworkComponent
     [HideFromIl2Cpp]
     private IEnumerator CoLarpPos(float targetX)
     {
-        if (this == null || Net._Zombie == null) yield break;
+        if (this == null || Net.Zombie == null) yield break;
 
-        float startX = Net._Zombie.mPosX;
+        float startX = Net.Zombie.mPosX;
         float distance = Mathf.Abs(targetX - startX);
 
         // Use zombie's current velocity for interpolation speed
-        float speed = Mathf.Abs(Net._Zombie.mVelX);
+        float speed = Mathf.Abs(Net.Zombie.mVelX);
         speed = Mathf.Clamp(speed, 10f, 40f);
 
         float duration = Mathf.Clamp(distance / speed, 0.1f, 2f);
@@ -160,19 +160,19 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         while (elapsedTime < duration)
         {
-            if (this == null || Net._Zombie == null) yield break;
+            if (this == null || Net.Zombie == null) yield break;
 
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
             t = SmoothStep(t);
 
-            Net._Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
+            Net.Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
             yield return null;
         }
 
         // Ensure final position is exact
-        Net._Zombie?.mPosX = targetX;
+        Net.Zombie?.mPosX = targetX;
 
         LastSyncPosX = null;
         _larpCoroutine = null;

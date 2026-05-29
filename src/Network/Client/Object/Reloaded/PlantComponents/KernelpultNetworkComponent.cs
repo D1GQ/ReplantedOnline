@@ -30,13 +30,13 @@ internal sealed class KernelpultNetworkComponent : PlantNetworkComponent
     {
         if (plantWeapon == PlantWeapon.Primary)
         {
-            Net._Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_KERNAL_OBJECT, 0);
-            Net._Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_BUTTER_OBJECT, -1);
+            Net.Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_KERNAL_OBJECT, 0);
+            Net.Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_BUTTER_OBJECT, -1);
         }
         else
         {
-            Net._Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_BUTTER_OBJECT, 0);
-            Net._Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_KERNAL_OBJECT, -1);
+            Net.Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_BUTTER_OBJECT, 0);
+            Net.Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_KERNAL_OBJECT, -1);
         }
     }
 

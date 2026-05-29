@@ -29,16 +29,16 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             return;
         }
 
-        var groundType = Net._Zombie.mBoard.mPlantRow[Net._Zombie.mRow];
+        var groundType = Net.Zombie.mBoard.mPlantRow[Net.Zombie.mRow];
         if (groundType == PlantRowType.Pool)
         {
-            Net._Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
+            Net.Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
 
             // remove arms overlay to appear over the water
-            Net._Zombie.mController.SetImageOverride("whitewater", string.Empty);
+            Net.Zombie.mController.SetImageOverride("whitewater", string.Empty);
         }
 
-        _whiteWaterEffect ??= WhiteWaterEffect.Create(Net._Zombie.mController, false);
+        _whiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
     }
 
     internal override void Update()
@@ -48,7 +48,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             return;
         }
 
-        var zombie = Net._Zombie;
+        var zombie = Net.Zombie;
         if (zombie == null) return;
         if (zombie.mBoard == null) return;
         if (zombie.mController == null) return;
@@ -104,14 +104,14 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
     {
         if (_whiteWaterEffect == null) return;
 
-        var zombie = Net._Zombie;
+        var zombie = Net.Zombie;
         var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && zombie.mAltitude < -35f;
         _whiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
         {
             case ZombieType.TrashCan:
-                if (Net._Zombie.mShieldType != ShieldType.None)
+                if (Net.Zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-15f, 110f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.05f, 1f, 1f);
@@ -119,7 +119,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 }
                 break;
             case ZombieType.Door:
-                if (Net._Zombie.mShieldType != ShieldType.None)
+                if (Net.Zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-25f, 110f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
@@ -127,7 +127,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 }
                 break;
             case ZombieType.Newspaper:
-                if (Net._Zombie.mShieldType != ShieldType.None)
+                if (Net.Zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-30f, 114f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.2f, 1f, 1f);
@@ -140,7 +140,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 return;
             case ZombieType.JackInTheBox:
                 _whiteWaterEffect.transform.localPosition = new(-5.9f, 114f, 0f);
-                _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+                _whiteWaterEffect.transform.localScale = new(Net.Zombie.mZombieRect.width * 0.020f, 1f, 1f);
                 return;
             case ZombieType.Football:
                 _whiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
@@ -151,15 +151,15 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         }
 
         _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
-        _whiteWaterEffect.transform.localScale = new(Net._Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+        _whiteWaterEffect.transform.localScale = new(Net.Zombie.mZombieRect.width * 0.020f, 1f, 1f);
     }
 
     private bool CanGoInWater()
     {
         bool typeCheck = Net.ZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
-        bool phaseCheck = Net._Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
+        bool phaseCheck = Net.Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
-        return typeCheck && phaseCheck && Net._Zombie.mController?.gameObject.active == true;
+        return typeCheck && phaseCheck && Net.Zombie.mController?.gameObject.active == true;
     }
 
     private void SendDrownRpc()
@@ -179,17 +179,17 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     private IEnumerator CoDrown()
     {
-        float target = Net._Zombie.mAltitude - 150;
-        while (Net._Zombie.mAltitude > target)
+        float target = Net.Zombie.mAltitude - 150;
+        while (Net.Zombie.mAltitude > target)
         {
-            Net._Zombie.mAltitude -= 25f;
-            Net._Zombie.mVelX = 0;
-            Net._Zombie.UpdateAnimSpeed();
-            Net._Zombie.PoolSplash(true);
+            Net.Zombie.mAltitude -= 25f;
+            Net.Zombie.mVelX = 0;
+            Net.Zombie.UpdateAnimSpeed();
+            Net.Zombie.PoolSplash(true);
             yield return null;
         }
         Net.Dead = true;
-        Net._Zombie.DieNoLootOriginal();
+        Net.Zombie.DieNoLootOriginal();
         Net.IsReadyToDespawn = true;
     }
 }

@@ -99,7 +99,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// </summary>
     internal static void Initialize()
     {
-        foreach (var type in ModInfo.Assembly.GetTypes().Where(type => !type.IsAbstract && typeof(IRpcReceiver).IsAssignableFrom(type)))
+        foreach (var type in ModInfo.Assembly.GetTypes().Where(type => !type.IsAbstract && typeof(INetworkIdentifier).IsAssignableFrom(type)))
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
@@ -120,16 +120,16 @@ internal sealed class RpcHandlerAttribute : Attribute
     }
 
     /// <summary>
-    /// Routes an RPC to the appropriate handler method on the target IRpcReceiver.
+    /// Routes an RPC to the appropriate handler method on the target INetworkIdentifier.
     /// Performs owner validation if required by the handler attribute.
     /// </summary>
-    /// <param name="rpcReceiver">The IRpcReceiver instance to route the RPC to.</param>
+    /// <param name="networkIdentifier">The INetworkIdentifier instance to route the RPC to.</param>
     /// <param name="sender">The client that sent the RPC.</param>
     /// <param name="rpcId">The ID of the RPC to route.</param>
     /// <param name="packetReader">The packet reader containing the RPC data payload.</param>
-    internal static void HandleRpcReceiver(IRpcReceiver rpcReceiver, ReloadedClientData sender, byte rpcId, PacketReader packetReader)
+    internal static void HandleRpcReceiver(INetworkIdentifier networkIdentifier, ReloadedClientData sender, byte rpcId, PacketReader packetReader)
     {
-        var type = rpcReceiver.GetType();
+        var type = networkIdentifier.GetType();
 
         if (!_handlers.TryGetValue(type, out var methods))
             return;
@@ -138,7 +138,7 @@ internal sealed class RpcHandlerAttribute : Attribute
             return;
 
         // Validate ownership if required
-        if (rpcMethodInfo.OwnerCheck && rpcReceiver.OwnerId != sender.ClientId)
+        if (rpcMethodInfo.OwnerCheck && networkIdentifier.OwnerId != sender.ClientId)
             return;
 
         var method = rpcMethodInfo.Method;
@@ -163,6 +163,6 @@ internal sealed class RpcHandlerAttribute : Attribute
             }
         }
 
-        method.Invoke(rpcReceiver, args);
+        method.Invoke(networkIdentifier, args);
     }
 }

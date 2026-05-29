@@ -40,12 +40,12 @@ internal sealed class PlantNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Zombie Target { get; set; }
 
-    internal DynamicWeakReference<Plant> _p = new();
+    internal WeakVar<Plant> _p = new();
 
     /// <summary>
     /// The underlying plant instance that this networked object represents.
     /// </summary>
-    internal Plant _Plant => _p.Value;
+    internal Plant Plant => _p.Value;
 
     /// <summary>
     /// The type of seed used to plant this plant when spawning.
@@ -71,7 +71,7 @@ internal sealed class PlantNetworked : NetworkObject
 
     public override string GetObjectName()
     {
-        return $"{Enum.GetName(_Plant.mSeedType)}Plant ({NetworkId})";
+        return $"{Enum.GetName(Plant.mSeedType)}Plant ({NetworkId})";
     }
 
     [HideFromIl2Cpp]
@@ -85,7 +85,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         LogicComponent = (PlantNetworkComponent)RegisterNetworkComponent.TryCreateInstance(SeedType, typeof(PlantNetworkComponent));
         AddNetworkComponent(LogicComponent);
-        _Plant.AddNetworkedLookup(this);
+        Plant.AddNetworkedLookup(this);
 
         if (SpawnType == SpawnType.ChinaJalapeno)
         {
@@ -99,7 +99,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => _Plant == null || _Plant.mDead && Dead, () =>
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => Plant == null || Plant.mDead && Dead, () =>
             {
                 DespawnAndDestroy(waitToBeReady);
             }));
@@ -108,11 +108,11 @@ internal sealed class PlantNetworked : NetworkObject
 
     public override void OnRejected()
     {
-        if (_Plant == null) return;
+        if (Plant == null) return;
 
-        if (!_Plant.mDead)
+        if (!Plant.mDead)
         {
-            _Plant?.DieOriginal();
+            Plant?.DieOriginal();
         }
     }
 
@@ -120,11 +120,11 @@ internal sealed class PlantNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (_Plant != null)
+        if (Plant != null)
         {
-            if (!Dead && !_Plant.mDead)
+            if (!Dead && !Plant.mDead)
             {
-                _Plant.DieOriginal();
+                Plant.DieOriginal();
             }
         }
     }
@@ -134,7 +134,7 @@ internal sealed class PlantNetworked : NetworkObject
     {
         if (!IsOnNetwork) return;
 
-        if (_Plant == null) return;
+        if (Plant == null) return;
 
         LogicComponent.Update();
     }
@@ -144,7 +144,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            SendNetworkObjectRpc(PlantRpcs.Die, _Plant.mDoSpecialCountdown);
+            SendNetworkObjectRpc(PlantRpcs.Die, Plant.mDoSpecialCountdown);
             DespawnAndDestroy(true);
         }
     }
@@ -155,7 +155,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            _Plant?.DieOriginal();
+            Plant?.DieOriginal();
         }
         IsReadyToDespawn = true;
     }
@@ -165,7 +165,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            _Plant?.DieOriginal();
+            Plant?.DieOriginal();
             SendNetworkObjectRpc(PlantRpcs.Shoveled);
             DespawnAndDestroy(true);
         }
@@ -177,7 +177,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            _Plant?.DieOriginal();
+            Plant?.DieOriginal();
             Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
         }
 
@@ -192,7 +192,7 @@ internal sealed class PlantNetworked : NetworkObject
     [RpcHandler(PlantRpcs.SquishPlant)]
     private void HandleSquashPlantRpc()
     {
-        _Plant.SquishOriginal();
+        Plant.SquishOriginal();
     }
 
     internal void SendReadyToFireRpc(int row, ref PlantWeapon plantWeapon)
@@ -215,7 +215,7 @@ internal sealed class PlantNetworked : NetworkObject
         }
 
         // Play animation
-        _Plant.FindTargetAndFireOriginal(row, plantWeapon);
+        Plant.FindTargetAndFireOriginal(row, plantWeapon);
     }
 
     internal void SendFireRpc(Zombie target, int row, ref PlantWeapon plantWeapon)
@@ -237,7 +237,7 @@ internal sealed class PlantNetworked : NetworkObject
             component.SetVisuals(PlantWeapon.Primary);
         }
 
-        _Plant.FireOriginal(target, row, plantWeapon);
+        Plant.FireOriginal(target, row, plantWeapon);
     }
 
     internal void SendSetZombieTargetRpc(Zombie target)
@@ -304,5 +304,10 @@ internal sealed class PlantNetworked : NetworkObject
         }
 
         LogicComponent.Deserialize(packetReader, init);
+    }
+
+    private sealed class SpawnInfo()
+    {
+
     }
 }

@@ -16,7 +16,7 @@ namespace ReplantedOnline.Network.Client.Object;
 /// Provides core functionality for ownership, synchronization, and remote procedure calls.
 /// </summary>
 [RegisterTypeInIl2Cpp]
-internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcReceiver
+internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetworkSerializable
 {
     /// <summary>
     /// Represents a null or uninitialized value.
@@ -115,7 +115,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkObject, IRpcRecei
     /// Gets or sets the dirty bits flag indicating modified properties.
     /// Each bit represents whether a specific property has changed since last sync.
     /// </summary>
-    public uint DirtyBits { get; set; }
+    internal uint DirtyBits { get; private set; }
 
     /// <summary>
     /// Gets whether any properties are dirty and need synchronization.

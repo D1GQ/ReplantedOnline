@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Client.Object.Component;
 /// Abstract base class for network components that provide modular functionality to NetworkObjects.
 /// Components handle serialization, updates, and RPC communication for specific features.
 /// </summary>
-internal abstract class NetworkComponent : IRpcReceiver
+internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializable
 {
     /// <summary>
     /// Gets or sets the NetworkObject that owns this component.
@@ -65,14 +65,14 @@ internal abstract class NetworkComponent : IRpcReceiver
     /// </summary>
     /// <param name="packetWriter">The packet writer to write serialized data to.</param>
     /// <param name="init">If true, performs full initialization serialization; if false, performs delta/dirty serialization.</param>
-    internal virtual void Serialize(PacketWriter packetWriter, bool init) { }
+    public virtual void Serialize(PacketWriter packetWriter, bool init) { }
 
     /// <summary>
     /// Deserializes component state from a received network packet.
     /// </summary>
     /// <param name="packetReader">The packet reader containing serialized state data.</param>
     /// <param name="init">If true, performs full initialization deserialization; if false, performs delta/dirty deserialization.</param>
-    internal virtual void Deserialize(PacketReader packetReader, bool init) { }
+    public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
     /// Sends a Remote Procedure Call (RPC) for this network component.

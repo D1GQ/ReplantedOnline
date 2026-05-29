@@ -4,19 +4,19 @@
 /// Provides a dynamic weak reference to a source object of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type of the referenced object, which must be a reference type.</typeparam>
-internal sealed class DynamicWeakReference<T> where T : class
+internal sealed class WeakVar<T> where T : class
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynamicWeakReference{T}"/> class with no initial delegate.
+    /// Initializes a new instance of the <see cref="WeakVar{T}"/> class with no initial delegate.
     /// The target must be set later using <see cref="SetTarget"/> before accessing <see cref="Value"/>.
     /// </summary>
-    internal DynamicWeakReference() { }
+    internal WeakVar() { }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DynamicWeakReference{T}"/> class with the specified getter delegate.
+    /// Initializes a new instance of the <see cref="WeakVar{T}"/> class with the specified getter delegate.
     /// </summary>
     /// <param name="get">A function that returns the target object of type <typeparamref name="T"/> when invoked.</param>
-    internal DynamicWeakReference(Func<T> get)
+    internal WeakVar(Func<T> get)
     {
         _getTarget = get;
     }

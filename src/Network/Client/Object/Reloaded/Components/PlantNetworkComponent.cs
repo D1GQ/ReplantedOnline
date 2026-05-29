@@ -32,44 +32,44 @@ internal class PlantNetworkComponent : NetworkComponent
 
     protected void UpdateHealthSync()
     {
-        if (Net._Plant == null) return;
+        if (Net.Plant == null) return;
 
         if (Net.AmOwner)
         {
-            if (!Net.Dead && !Net._Plant.mDead)
+            if (!Net.Dead && !Net.Plant.mDead)
             {
-                if (_syncHealthCooldown <= 0f && lastSyncPlantHealth != Net._Plant.mPlantHealth)
+                if (_syncHealthCooldown <= 0f && lastSyncPlantHealth != Net.Plant.mPlantHealth)
                 {
                     Net.MarkDirty();
                     _syncHealthCooldown = 1f;
-                    lastSyncPlantHealth = Net._Plant.mPlantHealth;
+                    lastSyncPlantHealth = Net.Plant.mPlantHealth;
                 }
                 _syncHealthCooldown -= Time.deltaTime;
             }
         }
         else
         {
-            if (!Net.Dead && !Net._Plant.mDead)
+            if (!Net.Dead && !Net.Plant.mDead)
             {
                 if (lastSyncPlantHealth != null)
                 {
-                    Net._Plant.mPlantHealth = lastSyncPlantHealth.Value;
+                    Net.Plant.mPlantHealth = lastSyncPlantHealth.Value;
                 }
 
-                if (Net._Plant.mPlantHealth < 25)
+                if (Net.Plant.mPlantHealth < 25)
                 {
-                    Net._Plant.mPlantHealth = 25;
+                    Net.Plant.mPlantHealth = 25;
                 }
             }
         }
     }
 
-    internal override void Serialize(PacketWriter packetWriter, bool init)
+    public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WritePackedInt(Net._Plant.mPlantHealth);
+        packetWriter.WritePackedInt(Net.Plant.mPlantHealth);
     }
 
-    internal override void Deserialize(PacketReader packetReader, bool init)
+    public override void Deserialize(PacketReader packetReader, bool init)
     {
         lastSyncPlantHealth = Math.Max(packetReader.ReadPackedInt(), 25);
     }

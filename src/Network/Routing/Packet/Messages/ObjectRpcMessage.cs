@@ -7,7 +7,7 @@ namespace ReplantedOnline.Network.Routing.Packet.Messages;
 /// <summary>
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on IRpcReceivers.
 /// </summary>
-internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcReceiver, byte>
+internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, INetworkIdentifier, byte>
 {
     /// <summary>
     /// Gets the unique network identifier of the target network object.
@@ -32,16 +32,15 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, IRpcRecei
 
     /// <summary>
     /// Serializes a network object RPC invocation into a packet for network transmission.
-    /// Handles both direct IRpcReceiver objects and NetworkComponent types.
     /// </summary>
-    /// <param name="rpcReceiver">The target IRpcReceiver instance to serialize.</param>
+    /// <param name="networkIdentifier">The target INetworkIdentifier instance to serialize.</param>
     /// <param name="rpcId">The identifier of the RPC method to invoke.</param>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
-    public void Serialize(IRpcReceiver rpcReceiver, byte rpcId, PacketWriter packetWriter)
+    public void Serialize(INetworkIdentifier networkIdentifier, byte rpcId, PacketWriter packetWriter)
     {
-        packetWriter.WriteNetworkId(rpcReceiver.NetworkId);
+        packetWriter.WriteNetworkId(networkIdentifier.NetworkId);
         packetWriter.WriteByte(rpcId);
-        if (rpcReceiver is NetworkComponent component)
+        if (networkIdentifier is NetworkComponent component)
         {
             packetWriter.WriteBool(true);
             packetWriter.WritePackedInt(component.Index);

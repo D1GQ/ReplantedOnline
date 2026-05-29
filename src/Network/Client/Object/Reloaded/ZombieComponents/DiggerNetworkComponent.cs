@@ -10,7 +10,7 @@ internal sealed class DiggerNetworkComponent : ZombieNetworkComponent
 {
     internal override void Update()
     {
-        if (Net._Zombie.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
+        if (Net.Zombie.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
         {
             UpdatePositionSync();
         }

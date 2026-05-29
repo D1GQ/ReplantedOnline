@@ -32,7 +32,7 @@ internal class ZombieResolver : IFastPacketResolver<Zombie>
         var zombieNetworked = packetReader.ReadNetworkObject<ZombieNetworked>();
         if (zombieNetworked != null)
         {
-            return zombieNetworked._Zombie;
+            return zombieNetworked.Zombie;
         }
         else
         {

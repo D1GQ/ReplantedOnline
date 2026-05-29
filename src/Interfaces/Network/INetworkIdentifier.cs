@@ -3,10 +3,9 @@
 namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
-/// Represents an object that can receive and handle Remote Procedure Calls (RPCs) over the network.
-/// Implemented by NetworkObject and NetworkComponent to enable RPC communication.
+/// Represents an object that can be identified on the network.
 /// </summary>
-internal interface IRpcReceiver
+internal interface INetworkIdentifier
 {
     /// <summary>
     /// Gets the unique identifier of the client that owns this object.

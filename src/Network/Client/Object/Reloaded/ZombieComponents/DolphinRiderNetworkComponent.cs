@@ -10,28 +10,28 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
 {
     internal override void Update()
     {
-        if (Net._Zombie == null) return;
+        if (Net.Zombie == null) return;
 
-        if (Net._Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+        if (Net.Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
 
         if (Net.AmOwner)
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.DolphinInJump && Net.Target == null)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump && Net.Target == null)
             {
                 // Send target to vault
-                Plant target = Net._Zombie.FindPlantTarget(ZombieAttackType.Vault);
+                Plant target = Net.Zombie.FindPlantTarget(ZombieAttackType.Vault);
                 Net.SendSetPlantTargetRpc(target);
             }
         }
 
         // Non owner logic is handled in DolphinRiderZombiePatch.cs
 
-        if (Net._Zombie.mZombiePhase == ZombiePhase.DolphinWalkingWithoutDolphin)
+        if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinWalkingWithoutDolphin)
         {
             Net.Target = null;
         }
 
-        if (Net._Zombie.mZombiePhase is not ZombiePhase.DolphinRiding)
+        if (Net.Zombie.mZombiePhase is not ZombiePhase.DolphinRiding)
         {
             UpdatePositionSync();
         }

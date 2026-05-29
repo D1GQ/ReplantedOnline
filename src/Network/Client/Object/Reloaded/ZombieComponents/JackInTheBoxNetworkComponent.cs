@@ -20,11 +20,11 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     private bool _isExploding;
     internal override void Update()
     {
-        if (Net._Zombie == null) return;
+        if (Net.Zombie == null) return;
 
         if (Net.AmOwner)
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
                 Net.Dead = true;
                 _isExploding = true;
@@ -34,11 +34,11 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net._Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
                 if (!_isExploding)
                 {
-                    Net._Zombie.mPhaseCounter = int.MaxValue;
+                    Net.Zombie.mPhaseCounter = int.MaxValue;
                 }
             }
         }
@@ -51,7 +51,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         int jackInTheBoxCount = 0;
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
         {
-            if (Net._Zombie == zombie) continue;
+            if (Net.Zombie == zombie) continue;
             if (zombie.mZombieType != ZombieType.JackInTheBox) continue;
 
             jackInTheBoxCount++;
@@ -74,7 +74,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     {
         _isExploding = true;
         Net.Dead = true;
-        Net._Zombie.mPhaseCounter = 0;
+        Net.Zombie.mPhaseCounter = 0;
         Net.IsReadyToDespawn = true;
     }
 }

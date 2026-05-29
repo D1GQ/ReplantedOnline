@@ -30,7 +30,7 @@ internal sealed class PushBackZombieRpc : IRpcDispatcher<Zombie>
         if (sender.AmHost)
         {
             var zombieNetworked = packetReader.ReadNetworkObject<ZombieNetworked>();
-            ArenaEvents.PushBackZombie(zombieNetworked._Zombie);
+            ArenaEvents.PushBackZombie(zombieNetworked.Zombie);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Routing.Packet.Messages;
@@ -6,7 +7,7 @@ namespace ReplantedOnline.Network.Routing.Packet.Messages;
 /// <summary>
 /// Represents a message used to synchronize the state of a networked object across clients, including its network
 /// </summary>
-internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMessage, INetworkObject, bool>
+internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMessage, NetworkObject, bool>
 {
     /// <summary>
     /// Gets a value indicating whether the initialization process.
@@ -30,10 +31,10 @@ internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMe
     /// <param name="init">A value indicating whether the packet represents an initialization state. If <see langword="true"/>, the packet
     /// will include initialization data.</param>
     /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
-    public void Serialize(INetworkObject networkObj, bool init, PacketWriter packetWriter)
+    public void Serialize(NetworkObject networkObj, bool init, PacketWriter packetWriter)
     {
         packetWriter.WriteNetworkId(networkObj.NetworkId);
-        packetWriter.WriteUInt(networkObj.DirtyBits);
+        packetWriter.WritePackedUInt(networkObj.DirtyBits);
         packetWriter.WriteBool(init);
         networkObj.Serialize(packetWriter, init);
     }
@@ -49,7 +50,7 @@ internal readonly struct NetworkObjectSyncMessage : IMessage<NetworkObjectSyncMe
         NetworkObjectSyncMessage message = new()
         {
             NetworkId = packetReader.ReadNetworkId(),
-            DirtyBits = packetReader.ReadUInt(),
+            DirtyBits = packetReader.ReadPackedUInt(),
             Init = packetReader.ReadBool()
         };
 
