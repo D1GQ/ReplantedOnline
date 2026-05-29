@@ -5,6 +5,7 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
@@ -71,7 +72,9 @@ internal static class LobbyCodePanel
                 if (_reloadedInputField != null && _reloadedInputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
                 {
                     _lobbyCodePanel.gameObject.SetActive(false);
-                    MatchmakingManager.SearchSteamLobbyByGameCode(_reloadedInputField.m_Text.ToUpper());
+                    string gameCode = _reloadedInputField.m_Text.ToUpper();
+                    SteamClientPatch.TrySetTempApp(MatchmakingManager.GetGameCodePostfixType(gameCode));
+                    MatchmakingManager.SearchSteamLobbyByGameCode(gameCode);
                 }
                 else
                 {

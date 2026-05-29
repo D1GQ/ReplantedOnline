@@ -9,6 +9,7 @@ namespace ReplantedOnline.Patches.Steam;
 internal static class SteamClientPatch
 {
     private static uint _currentAppId;
+    private static bool _hasTempAppId;
     private static bool _isShuttingDown = false;
 
     [HarmonyPatch(typeof(SteamClient), nameof(SteamClient.Init))]
@@ -25,16 +26,53 @@ internal static class SteamClientPatch
     /// <param name="appId">The target App ID to set for Steam.</param>
     internal static void SetApp(AppIds appId)
     {
-        SetApp(appId, 0);
+        SetApp(appId, false, 0);
+    }
+
+
+    /// <summary>
+    /// Temporarily overrides the current Steam App ID for special operations.
+    /// </summary>
+    /// <param name="appId">The temporary App ID to set.</param>
+    internal static void TrySetTempApp(AppIds appId)
+    {
+        if (_hasTempAppId) return;
+
+        if (appId == AppIds.Spacewar)
+        {
+            appId = (AppIds)480;
+        }
+
+        if ((uint)appId == _currentAppId)
+        {
+            return;
+        }
+
+        _hasTempAppId = true;
+        SetApp(appId, true, 0);
+    }
+
+    /// <summary>
+    /// Clears any temporary App ID override, allowing normal App ID operations to resume.
+    /// </summary>
+    internal static void TryClearTempApp()
+    {
+        if (!_hasTempAppId) return;
+
+        _hasTempAppId = false;
+        SetApp(BloomEngineManager.BloomConfigs.AppServerConfig.Value);
     }
 
     /// <summary>
     /// Sets the Steam App ID, handles shutdown of existing Steam client, environment variables, and steam_appid.txt creation.
     /// </summary>
     /// <param name="appId">The target App ID to set for Steam.</param>
+    /// <param name="bypassTemp">If true, bypasses temporary App ID restrictions and forces the change.</param>
     /// <param name="attempt">Current retry attempt number, recursive up to 100 times.</param>
-    private static void SetApp(AppIds appId, int attempt)
+    private static void SetApp(AppIds appId, bool bypassTemp, int attempt)
     {
+        if (_hasTempAppId && !bypassTemp) return;
+
         if (attempt >= 100)
         {
             return;
@@ -63,7 +101,7 @@ internal static class SteamClientPatch
         }
         catch
         {
-            SetApp(appId, ++attempt);
+            SetApp(appId, bypassTemp, ++attempt);
         }
     }
 

@@ -1,7 +1,9 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
+using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client;
@@ -23,6 +25,10 @@ internal static class MatchmakingManager
     /// Character set used for generating game codes. Excludes confusing characters like O/0 and I/1.
     /// </summary>
     internal static readonly char[] CODE_CHARS = "ABCDEFHIJKLMNPQRSTUVWXYZ".ToCharArray();
+
+    internal static readonly char[] CODE_REPLANTED_POSTFIX_CHARS = "BCDEFHIJKLM".ToCharArray();
+
+    internal static readonly char[] CODE_SPACEWAR_POSTFIX_CHARS = "NPQRSTUVWXY".ToCharArray();
 
     /// <summary>
     /// The length of generated game codes.
@@ -233,13 +239,58 @@ internal static class MatchmakingManager
         var random = new Random((int)(seed & 0xFFFFFFFF));
 
         StringBuilder codeBuilder = new();
-        for (int i = 0; i < CODE_LENGTH; i++)
+        for (int i = 0; i < CODE_LENGTH - 1; i++)
         {
             codeBuilder.Append(CODE_CHARS[random.Next(CODE_CHARS.Length)]);
         }
+        codeBuilder.Append(GetGameCodePostfix(random));
 
         string gameCode = codeBuilder.ToString();
         ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Generated game code: {gameCode} for lobby {lobbyId}");
         return gameCode;
+    }
+
+    /// <summary>
+    /// Gets a random postfix character for the game code based on the current application configuration.
+    /// </summary>
+    /// <param name="random">The random number generator to use for selecting the postfix character.</param>
+    /// <returns>A character that identifies the application type (Replanted or Spacewar).</returns>
+    internal static char GetGameCodePostfix(Random random)
+    {
+        switch (BloomEngineManager.BloomConfigs.AppServerConfig.Value)
+        {
+            case AppIds.Replanted:
+                return CODE_REPLANTED_POSTFIX_CHARS[random.Next(CODE_REPLANTED_POSTFIX_CHARS.Length)];
+            case AppIds.Spacewar:
+                return CODE_SPACEWAR_POSTFIX_CHARS[random.Next(CODE_SPACEWAR_POSTFIX_CHARS.Length)];
+            default:
+                return CODE_CHARS.Last();
+        }
+    }
+
+    /// <summary>
+    /// Determines the application type from a game code based on its postfix character.
+    /// </summary>
+    /// <param name="gameCode">The game code string to analyze.</param>
+    /// <returns>The AppIds value corresponding to the game code's postfix, or 0 if no match is found.</returns>
+    internal static AppIds GetGameCodePostfixType(string gameCode)
+    {
+        foreach (var character in CODE_REPLANTED_POSTFIX_CHARS)
+        {
+            if (gameCode.EndsWith(character))
+            {
+                return AppIds.Replanted;
+            }
+        }
+
+        foreach (var character in CODE_SPACEWAR_POSTFIX_CHARS)
+        {
+            if (gameCode.EndsWith(character))
+            {
+                return AppIds.Spacewar;
+            }
+        }
+
+        return 0;
     }
 }

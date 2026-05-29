@@ -198,7 +198,11 @@ internal static class ReloadedLobby
         var lobbyId = LobbyData.LobbyId;
         LobbyData.Dispose();
         Transitions.SetLoading();
-        Transitions.ToMainMenu(callback);
+        Transitions.ToMainMenu(() =>
+        {
+            SteamClientPatch.TryClearTempApp();
+            callback?.Invoke();
+        });
         LobbyData = null;
         NetworkTransport.LeaveLobby(lobbyId);
         DiscordManager.OnLeftLobby();
