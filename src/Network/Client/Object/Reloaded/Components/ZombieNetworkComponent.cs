@@ -69,9 +69,13 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         if (init) return;
 
-        packetWriter.WritePackedInt(Net.Zombie.mRow);
-        packetWriter.WriteFloat(Net.Zombie.mVelX);
-        packetWriter.WriteFloat(Net.Zombie.mPosX);
+        packetWriter.WriteBool(Net.Zombie != null);
+        if (Net.Zombie != null)
+        {
+            packetWriter.WritePackedInt(Net.Zombie.mRow);
+            packetWriter.WriteFloat(Net.Zombie.mVelX);
+            packetWriter.WriteFloat(Net.Zombie.mPosX);
+        }
     }
 
     public override void Deserialize(PacketReader packetReader, bool init)
@@ -80,12 +84,16 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         if (!Net.AmOwner)
         {
-            Net.Zombie.mRow = packetReader.ReadPackedInt();
-            Net.Zombie.mVelX = packetReader.ReadFloat();
-            Net.Zombie.UpdateAnimSpeed();
-            var posX = packetReader.ReadFloat();
-            LastSyncPosX = posX;
-            LarpPos(posX);
+            bool isZombieNull = packetReader.ReadBool();
+            if (!isZombieNull && Net.Zombie != null)
+            {
+                Net.Zombie.mRow = packetReader.ReadPackedInt();
+                Net.Zombie.mVelX = packetReader.ReadFloat();
+                Net.Zombie.UpdateAnimSpeed();
+                var posX = packetReader.ReadFloat();
+                LastSyncPosX = posX;
+                LarpPos(posX);
+            }
         }
     }
 
