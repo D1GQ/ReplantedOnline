@@ -186,6 +186,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             Net.Zombie.mVelX = 0;
             Net.Zombie.UpdateAnimSpeed();
             Net.Zombie.PoolSplash(true);
+            Net.Zombie.mController.ClipRect(new(-500, -500, 1000, 615));
             yield return null;
         }
         Net.Dead = true;
