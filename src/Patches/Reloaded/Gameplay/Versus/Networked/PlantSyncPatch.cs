@@ -22,7 +22,11 @@ internal static class PlantSyncPatch
             {
                 if (findTargetAndFireInterval.Execute())
                 {
-                    __instance.GetNetworked()?.SendReadyToFireRpc(theRow, ref thePlantWeapon);
+                    var plantNetworked = __instance.GetNetworked();
+                    if (plantNetworked != null)
+                    {
+                        plantNetworked.SendReadyToFireRpc(theRow, ref thePlantWeapon);
+                    }
                 }
             }
             else
@@ -53,7 +57,11 @@ internal static class PlantSyncPatch
             {
                 if (fireInterval.Execute())
                 {
-                    __instance.GetNetworked()?.SendFireRpc(theTargetZombie, theRow, ref thePlantWeapon);
+                    var plantNetworked = __instance.GetNetworked();
+                    if (plantNetworked != null)
+                    {
+                        plantNetworked.SendFireRpc(theTargetZombie, theRow, ref thePlantWeapon);
+                    }
                 }
             }
             else
@@ -79,7 +87,11 @@ internal static class PlantSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            __instance.GetNetworked()?.SendDieRpc();
+            var plantNetworked = __instance.GetNetworked();
+            if (plantNetworked != null)
+            {
+                plantNetworked.SendDieRpc();
+            }
         }
 
         return true;
@@ -101,8 +113,11 @@ internal static class PlantSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            // Sync Squish
-            __instance.GetNetworked()?.SendSquashPlantRpc();
+            var plantNetworked = __instance.GetNetworked();
+            if (plantNetworked != null)
+            {
+                plantNetworked.SendSquashPlantRpc();
+            }
         }
 
         return true;

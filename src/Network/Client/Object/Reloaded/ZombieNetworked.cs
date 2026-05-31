@@ -137,12 +137,9 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (Zombie != null)
+        if (Zombie != null && !Zombie.IsDeadOrDying())
         {
-            if (!Dead && !Zombie.IsDeadOrDying())
-            {
-                Zombie.DieDeserialize();
-            }
+            Zombie.DieNoLootOriginal();
         }
     }
 
@@ -256,26 +253,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendDragUnderRpc()
     {
-        if (!Dead)
-        {
-            Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
-            SendNetworkObjectRpc(ZombieRpcs.DragUnder);
-            DespawnAndDestroyWhenNullOrDead(true);
-        }
+        SendNetworkObjectRpc(ZombieRpcs.DragUnder);
     }
 
     [RpcHandler(ZombieRpcs.DragUnder)]
     private void HandleDragUnderRpc()
     {
-        if (!Dead)
-        {
-            Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
-            Zombie.DragUnderOriginal();
-        }
-
-        IsReadyToDespawn = true;
+        Zombie.DragUnderOriginal();
     }
 
     internal void SendMowDownRpc()

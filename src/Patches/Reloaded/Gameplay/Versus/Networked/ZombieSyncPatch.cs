@@ -16,8 +16,13 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
+            if (!VersusState.AmPlantSide) return false;
+
             var zombieNetworked = __instance.GetNetworked();
-            zombieNetworked?.SendDeathRpc(theDamageFlags);
+            if (zombieNetworked != null)
+            {
+                zombieNetworked.SendDeathRpc(theDamageFlags);
+            }
         }
 
         return true;
@@ -37,8 +42,13 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
+            if (!VersusState.AmPlantSide) return false;
+
             var zombieNetworked = __instance.GetNetworked();
-            zombieNetworked?.SendDieLootRpc(true);
+            if (zombieNetworked != null)
+            {
+                zombieNetworked.SendDieLootRpc(true);
+            }
         }
 
         return true;
@@ -58,8 +68,13 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
+            if (!VersusState.AmPlantSide) return false;
+
             var zombieNetworked = __instance.GetNetworked();
-            zombieNetworked?.SendDieLootRpc(false);
+            if (zombieNetworked != null)
+            {
+                zombieNetworked.SendDieLootRpc(false);
+            }
         }
 
         return true;
@@ -79,8 +94,13 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
+            if (!VersusState.AmPlantSide) return false;
+
             var zombieNetworked = __instance.GetNetworked();
-            zombieNetworked?.SendDragUnderRpc();
+            if (zombieNetworked != null)
+            {
+                zombieNetworked.SendDragUnderRpc();
+            }
         }
 
         return true;
@@ -105,7 +125,11 @@ internal static class ZombieSyncPatch
 
             if (!__instance.mDead)
             {
-                __instance.GetNetworked()?.SendMowDownRpc();
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
+                {
+                    zombieNetworked.SendMowDownRpc();
+                }
             }
         }
 
@@ -130,7 +154,11 @@ internal static class ZombieSyncPatch
 
             if (__instance.mHasHead)
             {
-                __instance.GetNetworked()?.SendTakeDamageRpc(theDamage, theDamageFlags);
+                var zombieNetworked = __instance.GetNetworked();
+                if (zombieNetworked != null)
+                {
+                    zombieNetworked.SendTakeDamageRpc(theDamage, theDamageFlags);
+                }
             }
         }
 
@@ -153,10 +181,13 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            // Execute the original HitIceTrap logic locally
-            __instance.HitIceTrapOriginal();
-
-            __instance.GetNetworked()?.SendSetFrozenRpc(true);
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked != null)
+            {
+                // Execute the original HitIceTrap logic locally
+                __instance.HitIceTrapOriginal();
+                zombieNetworked.SendSetFrozenRpc(true);
+            }
 
             return false;
         }
@@ -180,10 +211,13 @@ internal static class ZombieSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            // Execute the original RemoveIceTrap logic locally
-            __instance.RemoveIceTrapOriginal();
-
-            __instance.GetNetworked()?.SendSetFrozenRpc(false);
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked != null)
+            {
+                // Execute the original RemoveIceTrap logic locally
+                __instance.RemoveIceTrapOriginal();
+                zombieNetworked.SendSetFrozenRpc(false);
+            }
 
             return false;
         }
@@ -208,7 +242,11 @@ internal static class ZombieSyncPatch
             if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
 
-            __instance.GetNetworked()?.SendApplyBurnRpc();
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked != null)
+            {
+                zombieNetworked.SendApplyBurnRpc();
+            }
         }
 
         return true;
@@ -227,15 +265,13 @@ internal static class ZombieSyncPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (VersusState.AmPlantSide)
+            if (!VersusState.AmPlantSide) return false;
+
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked != null)
             {
-                var zombieNetworked = __instance.GetNetworked();
-                zombieNetworked?.SendMindControlledRpc();
-
-                return true;
+                zombieNetworked.SendMindControlledRpc();
             }
-
-            return false;
         }
 
         return true;

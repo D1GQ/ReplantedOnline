@@ -81,7 +81,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
             _inPool = false;
         }
 
-        UpdateWhiteWaterEffect();
+        UpdateWhiteWaterEffect(onPool);
 
         if (_inPool)
         {
@@ -100,12 +100,12 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void UpdateWhiteWaterEffect()
+    private void UpdateWhiteWaterEffect(bool onPool)
     {
         if (_whiteWaterEffect == null) return;
 
         var zombie = Net.Zombie;
-        var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && zombie.mAltitude < -35f;
+        var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
         _whiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
