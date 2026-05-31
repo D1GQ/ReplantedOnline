@@ -161,7 +161,7 @@ internal static class NetworkDispatcher
         if (ReloadedLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            ReloadedLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
+            ReloadedLobby.NetworkTransport.SendP2PPacket(targetId, packet.GetByteBuffer(), packetChannel, sendType);
         }
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packet.Length} bytes");
@@ -190,7 +190,7 @@ internal static class NetworkDispatcher
             if (ReloadedLobby.IsPlayerInOurLobby(client.ClientId))
             {
                 var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-                bool sent = ReloadedLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetByteBuffer(), packet.Length, packetChannel, sendType);
+                bool sent = ReloadedLobby.NetworkTransport.SendP2PPacket(client.ClientId, packet.GetByteBuffer(), packetChannel, sendType);
                 if (sent) sentCount++;
             }
         }
@@ -296,7 +296,7 @@ internal static class NetworkDispatcher
     /// </summary>
     private static void ReadPacket(uint messageSize, PacketChannel channel)
     {
-        var buffer = P2PPacketBuffer.Get(messageSize);
+        var buffer = PacketBuffer.Get(messageSize);
 
         try
         {
@@ -307,12 +307,7 @@ internal static class NetworkDispatcher
 
                 if (buffer.Size > 0)
                 {
-                    var receivedData = buffer.ToByteArray();
-                    if (receivedData == null)
-                    {
-                        return;
-                    }
-                    var packetReader = PacketReader.Get(receivedData);
+                    var packetReader = PacketReader.Get(buffer.Data);
                     Streamline(sender, packetReader, false);
                 }
                 else

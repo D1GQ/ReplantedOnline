@@ -58,7 +58,6 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal NetworkIdentifierPool NetworkIdPool = new();
 
-
     /// <summary>
     /// Processes the current list of lobby members, adding new clients and removing disconnected ones.
     /// </summary>

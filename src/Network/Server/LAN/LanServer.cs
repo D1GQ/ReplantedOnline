@@ -768,7 +768,7 @@ internal sealed class LanServer : IDisposable
     /// <param name="buffer">The buffer to store the packet data in.</param>
     /// <param name="channel">The channel to read from.</param>
     /// <returns>True if a packet was available, false otherwise.</returns>
-    internal bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel)
+    internal bool ReadP2PPacket(PacketBuffer buffer, PacketChannel channel)
     {
         lock (PacketQueue)
         {

@@ -1,5 +1,4 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSteamworks;
+﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Routing.Packet;
@@ -27,19 +26,43 @@ internal sealed class SteamTransport : INetworkTransport
         return SteamNetworking.Internal.IsP2PPacketAvailable(ref msgSize, (int)channel);
     }
 
-    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
+    public unsafe bool SendP2PPacket(ID clientId, byte[] data, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
     {
-        if (clientId.TryGetSteamId(out SteamId steamId))
-            return SteamNetworking.SendP2PPacket(steamId, data, length, (int)channel, sendType);
-        throw new ArgumentException("SendP2PPacket requires a SteamId");
+        if (!clientId.TryGetSteamId(out SteamId steamId))
+        {
+            throw new ArgumentException("SendP2PPacket requires a SteamId");
+        }
+
+        unsafe
+        {
+            fixed (byte* ptr = data)
+            {
+                return SteamNetworking.SendP2PPacket(steamId, ptr, (uint)data.Length, (int)channel, sendType);
+            }
+        }
     }
 
-    public bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
+    public unsafe bool ReadP2PPacket(PacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
     {
+        if (buffer.Data == null || buffer.Data.Length == 0)
+            return false;
+
         SteamId steamId = default;
-        var result = SteamNetworking.ReadP2PPacket(buffer.Data, ref buffer.Size, ref steamId, (int)channel);
+        uint actualSize = 0;
+        uint capacity = (uint)buffer.Data.Length;
+
+        bool result;
+        fixed (byte* ptr = buffer.Data)
+        {
+            result = SteamNetworking.ReadP2PPacket(ptr, capacity, ref actualSize, ref steamId, (int)channel);
+        }
+
         if (result)
+        {
+            buffer.Size = actualSize;
             buffer.ClientId = steamId.AsID();
+        }
+
         return result;
     }
 

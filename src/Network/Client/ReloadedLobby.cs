@@ -318,8 +318,7 @@ internal static class ReloadedLobby
     }
 
     /// <summary>
-    /// Synchronizes the internal client list with the current lobby members from Steamworks.
-    /// Clears the existing client list and repopulates it with current lobby members.
+    /// Synchronizes the internal client list with the current lobby members.
     /// </summary>
     internal static void ProcessMemberList()
     {

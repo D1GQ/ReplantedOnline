@@ -1,5 +1,4 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSteamworks;
+﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Reloaded;
@@ -79,12 +78,12 @@ internal sealed class LanTransport : INetworkTransport
         return LanServer.Server.IsP2PPacketAvailable(ref msgSize, channel);
     }
 
-    public bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
+    public bool SendP2PPacket(ID clientId, byte[] data, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable)
     {
         return LanServer.Server.SendP2PPacket(clientId, data, channel);
     }
 
-    public bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
+    public bool ReadP2PPacket(PacketBuffer buffer, PacketChannel channel = PacketChannel.Main)
     {
         return LanServer.Server.ReadP2PPacket(buffer, channel);
     }

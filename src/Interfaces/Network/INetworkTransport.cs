@@ -1,5 +1,4 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSteamworks;
+﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
@@ -39,7 +38,7 @@ internal interface INetworkTransport : IDisposable
     /// <param name="channel">The channel to send the packet on.</param>
     /// <param name="sendType">The reliability type of the packet.</param>
     /// <returns>True if the packet was sent successfully, false otherwise.</returns>
-    bool SendP2PPacket(ID clientId, Il2CppStructArray<byte> data, int length = -1, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable);
+    bool SendP2PPacket(ID clientId, byte[] data, PacketChannel channel = PacketChannel.Main, P2PSend sendType = P2PSend.Reliable);
 
     /// <summary>
     /// Reads an incoming P2P packet.
@@ -47,7 +46,7 @@ internal interface INetworkTransport : IDisposable
     /// <param name="buffer">The buffer to read the packet data into.</param>
     /// <param name="channel">The channel to read the packet from.</param>
     /// <returns>True if a packet was successfully read, false otherwise.</returns>
-    bool ReadP2PPacket(P2PPacketBuffer buffer, PacketChannel channel = PacketChannel.Main);
+    bool ReadP2PPacket(PacketBuffer buffer, PacketChannel channel = PacketChannel.Main);
 
     /// <summary>
     /// Gets data associated with a lobby.
