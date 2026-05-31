@@ -36,8 +36,12 @@ internal static class PolevaulterZombiePatch
                             // Push back until plant side has vaulted
                             if (__result != null)
                             {
+                                if (__result.mX < __instance.mX)
+                                {
+                                    __instance.mPosX -= __instance.GetZombieMoveDirection();
+                                }
+
                                 __result = null;
-                                __instance.mPosX -= __instance.GetZombieMoveDirection();
                             }
                         }
                     }

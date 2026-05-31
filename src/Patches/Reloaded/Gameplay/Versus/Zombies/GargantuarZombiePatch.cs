@@ -68,8 +68,12 @@ internal static class GargantuarZombiePatch
                             // If the gargantuar is not in synced smashing state, move it backward if target is found
                             if (__result != null)
                             {
+                                if (__result.mX < __instance.mX)
+                                {
+                                    __instance.mPosX -= __instance.GetZombieMoveDirection();
+                                }
+
                                 __result = null;
-                                __instance.mPosX -= __instance.GetZombieMoveDirection();
                             }
                         }
                     }
@@ -150,6 +154,7 @@ internal static class GargantuarZombiePatch
     }
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.DragUnder))]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPrefix]
     private static bool Zombie_DragUnder_Prefix(Zombie __instance)
     {
@@ -160,7 +165,11 @@ internal static class GargantuarZombiePatch
             // Make Tanglekelp act like every other insta on Gargantuar
             if (__instance.mBodyHealth > 1800)
             {
-                __instance.TakeDamage(1800, DamageFlags.HitsShieldAndBody);
+                if (VersusState.AmPlantSide)
+                {
+                    __instance.TakeDamage(1800, DamageFlags.HitsShieldAndBody);
+                }
+
                 foreach (var plant in __instance.mBoard.GetPlants())
                 {
                     if (plant.mSeedType != SeedType.Tanglekelp) continue;
@@ -170,6 +179,7 @@ internal static class GargantuarZombiePatch
                         plant.mTargetZombieID = ZombieID.Null;
                     }
                 }
+
                 return false;
             }
         }

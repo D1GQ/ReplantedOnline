@@ -79,8 +79,12 @@ internal static class ZombiePatch
                     // Push back until plant side starts eating plant
                     if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
+                        if (__result.mX < __instance.mX)
+                        {
+                            __instance.mPosX -= __instance.GetZombieMoveDirection();
+                        }
+
                         __result = null;
-                        __instance.mPosX -= __instance.GetZombieMoveDirection();
                     }
                 }
                 else
