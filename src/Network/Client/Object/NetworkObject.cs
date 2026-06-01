@@ -361,7 +361,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
                 networkObj.transform.SetParent(GlobalGameObjects.NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
                 networkObj.OnInit();
-                NetworkDispatcher.SpawnNetworkObject(networkObj, owner);
+                NetworkDispatcher.SendSpawnNetworkObject(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
                 networkObj.OnEnabled();
                 return networkObj;
@@ -395,7 +395,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
 
         if (IsOnNetwork)
         {
-            NetworkDispatcher.DespawnNetworkObject(this, waitToBeReady);
+            NetworkDispatcher.SendDespawnNetworkObject(this, waitToBeReady);
         }
     }
 

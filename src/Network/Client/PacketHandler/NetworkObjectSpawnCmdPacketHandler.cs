@@ -25,12 +25,12 @@ internal sealed class NetworkObjectSpawnCmdPacketHandler : IPacketHandler
 
         if (Validate(sender, message, packet))
         {
-            NetworkDispatcher.SendPacket(PacketWriter.Get(packetReader.GetByteBuffer()), true, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main, sender.ClientId);
+            NetworkDispatcher.SendPacket(PacketWriter.Get(packetReader.GetByteBuffer()), PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main, true, sender.ClientId);
             ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacketHandler), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
         }
         else
         {
-            NetworkDispatcher.RejectNetworkObject(message.NetworkId, sender.ClientId);
+            NetworkDispatcher.SendRejectNetworkObject(message.NetworkId, sender.ClientId);
         }
     }
 

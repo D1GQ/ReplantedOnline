@@ -234,7 +234,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         if (ReloadedLobby.AmLobbyHost())
         {
             LobbyRestarting.Value = true;
-            NetworkDispatcher.SendPacket(null, false, PacketHandlerType.ResetLobby, PacketChannel.Main);
+            NetworkDispatcher.SendPacket(null, PacketHandlerType.ResetLobby, PacketChannel.Main, false);
             ReloadedLobby.ResetLobby();
         }
     }
