@@ -69,7 +69,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         if (init) return;
 
-        packetWriter.WriteBool(Net.Zombie != null);
+        packetWriter.WriteBool(Net.Zombie == null);
         if (Net.Zombie != null)
         {
             packetWriter.WritePackedInt(Net.Zombie.mRow);
