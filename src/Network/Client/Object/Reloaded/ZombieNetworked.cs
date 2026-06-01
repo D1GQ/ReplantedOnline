@@ -198,26 +198,13 @@ internal sealed class ZombieNetworked : NetworkObject
     internal bool Dead;
     internal void SendDeathRpc(DamageFlags damageFlags)
     {
-        if (!Dead)
-        {
-            Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
-            SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
-            DespawnAndDestroyWhenNullOrDead(true);
-        }
+        SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
     }
 
     [RpcHandler(ZombieRpcs.Death)]
     private void HandleDeathRpc(DamageFlags damageFlags)
     {
-        if (!Dead)
-        {
-            Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
-            Zombie.PlayDeathAnimOriginal(damageFlags);
-        }
-
-        IsReadyToDespawn = true;
+        Zombie.PlayDeathAnimOriginal(damageFlags);
     }
 
     internal void SendDieLootRpc(bool withLoot)
