@@ -208,30 +208,4 @@ internal static class LanServerProtocol
     {
         serverData.DeserializeBroadcast(packetReader);
     }
-
-    /// <summary>
-    /// Serializes a packet header with type information.
-    /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
-    /// <param name="packetType">The type of server packet.</param>
-    internal static void SerializePacketHeader(PacketWriter packetWriter, LanServer.ServerPacket packetType)
-    {
-        packetWriter.AddTag(PacketHandlerType.Server);
-        packetWriter.WriteEnum(packetType);
-    }
-
-    /// <summary>
-    /// Deserializes a packet header and validates the packet type.
-    /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>The server packet type.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the packet tag is not Server.</exception>
-    internal static LanServer.ServerPacket DeserializePacketHeader(PacketReader packetReader)
-    {
-        var tag = packetReader.GetTag();
-        if (tag != PacketHandlerType.Server)
-            throw new InvalidOperationException($"Invalid packet tag: {tag}");
-
-        return packetReader.ReadEnum<LanServer.ServerPacket>();
-    }
 }

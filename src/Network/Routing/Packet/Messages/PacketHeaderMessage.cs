@@ -6,7 +6,7 @@ namespace ReplantedOnline.Network.Routing.Packet.Messages;
 /// <summary>
 /// Represents a network message header for invoking Remote Procedure Calls (RPCs).
 /// </summary>
-internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, PacketHandlerType, PacketWriter>
+internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, PacketHandlerType, IPacket>
 {
     /// <summary>
     /// Gets the packet handler type of message this header contains.
@@ -22,16 +22,16 @@ internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, Pac
     /// Serializes the header message into a packet buffer.
     /// </summary>
     /// <param name="packetHandlerType">The packet handler type tag to write to the packet.</param>
-    /// <param name="payload">The packet writer containing the RPC payload data.</param>
-    /// <param name="packet">The target packet writer to write the serialized header data to.</param>
-    public void Serialize(PacketHandlerType packetHandlerType, PacketWriter payload, PacketWriter packet)
+    /// <param name="payload">The packet containing the RPC payload data.</param>
+    /// <param name="packetWriter">The target packet writer to write the serialized header data to.</param>
+    public void Serialize(PacketHandlerType packetHandlerType, IPacket payload, PacketWriter packetWriter)
     {
-        packet.AddTag(packetHandlerType);
+        packetWriter.AddTag(packetHandlerType);
         if (payload != null)
         {
-            packet.WritePacketToBuffer(payload);
+            packetWriter.WritePacketToBuffer(payload);
         }
-        packet.EncryptBuffer();
+        packetWriter.EncryptBuffer();
     }
 
     /// <summary>

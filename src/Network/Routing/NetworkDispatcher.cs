@@ -107,9 +107,9 @@ internal static class NetworkDispatcher
     /// Sends an RPC (Remote Procedure Call) to all connected clients.
     /// </summary>
     /// <param name="rpc">The type of RPC to send.</param>
-    /// <param name="payload">The packet writer containing RPC-specific data.</param>
+    /// <param name="payload">The packet containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(RpcType rpc, PacketWriter payload = null, bool receiveLocally = false)
+    internal static void SendRpc(RpcType rpc, IPacket payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<RpcMessage>.Instance.Serialize(rpc, packetWriter);
@@ -128,9 +128,9 @@ internal static class NetworkDispatcher
     /// </summary>
     /// <param name="networkIdentifier">The target INetworkIdentifier instance to receive the RPC.</param>
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
-    /// <param name="payload">The packet writer containing RPC-specific data.</param>
+    /// <param name="payload">The packet containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, PacketWriter payload = null, bool receiveLocally = false)
+    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, IPacket payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<ObjectRpcMessage>.Instance.Serialize(networkIdentifier, rpcId, packetWriter);
@@ -147,12 +147,12 @@ internal static class NetworkDispatcher
     /// <summary>
     /// Sends a packet to all connected clients in the lobby.
     /// </summary>
-    /// <param name="payload">The packet writer containing the data to send.</param>
+    /// <param name="payload">The packet containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="ignoredClientIds">Optional array of client IDs that should not receive this packet.</param>
-    internal static void SendPacket(PacketWriter payload, PacketHandlerType tag, PacketChannel packetChannel, bool receiveLocally, params ID[] ignoredClientIds)
+    internal static void SendPacket(IPacket payload, PacketHandlerType tag, PacketChannel packetChannel, bool receiveLocally, params ID[] ignoredClientIds)
     {
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
@@ -173,7 +173,7 @@ internal static class NetworkDispatcher
     /// <param name="payload">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    internal static void SendPacketTo(ID targetId, PacketWriter payload, PacketHandlerType tag, PacketChannel packetChannel)
+    internal static void SendPacketTo(ID targetId, IPacket payload, PacketHandlerType tag, PacketChannel packetChannel)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<PacketHeaderMessage>.Instance.Serialize(tag, payload, packetWriter);
