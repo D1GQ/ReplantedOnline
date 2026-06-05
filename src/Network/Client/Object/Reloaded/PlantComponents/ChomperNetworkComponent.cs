@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
@@ -16,9 +16,11 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         ChomperState
     }
 
-    private string _chomperState;
+    private string _chomperState = string.Empty;
     internal override void Update()
     {
+        if (Net.Plant == null) return;
+
         if (Net.AmOwner)
         {
             string plantStateStr = Net.Plant.mState.ToString();

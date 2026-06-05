@@ -27,7 +27,7 @@ internal static class NetworkDispatcher
     /// <param name="targetId">The ID of the target client to receive the packet.</param>
     internal static void SendNetworkObjectsTo(ID targetId)
     {
-        if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.Count > 0)
+        if (ReloadedLobby.LobbyData!.NetworkObjectsSpawned.Count > 0)
         {
             foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
             {
@@ -53,7 +53,7 @@ internal static class NetworkDispatcher
     internal static void SendSpawnNetworkObject(NetworkObject networkObj, ID owner)
     {
         networkObj.OwnerId = owner;
-        networkObj.NetworkId = ReloadedLobby.LobbyData.NetworkIdPool.Allocate();
+        networkObj.NetworkId = ReloadedLobby.LobbyData!.NetworkIdPool.Allocate();
         PacketWriter packetWriter = PacketWriter.Get();
         Message<NetworkObjectSpawnMessage>.Instance.Serialize(networkObj, packetWriter);
 
@@ -76,7 +76,7 @@ internal static class NetworkDispatcher
     /// <param name="owner">The ID of the owner who requested the spawn.</param>
     internal static void SendRejectNetworkObject(NetworkIdentifier networkId, ID owner)
     {
-        if (owner.GetNetClient().AmLocal) return;
+        if (owner.GetNetClient()!.AmLocal) return;
 
         PacketWriter packetWriter = PacketWriter.Get();
         Message<NetworkObjectRejectMessage>.Instance.Serialize(networkId, packetWriter);
@@ -100,7 +100,7 @@ internal static class NetworkDispatcher
         SendPacket(packetWriter, PacketHandlerType.NetworkObjectDespawn, PacketChannel.Main, false);
         packetWriter.Recycle();
 
-        ReloadedLobby.LobbyData.OnNetworkObjectDespawn(networkObj);
+        ReloadedLobby.LobbyData!.OnNetworkObjectDespawn(networkObj);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ internal static class NetworkDispatcher
     /// <param name="rpc">The type of RPC to send.</param>
     /// <param name="payload">The packet containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(RpcType rpc, IPacket payload = null, bool receiveLocally = false)
+    internal static void SendRpc(RpcType rpc, IPacket? payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<RpcMessage>.Instance.Serialize(rpc, packetWriter);
@@ -130,7 +130,7 @@ internal static class NetworkDispatcher
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="payload">The packet containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, IPacket payload = null, bool receiveLocally = false)
+    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<ObjectRpcMessage>.Instance.Serialize(networkIdentifier, rpcId, packetWriter);
@@ -152,9 +152,9 @@ internal static class NetworkDispatcher
     /// <param name="packetChannel">The channel to send the packet on.</param>
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="ignoredClientIds">Optional array of client IDs that should not receive this packet.</param>
-    internal static void SendPacket(IPacket payload, PacketHandlerType tag, PacketChannel packetChannel, bool receiveLocally, params ID[] ignoredClientIds)
+    internal static void SendPacket(IPacket? payload, PacketHandlerType tag, PacketChannel packetChannel, bool receiveLocally, params ID[] ignoredClientIds)
     {
-        foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
+        foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
         {
             if (ignoredClientIds.Contains(client.ClientId)) continue;
             if (client.AmLocal && !receiveLocally) continue;
@@ -173,17 +173,17 @@ internal static class NetworkDispatcher
     /// <param name="payload">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    internal static void SendPacketTo(ID targetId, IPacket payload, PacketHandlerType tag, PacketChannel packetChannel)
+    internal static void SendPacketTo(ID targetId, IPacket? payload, PacketHandlerType tag, PacketChannel packetChannel)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<PacketHeaderMessage>.Instance.Serialize(tag, payload, packetWriter);
 
-        if (targetId.GetNetClient().AmLocal)
+        if (targetId.GetNetClient()!.AmLocal == true)
         {
             var rePacket = PacketReader.Get(packetWriter.GetByteBuffer());
             try
             {
-                Streamline(ReloadedClientData.LocalClient, rePacket, true);
+                Streamline(ReloadedClientData.LocalClient!, rePacket, true);
             }
             finally
             {
@@ -196,14 +196,14 @@ internal static class NetworkDispatcher
         if (ReloadedLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            ReloadedLobby.NetworkTransport.SendP2PPacket(targetId, packetWriter.GetByteBuffer(), packetChannel, sendType);
+            ReloadedLobby.NetworkTransport!.SendP2PPacket(targetId, packetWriter.GetByteBuffer(), packetChannel, sendType);
         }
 
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {targetId.GetNetClient().Name} -> Size: {packetWriter.Length} bytes");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Sent {tag} packet to {targetId.GetNetClient()!.Name} -> Size: {packetWriter.Length} bytes");
         packetWriter.Recycle();
     }
 
-    private static object ListeningToken;
+    private static object? ListeningToken;
 
     /// <summary>
     /// Starts the network packet listening coroutine.
@@ -233,27 +233,30 @@ internal static class NetworkDispatcher
         {
             try
             {
-                ReloadedLobby.NetworkTransport.Tick(Time.deltaTime);
+                ReloadedLobby.NetworkTransport?.Tick(Time.deltaTime);
 
-                foreach (var networkObj in ReloadedLobby.LobbyData?.NetworkObjectsSpawned.Values)
+                if (ReloadedLobby.LobbyData != null)
                 {
-                    if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
-                    var packet = PacketWriter.Get();
-                    Message<NetworkObjectSyncMessage>.Instance.Serialize(networkObj, false, packet);
-                    SendPacket(packet, PacketHandlerType.NetworkObjectSync, PacketChannel.Buffered, false);
-                    packet.Recycle();
+                    foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
+                    {
+                        if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
+                        var packet = PacketWriter.Get();
+                        Message<NetworkObjectSyncMessage>.Instance.Serialize(networkObj, false, packet);
+                        SendPacket(packet, PacketHandlerType.NetworkObjectSync, PacketChannel.Buffered, false);
+                        packet.Recycle();
+                    }
+
+                    Processed = 5;
+                    while (ReloadedLobby.NetworkTransport!.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
+                    {
+                        if (Processed <= 0) break;
+                        ReadPacket(messageSize, PacketChannel.Rpc);
+                        Processed--;
+                    }
                 }
 
                 Processed = 5;
-                while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
-                {
-                    if (Processed <= 0) break;
-                    ReadPacket(messageSize, PacketChannel.Rpc);
-                    Processed--;
-                }
-
-                Processed = 5;
-                while (ReloadedLobby.NetworkTransport.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
+                while (ReloadedLobby.NetworkTransport!.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Main))
                 {
                     if (Processed <= 0) break;
                     ReadPacket(messageSize, PacketChannel.Main);
@@ -297,13 +300,18 @@ internal static class NetworkDispatcher
 
         try
         {
-            if (ReloadedLobby.NetworkTransport.ReadP2PPacket(buffer, channel))
+            if (ReloadedLobby.NetworkTransport!.ReadP2PPacket(buffer, channel))
             {
-                var sender = buffer.ClientId.GetNetClient();
+                ReloadedClientData sender = buffer.ClientId.GetNetClient()!;
                 ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
 
                 if (buffer.Size > 0)
                 {
+                    if (buffer.Data == null)
+                    {
+                        return;
+                    }
+
                     var packetReader = PacketReader.Get(buffer.Data);
                     try
                     {
@@ -344,7 +352,7 @@ internal static class NetworkDispatcher
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender?.Name ?? "Unknown"}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender.Name}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
             packetReader.Recycle();
@@ -353,7 +361,7 @@ internal static class NetworkDispatcher
 
         if (!local)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.HandlerType} packet from {sender?.Name ?? "Unknown"}");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkDispatcher), $"Processing {message.HandlerType} packet from {sender.Name}");
         }
 
         switch (message.HandlerType)

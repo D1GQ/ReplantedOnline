@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+﻿#pragma warning disable CS0162
+
+using MelonLoader;
 using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
@@ -163,7 +165,7 @@ internal class ReplantedOnlineMod : MelonMod
     internal static bool HasUnauthorizedMod(out MelonMod melonMod)
     {
 #if DEBUG
-        melonMod = null;
+        melonMod = null!;
         return false;
 #endif
 
@@ -176,7 +178,7 @@ internal class ReplantedOnlineMod : MelonMod
             }
         }
 
-        melonMod = null;
+        melonMod = null!;
         return false;
     }
 

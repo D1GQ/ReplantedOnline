@@ -46,7 +46,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
             throw new Exception($"[NetworkSpawnPacket] Unable to find prefab by GUID: {networkObj.GUID}");
         }
 
-        ReloadedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
+        ReloadedLobby.LobbyData!.OnNetworkObjectSpawn(networkObj);
         networkObj.Serialize(packetWriter, true);
 
         var count = Math.Min(networkObj.ChildNetworkObjects.Count, ReplantedOnlineMod.Constants.Network.MAX_NETWORK_CHILDREN - 1);
@@ -88,7 +88,7 @@ internal readonly struct NetworkObjectSpawnMessage : IMessage<NetworkObjectSpawn
     /// </summary>
     public void DeserializeNetworkObject(NetworkObject networkObj, PacketReader packetReader)
     {
-        ReloadedLobby.LobbyData.OnNetworkObjectSpawn(networkObj);
+        ReloadedLobby.LobbyData!.OnNetworkObjectSpawn(networkObj);
         networkObj.Deserialize(packetReader, true);
         networkObj.gameObject.name = networkObj.GetObjectName();
 

@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 using ReplantedOnline.Utilities.Modded;
@@ -74,7 +74,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     {
         _isExploding = true;
         Net.Dead = true;
-        Net.Zombie.mPhaseCounter = 0;
+        Net.Zombie?.mPhaseCounter = 0;
         Net.IsReadyToDespawn = true;
     }
 }

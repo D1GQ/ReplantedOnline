@@ -24,7 +24,7 @@ internal sealed class PacketBuffer
     /// <summary>
     /// The packet data.
     /// </summary>
-    internal byte[] Data;
+    internal byte[]? Data;
 
     /// <summary>
     /// Retrieves a P2PPacketBuffer instance from the pool or creates a new one if the pool is empty.

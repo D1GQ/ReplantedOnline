@@ -106,7 +106,7 @@ internal interface IArenaSetupSeedbank
         localSeedBankInfo.ClearAllSeedsInSeedBack();
         opponentSeedBankInfo.ClearAllSeedsInSeedBack();
 
-        if (ReloadedClientData.LocalClient.Team == PlayerTeam.Plants)
+        if (ReloadedClientData.LocalClient?.Team == PlayerTeam.Plants)
         {
             for (int i = 0; i < GetStartingSeedPacketCount(); i++)
             {

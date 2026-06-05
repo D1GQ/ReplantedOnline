@@ -20,7 +20,7 @@ internal static class Transitions
     /// <summary>
     /// Transitions to the main menu scene.
     /// </summary>
-    internal static void ToMainMenu(Action callback = null)
+    internal static void ToMainMenu(Action? callback = null)
     {
         StateTransitionUtils.Transition("Frontend");
         if (callback != null)
@@ -32,9 +32,9 @@ internal static class Transitions
     /// <summary>
     /// Transitions to the Versus mode scene for online multiplayer matches.
     /// </summary>
-    internal static void ToVersus(Action callback = null)
+    internal static void ToVersus(Action? callback = null)
     {
-        var level = LevelEntries.GetLevel("Level-Versus");
+        var level = LevelEntries.GetLevel("Level-Versus")!;
         level.GetGameplayService().SetCurrentLevelData(level);
         LevelEntries.ResetVersusArena();
         StateTransitionUtils.Transition("Gameplay");
@@ -48,7 +48,7 @@ internal static class Transitions
     /// <summary>
     /// Transitions to the lawn/board
     /// </summary>
-    internal static void ToGameplay(Action callback = null)
+    internal static void ToGameplay(Action? callback = null)
     {
         StateTransitionUtils.Transition("Gameplay");
         if (callback != null)
@@ -60,7 +60,7 @@ internal static class Transitions
     /// <summary>
     /// Transitions to the seed selection scene for choosing plants and zombies.
     /// </summary>
-    internal static void ToChooseSeeds(Action callback = null)
+    internal static void ToChooseSeeds(Action? callback = null)
     {
         StateTransitionUtils.Transition("ChooseSeeds");
         if (callback != null)
@@ -72,7 +72,7 @@ internal static class Transitions
     /// <summary>
     /// Transitions to an loading state
     /// </summary>
-    internal static void ToGameEnd(Action callback = null)
+    internal static void ToGameEnd(Action? callback = null)
     {
         StateTransitionUtils.Transition("Win");
         if (callback != null)
@@ -86,11 +86,11 @@ internal static class Transitions
     /// </summary>
     internal static void SetLoading()
     {
-        Instances.GlobalPanels.GetPanel("loadingScrim").gameObject.SetActive(true);
+        Instances.GlobalPanels.GetPanel("loadingScrim")!.gameObject.SetActive(true);
         SetFade();
         MelonCoroutines.Start(CoroutineUtils.WaitForCondition(() =>
         {
-            return !Instances.GlobalPanels.GetPanel("loadingScrim").gameObject.activeInHierarchy;
+            return !Instances.GlobalPanels.GetPanel("loadingScrim")!.gameObject.activeInHierarchy;
         }, FadeIn));
     }
 

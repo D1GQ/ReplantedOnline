@@ -13,14 +13,14 @@ internal static class MonoSingleton<T> where T : MonoBehaviour, new()
     /// Gets the singleton instance of type <typeparamref name="T"/>.
     /// Returns <c>null</c> if <see cref="CreateInstance"/> has not been called yet.
     /// </summary>
-    internal static T Instance { get; private set; }
+    internal static T Instance { get; private set; } = null!;
 
     /// <summary>
     /// Creates a new singleton instance of type <typeparamref name="T"/> by instantiating a new GameObject.
     /// Does nothing and returns <c>null</c> if an instance already exists.
     /// </summary>
     /// <returns>The created singleton instance, or <c>null</c> if one already exists.</returns>
-    internal static T CreateInstance()
+    internal static T? CreateInstance()
     {
         if (Instance != null)
         {

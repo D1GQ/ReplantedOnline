@@ -8,7 +8,7 @@ namespace ReplantedOnline.Data.Network;
 /// Only the lobby host can modify the value, and updates are automatically propagated to all clients.
 /// </summary>
 /// <typeparam name="T">The type of the lobby variable. Supported types include: <see cref="string"/>, <see cref="bool"/>, numeric primitives, and <see langword="enum"/> types.</typeparam>
-internal sealed class LobbyVar<T>
+internal sealed class LobbyVar<T> where T : notnull
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LobbyVar{T}"/> class with a default value.
@@ -32,8 +32,8 @@ internal sealed class LobbyVar<T>
         get
         {
             return (T)Deserialize(
-                ReloadedLobby.NetworkTransport.GetLobbyData(
-                    ReloadedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport!.GetLobbyData(
+                    ReloadedLobby.LobbyData!.LobbyId,
                     _varName),
                 typeof(T));
         }
@@ -41,8 +41,8 @@ internal sealed class LobbyVar<T>
         {
             if (ReloadedLobby.AmLobbyHost())
             {
-                ReloadedLobby.NetworkTransport.SetLobbyData(
-                    ReloadedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport!.SetLobbyData(
+                    ReloadedLobby.LobbyData!.LobbyId,
                     _varName,
                     Serialize(value, typeof(T)));
 
@@ -125,7 +125,7 @@ internal sealed class LobbyVar<T>
             var itemType = type.GetGenericArguments()[0];
             var items = value.Split(['|'], StringSplitOptions.None);
             var listType = typeof(List<>).MakeGenericType(itemType);
-            var list = (System.Collections.IList)Activator.CreateInstance(listType);
+            var list = (System.Collections.IList)Activator.CreateInstance(listType)!;
 
             foreach (var item in items)
             {

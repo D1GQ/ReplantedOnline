@@ -34,7 +34,7 @@ internal static class LawnMowerSyncPatch
 
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(LawnMower), nameof(LawnMower.MowZombie))]
-    internal static void MowZombieOriginal(this LawnMower __instance, Zombie theZombie)
+    internal static void MowZombieOriginal(this LawnMower __instance, Zombie? theZombie)
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }

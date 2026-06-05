@@ -21,6 +21,7 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 
     internal override void OnDeath(DeathReason deathReason)
     {
+        if (ReloadedLobby.LobbyData == null) return;
         if (deathReason != DeathReason.Normal) return;
         if (_hasDead) return;
         _hasDead = true;

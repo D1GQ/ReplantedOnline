@@ -15,11 +15,13 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         Activate
     }
 
-    private Texture _awakeTexture;
-    private Texture _sleepingTexture;
+    private Texture _awakeTexture = default!;
+    private Texture _sleepingTexture = default!;
 
     internal override void OnInit()
     {
+        if (Net.Plant == null) return;
+
         _awakeTexture = Net.Plant.mController.m_meshRenderer.material.mainTexture;
         _sleepingTexture = ReplantedOnlineAssets.Sprites.Character.JalapenoSleeping.texture;
         Net.Plant.mSeedType = SeedType.None;
@@ -38,7 +40,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     private bool _activated;
     internal override void Update()
     {
-        if (Net.Plant.mController == null) return;
+        if (Net.Plant?.mController == null) return;
 
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
 
@@ -88,11 +90,11 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (useHighContrast)
         {
-            Net.Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
+            Net.Plant?.mController?.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0.4f);
         }
         else
         {
-            Net.Plant.mController.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
+            Net.Plant?.mController?.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
         }
     }
 
@@ -111,8 +113,11 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         if (!_activated)
         {
             _activated = true;
-            Net.Plant.mSeedType = SeedType.Jalapeno;
-            Net.Plant.SetSleeping(false);
+            if (Net.Plant != null)
+            {
+                Net.Plant.mSeedType = SeedType.Jalapeno;
+                Net.Plant.SetSleeping(false);
+            }
         }
     }
 

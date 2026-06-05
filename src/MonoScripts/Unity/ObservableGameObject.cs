@@ -15,7 +15,7 @@ internal sealed class ObservableGameObject : MonoBehaviour
     /// The parameter is the GameObject that is being destroyed.
     /// </summary>
     [HideFromIl2Cpp]
-    internal event Action<GameObject> OnGameObjectDestroy;
+    internal event Action<GameObject>? OnGameObjectDestroy;
 
     private void OnDestroy()
     {

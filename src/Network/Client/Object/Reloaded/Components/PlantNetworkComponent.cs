@@ -11,11 +11,11 @@ internal class PlantNetworkComponent : NetworkComponent
     /// <summary>
     /// Gets the NetworkObject that owns this component.
     /// </summary>
-    protected PlantNetworked Net { get; private set; }
+    protected PlantNetworked Net { get; private set; } = default!;
 
     internal sealed override void Init()
     {
-        Net = NetObj as PlantNetworked;
+        Net = (NetObj as PlantNetworked)!;
         OnInit();
     }
 
@@ -66,7 +66,7 @@ internal class PlantNetworkComponent : NetworkComponent
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WritePackedInt(Net.Plant.mPlantHealth);
+        packetWriter.WritePackedInt(Net.Plant?.mPlantHealth ?? int.MaxValue);
     }
 
     public override void Deserialize(PacketReader packetReader, bool init)

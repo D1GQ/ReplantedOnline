@@ -55,7 +55,7 @@ internal sealed class PacketWriter : IPacket
     /// <param name="id">The ID value to write.</param>
     internal void WriteID(ID id)
     {
-        if (id == null || id.IsNull)
+        if (id == null! || id.IsNull)
         {
             WriteByte(0); // None type
             return;
@@ -95,7 +95,7 @@ internal sealed class PacketWriter : IPacket
     /// <summary>
     /// Writes an NetworkObject.
     /// </summary>
-    internal void WriteNetworkObject(NetworkObject networkObj)
+    internal void WriteNetworkObject(NetworkObject? networkObj)
     {
         if (networkObj != null)
         {

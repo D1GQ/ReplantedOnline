@@ -166,16 +166,22 @@ internal static class SeedPacketDefinitions
         var snorkelDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "Snorkel",
             ReplantedOnlineAssets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
-        snorkelDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
-        snorkelDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(12f);
-        snorkelDefinition.m_versusCost = 100;
+        if (snorkelDefinition != null)
+        {
+            snorkelDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
+            snorkelDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(12f);
+            snorkelDefinition.m_versusCost = 100;
+        }
 
         var dolphinRiderDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "Dolphin Rider",
             ReplantedOnlineAssets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
-        dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
-        dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
-        dolphinRiderDefinition.m_versusCost = 150;
+        if (dolphinRiderDefinition != null)
+        {
+            dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
+            dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
+            dolphinRiderDefinition.m_versusCost = 150;
+        }
     }
 
     /// <summary>
@@ -230,7 +236,7 @@ internal static class SeedPacketDefinitions
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
     /// <returns>The spawned Plant objects.</returns>
-    internal static (Plant Plant, PlantNetworked PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
     {
         return SpawnPlant(seedType, gridX, gridY, SpawnType.None, spawnOnNetwork);
     }
@@ -244,7 +250,7 @@ internal static class SeedPacketDefinitions
     /// <param name="spawnType">The type of spawning.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
     /// <returns>The spawned Plant objects.</returns>
-    internal static (Plant Plant, PlantNetworked PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
     {
         // Create the actual plant object in the game world using the original game method
         var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
@@ -254,7 +260,7 @@ internal static class SeedPacketDefinitions
 
         // Only create network controller if network synchronization is requested
         // This prevents creating network objects in single-player mode
-        PlantNetworked plantNetworked = null;
+        PlantNetworked? plantNetworked = null;
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this plant across all clients
@@ -276,7 +282,7 @@ internal static class SeedPacketDefinitions
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned PlantNetworked controller object.</returns>
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, Action<PlantNetworked> callback = null)
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, Action<PlantNetworked>? callback = null)
     {
         return SpawnPlantOnNetwork(plant, gridX, gridY, SpawnType.None, callback);
     }
@@ -290,7 +296,7 @@ internal static class SeedPacketDefinitions
     /// <param name="spawnType">The type of spawning.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned PlantNetworked controller object.</returns>
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, SpawnType spawnType, Action<PlantNetworked> callback = null)
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, SpawnType spawnType, Action<PlantNetworked>? callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
         {
@@ -301,7 +307,7 @@ internal static class SeedPacketDefinitions
             net.GridY = gridY;
             callback?.Invoke(net);
         }, VersusState.PlantClientId);
-        return networkObj;
+        return networkObj!;
     }
 
     /// <summary>
@@ -312,7 +318,7 @@ internal static class SeedPacketDefinitions
     /// <param name="gridY">The Y grid coordinate (row) or target row for Bungee zombies.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
     /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
-    internal static (Zombie Zombie, ZombieNetworked ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
     {
         int truegridX = gridX;
         if (zombieType == ZombieType.BackupDancer)
@@ -332,7 +338,7 @@ internal static class SeedPacketDefinitions
     /// <param name="spawnType">The type of spawning.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
     /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
-    internal static (Zombie Zombie, ZombieNetworked ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
     {
         // Add zombie to the board at the specified position
         bool spawnInBack = spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes || zombieType == ZombieType.BackupDancer;
@@ -447,7 +453,7 @@ internal static class SeedPacketDefinitions
         zombie.UpdateReanim();
 
         // Only create network controller if network synchronization is requested
-        ZombieNetworked zombieNetworked = null;
+        ZombieNetworked? zombieNetworked = null;
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this zombie across all clients
@@ -469,7 +475,7 @@ internal static class SeedPacketDefinitions
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked> callback = null)
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked>? callback = null)
     {
         return SpawnZombieOnNetwork(zombie, gridX, gridY, GetZombieSpawnType(zombie.mZombieType, gridX, gridY), callback);
     }
@@ -483,7 +489,7 @@ internal static class SeedPacketDefinitions
     /// <param name="spawnType">The type of spawning.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType, Action<ZombieNetworked> callback = null)
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType, Action<ZombieNetworked>? callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
         {
@@ -494,7 +500,7 @@ internal static class SeedPacketDefinitions
             net.GridY = gridY;
             callback?.Invoke(net);
         }, VersusState.PlantClientId);
-        return networkObj;
+        return networkObj!;
     }
 
     /// <summary>

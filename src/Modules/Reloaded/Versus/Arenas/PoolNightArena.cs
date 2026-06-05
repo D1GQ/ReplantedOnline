@@ -21,7 +21,7 @@ internal sealed class PoolNightArena : PoolArena
     /// <inheritdoc/>
     public override LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea4Level2");
+        return LevelEntries.GetLevel("Level-AdventureArea4Level2")!;
     }
 
     /// <inheritdoc/>

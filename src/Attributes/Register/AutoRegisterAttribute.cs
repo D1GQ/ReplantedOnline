@@ -14,7 +14,7 @@ internal abstract class AutoRegisterAttribute : Attribute
     /// Gets the identifier value associated with this attribute.
     /// </summary>
     /// <returns>The identifier value for this attribute instance.</returns>
-    internal virtual object GetIdentifier() => null;
+    internal virtual object? GetIdentifier() => null;
 
     /// <summary>
     /// Scans the entire assembly and registers all instances of classes marked with <see cref="AutoRegisterAttribute"/> subclasses.
@@ -58,7 +58,7 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
     /// </summary>
     /// <typeparam name="J">The concrete type of the instance to retrieve. Must inherit from or implement <typeparamref name="T"/>.</typeparam>
     /// <returns>The instance of type <typeparamref name="J"/> if found, otherwise null.</returns>
-    internal static J GetInstance<J>() where J : T => (J)_instances.FirstOrDefault(instance => instance.GetType() == typeof(J));
+    internal static J? GetInstance<J>() where J : T => (J?)_instances.FirstOrDefault(instance => instance.GetType() == typeof(J));
 
     /// <inheritdoc/>
     protected override void RegisterInstances()
@@ -89,16 +89,16 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
 /// Registers classes that implement IFastPacketResolver.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterFastPacketResolver : AutoRegisterAttribute<IFastPacketResolver> { }
+internal sealed class RegisterFastPacketResolver : AutoRegisterAttribute<IFastPacketResolver>;
 
 /// <summary>
 /// Registers classes that implement IArena.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterArena : AutoRegisterAttribute<IArena> { }
+internal sealed class RegisterArena : AutoRegisterAttribute<IArena>;
 
 /// <summary>
 /// Registers classes that implement IVersusGamemode.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterVersusGameMode : AutoRegisterAttribute<IVersusGamemode> { }
+internal sealed class RegisterVersusGameMode : AutoRegisterAttribute<IVersusGamemode>;

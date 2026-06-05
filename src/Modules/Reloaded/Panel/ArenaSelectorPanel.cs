@@ -22,8 +22,8 @@ internal static class ArenaSelectorPanel
 {
     private static readonly ArenaTypes[] DisabledArenas = [];
 
-    private static GameObject Panel;
-    private static Image Preview;
+    private static GameObject? Panel;
+    private static Image? Preview;
 
     /// <summary>
     /// Creates the arena selector panel by cloning an existing plant panel and configuring it for arena selection.
@@ -38,10 +38,11 @@ internal static class ArenaSelectorPanel
         VsPanels.transform.Find("Panel")?.localPosition = new Vector3(0f, -100f, 0f);
 
         // Clone the existing plant panel from the almanac and use it as the base for the arena selector panel
-        GameObject plantPanel = Instances.GlobalPanels.GetPanel("almanac").transform.Find("Canvas/Layout/Center/Panel/PlantPanel").gameObject;
+        GameObject? plantPanel = Instances.GlobalPanels.GetPanel("almanac")?.transform.Find("Canvas/Layout/Center/Panel/PlantPanel").gameObject;
         Panel = UnityEngine.Object.Instantiate(plantPanel, VsPanels.transform);
+        if (Panel == null) return;
         Panel.name = "ArenaPanel";
-        GameObject viewPlantsButton = Panel.transform.Find("ViewPlantsButton").gameObject;
+        var viewPlantsButton = Panel.transform.Find("ViewPlantsButton")?.gameObject;
         if (viewPlantsButton != null)
         {
             UnityEngine.Object.Destroy(viewPlantsButton);
@@ -66,6 +67,7 @@ internal static class ArenaSelectorPanel
 
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
+                if (ReloadedLobby.LobbyData == null) return;
                 ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next(DisabledArenas);
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
@@ -73,6 +75,7 @@ internal static class ArenaSelectorPanel
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
+                if (ReloadedLobby.LobbyData == null) return;
                 ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous(DisabledArenas);
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
@@ -94,7 +97,7 @@ internal static class ArenaSelectorPanel
     private static Button CreateButton(PanelView VsSideChooser, string name, Action action)
     {
         var prefab = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/QuickPlay");
-        var button = UnityEngine.Object.Instantiate(prefab, Panel.transform)?.GetComponent<Button>();
+        var button = UnityEngine.Object.Instantiate(prefab, Panel!.transform)?.GetComponent<Button>();
         if (button != null)
         {
             var text = button.transform.Find("ButtonText")?.GetComponent<TextMeshProUGUI>();
@@ -108,7 +111,7 @@ internal static class ArenaSelectorPanel
             button.onClick = new();
             button.onClick.AddListener(action);
         }
-        return button;
+        return button!;
     }
 
     /// <summary>

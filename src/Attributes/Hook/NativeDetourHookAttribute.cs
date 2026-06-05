@@ -106,12 +106,12 @@ internal sealed class NativeDetourHook<TDelegate> : NativeDetourHook where TDele
     /// <summary>
     /// Gets the original method trampoline that can be called to invoke the original implementation.
     /// </summary>
-    internal static TDelegate Orig { get; private set; }
+    internal static TDelegate Orig { get; private set; } = null!;
 
     /// <summary>
     /// Gets the type that contains the target method to be hooked.
     /// </summary>
-    internal readonly Type TargetType;
+    internal readonly Type? TargetType;
 
     /// <summary>
     /// Gets the name of the target method to be hooked.
@@ -121,12 +121,12 @@ internal sealed class NativeDetourHook<TDelegate> : NativeDetourHook where TDele
     /// <summary>
     /// Gets the parameter types of the specific overload to target. If null, the first matching overload is used.
     /// </summary>
-    internal readonly Type[] ParameterTypes;
+    internal readonly Type[]? ParameterTypes;
 
     /// <summary>
     /// Gets the generic type arguments for the target method if it's generic.
     /// </summary>
-    internal readonly Type[] GenericArguments;
+    internal readonly Type[]? GenericArguments;
 
     /// <summary>
     /// Installs the native detour hook by creating an IL2CPP method detour.
@@ -183,7 +183,7 @@ internal sealed class NativeDetourHook<TDelegate> : NativeDetourHook where TDele
     /// <exception cref="Exception">Thrown when the target method cannot be found.</exception>
     private MethodInfo GetTargetMethod()
     {
-        var methods = TargetType.GetMethods(BindingFlags)
+        var methods = TargetType!.GetMethods(BindingFlags)
             .Where(m => m.Name == MethodName)
             .ToList();
 

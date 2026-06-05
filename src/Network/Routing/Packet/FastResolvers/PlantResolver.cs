@@ -32,11 +32,11 @@ internal class PlantResolver : IFastPacketResolver<Plant>
         var plantNetworked = packetReader.ReadNetworkObject<PlantNetworked>();
         if (plantNetworked != null)
         {
-            return plantNetworked.Plant;
+            return plantNetworked.Plant!;
         }
         else
         {
-            return null;
+            return default!;
         }
     }
 }

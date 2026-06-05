@@ -19,27 +19,27 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Event fired when a lobby creation operation completes.
     /// </summary>
-    internal static event Action<Result, ServerLobby> OnLobbyCreatedCompleted;
+    internal static event Action<Result, ServerLobby>? OnLobbyCreatedCompleted;
 
     /// <summary>
     /// Event fired when successfully entering a lobby.
     /// </summary>
-    internal static event Action<ServerLobby> OnLobbyEnteredCompleted;
+    internal static event Action<ServerLobby>? OnLobbyEnteredCompleted;
 
     /// <summary>
     /// Event fired when lobby data is modified.
     /// </summary>
-    internal static event Action<ServerLobby> OnLobbyDataChanged;
+    internal static event Action<ServerLobby>? OnLobbyDataChanged;
 
     /// <summary>
     /// Event fired when a new member joins the lobby.
     /// </summary>
-    internal static event Action<ServerLobby, ID> OnLobbyMemberJoined;
+    internal static event Action<ServerLobby, ID>? OnLobbyMemberJoined;
 
     /// <summary>
     /// Event fired when a member leaves the lobby.
     /// </summary>
-    internal static event Action<ServerLobby, ID> OnLobbyMemberLeave;
+    internal static event Action<ServerLobby, ID>? OnLobbyMemberLeave;
 
     /// <summary>
     /// Packet types used for server/member communication.
@@ -63,27 +63,27 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Gets the singleton server instance.
     /// </summary>
-    internal static LanServer Server { get; set; }
+    internal static LanServer Server { get; set; } = default!;
 
     /// <summary>
     /// Server data containing lobby information and metadata.
     /// </summary>
-    internal LanServerData ServerData;
+    internal LanServerData ServerData = default!;
 
     /// <summary>
     /// Broadcast service for LAN discovery.
     /// </summary>
-    internal readonly LanServerBroadcast ServerBroadcast;
+    internal readonly LanServerBroadcast? ServerBroadcast;
 
     /// <summary>
     /// UDP client for P2P communication.
     /// </summary>
-    internal UdpClient P2PClient;
+    internal UdpClient? P2PClient;
 
     /// <summary>
     /// Cancellation token source for async operations.
     /// </summary>
-    internal CancellationTokenSource P2PCTS;
+    internal CancellationTokenSource P2PCTS = default!;
 
     /// <summary>
     /// Packet queues organized by channel type.
@@ -93,7 +93,7 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Local member's unique identifier.
     /// </summary>
-    internal ID LocalMemberId;
+    internal ID LocalMemberId = ID.Null;
 
     /// <summary>
     /// Dictionary of all connected members.
@@ -128,7 +128,7 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Task completion source for handshake operations.
     /// </summary>
-    internal TaskCompletionSource<bool> HandshakeCompletionSource;
+    internal TaskCompletionSource<bool>? HandshakeCompletionSource;
 
     private static readonly IPAddress LOCALHOST_IP = IPAddress.Parse("127.0.0.1");
 
@@ -172,7 +172,7 @@ internal sealed class LanServer : IDisposable
         Server.P2PClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         Server.P2PClient.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
 
-        var localEndpoint = (IPEndPoint)Server.P2PClient.Client.LocalEndPoint;
+        var localEndpoint = (IPEndPoint)Server.P2PClient.Client.LocalEndPoint!;
         var localIP = GetLocalNetworkIP();
 
         Server.ServerData.HostAddress = localIP;
@@ -191,7 +191,7 @@ internal sealed class LanServer : IDisposable
         Server.ServerData.HostId = Server.LocalMemberId;
 
         Server.CreateMember(Server.LocalMemberId, actualLocalEndpoint, playerName);
-        Server.ServerBroadcast.StartBroadcasting();
+        Server.ServerBroadcast?.StartBroadcasting();
 
         MainThreadDispatcher.Execute(() =>
         {
@@ -222,7 +222,7 @@ internal sealed class LanServer : IDisposable
         Server.P2PClient = new();
         Server.P2PClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         Server.P2PClient.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
-        Server.ServerData.GamePort = ((IPEndPoint)Server.P2PClient.Client.LocalEndPoint).Port;
+        Server.ServerData.GamePort = ((IPEndPoint)Server.P2PClient.Client.LocalEndPoint!).Port;
 
         Task.Run(Server.ListenForP2P, Server.P2PCTS.Token);
 
@@ -274,8 +274,8 @@ internal sealed class LanServer : IDisposable
 
         if (!shouldRun) return;
 
-        Server.ServerBroadcast.StopBroadcasting();
-        Server.P2PCTS.Cancel();
+        Server.ServerBroadcast?.StopBroadcasting();
+        Server.P2PCTS?.Cancel();
 
         if (Server.IsHost)
         {
@@ -304,7 +304,7 @@ internal sealed class LanServer : IDisposable
             }
         }
 
-        Server.P2PClient.Close();
+        Server.P2PClient?.Close();
         Server.ServerData.Reset();
 
         lock (Server._membersLock) Server.Members.Clear();
@@ -325,7 +325,7 @@ internal sealed class LanServer : IDisposable
         {
             try
             {
-                var result = await P2PClient.ReceiveAsync();
+                var result = await P2PClient!.ReceiveAsync();
                 ProcessServerPacket(result.Buffer, result.RemoteEndPoint);
             }
             catch (OperationCanceledException) { break; }
@@ -414,7 +414,7 @@ internal sealed class LanServer : IDisposable
 
         try
         {
-            P2PClient.Send(buffer, buffer.Length, iPEndPoint);
+            P2PClient!.Send(buffer, buffer.Length, iPEndPoint);
         }
         catch (Exception ex)
         {
@@ -876,7 +876,7 @@ internal sealed class LanServer : IDisposable
         /// <summary>
         /// The raw packet data.
         /// </summary>
-        public byte[] Data { get; set; }
+        public byte[]? Data { get; set; }
 
         /// <summary>
         /// The ID of the member that sent the packet.

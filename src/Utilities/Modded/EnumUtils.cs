@@ -15,7 +15,7 @@ internal static class EnumUtils
     /// <param name="skip">Optional collection of enum values to skip.</param>
     /// <returns>The next enum value in the sequence, or the first value if current is the last.</returns>
     /// <exception cref="ArgumentException">Thrown if the type parameter is not an enum.</exception>
-    internal static T Next<T>(this T current, IEnumerable<T> skip = null) where T : Enum
+    internal static T Next<T>(this T current, IEnumerable<T>? skip = null) where T : Enum
     {
         T[] allValues = [.. Enum.GetValues(typeof(T)).Cast<T>()];
         T[] values = skip != null && skip.Any()
@@ -43,7 +43,7 @@ internal static class EnumUtils
     /// <param name="skip">Optional collection of enum values to skip.</param>
     /// <returns>The previous enum value in the sequence, or the last value if current is the first.</returns>
     /// <exception cref="ArgumentException">Thrown if the type parameter is not an enum.</exception>
-    internal static T Previous<T>(this T current, IEnumerable<T> skip = null) where T : Enum
+    internal static T Previous<T>(this T current, IEnumerable<T>? skip = null) where T : Enum
     {
         T[] allValues = [.. Enum.GetValues(typeof(T)).Cast<T>()];
         T[] values = skip != null && skip.Any()

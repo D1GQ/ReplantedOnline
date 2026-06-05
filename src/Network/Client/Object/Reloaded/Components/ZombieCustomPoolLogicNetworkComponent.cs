@@ -20,11 +20,11 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
     private bool _inPool;
     private bool _isDrowning;
 
-    private WhiteWaterEffect _whiteWaterEffect;
+    private WhiteWaterEffect _whiteWaterEffect = null!;
 
     internal override void OnInit()
     {
-        if (!CanGoInWater())
+        if (!CanGoInWater() || Net.Zombie == null)
         {
             return;
         }
@@ -105,13 +105,14 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         if (_whiteWaterEffect == null) return;
 
         var zombie = Net.Zombie;
+        if (zombie == null) return;
         var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
         _whiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
         {
             case ZombieType.TrashCan:
-                if (Net.Zombie.mShieldType != ShieldType.None)
+                if (zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-15f, 110f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.05f, 1f, 1f);
@@ -119,7 +120,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 }
                 break;
             case ZombieType.Door:
-                if (Net.Zombie.mShieldType != ShieldType.None)
+                if (zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-25f, 110f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
@@ -127,7 +128,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 }
                 break;
             case ZombieType.Newspaper:
-                if (Net.Zombie.mShieldType != ShieldType.None)
+                if (zombie.mShieldType != ShieldType.None)
                 {
                     _whiteWaterEffect.transform.localPosition = new(-30f, 114f, 0f);
                     _whiteWaterEffect.transform.localScale = new(1.2f, 1f, 1f);
@@ -140,7 +141,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
                 return;
             case ZombieType.JackInTheBox:
                 _whiteWaterEffect.transform.localPosition = new(-5.9f, 114f, 0f);
-                _whiteWaterEffect.transform.localScale = new(Net.Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+                _whiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
                 return;
             case ZombieType.Football:
                 _whiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
@@ -151,15 +152,15 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         }
 
         _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
-        _whiteWaterEffect.transform.localScale = new(Net.Zombie.mZombieRect.width * 0.020f, 1f, 1f);
+        _whiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
     }
 
     private bool CanGoInWater()
     {
         bool typeCheck = Net.ZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
-        bool phaseCheck = Net.Zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
+        bool phaseCheck = Net.Zombie?.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
-        return typeCheck && phaseCheck && Net.Zombie.mController?.gameObject.active == true;
+        return typeCheck && phaseCheck && Net.Zombie?.mController?.gameObject.active == true;
     }
 
     private void SendDrownRpc()
@@ -179,6 +180,8 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     private IEnumerator CoDrown()
     {
+        if (Net.Zombie == null) yield break;
+
         float target = Net.Zombie.mAltitude - 150;
         while (Net.Zombie.mAltitude > target)
         {

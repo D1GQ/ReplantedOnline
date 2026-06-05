@@ -31,7 +31,7 @@ internal static class AssetReferenceHook
     {
         var keyClassPtr = IL2CPP.il2cpp_object_get_class(keyPtr);
 
-        string assetGuid = null;
+        string? assetGuid = null;
 
         if (keyClassPtr.IsSubclassOf(Il2CppClassPointerStore<AssetReference>.NativeClassPtr))
         {

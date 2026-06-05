@@ -11,7 +11,7 @@ internal static class CatapultZombiePatchPatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindCatapultTarget))]
     [HarmonyPostfix]
-    private static void Zombie_FindCatapultTarget_Postfix(Zombie __instance, ref Plant __result)
+    private static void Zombie_FindCatapultTarget_Postfix(Zombie __instance, ref Plant? __result)
     {
         if (ReloadedLobby.AmInLobby())
         {

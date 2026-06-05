@@ -200,7 +200,7 @@ internal readonly struct CustomSeedType
     /// </summary>
     /// <param name="obj">The object to compare with the current object.</param>
     /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is CustomSeedType other)
         {

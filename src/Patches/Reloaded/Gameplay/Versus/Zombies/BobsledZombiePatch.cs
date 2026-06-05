@@ -143,7 +143,7 @@ internal static class BobsledZombiePatch
     {
         // Setup Bobsled passenger
         var netLeader = packetReader.ReadNetworkObject<ZombieNetworked>();
-        if (netLeader != null)
+        if (netLeader?.Zombie != null)
         {
             SetupPassenger(bobsled, netLeader.Zombie);
         }

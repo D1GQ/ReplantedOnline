@@ -9,9 +9,9 @@ namespace ReplantedOnline.MonoScripts.Unity;
 [RegisterTypeInIl2Cpp]
 internal sealed class SpriteRendererMask : MonoBehaviour
 {
-    private SpriteRenderer _spriteRenderer;
-    private SpriteMask _spriteMask;
-    private SpriteRenderer _spriteRendererMask;
+    private SpriteRenderer _spriteRenderer = default!;
+    private SpriteMask _spriteMask = default!;
+    private SpriteRenderer _spriteRendererMask = default!;
     private SpriteMaskInteraction _interaction = SpriteMaskInteraction.None;
 
     private void Awake()

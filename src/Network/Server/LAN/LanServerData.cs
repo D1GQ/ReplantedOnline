@@ -35,7 +35,7 @@ internal sealed class LanServerData : IDisposable
     /// <summary>
     /// Gets or sets the host's IP address.
     /// </summary>
-    internal IPAddress HostAddress { get; set; }
+    internal IPAddress HostAddress { get; set; } = default!;
 
     /// <summary>
     /// Custom key-value data associated with the lobby.
@@ -122,7 +122,7 @@ internal sealed class LanServerData : IDisposable
         HostId = ID.Null;
         LobbyId = ID.Null;
         GamePort = 0;
-        HostAddress = null;
+        HostAddress = null!;
         Data.Clear();
     }
 

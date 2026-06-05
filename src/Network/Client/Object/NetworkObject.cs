@@ -27,7 +27,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// Gets the parent network object associated with this instance.
     /// </summary>
     [HideFromIl2Cpp]
-    internal NetworkObject ParentNetworkObject { get; private set; }
+    internal NetworkObject? ParentNetworkObject { get; private set; }
 
     /// <summary>
     /// if this NetworkObject is a child of another NetworkObject
@@ -86,7 +86,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// Gets whether the local client is the owner of this network object.
     /// Determines if this client has authority to modify the object's state.
     /// </summary>
-    internal bool AmOwner => ReloadedLobby.NetworkTransport.LocalClientId == OwnerId;
+    internal bool AmOwner => ReloadedLobby.NetworkTransport!.LocalClientId == OwnerId;
 
     /// <summary>
     /// Gets or sets the Steam ID of the client who owns this network object.
@@ -236,7 +236,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     [HideFromIl2Cpp]
     public void SendNetworkObjectRpc<T>(T rpcId, params object[] args) where T : Enum
     {
-        PacketWriter packetWriter = null;
+        PacketWriter? packetWriter = null;
         if (args.Length > 0)
         {
             packetWriter = PacketWriter.Get();
@@ -313,8 +313,8 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
             throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");
         }
 
-        T component = Activator.CreateInstance(typeof(T)) as T;
-        AddNetworkComponent(component);
+        T component = (Activator.CreateInstance(typeof(T)) as T)!;
+        AddNetworkComponent(component!);
         return component;
     }
 
@@ -322,12 +322,12 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// Gets network component from this instance's collection of network components by its type.
     /// </summary>
     /// <typeparam name="T">The type of  NetworkComponent to get.</typeparam>
-    internal T GetNetworkComponent<T>() where T : NetworkComponent
+    internal T? GetNetworkComponent<T>() where T : NetworkComponent
     {
         var type = typeof(T);
         if (_networkComponentsLookup.TryGetValue(type, out var component))
         {
-            return component as T;
+            return (component as T)!;
         }
 
         return null;
@@ -339,7 +339,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// <typeparam name="T">The type of  NetworkComponent to get.</typeparam>
     internal bool TryGetNetworkComponent<T>(out T component) where T : NetworkComponent
     {
-        component = GetNetworkComponent<T>();
+        component = GetNetworkComponent<T>()!;
         return component != null;
     }
 
@@ -351,7 +351,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
     /// <param name="owner">The Steam ID of the owner who controls this network object.</param>
     /// <returns>The newly spawned NetworkObject instance.</returns>
-    public static T SpawnNew<T>(Action<T> callback = default, ID owner = default) where T : NetworkObject
+    public static T? SpawnNew<T>(Action<T>? callback = null, ID owner = default) where T : NetworkObject
     {
         if (PrefabIdTypeLookup.TryGetValue(typeof(T), out var prefabId))
         {
@@ -414,7 +414,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// Creates and registers a network prefab of the specified type with a unique identifier.
     /// The prefab is marked as hidden and persistent, serving as a template for network instantiation.
     /// </summary>
-    private static T CreateNetworkPrefab<T>(byte prefabId, Action<T> callback = null) where T : NetworkObject
+    private static T CreateNetworkPrefab<T>(byte prefabId, Action<T>? callback = null) where T : NetworkObject
     {
         var networkObject = CreatePrefab<T>($"{typeof(T)}:{prefabId}");
         networkObject.transform.SetParent(GlobalGameObjects.NetworkPrefabsObj.transform);

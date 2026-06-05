@@ -52,7 +52,7 @@ internal readonly struct NetworkIdentifier : IEquatable<NetworkIdentifier>
             throw new ArgumentOutOfRangeException(nameof(localId));
         }
 
-        return new NetworkIdentifier(ReloadedClientData.LocalClient.GetClientIndex(), localId);
+        return new NetworkIdentifier(ReloadedClientData.LocalClient!.GetClientIndex(), localId);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ internal readonly struct NetworkIdentifier : IEquatable<NetworkIdentifier>
     public bool Equals(NetworkIdentifier other) => Id == other.Id;
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is NetworkIdentifier other && Equals(other);
     }

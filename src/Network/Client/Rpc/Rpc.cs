@@ -13,5 +13,5 @@ internal static class Rpc<T> where T : IRpc
     /// Gets the singleton instance of the specified RPC handler type.
     /// </summary>
     /// <value>A singleton instance of type <typeparamref name="T"/> retrieved from the RPC registry.</value>
-    internal static T Instance { get; } = RegisterRpc.GetInstance<T>();
+    internal static T Instance { get; } = RegisterRpc.GetInstance<T>()!;
 }

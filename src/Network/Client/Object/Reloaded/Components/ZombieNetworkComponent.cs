@@ -15,11 +15,11 @@ internal class ZombieNetworkComponent : NetworkComponent
     /// <summary>
     /// Gets the NetworkObject that owns this component.
     /// </summary>
-    protected ZombieNetworked Net { get; private set; }
+    protected ZombieNetworked Net { get; private set; } = default!;
 
     internal sealed override void Init()
     {
-        Net = NetObj as ZombieNetworked;
+        Net = (NetObj as ZombieNetworked)!;
         OnInit();
     }
 
@@ -97,7 +97,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         }
     }
 
-    private Coroutine _larpCoroutine;
+    private Coroutine? _larpCoroutine;
     internal float? LastSyncPosX;
 
     /// <summary>

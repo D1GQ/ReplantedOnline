@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
@@ -95,7 +95,7 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     {
         Net.Target = target;
         _lastSummonCounter = summonCounter;
-        Net.Zombie.mSummonCounter = summonCounter;
+        Net.Zombie?.mSummonCounter = summonCounter;
         ReadyToFire = true;
     }
 }

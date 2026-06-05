@@ -31,17 +31,17 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Gets the Code of this lobby.
     /// </summary>
-    internal string LobbyCode;
+    internal string LobbyCode = string.Empty;
 
     /// <summary>
     /// Gets the Steam ID of this lobby.
     /// </summary>
-    internal readonly ID LobbyId;
+    internal readonly ID LobbyId = ID.Null;
 
     /// <summary>
     /// Gets or Sets the Steam ID of the host.
     /// </summary>
-    internal readonly ID HostId;
+    internal readonly ID HostId = ID.Null;
 
     /// <summary>
     /// Gets or sets the dictionary of all connected clients in the lobby, keyed by their Steam ID.
@@ -121,14 +121,14 @@ internal sealed class ReloadedLobbyData : IDisposable
             OnNetworkObjectDespawn(netChild);
         }
 
-        ReloadedLobby.LobbyData.NetworkObjectsSpawned.Remove(networkObj.NetworkId);
+        NetworkObjectsSpawned.Remove(networkObj.NetworkId);
         networkObj.IsOnNetwork = false;
         networkObj.OnDespawn();
         networkObj.OwnerId = ID.Null;
 
         if (!networkObj.AmChild)
         {
-            ReloadedLobby.LobbyData.NetworkIdPool.Free(networkObj.NetworkId);
+            NetworkIdPool.Free(networkObj.NetworkId);
         }
 
         networkObj.NetworkId = NetworkIdentifier.Null;
@@ -148,7 +148,7 @@ internal sealed class ReloadedLobbyData : IDisposable
                 continue;
             }
 
-            var child = networkObject?.AmChild ?? false;
+            var child = networkObject.AmChild;
             if (!child && networkObject.gameObject != null)
             {
                 UnityEngine.Object.Destroy(networkObject.gameObject);
@@ -250,7 +250,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         if (hostTeam is PlayerTeam.None)
         {
             VersusLobbyManager.ResetPlayerInput();
-            ReloadedLobby.LobbyData.UnsetAllTeams();
+            UnsetAllTeams();
             VersusLobbyManager.UpdateSideVisuals();
         }
         else
@@ -258,13 +258,13 @@ internal sealed class ReloadedLobbyData : IDisposable
             var otherTeam = hostTeam.GetOppositeTeam();
             if (ReloadedLobby.AmLobbyHost())
             {
-                ReloadedClientData.LocalClient.Team = hostTeam;
+                ReloadedClientData.LocalClient!.Team = hostTeam;
                 ReloadedClientData.OpponentClient?.Team = otherTeam;
                 VersusLobbyManager.SetPlayerInput(hostTeam);
             }
             else
             {
-                ReloadedClientData.LocalClient.Team = otherTeam;
+                ReloadedClientData.LocalClient!.Team = otherTeam;
                 ReloadedClientData.OpponentClient?.Team = hostTeam;
                 VersusLobbyManager.SetPlayerInput(otherTeam);
             }
@@ -283,8 +283,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         LocalDespawnAll();
         AllClients?.Clear();
         NetworkObjectsSpawned?.Clear();
-        LobbyCode = null;
+        LobbyCode = string.Empty;
         NetworkIdPool?.Dispose();
-        NetworkIdPool = null;
     }
 }

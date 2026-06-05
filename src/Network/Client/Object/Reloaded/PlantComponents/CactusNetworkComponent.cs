@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
@@ -18,6 +18,8 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
     private bool _isHigh;
     internal override void Update()
     {
+        if (Net.Plant == null) return;
+
         if (Net.AmOwner)
         {
             if (Net.Plant.mState is PlantState.CactusLow or PlantState.CactusLowering)

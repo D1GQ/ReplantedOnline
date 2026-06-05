@@ -128,7 +128,7 @@ internal static class MatchmakingManager
     /// <param name="maxResults">The maximum number of lobbies to return in the search results.</param>
     /// <param name="callback">Callback method invoked with the array of found lobbies when the search completes successfully.</param>
     /// <param name="errorCallback">Optional callback method invoked when an error occurs or no lobbies are found.</param>
-    internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError> errorCallback = null)
+    internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError>? errorCallback = null)
     {
         Transitions.SetLoading();
         ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Searching for lobbies");
@@ -178,7 +178,7 @@ internal static class MatchmakingManager
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(ReloadedLobbyData data)
     {
-        ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
+        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
         ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode);
         ReloadedLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
@@ -193,15 +193,15 @@ internal static class MatchmakingManager
 
         if (@override != null)
         {
-            ReloadedLobby.LobbyData.LobbyJoinable.Value = @override.Value;
-            ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, @override.Value);
+            ReloadedLobby.LobbyData!.LobbyJoinable.Value = @override.Value;
+            ReloadedLobby.NetworkTransport!.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, @override.Value);
             DiscordManager.SetJoinable(@override.Value);
             return;
         }
 
-        bool canJoin = !ReloadedLobby.LobbyData.HasStarted.Value;
+        bool canJoin = !ReloadedLobby.LobbyData!.HasStarted.Value;
         ReloadedLobby.LobbyData.LobbyJoinable.Value = canJoin;
-        ReloadedLobby.NetworkTransport.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, canJoin);
+        ReloadedLobby.NetworkTransport!.SetLobbyJoinable(ReloadedLobby.LobbyData.LobbyId, canJoin);
         DiscordManager.SetJoinable(canJoin);
     }
 

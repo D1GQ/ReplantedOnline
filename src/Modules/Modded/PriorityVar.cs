@@ -7,7 +7,7 @@
 /// <typeparam name="T">The type of value to store.</typeparam>
 internal class PriorityVar<T>
 {
-    private T _value;
+    private T? _value;
     private float _currentPriority = int.MinValue;
 
     /// <summary>
@@ -29,7 +29,7 @@ internal class PriorityVar<T>
     /// Gets the currently stored value, which is the one with the highest priority seen so far.
     /// </summary>
     /// <returns>The value with the highest priority, or null if no value has been added.</returns>
-    internal T Get()
+    internal T? Get()
     {
         return _value;
     }
@@ -42,7 +42,7 @@ internal class PriorityVar<T>
     /// otherwise, null. This parameter is passed uninitialized.
     /// </param>
     /// <returns>true if a value has been added and is available; otherwise, false.</returns>
-    internal bool TryGet(out T value)
+    internal bool TryGet(out T? value)
     {
         if (_value != null)
         {

@@ -34,7 +34,7 @@ internal static class PotatominePlantPatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPostfix]
-    private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie __result)
+    private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie? __result)
     {
         if (__instance.mSeedType != SeedType.Potatomine) return;
 

@@ -36,7 +36,7 @@ internal static class GargantuarZombiePatch
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
     [HarmonyPostfix]
-    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant __result)
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant? __result)
     {
         if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
 
@@ -261,9 +261,9 @@ internal static class GargantuarZombiePatch
     {
         float randomArc = 0f;
         var impNetworked = imp.GetNetworked();
-        if (impNetworked != null)
+        if (impNetworked != null && impNetworked.TryGetNetworkComponent<ImpNetworkComponent>(out var comp))
         {
-            randomArc = impNetworked.GetNetworkComponent<ImpNetworkComponent>().ImpRandomArc;
+            randomArc = comp.ImpRandomArc;
         }
 
         float baseArc = gargantuar.mPosX - 360f;
@@ -278,7 +278,7 @@ internal static class GargantuarZombiePatch
     // Serialization and deserialization for the imp to sync the throw across the network
     internal static void ImpSerialize(ZombieNetworked impNetworked, PacketWriter packetWriter)
     {
-        Zombie gargantuar = impNetworked.Zombie.mBoard.ZombieGet(impNetworked.Zombie.mRelatedZombieID);
+        Zombie? gargantuar = impNetworked.Zombie?.mBoard.ZombieGet(impNetworked.Zombie.mRelatedZombieID);
 
         if (gargantuar != null)
         {
@@ -289,17 +289,25 @@ internal static class GargantuarZombiePatch
             packetWriter.WriteNetworkObject(null);
         }
 
-        var impComp = impNetworked.GetNetworkComponent<ImpNetworkComponent>();
-        impComp.ImpRandomArc = UnityEngine.Random.Range(0f, 100f);
-        packetWriter.WriteFloat(impComp.ImpRandomArc);
+        if (impNetworked.TryGetNetworkComponent<ImpNetworkComponent>(out var impComp))
+        {
+            impComp.ImpRandomArc = UnityEngine.Random.Range(0f, 100f);
+            packetWriter.WriteFloat(impComp.ImpRandomArc);
+        }
+        else
+        {
+            packetWriter.WriteFloat(0f);
+        }
     }
 
     internal static void ImpDeserialize(ZombieNetworked impNetworked, PacketReader packetReader)
     {
-        Zombie gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?.Zombie;
+        if (impNetworked.Zombie == null) return;
+
+        Zombie? gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?.Zombie;
 
         var impComp = impNetworked.GetNetworkComponent<ImpNetworkComponent>();
-        impComp.ImpRandomArc = packetReader.ReadFloat();
+        impComp?.ImpRandomArc = packetReader.ReadFloat();
 
         // Link the imp to the Gargantuar for synchronization, UpdateZombieGargantuar will handle the rest of the throw logic
         gargantuar?.mRelatedZombieID = impNetworked.Zombie.DataID;

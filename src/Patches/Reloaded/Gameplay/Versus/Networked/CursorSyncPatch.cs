@@ -136,6 +136,7 @@ internal static class CursorSyncPatch
                 {
                     // Find the seed packet from the seed bank that matches the seed type
                     var seedPacket = __instance.Board.SeedBanks.LocalItem().SeedPackets.FirstOrDefault(packet => packet.mPacketType == seedType);
+                    if (seedPacket == null) return false;
 
                     // Get the cost of the seed and check if player has enough sun
                     var cost = seedPacket.GetCost();

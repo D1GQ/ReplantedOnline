@@ -117,7 +117,7 @@ internal static class NetworkExtensions
     /// <typeparam name="T">The type of NetworkObject to retrieve.</typeparam>
     /// <param name="child">The object instance to look up.</param>
     /// <returns>The associated NetworkObject instance, or null if not found.</returns>
-    internal static T GetNetworked<T>(this object child) where T : NetworkObject
+    internal static T? GetNetworked<T>(this object child) where T : NetworkObject
     {
         if (child == null)
         {
@@ -143,7 +143,7 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="zombie">The zombie instance to look up.</param>
     /// <returns>The associated ZombieNetworked instance, or null if not found.</returns>
-    internal static ZombieNetworked GetNetworked(this Zombie zombie)
+    internal static ZombieNetworked? GetNetworked(this Zombie zombie)
     {
         return zombie.GetNetworked<ZombieNetworked>();
     }
@@ -153,7 +153,7 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="plant">The plant instance to look up.</param>
     /// <returns>The associated PlantNetworked instance, or null if not found.</returns>
-    internal static PlantNetworked GetNetworked(this Plant plant)
+    internal static PlantNetworked? GetNetworked(this Plant plant)
     {
         return plant.GetNetworked<PlantNetworked>();
     }
@@ -185,7 +185,7 @@ internal static class NetworkExtensions
             }
         }
 
-        networkObject = null;
+        networkObject = default!;
         return false;
     }
 
@@ -216,14 +216,32 @@ internal static class NetworkExtensions
     /// </summary>
     /// <param name="clientId">The Client ID to search for.</param>
     /// <returns>The NetClient instance if found in the current lobby, otherwise null.</returns>
-    internal static ReloadedClientData GetNetClient(this ID clientId)
+    internal static ReloadedClientData? GetNetClient(this ID clientId)
     {
         if (ReloadedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var client) == true)
         {
             return client;
         }
 
-        return default;
+        return null;
+    }
+
+    /// <summary>
+    /// Attempts to retrieve a NetClient instance by Client ID from the current lobby.
+    /// </summary>
+    /// <param name="clientId">The Client ID to search for.</param>
+    /// <param name="client">When this method returns, contains the NetClient instance if found; otherwise, the default value.</param>
+    /// <returns>true if the NetClient was found in the current lobby; otherwise, false.</returns>
+    internal static bool TryGetNetClient(this ID clientId, out ReloadedClientData client)
+    {
+        if (ReloadedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var rClient) == true)
+        {
+            client = rClient;
+            return true;
+        }
+
+        client = default!;
+        return false;
     }
 
     /// <summary>

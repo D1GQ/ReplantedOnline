@@ -12,7 +12,7 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
 {
     internal override void Update()
     {
-        if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
+        if (Net.Zombie?.mZombiePhase == ZombiePhase.ZombieNormal)
         {
             UpdatePositionSync();
         }
@@ -22,7 +22,11 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
     {
         if (init)
         {
-            BobsledZombiePatch.BobsledSerialize(Net.Zombie, packetWriter);
+            packetWriter.WriteBool(Net.Zombie == null);
+            if (Net.Zombie != null)
+            {
+                BobsledZombiePatch.BobsledSerialize(Net.Zombie, packetWriter);
+            }
         }
 
         base.Serialize(packetWriter, init);
@@ -32,7 +36,11 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
     {
         if (init)
         {
-            BobsledZombiePatch.BobsledDeserialize(Net.Zombie, packetReader);
+            bool isZombieNull = packetReader.ReadBool();
+            if (!isZombieNull && Net.Zombie != null)
+            {
+                BobsledZombiePatch.BobsledDeserialize(Net.Zombie, packetReader);
+            }
         }
 
         base.Deserialize(packetReader, init);

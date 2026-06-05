@@ -11,10 +11,10 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class CustomPopupPanel
 {
-    private static PanelView Panel;
-    private static TextMeshProUGUI HeaderText;
-    private static TextMeshProUGUI Text;
-    private static TextMeshProUGUI LabelText;
+    private static PanelView Panel = default!;
+    private static TextMeshProUGUI HeaderText = default!;
+    private static TextMeshProUGUI Text = default!;
+    private static TextMeshProUGUI LabelText = default!;
     private static bool HasInit;
 
     /// <summary>

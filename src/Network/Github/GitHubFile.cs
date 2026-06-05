@@ -16,7 +16,7 @@ internal static class GitHubFile
     /// <param name="localFilePath">The local file path where the downloaded file will be saved.</param>
     /// <param name="callback">Optional callback invoked after successful download, passing the local file path.</param>
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
-    internal static IEnumerator CoDownloadFile(string url, string localFilePath, Action<string> callback = null)
+    internal static IEnumerator CoDownloadFile(string url, string localFilePath, Action<string>? callback = null)
     {
         var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
         {

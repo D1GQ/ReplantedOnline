@@ -55,6 +55,6 @@ internal interface IArena
             }
         }
 
-        return null;
+        return default!;
     }
 }

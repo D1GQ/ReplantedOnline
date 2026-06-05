@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
@@ -18,6 +18,8 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
     private bool _isWakingup = true;
     internal override void Update()
     {
+        if (Net.Plant! == null) return;
+
         if (Net.Plant.mState == PlantState.Notready)
         {
             UpdateSleeping();
@@ -28,6 +30,8 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 
     private void UpdateSleeping()
     {
+        if (Net.Plant! == null) return;
+
         if (Net.AmOwner)
         {
             if (_isWakingup)
@@ -57,7 +61,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
     private void HandleWakeupRpc()
     {
         _isWakingup = false;
-        Net.Plant.mStateCountdown = 0;
+        Net.Plant?.mStateCountdown = 0;
     }
 
     internal void ExplodeSynced()

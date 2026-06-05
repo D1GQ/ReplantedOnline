@@ -61,7 +61,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea3Level2");
+        return LevelEntries.GetLevel("Level-AdventureArea3Level2")!;
     }
 
     /// <inheritdoc/>
@@ -95,7 +95,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        SpriteRenderer poolSpriteRenderer;
+        SpriteRenderer? poolSpriteRenderer;
         if (!Type.IsArenaAtNight())
         {
             poolSpriteRenderer = versusMode.m_app.BackgroundController.transform.Find("Background/Area3_PoolWater_Overlay")?.GetComponent<SpriteRenderer>();

@@ -87,7 +87,7 @@ internal static class ProjectilePatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPrefix]
-    private static bool Plant_FindTargetZombie_Prefix(Plant __instance, ref Zombie __result)
+    private static bool Plant_FindTargetZombie_Prefix(Plant __instance, ref Zombie? __result)
     {
         if (__instance.mSeedType is not (SeedType.Cabbagepult or SeedType.Kernelpult or SeedType.Melonpult)) return true;
 
@@ -124,7 +124,7 @@ internal static class ProjectilePatch
 
     [HarmonyPatch(typeof(Projectile), nameof(Projectile.FindCollisionTarget))]
     [HarmonyPostfix]
-    private static void Projectile_FindCollisionTarge_Postfix(Projectile __instance, ref Zombie __result)
+    private static void Projectile_FindCollisionTarge_Postfix(Projectile __instance, ref Zombie? __result)
     {
         if (__instance.mProjectileType is not (ProjectileType.Cabbage or ProjectileType.Kernel or
             ProjectileType.Butter or ProjectileType.Wintermelon)) return;

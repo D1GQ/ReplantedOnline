@@ -24,7 +24,7 @@ internal static class ReplantedOnlineAssets
                     field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Logo-BG.png");
                 }
 
-                return field;
+                return field!;
             }
         }
 
@@ -37,7 +37,7 @@ internal static class ReplantedOnlineAssets
                     field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.PVZR-Online-Promo-Logo-Compressed.png");
                 }
 
-                return field;
+                return field!;
             }
         }
 
@@ -55,7 +55,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofday.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -68,7 +68,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Roofnight.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -81,7 +81,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.China.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -94,7 +94,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Roof-Overlay.png", 100f);
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -107,7 +107,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.China-Overlay.png", 100f);
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -120,7 +120,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Arenas.Bowlinglines.Poolline.png", 100f);
                     }
 
-                    return field;
+                    return field!;
                 }
             }
         }
@@ -139,7 +139,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Jalapeno-Sleeping.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -152,7 +152,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Gravestone-Dirtless.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -165,7 +165,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Characters.Gravestone-Pool.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
         }
@@ -184,7 +184,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Hidden-Seedpacket.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -197,7 +197,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Dolphinrider-Seedpacket.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -210,7 +210,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Snorkel-Seedpacket.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
         }
@@ -226,7 +226,7 @@ internal static class ReplantedOnlineAssets
                         field = ModInfo.Assembly.LoadTextureFromResources("ReplantedOnline.Resources.Images.Characters.White-Water.png");
                     }
 
-                    return field;
+                    return field!;
                 }
             }
 
@@ -237,9 +237,9 @@ internal static class ReplantedOnlineAssets
                     if (field == null)
                     {
                         List<Sprite> list = [];
-                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 1)));
-                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 2)));
-                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 3)));
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 1))!);
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 2))!);
+                        list.Add(Sheet.LoadSpriteFromTextureSheet(1, 3, (1, 3))!);
                         field = [.. list];
                     }
 
@@ -261,7 +261,7 @@ internal static class ReplantedOnlineAssets
                 if (field == null)
                 {
                     field = ModInfo.Assembly.LoadWavFromResources("ReplantedOnline.Resources.Sounds.CrazyDaveMainTheme-Compressed.wav");
-                    field.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+                    field!.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
                 }
 
                 return field;

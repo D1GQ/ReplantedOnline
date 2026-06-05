@@ -70,6 +70,6 @@ internal static class DebugLoggerPatch
     private static void Postfix(object[] __args, MethodBase __originalMethod)
     {
         var parameters = __originalMethod.GetParameters();
-        LogInfo(__originalMethod.DeclaringType.Name, __originalMethod.Name, __args, parameters);
+        LogInfo(__originalMethod.DeclaringType!.Name, __originalMethod.Name, __args, parameters);
     }
 }

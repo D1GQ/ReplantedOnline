@@ -85,7 +85,7 @@ internal static class DancerZombiePatch
         dancer.mFollowerZombieID = array;
     }
 
-    private static Zombie TrySummonBackupDancer(this Zombie dancer, int thePosX, int theRow)
+    private static Zombie? TrySummonBackupDancer(this Zombie dancer, int thePosX, int theRow)
     {
         if (theRow < 0 || theRow > (dancer.mBoard.GetNumRows() - 1)) return null;
         if (dancer.mBoard.mPlantRow[theRow] == PlantRowType.Pool) return null;

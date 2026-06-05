@@ -44,7 +44,7 @@ internal interface IVersusGamemode
     /// The appropriate IVersusGamemode implementation for the current selection:
     /// Returns null if the SelectionSet doesn't match any known gamemode.
     /// </returns>
-    internal static IVersusGamemode GetCurrentGamemode()
+    internal static IVersusGamemode? GetCurrentGamemode()
     {
         return VersusState.SelectionSet switch
         {

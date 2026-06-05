@@ -17,7 +17,7 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// <summary>
     /// Gets a null/empty ID instance.
     /// </summary>
-    internal static ID Null { get; } = new ID(null, IdType.Null);
+    internal static ID Null { get; } = new ID(null!, IdType.Null);
 
     /// <summary>
     /// Initializes a new instance of the ID struct with the specified value and type.
@@ -129,7 +129,7 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
             endpoint = (IPEndPoint)_id;
             return true;
         }
-        endpoint = default;
+        endpoint = default!;
         return false;
     }
 
@@ -237,7 +237,7 @@ internal readonly struct ID : IEquatable<ID>, IComparable<ID>
     /// <summary>
     /// Determines whether the specified object is equal to the current ID.
     /// </summary>
-    public override bool Equals(object obj) => obj is ID other && Equals(other);
+    public override bool Equals(object? obj) => obj is ID other && Equals(other);
 
     /// <summary>
     /// Indicates whether the current ID is equal to another ID.

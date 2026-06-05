@@ -13,7 +13,7 @@ namespace ReplantedOnline.Attributes.Register;
 /// <typeparam name="Id">The type used as a key for instance lookup.</typeparam>
 /// <param name="identifier">The specific identifier value to associate with this attribute.</param>
 [AttributeUsage(AttributeTargets.Class)]
-internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : AutoRegisterAttribute<T> where T : class
+internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : AutoRegisterAttribute<T> where T : class where Id : notnull
 {
     /// <summary>
     /// The identifier value associated with instances registered by this attribute.
@@ -39,7 +39,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
     /// </summary>
     /// <param name="identifier">The identifier value to look up.</param>
     /// <returns>The instance associated with the specified identifier, or null if not found.</returns>
-    internal static T GetInstanceFromLookup(Id identifier)
+    internal static T? GetInstanceFromLookup(Id identifier)
     {
         if (InstanceLookup.TryGetValue(identifier, out var instanceLookup))
         {
@@ -65,7 +65,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
             return true;
         }
 
-        instance = null;
+        instance = null!;
         return false;
     }
 
@@ -88,7 +88,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
                     {
                         var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
 
-                        Id identifierValue = (Id)autoRegisterAttribute.GetIdentifier();
+                        Id identifierValue = (Id)autoRegisterAttribute.GetIdentifier()!;
                         if (constructor != null && constructor.Invoke(null) is T instance)
                         {
                             _instances.Add(instance);

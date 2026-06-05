@@ -17,7 +17,7 @@ internal sealed class ReloadedClientData
     internal ReloadedClientData(ID id)
     {
         ClientId = id;
-        Name = ReloadedLobby.NetworkTransport.GetMemberName(id);
+        Name = ReloadedLobby.NetworkTransport!.GetMemberName(id);
         AmLocal = id == ReloadedLobby.NetworkTransport.LocalClientId;
         if (AmLocal)
         {
@@ -39,12 +39,12 @@ internal sealed class ReloadedClientData
     /// <summary>
     /// Get the local NetClient
     /// </summary>
-    internal static ReloadedClientData LocalClient { get; private set; }
+    internal static ReloadedClientData? LocalClient { get; private set; }
 
     /// <summary>
     /// Get the opponent NetClient
     /// </summary>
-    internal static ReloadedClientData OpponentClient { get; private set; }
+    internal static ReloadedClientData? OpponentClient { get; private set; }
 
     /// <summary>
     /// The ID of this client.
@@ -80,7 +80,7 @@ internal sealed class ReloadedClientData
     internal byte GetClientIndex()
     {
         byte index = 1;
-        foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
+        foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
         {
             if (client == this)
             {
@@ -95,8 +95,13 @@ internal sealed class ReloadedClientData
     /// <summary>
     /// Gets the plants NetClient
     /// </summary>
-    internal static ReloadedClientData GetPlantClient()
+    internal static ReloadedClientData? GetPlantClient()
     {
+        if (ReloadedLobby.LobbyData == null)
+        {
+            return null;
+        }
+
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
             if (client.Team == PlayerTeam.Plants)
@@ -111,8 +116,13 @@ internal sealed class ReloadedClientData
     /// <summary>
     /// Gets the zombies NetClient
     /// </summary>
-    internal static ReloadedClientData GetZombieClient()
+    internal static ReloadedClientData? GetZombieClient()
     {
+        if (ReloadedLobby.LobbyData == null)
+        {
+            return null;
+        }
+
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
             if (client.Team == PlayerTeam.Zombies)

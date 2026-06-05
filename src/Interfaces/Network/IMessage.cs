@@ -5,10 +5,7 @@ namespace ReplantedOnline.Interfaces.Network;
 /// <summary>
 /// Represents the base interface for all network messages.
 /// </summary>
-internal interface IMessage
-{
-
-}
+internal interface IMessage;
 
 /// <summary>
 /// Represents a network message that can be serialized and deserialized without additional arguments.

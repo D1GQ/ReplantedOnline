@@ -18,7 +18,7 @@ internal sealed class NightArena : DayArena
     /// <inheritdoc/>
     public override LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea2Level2");
+        return LevelEntries.GetLevel("Level-AdventureArea2Level2")!;
     }
 
     /// <inheritdoc/>

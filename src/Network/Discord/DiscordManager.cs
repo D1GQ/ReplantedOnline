@@ -30,12 +30,12 @@ internal static class DiscordManager
     /// <summary>
     /// The Discord RPC client instance.
     /// </summary>
-    private static DiscordRpcClient Client;
+    private static DiscordRpcClient Client = default!;
 
     /// <summary>
     /// The current Rich Presence data.
     /// </summary>
-    private static RichPresence Presence;
+    private static RichPresence Presence = default!;
 
     /// <summary>
     /// The current presence details text.
@@ -319,6 +319,7 @@ internal static class DiscordManager
     /// <param name="args">The join request message containing user information.</param>
     private static void OnJoinRequested(object sender, JoinRequestMessage args)
     {
+        if (ReloadedLobby.LobbyData == null) return;
         bool accept = ReloadedLobby.LobbyData.LobbyJoinable.Value;
         Client.Respond(args, accept);
         if (accept)

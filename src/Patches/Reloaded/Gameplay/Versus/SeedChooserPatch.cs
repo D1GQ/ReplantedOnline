@@ -126,7 +126,7 @@ internal static class SeedChooserPatch
 
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.GetChosenSeedFromType))]
     [HarmonyPrefix]
-    private static bool SeedChooserScreen_GetChosenSeedFromType_Prefix(SeedChooserScreen __instance, SeedType theSeedType, ref ChosenSeed __result)
+    private static bool SeedChooserScreen_GetChosenSeedFromType_Prefix(SeedChooserScreen __instance, SeedType theSeedType, ref ChosenSeed? __result)
     {
         // Bypass hardcoded index range check to allow CustomSeedType!
 

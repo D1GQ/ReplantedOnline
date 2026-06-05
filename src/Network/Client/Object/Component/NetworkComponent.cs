@@ -17,7 +17,10 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
     /// </summary>
     internal NetworkObject NetObj
     {
-        get;
+        get
+        {
+            return field!;
+        }
         set
         {
             if (field != null) return;
@@ -83,7 +86,7 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
     [HideFromIl2Cpp]
     public void SendNetworkComponentRpc<T>(T rpcId, params object[] args) where T : Enum
     {
-        PacketWriter packetWriter = null;
+        PacketWriter? packetWriter = null;
         if (args.Length > 0)
         {
             packetWriter = PacketWriter.Get();

@@ -74,7 +74,7 @@ internal static class Il2CppExtensions
     /// <returns>An Il2Cpp array containing the same elements, or null if input is null.</returns>
     internal static T[] ToIl2CppArray<T>(this T[] managedArray)
     {
-        if (managedArray == null) return null;
+        if (managedArray == null) return default!;
 
         var il2cppArray = new T[managedArray.Length];
         for (int i = 0; i < managedArray.Length; i++)
@@ -90,7 +90,7 @@ internal static class Il2CppExtensions
     /// <returns>A managed array containing the same elements, or null if input is null.</returns>
     internal static T[] ToManagedArray<T>(this T[] il2cppArray)
     {
-        if (il2cppArray == null) return null;
+        if (il2cppArray == null) return default!;
 
         var managedArray = new T[il2cppArray.Length];
         for (int i = 0; i < il2cppArray.Length; i++)
@@ -106,7 +106,7 @@ internal static class Il2CppExtensions
     /// <returns>An Il2Cpp array containing the same elements, or null if input is null.</returns>
     internal static T[] ToIl2CppArray<T>(this List<T> managedList)
     {
-        if (managedList == null) return null;
+        if (managedList == null) return default!;
 
         var il2cppArray = new T[managedList.Count];
         for (int i = 0; i < managedList.Count; i++)
@@ -122,7 +122,7 @@ internal static class Il2CppExtensions
     /// <returns>An Il2Cpp array containing the same elements, or null if input is null.</returns>
     internal static T[] ToIl2CppArray<T>(this Il2CppSystem.Collections.Generic.List<T> il2cppList)
     {
-        if (il2cppList == null) return null;
+        if (il2cppList == null) return default!;
 
         var il2cppArray = new T[il2cppList.Count];
         for (int i = 0; i < il2cppList.Count; i++)
@@ -138,7 +138,7 @@ internal static class Il2CppExtensions
     /// <returns>An Il2Cpp array containing the same elements, or null if input is null.</returns>
     internal static T[] ToIl2CppArray<T>(this IEnumerable<T> enumerable)
     {
-        if (enumerable == null) return null;
+        if (enumerable == null) return default!;
 
         if (enumerable is List<T> list)
             return list.ToIl2CppArray();
@@ -162,7 +162,7 @@ internal static class Il2CppExtensions
     /// </returns>
     internal static bool Il2CppTryCast<T>(this Il2CppObjectBase value, out T typeCast) where T : Il2CppObjectBase
     {
-        typeCast = value.TryCast<T>();
+        typeCast = value.TryCast<T>()!;
         return typeCast != null;
     }
 

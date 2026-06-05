@@ -44,7 +44,7 @@ internal sealed class DebugArena : IArena, IArenaData
     /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-Minigame-Beghouled");
+        return LevelEntries.GetLevel("Level-Minigame-Beghouled")!;
     }
 
     /// <inheritdoc/>
@@ -107,7 +107,7 @@ internal sealed class DebugArena : IArena, IArenaData
     {
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        foreach (var networkobject in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
+        foreach (var networkobject in ReloadedLobby.LobbyData!.NetworkObjectsSpawned.Values)
         {
             networkobject.DespawnAndDestroy();
         }

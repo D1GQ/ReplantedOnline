@@ -16,7 +16,7 @@ internal abstract class CustomAssetReference
     /// <summary>
     /// The full GUID of this custom asset reference, including the custom prefix.
     /// </summary>
-    protected string _guid;
+    protected string _guid = string.Empty;
 
     /// <summary>
     /// Registers a custom asset reference into the global lookup dictionary.
@@ -35,7 +35,7 @@ internal abstract class CustomAssetReference
     /// </summary>
     /// <param name="guid">The full GUID to look up.</param>
     /// <returns>The matching CustomAssetReference if found; otherwise, null.</returns>
-    internal static CustomAssetReference GetByGuid(string guid)
+    internal static CustomAssetReference? GetByGuid(string guid)
     {
         if (CustomAssetReferences.TryGetValue(guid, out var asset))
         {
@@ -76,7 +76,7 @@ internal sealed class CustomAssetReference<T> : CustomAssetReference where T : A
     /// <summary>
     /// Gets the typed asset reference instance created with the custom prefixed GUID.
     /// </summary>
-    internal T AssetRef { get; private set; }
+    internal T AssetRef { get; private set; } = default!;
 
     /// <summary>
     /// Initializes a new instance of the CustomAssetReference class with a custom GUID prefix.
@@ -87,7 +87,7 @@ internal sealed class CustomAssetReference<T> : CustomAssetReference where T : A
     {
         _guid = ReplantedOnlineAssets.CUSTOM_ASSET_REF_GUID_PREFIX + guid;
         _asset = asset;
-        AssetRef = Activator.CreateInstance(typeof(T), args: _guid) as T;
+        AssetRef = (Activator.CreateInstance(typeof(T), args: _guid) as T)!;
     }
 
     /// <summary>

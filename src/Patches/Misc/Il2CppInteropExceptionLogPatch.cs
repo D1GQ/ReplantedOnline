@@ -7,9 +7,9 @@ namespace ReplantedOnline.Patches.Misc;
 
 internal static class Il2CppInteropExceptionLogPatch
 {
-    private static readonly MelonLogger.Instance _logger = GetIl2CppInteropLogger();
+    private static readonly MelonLogger.Instance? _logger = GetIl2CppInteropLogger();
 
-    private static MelonLogger.Instance GetIl2CppInteropLogger()
+    private static MelonLogger.Instance? GetIl2CppInteropLogger()
     {
         try
         {
@@ -105,9 +105,9 @@ internal static class Il2CppInteropExceptionLogPatch
             var harmonySupportAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "Il2CppInterop.HarmonySupport");
 
-            var detourMethodPatcherType = harmonySupportAssembly.GetType("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher");
+            var detourMethodPatcherType = harmonySupportAssembly?.GetType("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher");
 
-            var reportException = detourMethodPatcherType.GetMethod("ReportException",
+            var reportException = detourMethodPatcherType?.GetMethod("ReportException",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             var ourPrefix = typeof(Il2CppInteropExceptionLogPatch).GetMethod(nameof(OurReportException_Prefix),
@@ -130,7 +130,7 @@ internal static class Il2CppInteropExceptionLogPatch
             return false;
         }
 
-        _logger.Error("During invoking native->managed trampoline", __0);
+        _logger?.Error("During invoking native->managed trampoline", __0);
 
         return false;
     }

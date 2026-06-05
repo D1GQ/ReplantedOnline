@@ -32,7 +32,7 @@ internal static class VersusEndGameManager
         Instances.GameplayActivity.Player2VersusWinData = new();
 
         // Play winning or losing sound 
-        foreach (var netClient in ReloadedLobby.LobbyData.AllClients.Values)
+        foreach (var netClient in ReloadedLobby.LobbyData!.AllClients.Values)
         {
             if (netClient.AmLocal && netClient.Team is not PlayerTeam.Spectators)
             {
@@ -84,7 +84,7 @@ internal static class VersusEndGameManager
         winner.Init();
         loser.Init();
 
-        foreach (var netClient in ReloadedLobby.LobbyData.AllClients.Values)
+        foreach (var netClient in ReloadedLobby.LobbyData!.AllClients.Values)
         {
             if (netClient.Team is not PlayerTeam.Spectators)
             {
@@ -154,52 +154,52 @@ internal static class VersusEndGameManager
         /// <summary>
         /// Text display for the player's name.
         /// </summary>
-        private TextMeshProUGUI NameDisplay;
+        private TextMeshProUGUI NameDisplay = default!;
 
         /// <summary>
         /// Plant team frame GameObject.
         /// </summary>
-        private GameObject PlantFrame;
+        private GameObject PlantFrame = default!;
 
         /// <summary>
         /// Zombie team frame GameObject.
         /// </summary>
-        private GameObject ZombieFrame;
+        private GameObject ZombieFrame = default!;
 
         /// <summary>
         /// Plant avatar GameObject.
         /// </summary>
-        private GameObject PlantAvatar;
+        private GameObject PlantAvatar = default!;
 
         /// <summary>
         /// Zombie avatar GameObject.
         /// </summary>
-        private GameObject ZombieAvatar;
+        private GameObject ZombieAvatar = default!;
 
         /// <summary>
         /// Trophy GameObject.
         /// </summary>
-        private GameObject Trophy;
+        private GameObject Trophy = default!;
 
         /// <summary>
         /// Plant trophy GameObject.
         /// </summary>
-        private GameObject PlantTrophy;
+        private GameObject PlantTrophy = default!;
 
         /// <summary>
         /// Zombie trophy GameObject.
         /// </summary>
-        private GameObject ZombieTrophy;
+        private GameObject ZombieTrophy = default!;
 
         /// <summary>
         /// Plant trophy count GameObject.
         /// </summary>
-        private GameObject PlantTrophyCount;
+        private GameObject PlantTrophyCount = default!;
 
         /// <summary>
         /// Zombie trophy count GameObject.
         /// </summary>
-        private GameObject ZombieTrophyCount;
+        private GameObject ZombieTrophyCount = default!;
 
         /// <summary>
         /// Initializes the nameplate by finding and caching all relevant GameObjects.
@@ -322,14 +322,14 @@ internal static class VersusEndGameManager
         /// </summary>
         public void Dispose()
         {
-            NameDisplay = null;
-            PlantFrame = null;
-            ZombieFrame = null;
-            PlantAvatar = null;
-            ZombieAvatar = null;
-            PlantTrophy = null;
-            ZombieTrophyCount = null;
-            PlantTrophyCount = null;
+            NameDisplay = null!;
+            PlantFrame = null!;
+            ZombieFrame = null!;
+            PlantAvatar = null!;
+            ZombieAvatar = null!;
+            PlantTrophy = null!;
+            ZombieTrophyCount = null!;
+            PlantTrophyCount = null!;
         }
     }
 }

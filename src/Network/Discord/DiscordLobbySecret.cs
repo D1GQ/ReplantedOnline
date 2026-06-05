@@ -15,12 +15,12 @@ internal sealed class DiscordLobbySecret
     /// <summary>
     /// Gets the formatted version string associated with the lobby secret.
     /// </summary>
-    internal string VersionFormatted { get; init; }
+    internal string VersionFormatted { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the game code to be included in the lobby secret.
     /// </summary>
-    internal string GameCode { get; init; }
+    internal string GameCode { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets a value indicating whether a format error occurred during deserialization.

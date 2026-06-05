@@ -45,7 +45,7 @@ internal class VersusGameplayManager
             InputManager.SetDeviceActive(true);
         }));
 
-        ReloadedLobby.LobbyData.ReadyForNetworkObjects = true;
+        ReloadedLobby.LobbyData?.ReadyForNetworkObjects = true;
     }
 
     internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)

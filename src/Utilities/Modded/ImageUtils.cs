@@ -15,7 +15,7 @@ internal static class ImageUtils
     /// <param name="resourcePath">The fully qualified name of the embedded resource.</param>
     /// <param name="pixelsPerUnit">The number of texture pixels that correspond to one unit in world space. Default is 1.</param>
     /// <returns>A Sprite loaded from the embedded resource, or null if loading fails.</returns>
-    internal static Sprite LoadSpriteFromResources(this Assembly assembly, string resourcePath, float pixelsPerUnit = 1f)
+    internal static Sprite? LoadSpriteFromResources(this Assembly assembly, string resourcePath, float pixelsPerUnit = 1f)
     {
         try
         {
@@ -26,7 +26,7 @@ internal static class ImageUtils
             using var ms = new MemoryStream();
             stream.CopyTo(ms);
             var sprite = LoadSpriteFromBytes(ms.ToArray(), pixelsPerUnit);
-            sprite.name = Path.GetFileNameWithoutExtension(resourcePath);
+            sprite?.name = Path.GetFileNameWithoutExtension(resourcePath);
             return sprite;
         }
         catch (Exception ex)
@@ -46,7 +46,7 @@ internal static class ImageUtils
     /// <param name="pixelsPerUnit">Pixels per unit for the sprite.</param>
     /// <param name="padding">Optional padding between sprites in pixels.</param>
     /// <returns>The requested Sprite, or null if out of bounds or failed to load.</returns>
-    internal static Sprite LoadSpriteFromTextureSheet(this Texture2D texture, int columns, int rows, (int col, int row) targetSprite, float pixelsPerUnit = 1f, int padding = 0)
+    internal static Sprite? LoadSpriteFromTextureSheet(this Texture2D texture, int columns, int rows, (int col, int row) targetSprite, float pixelsPerUnit = 1f, int padding = 0)
     {
         try
         {
@@ -98,7 +98,7 @@ internal static class ImageUtils
     /// <param name="assembly">The assembly containing the embedded resource.</param>
     /// <param name="resourcePath">The fully qualified name of the embedded resource.</param>
     /// <returns>A Texture2D loaded from the resource, or null if loading fails.</returns>
-    internal static Texture2D LoadTextureFromResources(this Assembly assembly, string resourcePath)
+    internal static Texture2D? LoadTextureFromResources(this Assembly assembly, string resourcePath)
     {
         try
         {
@@ -109,7 +109,7 @@ internal static class ImageUtils
             using var ms = new MemoryStream();
             stream.CopyTo(ms);
             var texture = LoadTextureFromBytes(ms.ToArray());
-            texture.name = Path.GetFileNameWithoutExtension(resourcePath);
+            texture?.name = Path.GetFileNameWithoutExtension(resourcePath);
             return texture;
         }
         catch (Exception ex)
@@ -125,13 +125,13 @@ internal static class ImageUtils
     /// <param name="filePath">The full path to the image file.</param>
     /// <param name="pixelsPerUnit">The number of texture pixels that correspond to one unit in world space. Default is 1.</param>
     /// <returns>A Sprite loaded from the disk file, or null if loading fails.</returns>
-    internal static Sprite LoadSpriteFromDisk(string filePath, float pixelsPerUnit = 1f)
+    internal static Sprite? LoadSpriteFromDisk(string filePath, float pixelsPerUnit = 1f)
     {
         try
         {
             byte[] bytes = File.ReadAllBytes(filePath);
             var sprite = LoadSpriteFromBytes(bytes, pixelsPerUnit);
-            sprite.name = Path.GetFileNameWithoutExtension(Path.GetFileName(filePath));
+            sprite?.name = Path.GetFileNameWithoutExtension(Path.GetFileName(filePath));
             return sprite;
         }
         catch (Exception ex)
@@ -147,7 +147,7 @@ internal static class ImageUtils
     /// <param name="bytes">The raw image file bytes (PNG, JPG, etc.).</param>
     /// <param name="pixelsPerUnit">The number of texture pixels that correspond to one unit in world space. Default is 1.</param>
     /// <returns>A Sprite created from the byte data, retrieved from cache if previously loaded.</returns>
-    internal static Sprite LoadSpriteFromBytes(byte[] bytes, float pixelsPerUnit = 1f)
+    internal static Sprite? LoadSpriteFromBytes(byte[] bytes, float pixelsPerUnit = 1f)
     {
         try
         {
@@ -172,7 +172,7 @@ internal static class ImageUtils
     /// </summary>
     /// <param name="bytes">The raw image file bytes (PNG, JPG, etc.).</param>
     /// <returns>A Texture2D created from the byte data, or null if loading fails.</returns>
-    internal static Texture2D LoadTextureFromBytes(byte[] bytes)
+    internal static Texture2D? LoadTextureFromBytes(byte[] bytes)
     {
         try
         {

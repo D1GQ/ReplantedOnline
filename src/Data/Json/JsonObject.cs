@@ -52,7 +52,7 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// </summary>
     /// <param name="json">The JSON string to deserialize.</param>
     /// <returns>A deserialized object of type <typeparamref name="T"/>, or null if deserialization fails or the input is invalid.</returns>
-    internal static T DeserializeObject(string json)
+    internal static T? DeserializeObject(string json)
     {
         return UninitializedObject.Deserialize(json);
     }
@@ -71,7 +71,7 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// </summary>
     /// <param name="json">The JSON string to deserialize.</param>
     /// <returns>A deserialized object of type <typeparamref name="T"/>, or null if deserialization fails or the input is invalid.</returns>
-    internal virtual T Deserialize(string json)
+    internal virtual T? Deserialize(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
             return null;

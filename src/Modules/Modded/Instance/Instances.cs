@@ -12,10 +12,10 @@ namespace ReplantedOnline.Modules.Modded.Instance;
 /// </summary>
 internal static class Instances
 {
-    internal static AppCore AppCore => InstanceWrapper<AppCore>.Instance ?? default;
-    internal static GameplayDataProvider GameplayDataProvider => InstanceWrapper<GameplayDataProvider>.Instance ?? default;
-    internal static GameplayActivity GameplayActivity => InstanceWrapper<GameplayActivity>.Instance ?? default;
-    internal static IDataService IDataService => InstanceWrapper<DataServiceActivity>.Instance.Service ?? default;
-    internal static VersusDataModel VersusDataModel => InstanceWrapper<VersusDataModel>.Instance ?? default;
-    internal static PanelViewContainer GlobalPanels { get; set; }
+    internal static AppCore AppCore => InstanceWrapper<AppCore>.Instance!;
+    internal static GameplayDataProvider GameplayDataProvider => InstanceWrapper<GameplayDataProvider>.Instance!;
+    internal static GameplayActivity GameplayActivity => InstanceWrapper<GameplayActivity>.Instance!;
+    internal static IDataService IDataService => InstanceWrapper<DataServiceActivity>.Instance.Service!;
+    internal static VersusDataModel VersusDataModel => InstanceWrapper<VersusDataModel>.Instance!;
+    internal static PanelViewContainer GlobalPanels { get; set; } = default!;
 }

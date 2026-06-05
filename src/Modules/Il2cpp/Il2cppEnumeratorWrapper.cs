@@ -11,7 +11,7 @@ namespace ReplantedOnline.Modules.Il2cpp;
 [RegisterTypeInIl2CppWithInterfaces(typeof(Il2CppSystem.Collections.IEnumerator))]
 internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
 {
-    private readonly IEnumerator enumerator;
+    private readonly IEnumerator? enumerator;
 
     /// <summary>
     /// Il2Cpp constructor required for runtime injection.
@@ -35,9 +35,9 @@ internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
     /// Converts managed objects to Il2Cpp objects as needed, with special handling for nested enumerators.
     /// </summary>
     /// <exception cref="NotSupportedException">Thrown when encountering an unsupported type.</exception>
-    public Il2CppSystem.Object Current
+    public Il2CppSystem.Object? Current
     {
-        get => enumerator.Current switch
+        get => enumerator!.Current switch
         {
             IEnumerator next => new Il2cppEnumeratorWrapper(next),
             Il2CppSystem.Object il2cppObject => il2cppObject,
@@ -58,7 +58,7 @@ internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
     {
         try
         {
-            return enumerator.MoveNext();
+            return enumerator!.MoveNext();
         }
         catch (Exception ex)
         {
@@ -70,5 +70,5 @@ internal sealed class Il2cppEnumeratorWrapper : Il2CppSystem.Object
     /// <summary>
     /// Sets the enumerator to its initial position, which is before the first element in the collection.
     /// </summary>
-    public void Reset() => enumerator.Reset();
+    public void Reset() => enumerator!.Reset();
 }

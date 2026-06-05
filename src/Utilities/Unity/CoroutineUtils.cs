@@ -95,7 +95,7 @@ internal static class CoroutineUtils
     /// <param name="onSuccess">Action to execute if condition is met before timeout.</param>
     /// <param name="onTimeout">Action to execute if timeout occurs (optional).</param>
     /// <returns>An IEnumerator that waits for condition or timeout.</returns>
-    internal static IEnumerator WaitForConditionWithTimeout(Func<bool> condition, float timeoutSeconds, Action onSuccess, Action onTimeout = null)
+    internal static IEnumerator WaitForConditionWithTimeout(Func<bool> condition, float timeoutSeconds, Action? onSuccess, Action? onTimeout = null)
     {
         float elapsedTime = 0f;
 

@@ -11,8 +11,8 @@ namespace ReplantedOnline.MonoScripts.Modded;
 internal sealed class WhiteWaterEffect : MonoBehaviour
 {
     private readonly int _fps = 10;
-    private Sprite[] _sprites;
-    private SpriteRenderer _spriteRenderer;
+    private Sprite[] _sprites = default!;
+    private SpriteRenderer _spriteRenderer = default!;
     private float _frameTimer;
     private int _currentFrame;
     private int _sortingOrder;

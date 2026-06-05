@@ -25,14 +25,14 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// <summary>
     /// The unique identifier for this prefab instance.
     /// </summary>
-    internal string GUID { get; private set; }
+    internal string GUID { get; private set; } = string.Empty;
 
     /// <summary>
     /// Gets the current state of the object.
     /// This property can hold any type of object to represent various states.
     /// </summary>
     [HideFromIl2Cpp]
-    internal object State { get; set; }
+    internal object? State { get; set; }
 
     /// <summary>
     /// Creates a new runtime prefab of the specified type.
@@ -41,7 +41,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// <param name="prefabGUID">The unique identifier for the prefab.</param>
     /// <param name="callback">Optional callback to configure the prefab after creation.</param>
     /// <returns>The created prefab instance.</returns>
-    internal static T CreatePrefab<T>(string prefabGUID, Action<T> callback = null) where T : RuntimePrefab
+    internal static T CreatePrefab<T>(string prefabGUID, Action<T>? callback = null) where T : RuntimePrefab
     {
         var go = new GameObject($"{typeof(T).Name}_Prefab");
         go.transform.SetParent(GlobalGameObjects.PrefabsGo.transform);
@@ -69,7 +69,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
             return @new;
         }
 
-        return null;
+        return default!;
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ internal abstract class RuntimePrefab : MonoBehaviour
     /// <typeparam name="T">The expected type of the prefab, must inherit from RuntimePrefab.</typeparam>
     /// <param name="prefabGUID">The GUID of the prefab to clone.</param>
     /// <returns>A new instance of the cloned prefab cast to type T, or null if not found.</returns>
-    internal static T Clone<T>(string prefabGUID) where T : RuntimePrefab => Clone(prefabGUID) as T;
+    internal static T Clone<T>(string prefabGUID) where T : RuntimePrefab => (Clone(prefabGUID) as T)!;
 
     /// <summary>
     /// Clones this specific prefab instance using its stored GUID.

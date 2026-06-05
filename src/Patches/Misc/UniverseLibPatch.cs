@@ -16,7 +16,7 @@ internal static class UniverseLibPatch
         harmony.Patch(loadMethod, prefix: new HarmonyMethod(prefixMethod));
     }
 
-    private static bool AssetBundle_LoadFromMemory_Prefix(byte[] binary, uint crc, ref object __result)
+    private static bool AssetBundle_LoadFromMemory_Prefix(byte[] binary, uint crc, ref object? __result)
     {
         ReplantedOnlineMod.Logger.Warning(typeof(UniverseLibPatch), "DO NOT REPORT WARNING BELOW!!! Interrupting AssetBundle load...");
         __result = null;

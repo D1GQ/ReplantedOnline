@@ -24,7 +24,7 @@ internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, Pac
     /// <param name="packetHandlerType">The packet handler type tag to write to the packet.</param>
     /// <param name="payload">The packet containing the RPC payload data.</param>
     /// <param name="packetWriter">The target packet writer to write the serialized header data to.</param>
-    public void Serialize(PacketHandlerType packetHandlerType, IPacket payload, PacketWriter packetWriter)
+    public void Serialize(PacketHandlerType packetHandlerType, IPacket? payload, PacketWriter packetWriter)
     {
         packetWriter.AddTag(packetHandlerType);
         if (payload != null)

@@ -24,10 +24,10 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 [HarmonyPatch]
 internal static class VersusLobbyPatch
 {
-    private static GameObject InteractableBlocker;
-    private static GameObject InteractableGamePad;
-    private static GameObject LobbyBackground;
-    internal static PanelView VsSideChooser;
+    private static GameObject? InteractableBlocker;
+    private static GameObject? InteractableGamePad;
+    private static GameObject? LobbyBackground;
+    internal static PanelView? VsSideChooser;
 
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
     [HarmonyPostfix]
@@ -99,7 +99,7 @@ internal static class VersusLobbyPatch
         if (!ReloadedLobby.AmInLobby()) return;
 
         // Use Rip clouds as lobby background 
-        if (LobbyBackground == null)
+        if (LobbyBackground == null && VsSideChooser != null)
         {
             LobbyBackground = UnityEngine.Object.Instantiate(__instance.transform.Find("Sky RIP").gameObject, VsSideChooser.transform.parent);
             LobbyBackground.SetActive(true);
@@ -195,9 +195,10 @@ internal static class VersusLobbyPatch
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Confirm))]
     [HarmonyPostfix]
-    private static void Confirm_Postfix(VersusPlayerModel __instance, bool __state)
+    private static void Confirm_Postfix(bool __state)
     {
         if (!__state) return;
+        if (ReloadedLobby.LobbyData == null) return;
 
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == 0)
         {
@@ -211,7 +212,7 @@ internal static class VersusLobbyPatch
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Cancel))]
     [HarmonyPrefix]
-    private static bool Cancel_Prefix(VersusPlayerModel __instance, ref bool __state)
+    private static bool Cancel_Prefix(ref bool __state)
     {
         __state = false;
         if (!ReloadedLobby.AmLobbyHost()) return false;
@@ -225,6 +226,7 @@ internal static class VersusLobbyPatch
     private static void Cancel_Postfix(VersusPlayerModel __instance, bool __state)
     {
         if (!__state) return;
+        if (ReloadedLobby.LobbyData == null) return;
 
         ReloadedLobby.LobbyData.HostTeam.Value = PlayerTeam.None;
     }

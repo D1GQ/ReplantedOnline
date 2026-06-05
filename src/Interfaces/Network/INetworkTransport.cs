@@ -34,7 +34,6 @@ internal interface INetworkTransport : IDisposable
     /// </summary>
     /// <param name="clientId">The ID of the target client.</param>
     /// <param name="data">The byte array containing the packet data.</param>
-    /// <param name="length">Length of data to send. Use -1 to send the entire array.</param>
     /// <param name="channel">The channel to send the packet on.</param>
     /// <param name="sendType">The reliability type of the packet.</param>
     /// <returns>True if the packet was sent successfully, false otherwise.</returns>

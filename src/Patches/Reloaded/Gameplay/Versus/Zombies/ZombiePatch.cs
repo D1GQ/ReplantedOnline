@@ -39,7 +39,7 @@ internal static class ZombiePatch
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
     [HarmonyPostfix]
-    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant __result)
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
         if (theAttackType != ZombieAttackType.Chew) return;
         if (__instance.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar) return;

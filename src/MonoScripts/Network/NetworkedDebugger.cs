@@ -11,28 +11,24 @@ namespace ReplantedOnline.MonoScripts.Network;
 [RegisterTypeInIl2Cpp]
 internal sealed class NetworkedDebugger : MonoBehaviour
 {
-    private NetworkObject _instance;
-    private GUIStyle _boxOutlineStyle;
-    private GUIStyle _boxFillStyle;
-    private GUIStyle _labelStyle;
-    private GUIStyle _infoStyle;
-    private GUIStyle _backgroundStyle;
-    private GUIStyle _lineStyle;
-    private Texture2D _whiteTexture;
+    private NetworkObject? _instance;
+    private GUIStyle? _boxOutlineStyle;
+    private GUIStyle? _boxFillStyle;
+    private GUIStyle? _labelStyle;
+    private GUIStyle? _infoStyle;
+    private GUIStyle? _backgroundStyle;
+    private GUIStyle? _lineStyle;
+    private Texture2D? _whiteTexture;
     private bool _isMouseOver;
     private Vector3 _cachedScreenPos;
 
-    private Texture2D _lineTexture;
+    private Texture2D? _lineTexture;
     private Color _currentLineColor;
 
     private Color _currentOutlineColor;
     private Color _currentFillColor;
 
     private Rect _tempRect = new();
-
-
-    private Vector3 _cachedWorldPos;
-    private Rect _cachedHitboxRect;
 
     [HideFromIl2Cpp]
     internal void Initialize(NetworkObject networkObj)
@@ -137,7 +133,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         }
         else if (!isDead)
         {
-            Vector3 worldPos = zombie.mController.transform.position + zombie.mController.GetRenderOffset();
+            Vector3 worldPos = zombie!.mController.transform.position + zombie.mController.GetRenderOffset();
             Rect hitboxRect = zombie.mZombieRect;
             _cachedScreenPos = WorldToScreen(worldPos + new Vector3(0f, 100f, 0f));
 
@@ -173,7 +169,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         }
         else if (!isDead)
         {
-            Vector3 worldPos = plant.mController.transform.position + plant.mController.GetRenderOffset();
+            Vector3 worldPos = plant!.mController.transform.position + plant.mController.GetRenderOffset();
             Rect hitboxRect = plant.mPlantRect;
             _cachedScreenPos = WorldToScreen(worldPos + new Vector3(0f, 100f, 0f));
 
@@ -217,7 +213,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         GUI.Box(_tempRect, "", _boxFillStyle);
         DrawBoxOutline(_tempRect, 2f);
 
-        Vector2 nameSize = _labelStyle.CalcSize(new GUIContent(objectName));
+        Vector2 nameSize = _labelStyle!.CalcSize(new GUIContent(objectName));
         Rect nameRect = new(
             screenPos.x - nameSize.x / 2f - 4f,
             _tempRect.y + _tempRect.height + 5f,
@@ -230,7 +226,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         if (_isMouseOver && !string.IsNullOrEmpty(info))
         {
             GUIContent infoContent = new GUIContent(info);
-            Vector2 infoSize = _infoStyle.CalcSize(infoContent);
+            Vector2 infoSize = _infoStyle!.CalcSize(infoContent);
 
             float padding = 8f;
             Rect infoRect = new Rect(
@@ -276,8 +272,8 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
         _isMouseOver = _tempRect.Contains(Event.current.mousePosition);
 
-        Color outlineColor = new Color(color.r, color.g, color.b, 0.8f);
-        Color fillColor = new Color(color.r, color.g, color.b, 0.15f);
+        Color outlineColor = new(color.r, color.g, color.b, 0.8f);
+        Color fillColor = new(color.r, color.g, color.b, 0.15f);
 
         if (outlineColor != _currentOutlineColor || fillColor != _currentFillColor)
         {
@@ -287,7 +283,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         GUI.Box(_tempRect, "", _boxFillStyle);
         DrawBoxOutline(_tempRect, 2f);
 
-        Color originalTextColor = _labelStyle.normal.textColor;
+        Color originalTextColor = _labelStyle!.normal.textColor;
         _labelStyle.normal.textColor = color;
 
         Vector2 nameSize = _labelStyle.CalcSize(new GUIContent(objectName));
@@ -305,10 +301,12 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     [HideFromIl2Cpp]
     private void DrawSyncPosition(ZombieNetworked zombieNetworked, Vector3 currentWorldPos)
     {
+        if (zombieNetworked.LogicComponent.LastSyncPosX == null) return;
+
         Vector3 currentScreenPos = WorldToScreen(currentWorldPos + new Vector3(0f, 100f, 0f));
         if (currentScreenPos.z < 0) return;
 
-        Vector3 syncWorldPos = new Vector3(
+        Vector3 syncWorldPos = new(
             PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.LogicComponent.LastSyncPosX.Value),
             currentWorldPos.y,
             currentWorldPos.z
@@ -349,7 +347,7 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         // Update line texture color only if changed
         if (color != _currentLineColor)
         {
-            _lineTexture.SetPixel(0, 0, color);
+            _lineTexture!.SetPixel(0, 0, color);
             _lineTexture.Apply();
             _currentLineColor = color;
         }
@@ -361,11 +359,11 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
     private void UpdateBoxColors(Color outlineColor, Color fillColor)
     {
-        var outlineTex = _boxOutlineStyle.normal.background;
+        var outlineTex = _boxOutlineStyle!.normal.background;
         outlineTex.SetPixel(0, 0, outlineColor);
         outlineTex.Apply();
 
-        var fillTex = _boxFillStyle.normal.background;
+        var fillTex = _boxFillStyle!.normal.background;
         fillTex.SetPixel(0, 0, fillColor);
         fillTex.Apply();
 

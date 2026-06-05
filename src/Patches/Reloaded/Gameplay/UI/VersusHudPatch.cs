@@ -13,8 +13,8 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 [HarmonyPatch]
 internal static class VersusHudPatch
 {
-    private static ContentSizeFitter plantHud;
-    private static ContentSizeFitter zombieHud;
+    private static ContentSizeFitter? plantHud;
+    private static ContentSizeFitter? zombieHud;
 
     [HarmonyPatch(typeof(ContentSizeFitter), nameof(ContentSizeFitter.OnEnable))]
     [HarmonyPostfix]
@@ -75,7 +75,7 @@ internal static class VersusHudPatch
         }
     }
 
-    private static void SetUnknownCount(NumberLabelBinder binder)
+    private static void SetUnknownCount(NumberLabelBinder? binder)
     {
         if (binder == null)
             return;

@@ -16,7 +16,7 @@ internal sealed class WeakVar<T> where T : class
     /// Initializes a new instance of the <see cref="WeakVar{T}"/> class with the specified getter delegate.
     /// </summary>
     /// <param name="get">A function that returns the target object of type <typeparamref name="T"/> when invoked.</param>
-    internal WeakVar(Func<T> get)
+    internal WeakVar(Func<T?> get)
     {
         _getTarget = get;
     }
@@ -28,15 +28,15 @@ internal sealed class WeakVar<T> where T : class
     /// The referenced object of type <typeparamref name="T"/>, or <c>null</c> if the delegate is <c>null</c>, 
     /// the delegate returns <c>null</c>, or any intermediate property in the delegate's resolution path is <c>null</c>.
     /// </returns>
-    internal T Value => _getTarget?.Invoke();
+    internal T? Value => _getTarget?.Invoke();
 
-    private Func<T> _getTarget;
+    private Func<T?>? _getTarget;
 
     /// <summary>
     /// Sets or updates the delegate used to retrieve the target object dynamically.
     /// </summary>
     /// <param name="get">A function that returns the target object of type <typeparamref name="T"/> when invoked.</param>
-    internal void SetTarget(Func<T> get)
+    internal void SetTarget(Func<T?> get)
     {
         if (_getTarget != null && Value != null)
         {

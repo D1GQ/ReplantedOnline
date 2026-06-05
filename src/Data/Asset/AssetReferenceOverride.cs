@@ -19,8 +19,8 @@ internal sealed class AssetReferenceOverride<T> : IAssetReferenceOverride where 
     }
 
     private readonly AssetReference _assetReference;
-    private T _asset;
-    private Func<bool> _shouldApply;
+    private T? _asset;
+    private Func<bool>? _shouldApply;
 
     /// <summary>
     /// Sets the asset instance that will be used when overriding the addressable operation.

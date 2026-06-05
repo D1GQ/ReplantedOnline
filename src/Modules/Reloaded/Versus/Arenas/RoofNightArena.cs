@@ -19,7 +19,7 @@ internal sealed class RoofNightArena : RoofArena
     /// <inheritdoc/>
     public override LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea5Level10");
+        return LevelEntries.GetLevel("Level-AdventureArea5Level10")!;
     }
 
     /// <inheritdoc/>

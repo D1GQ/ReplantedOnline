@@ -76,7 +76,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleDiveRpc()
     {
         _isDiving = true;
-        Net.Zombie.mPhaseCounter = 0;
+        Net.Zombie?.mPhaseCounter = 0;
     }
 
     private void SendTakePlantRpc()
@@ -88,6 +88,6 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
     private void HandleTakePlantRpc()
     {
         _isTakingPlant = true;
-        Net.Zombie.mPhaseCounter = 0;
+        Net.Zombie?.mPhaseCounter = 0;
     }
 }

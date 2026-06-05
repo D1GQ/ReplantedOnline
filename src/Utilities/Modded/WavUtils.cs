@@ -15,11 +15,11 @@ internal static class WavUtils
     /// <param name="assembly">The assembly containing the embedded WAV resource.</param>
     /// <param name="resourcePath">The fully qualified name of the embedded resource.</param>
     /// <returns>An AudioClip containing the loaded WAV data, or null if loading fails.</returns>
-    internal static AudioClip LoadWavFromResources(this Assembly assembly, string resourcePath)
+    internal static AudioClip? LoadWavFromResources(this Assembly assembly, string resourcePath)
     {
         try
         {
-            using Stream stream = assembly.GetManifestResourceStream(resourcePath);
+            using Stream? stream = assembly.GetManifestResourceStream(resourcePath);
             if (stream == null)
             {
                 ReplantedOnlineMod.Logger.Error(typeof(WavUtils), $"Resource not found: {resourcePath}");
@@ -45,7 +45,7 @@ internal static class WavUtils
     /// </summary>
     /// <param name="filePath">The full path to the WAV file.</param>
     /// <returns>An AudioClip containing the loaded WAV data, or null if loading fails.</returns>
-    internal static AudioClip LoadWavFromDisk(string filePath)
+    internal static AudioClip? LoadWavFromDisk(string filePath)
     {
         if (!File.Exists(filePath))
         {

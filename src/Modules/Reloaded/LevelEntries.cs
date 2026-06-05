@@ -38,13 +38,14 @@ internal static class LevelEntries
     /// <returns>
     /// The LevelEntryData object if found; otherwise, returns the default value for LevelEntryData.
     /// </returns>
-    internal static LevelEntryData GetLevel(string name)
+    internal static LevelEntryData? GetLevel(string name)
     {
         if (LevelNameLookup.TryGetValue(name, out var levelData))
         {
             return levelData;
         }
-        return default;
+
+        return null;
     }
 
     /// <summary>
@@ -57,7 +58,7 @@ internal static class LevelEntries
 
         var versusLevel = GetLevel("Level-Versus");
         var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
-        if (arena is IArenaData data)
+        if (arena is IArenaData data && versusLevel != null)
         {
             data.SetupVersusLevel(versusLevel);
         }
@@ -116,7 +117,10 @@ internal static class LevelEntries
     internal static void ResetVersusArena()
     {
         var level = GetLevel("Level-Versus");
-        level.m_gameArea = GameArea.Day;
-        level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1").BackgroundPrefab;
+        if (level != null)
+        {
+            level.m_gameArea = GameArea.Day;
+            level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1")!.BackgroundPrefab;
+        }
     }
 }

@@ -75,7 +75,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     private class RpcMethodInfo
     {
         /// <summary>Gets or sets the method info for the RPC handler.</summary>
-        public MethodInfo Method { get; set; }
+        public MethodInfo? Method { get; set; }
 
         /// <summary>Gets or sets whether owner validation is required for this handler.</summary>
         public bool OwnerCheck { get; set; }
@@ -90,7 +90,7 @@ internal sealed class RpcHandlerAttribute : Attribute
         /// <summary>
         /// Gets or sets the client data of the client that sent this RPC.
         /// </summary>
-        internal ReloadedClientData Sender { get; set; }
+        internal ReloadedClientData? Sender { get; set; }
     }
 
     /// <summary>
@@ -142,6 +142,9 @@ internal sealed class RpcHandlerAttribute : Attribute
             return;
 
         var method = rpcMethodInfo.Method;
+        if (method == null)
+            return;
+
         var parameters = method.GetParameters();
         var args = new object[parameters.Length];
 

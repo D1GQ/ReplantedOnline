@@ -44,7 +44,7 @@ internal interface IFastPacketResolver
     /// <param name="packetWriter">The packet writer to write to.</param>
     /// <param name="value">The value to write. Can be null for reference types.</param>
     /// <exception cref="NotSupportedException">Thrown when the type T is not supported by any registered resolver.</exception>
-    internal static void WriteFast<T>(PacketWriter packetWriter, T value)
+    internal static void WriteFast<T>(PacketWriter packetWriter, T value) where T : notnull
     {
         WriteFast(packetWriter, value, typeof(T));
     }
@@ -128,7 +128,7 @@ internal interface IFastPacketResolver
 /// Implements the non-generic IFastPacketResolver interface with type-safe methods.
 /// </summary>
 /// <typeparam name="T">The type that this resolver handles.</typeparam>
-internal interface IFastPacketResolver<T> : IFastPacketResolver
+internal interface IFastPacketResolver<T> : IFastPacketResolver where T : notnull
 {
     /// <summary>
     /// Serializes a strongly-typed value to the packet writer.

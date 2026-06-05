@@ -23,7 +23,7 @@ internal class DayArena : IArena, IArenaData
     /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea1Level2");
+        return LevelEntries.GetLevel("Level-AdventureArea1Level2")!;
     }
 
     /// <inheritdoc/>

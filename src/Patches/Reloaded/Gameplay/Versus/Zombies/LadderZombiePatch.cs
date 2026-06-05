@@ -12,7 +12,7 @@ internal static class LadderZombiePatch
 {
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.FindPlantTarget))]
     [HarmonyPostfix]
-    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant __result)
+    private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
         if (__instance.mZombieType != ZombieType.Ladder) return;
         if (theAttackType != ZombieAttackType.Ladder) return;

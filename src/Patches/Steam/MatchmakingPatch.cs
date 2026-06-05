@@ -15,7 +15,7 @@ internal static class MatchmakingPatch
     {
         if (ReloadedLobby.AmInLobby() && ReloadedLobby.AmLobbyHost())
         {
-            ReloadedLobby.NetworkTransport.SetLobbyData(ReloadedLobby.LobbyData.LobbyId, $"ban:{clientId}", bool.TrueString);
+            ReloadedLobby.NetworkTransport!.SetLobbyData(ReloadedLobby.LobbyData!.LobbyId, $"ban:{clientId}", bool.TrueString);
         }
     }
 
@@ -27,7 +27,7 @@ internal static class MatchmakingPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            return ReloadedLobby.NetworkTransport.GetLobbyData(ReloadedLobby.LobbyData.LobbyId, $"ban:{clientId}") == bool.TrueString;
+            return ReloadedLobby.NetworkTransport!.GetLobbyData(ReloadedLobby.LobbyData!.LobbyId, $"ban:{clientId}") == bool.TrueString;
         }
 
         return false;
@@ -54,7 +54,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static bool ISteamMatchmaking_GetNumLobbyMembers_Prefix(SteamId steamIDLobby, ref int __result)
     {
-        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return true;
+        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData!.LobbyId != steamIDLobby) return true;
 
         var filtered = GetFilteredMembers(steamIDLobby);
         __result = filtered.Count;
@@ -73,7 +73,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static bool ISteamMatchmaking_GetLobbyMemberByIndex_Prefix(SteamId steamIDLobby, int iMember, ref SteamId __result)
     {
-        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return true;
+        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData!.LobbyId != steamIDLobby) return true;
 
         var filtered = GetFilteredMembers(steamIDLobby);
 
@@ -98,7 +98,7 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static void ISteamMatchmaking_SetLobbyMemberLimit_Prefix(SteamId steamIDLobby, ref int cMaxMembers)
     {
-        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData.LobbyId != steamIDLobby) return;
+        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData!.LobbyId != steamIDLobby) return;
 
         int realTotalMembers = SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(steamIDLobby);
         int visibleMembers = GetFilteredMembers(steamIDLobby).Count;

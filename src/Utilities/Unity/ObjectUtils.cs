@@ -102,7 +102,7 @@ internal static class ObjectUtils
     /// </summary>
     /// <param name="panelViewContainer">The PanelViewContainer.</param>
     /// <param name="panelId">The PanelView id.</param>
-    internal static PanelView GetPanel(this PanelViewContainer panelViewContainer, string panelId)
+    internal static PanelView? GetPanel(this PanelViewContainer panelViewContainer, string panelId)
     {
         foreach (var panel in panelViewContainer.m_panels)
         {

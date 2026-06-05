@@ -25,7 +25,7 @@ internal static class CustomPlantDefinition
     /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.
     /// </returns>
-    internal static PlantDefinition CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string name, Sprite seedPacketSprite)
+    internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string name, Sprite seedPacketSprite)
     {
         if (!customSeedType.HasValidZombieType())
         {

@@ -24,8 +24,8 @@ internal static class AudioManager
         }));
     }
 
-    private static AudioClip MainMenuTheme;
-    private static AudioClip CustomMainMenuTheme;
+    private static AudioClip? MainMenuTheme;
+    private static AudioClip? CustomMainMenuTheme;
 
     /// <summary>
     /// Captures and caches audio.
@@ -33,7 +33,10 @@ internal static class AudioManager
     private static void CatchAudio()
     {
         MainMenuTheme = GetAudio(MusicFile.MainMusic, MusicTune.TitleCrazyDaveMainTheme);
-        MainMenuTheme.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+        if (MainMenuTheme != null)
+        {
+            MainMenuTheme.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+        }
         CustomMainMenuTheme = ReplantedOnlineAssets.Sounds.CrazyDaveMainThemeCompressed;
     }
 
@@ -90,7 +93,7 @@ internal static class AudioManager
     /// The AudioClip currently assigned to the specified audio track, or null if no matching
     /// audio source is found.
     /// </returns>
-    internal static AudioClip GetAudio(MusicFile id, MusicTune tune)
+    internal static AudioClip? GetAudio(MusicFile id, MusicTune tune)
     {
         var Audio = Instances.AppCore.m_audioSourcesService.m_musicSourceMappings.FirstOrDefault(am => am.IsId(id, tune));
         return Audio?.m_audioSource.m_audioSource.clip;

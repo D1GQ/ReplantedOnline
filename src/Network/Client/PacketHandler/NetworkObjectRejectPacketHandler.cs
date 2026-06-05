@@ -20,7 +20,7 @@ internal sealed class NetworkObjectRejectPacketHandler : IPacketHandler
 
         try
         {
-            if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
+            if (ReloadedLobby.LobbyData!.NetworkObjectsSpawned.TryGetValue(message.NetworkId, out var networkObj))
             {
                 networkObj.OnRejected();
                 UnityEngine.Object.Destroy(networkObj);

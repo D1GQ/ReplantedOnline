@@ -29,12 +29,12 @@ internal static class ReloadedLobby
     /// <summary>
     /// The LobbyData of the current lobby the player is in, or null if not in a lobby.
     /// </summary>
-    internal static ReloadedLobbyData LobbyData;
+    internal static ReloadedLobbyData? LobbyData;
 
     /// <summary>
     /// Gets the current network transport implementation for lobby and P2P operations.
     /// </summary>
-    internal static INetworkTransport NetworkTransport { get; private set; }
+    internal static INetworkTransport? NetworkTransport { get; private set; }
 
     /// <summary>
     /// Gets the current transport mode being used for network communication.
@@ -143,14 +143,14 @@ internal static class ReloadedLobby
     /// <summary>
     /// Resets the lobby state and transitions back to the Versus menu.
     /// </summary>
-    internal static void ResetLobby(Action callback = null)
+    internal static void ResetLobby(Action? callback = null)
     {
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Restarting the lobby");
         ReloadedClientData.LocalClient?.Ready.Value = false;
         DiscordManager.OnLobbyRestart();
         VersusLobbyManager.ResetPlayerInput();
         InputManager.SetListeningForNewDevice(true);
-        LobbyData.UnsetAllTeams();
+        LobbyData!.UnsetAllTeams();
         LobbyData.LocalDespawnAll();
         LobbyData.InitializeData();
         Transitions.SetLoading();
@@ -169,7 +169,7 @@ internal static class ReloadedLobby
     /// </summary>
     internal static void CreateLobby()
     {
-        NetworkTransport.CreateLobby(MAX_LOBBY_SIZE);
+        NetworkTransport!.CreateLobby(MAX_LOBBY_SIZE);
         Transitions.SetLoading();
     }
 
@@ -178,7 +178,7 @@ internal static class ReloadedLobby
     /// </summary>
     internal static void JoinLobby(ID lobbyId)
     {
-        NetworkTransport.JoinLobby(lobbyId);
+        NetworkTransport!.JoinLobby(lobbyId);
         Transitions.SetLoading();
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joining lobby: {lobbyId}");
     }
@@ -186,7 +186,7 @@ internal static class ReloadedLobby
     /// <summary>
     /// Leaves the current lobby and cleans up network connections.
     /// </summary>
-    internal static void LeaveLobby(Action callback = null)
+    internal static void LeaveLobby(Action? callback = null)
     {
         if (LobbyData == null)
         {
@@ -204,7 +204,7 @@ internal static class ReloadedLobby
             callback?.Invoke();
         });
         LobbyData = null;
-        NetworkTransport.LeaveLobby(lobbyId);
+        NetworkTransport!.LeaveLobby(lobbyId);
         DiscordManager.OnLeftLobby();
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Successfully left lobby");
     }
@@ -230,7 +230,7 @@ internal static class ReloadedLobby
     {
         LobbyData?.Dispose();
         LobbyData = new(lobby.Id, lobby.OwnerId);
-        LobbyData.LobbyCode = NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+        LobbyData.LobbyCode = NetworkTransport!.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
 
         Transitions.ToVersus(() =>
         {
@@ -259,18 +259,18 @@ internal static class ReloadedLobby
     {
         if (!AmInLobby()) return;
 
-        LobbyData.UpdateLobbyStates();
+        LobbyData!.UpdateLobbyStates();
     }
 
     internal static void OnLobbyMemberJoined(ServerLobby lobby, ID clientId)
     {
-        if (lobby.Id != LobbyData.LobbyId)
+        if (lobby.Id != LobbyData!.LobbyId)
         {
             ReplantedOnlineMod.Logger.Warning(typeof(ReloadedLobby), $"Member joined different lobby (ours: {LobbyData.LobbyId}, theirs: {lobby.Id})");
             return;
         }
 
-        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Player {clientId} ({NetworkTransport.GetMemberName(clientId)}) joined the lobby");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Player {clientId} ({NetworkTransport!.GetMemberName(clientId)}) joined the lobby");
         ProcessMemberList();
 
         // If we're the host, request P2P session with the new player
@@ -308,7 +308,7 @@ internal static class ReloadedLobby
     {
         if (clientId.IsBanned()) return;
 
-        NetworkTransport.AcceptP2PSessionWithUser(clientId);
+        NetworkTransport!.AcceptP2PSessionWithUser(clientId);
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Accepted P2P session with {clientId}");
     }
 
@@ -327,11 +327,11 @@ internal static class ReloadedLobby
         if (AmLobbyHost())
         {
             MatchmakingManager.UpdateLobbyJoinable(false);
-            NetworkTransport.SetLobbyMemberLimit(LobbyData.LobbyId, MAX_LOBBY_SIZE);
+            NetworkTransport!.SetLobbyMemberLimit(LobbyData.LobbyId, MAX_LOBBY_SIZE);
         }
 
         List<ID> members = [];
-        var num = NetworkTransport.GetNumLobbyMembers(LobbyData.LobbyId);
+        var num = NetworkTransport!.GetNumLobbyMembers(LobbyData.LobbyId);
         for (int i = 0; i < num; i++)
         {
             var member = NetworkTransport.GetLobbyMemberByIndex(LobbyData.LobbyId, i);
@@ -371,7 +371,7 @@ internal static class ReloadedLobby
             return;
         }
 
-        if (clientId == NetworkTransport.LocalClientId)
+        if (clientId == NetworkTransport!.LocalClientId)
         {
             ReplantedOnlineMod.Logger.Warning(typeof(ReloadedLobby), "Cannot kick yourself");
             return;
@@ -397,7 +397,7 @@ internal static class ReloadedLobby
     /// <returns>The number of lobby members.</returns>
     internal static int GetLobbyMemberCount()
     {
-        return LobbyData.AllClients.Count;
+        return LobbyData!.AllClients.Count;
     }
 
     /// <summary>
@@ -407,7 +407,7 @@ internal static class ReloadedLobby
     /// <returns>The Client ID of the lobby member at the specified index.</returns>
     internal static ID GetLobbyMemberByIndex(int index)
     {
-        return NetworkTransport.GetLobbyMemberByIndex(LobbyData.LobbyId, index);
+        return NetworkTransport!.GetLobbyMemberByIndex(LobbyData!.LobbyId, index);
     }
 
     /// <summary>
@@ -416,7 +416,7 @@ internal static class ReloadedLobby
     /// <returns>The CLient ID of the lobby owner.</returns>
     internal static ID GetLobbyOwner()
     {
-        return NetworkTransport.GetLobbyOwner(LobbyData.LobbyId);
+        return NetworkTransport!.GetLobbyOwner(LobbyData!.LobbyId);
     }
 
     /// <summary>
@@ -426,7 +426,7 @@ internal static class ReloadedLobby
     /// <returns>True if the player is in our lobby, false otherwise.</returns>
     internal static bool IsPlayerInOurLobby(ID clientId)
     {
-        foreach (var client in LobbyData.AllClients.Values)
+        foreach (var client in LobbyData!.AllClients.Values)
         {
             if (client.ClientId == clientId)
                 return true;
@@ -447,7 +447,7 @@ internal static class ReloadedLobby
     /// <returns>True if the local player is the lobby host, false otherwise.</returns>
     internal static bool AmLobbyHost()
     {
-        return GetLobbyOwner() == NetworkTransport.LocalClientId;
+        return GetLobbyOwner() == NetworkTransport!.LocalClientId;
     }
 
     /// <summary>
@@ -466,6 +466,6 @@ internal static class ReloadedLobby
     internal static string GetCurrentLobbyGameCode()
     {
         if (!AmInLobby()) return string.Empty;
-        return NetworkTransport.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+        return NetworkTransport!.GetLobbyData(LobbyData!.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
     }
 }

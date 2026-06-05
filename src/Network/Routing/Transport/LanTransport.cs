@@ -37,7 +37,7 @@ internal sealed class LanTransport : INetworkTransport
             _isJoining = true;
             ReplantedOnlineMod.Logger.Msg(typeof(LanTransport), "Searching for lobbies...");
 
-            var serverData = await LanServer.Server.ServerBroadcast.DiscoverFirstLobby();
+            var serverData = await LanServer.Server.ServerBroadcast!.DiscoverFirstLobby();
 
             if (serverData == null)
             {
@@ -193,7 +193,7 @@ internal sealed class LanTransport : INetworkTransport
 
     public void JoinLobby(ID lobbyId)
     {
-        var serverData = LanServer.Server.ServerBroadcast.GetDiscoveredServer(lobbyId);
+        var serverData = LanServer.Server.ServerBroadcast!.GetDiscoveredServer(lobbyId);
         if (serverData != null)
         {
             LanServer.StartClient("Client");
@@ -231,6 +231,5 @@ internal sealed class LanTransport : INetworkTransport
         _isJoining = false;
         LanServer.Leave();
         LanServer.Server.Dispose();
-        LanServer.Server = null;
     }
 }

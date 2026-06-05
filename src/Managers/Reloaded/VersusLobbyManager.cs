@@ -23,14 +23,14 @@ namespace ReplantedOnline.Managers.Reloaded;
 internal static class VersusLobbyManager
 {
     // UI text components for displaying player names on each team
-    private static TextMeshProUGUI ZombiePlayer1;
-    private static TextMeshProUGUI ZombiePlayer2;
-    private static TextMeshProUGUI PlantPlayer1;
-    private static TextMeshProUGUI PlantPlayer2;
-    private static TextMeshProUGUI PlayerList;
-    private static TextMeshProUGUI PickSides;
+    private static TextMeshProUGUI? ZombiePlayer1;
+    private static TextMeshProUGUI? ZombiePlayer2;
+    private static TextMeshProUGUI? PlantPlayer1;
+    private static TextMeshProUGUI? PlantPlayer2;
+    private static TextMeshProUGUI? PlayerList;
+    private static TextMeshProUGUI? PickSides;
 
-    private static EventTrigger LobbyCodeHeaderTrigger;
+    private static EventTrigger? LobbyCodeHeaderTrigger;
     private static string DefaultHeaderText => ReloadedLobby.NetworkTransport is LanTransport ?
         "LAN Mode" : $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
     private static bool CopyingLobbyCode = false;
@@ -57,32 +57,49 @@ internal static class VersusLobbyManager
         // Find and cache the zombie team player name text components
         // Using GetComponentInChildren with includeInactive = true to find components even if parent objects are disabled
         ZombiePlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        ZombiePlayer1.gameObject.DestroyAllTextLocalizers();
-        ZombiePlayer1.enableAutoSizing = false;
-        ZombiePlayer1.fontSize = 100f;
+        if (ZombiePlayer1 != null)
+        {
+            ZombiePlayer1.gameObject.DestroyAllTextLocalizers();
+            ZombiePlayer1.enableAutoSizing = false;
+            ZombiePlayer1.fontSize = 100f;
+        }
+
         ZombiePlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SideZombies/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        ZombiePlayer2.gameObject.DestroyAllTextLocalizers();
-        ZombiePlayer2.enableAutoSizing = false;
-        ZombiePlayer2.fontSize = 100f;
+        if (ZombiePlayer2 != null)
+        {
+            ZombiePlayer2.gameObject.DestroyAllTextLocalizers();
+            ZombiePlayer2.enableAutoSizing = false;
+            ZombiePlayer2.fontSize = 100f;
+        }
 
         // Find and cache the plant team player name text components
         PlantPlayer1 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber1")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        PlantPlayer1.gameObject.DestroyAllTextLocalizers();
-        PlantPlayer1.enableAutoSizing = false;
-        PlantPlayer1.fontSize = 100f;
+        if (PlantPlayer1 != null)
+        {
+            PlantPlayer1.gameObject.DestroyAllTextLocalizers();
+            PlantPlayer1.enableAutoSizing = false;
+            PlantPlayer1.fontSize = 100f;
+        }
+
         PlantPlayer2 = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/SidePlants/Selected/PlayerNumber2")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        PlantPlayer2.gameObject.DestroyAllTextLocalizers();
-        PlantPlayer2.enableAutoSizing = false;
-        PlantPlayer2.fontSize = 100f;
+        if (PlantPlayer2 != null)
+        {
+            PlantPlayer2.gameObject.DestroyAllTextLocalizers();
+            PlantPlayer2.enableAutoSizing = false;
+            PlantPlayer2.fontSize = 100f;
+        }
 
         PlayerList = UnityEngine.Object.Instantiate(PlantPlayer1, vsPanelView.transform.Find($"Canvas/Layout/Center/Panel"));
-        PlayerList.gameObject.DestroyAllTextLocalizers();
-        PlayerList.transform.localPosition = new Vector3(-15f, 0f, 0f);
-        PlayerList.gameObject.name = "PlayerList";
-        PlayerList.color = Color.white;
+        if (PlayerList != null)
+        {
+            PlayerList.gameObject.DestroyAllTextLocalizers();
+            PlayerList.transform.localPosition = new Vector3(-15f, 0f, 0f);
+            PlayerList.gameObject.name = "PlayerList";
+            PlayerList.color = Color.white;
+        }
 
         PickSides = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header/HeaderLabel")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        PickSides.gameObject.DestroyAllTextLocalizers();
+        PickSides?.gameObject.DestroyAllTextLocalizers();
 
         // Add event trigger to header for copying the lobby code to clipboard
         LobbyCodeHeaderTrigger = vsPanelView.transform.Find($"Canvas/Layout/Center/Panel/Header").gameObject.AddComponent<EventTrigger>();
@@ -105,6 +122,8 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void SetNamesFromTeams()
     {
+        if (ReloadedLobby.LobbyData == null) return;
+
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
             if (client.Team is PlayerTeam.Plants)
@@ -251,6 +270,11 @@ internal static class VersusLobbyManager
 
     private static IEnumerator CoCopyLobbyCode()
     {
+        if (ReloadedLobby.LobbyData == null)
+        {
+            yield break;
+        }
+
         CopyingLobbyCode = true;
         GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
         Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);

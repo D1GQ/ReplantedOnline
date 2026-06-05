@@ -10,5 +10,5 @@ internal sealed class InstanceWrapper<T> where T : class
     /// <summary>
     /// Gets or sets the singleton instance of type T.
     /// </summary>
-    internal static T Instance { get; set; } = default;
+    internal static T Instance { get; set; } = default!;
 }

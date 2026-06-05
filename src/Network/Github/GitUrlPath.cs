@@ -55,7 +55,7 @@ internal struct GitUrlPath(string folder)
     /// <param name="localFilePath">The local file path where the downloaded file will be saved.</param>
     /// <param name="callback">Optional callback invoked after successful download, passing the local file path.</param>
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
-    internal IEnumerator CoDownloadFile(string path, string localFilePath, Action<string> callback = null)
+    internal IEnumerator CoDownloadFile(string path, string localFilePath, Action<string>? callback = null)
     {
         return GitHubFile.CoDownloadFile(Combine(path), localFilePath, callback);
     }

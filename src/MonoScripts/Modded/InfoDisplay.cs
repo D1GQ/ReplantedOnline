@@ -21,7 +21,7 @@ internal sealed class InfoDisplay : MonoBehaviour
     internal static bool DebugLoggerEnabled { get; private set; }
 
     private bool _enabled = true;
-    internal static GUIStyle Style;
+    internal static GUIStyle? Style;
 
     private void Update()
     {
@@ -147,7 +147,7 @@ internal sealed class InfoDisplay : MonoBehaviour
 
         sb.AppendLine($" Prefabs: {RuntimePrefab.Prefabs.Count}");
 
-        if (ReloadedLobby.AmInLobby())
+        if (ReloadedLobby.LobbyData != null)
         {
             sb.AppendLine("Lobby Info >");
 

@@ -69,7 +69,7 @@ internal sealed class DetourHookAttribute : Attribute
     /// <summary>
     /// Gets the type that contains the target method to be hooked.
     /// </summary>
-    internal readonly Type TargetType;
+    internal readonly Type? TargetType;
 
     /// <summary>
     /// Gets the name of the target method to be hooked.
@@ -79,12 +79,12 @@ internal sealed class DetourHookAttribute : Attribute
     /// <summary>
     /// Gets the parameter types of the specific overload to target. If null, any overload with matching name will be used.
     /// </summary>
-    internal readonly Type[] ParameterTypes;
+    internal readonly Type[]? ParameterTypes;
 
     /// <summary>
     /// Gets the generic type arguments for the target method if it's generic.
     /// </summary>
-    internal readonly Type[] GenericArguments;
+    internal readonly Type[]? GenericArguments;
 
     /// <summary>
     /// Installs all method hooks defined in the current assembly.
@@ -128,7 +128,7 @@ internal sealed class DetourHookAttribute : Attribute
     /// <returns>The target method info.</returns>
     private MethodInfo GetTargetMethod()
     {
-        var methods = TargetType.GetMethods(BindingFlag)
+        var methods = TargetType!.GetMethods(BindingFlag)
             .Where(m => m.Name == MethodName)
             .ToList();
 

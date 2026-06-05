@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
@@ -23,6 +23,8 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     private bool _jump;
     internal override void Update()
     {
+        if (Net.Plant! == null) return;
+
         if (Net.AmOwner)
         {
             if (Net.Plant.mState == PlantState.SquashLook && !_looking)
@@ -52,10 +54,12 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     [RpcHandler(SquashRpcs.Look)]
     private void HandleLookRpc()
     {
+        if (Net.Plant! == null) return;
         if (_looking) return;
         _looking = true;
 
         var target = Net.Target;
+        if (target == null) return;
         Net.Plant.mTargetZombieID = target.DataID;
 
         Net.Plant.mState = PlantState.SquashLook;
@@ -80,10 +84,12 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     [RpcHandler(SquashRpcs.Jump)]
     private void HandleJumpRpc()
     {
+        if (Net.Plant! == null) return;
         if (_jump) return;
         _jump = true;
 
         var target = Net.Target;
+        if (target == null) return;
         Net.Plant.mTargetZombieID = target.DataID;
 
         Net.Plant.mTargetX = Mathf.FloorToInt(target.mPosX);

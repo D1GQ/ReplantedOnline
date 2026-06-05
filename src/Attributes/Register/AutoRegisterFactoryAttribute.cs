@@ -11,7 +11,7 @@ namespace ReplantedOnline.Attributes.Register;
 /// <typeparam name="Id">The type used as a key for factory lookup.</typeparam>
 /// <param name="identifier">The specific identifier value to associate with this factory registration.</param>
 [AttributeUsage(AttributeTargets.Class)]
-internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : AutoRegisterAttribute where T : class
+internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : AutoRegisterAttribute where T : class where Id : notnull
 {
     private readonly Id _identifier = identifier;
 
@@ -39,7 +39,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
     /// otherwise, null if no type is registered for the identifier, the registered type is not assignable to <typeparamref name="T"/>, 
     /// the fallback type is null or not assignable, or instantiation fails.
     /// </returns>
-    internal static T TryCreateInstance(Id identifier, Type fallback = null)
+    internal static T? TryCreateInstance(Id identifier, Type? fallback = null)
     {
         if (TypeLookup.TryGetValue(identifier, out var type))
         {
@@ -77,7 +77,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
                 {
                     if (attribute is AutoRegisterAttribute autoRegisterAttribute)
                     {
-                        Id identifierValue = (Id)autoRegisterAttribute.GetIdentifier();
+                        Id identifierValue = (Id)autoRegisterAttribute.GetIdentifier()!;
                         TypeLookup[identifierValue] = type;
                     }
                 }

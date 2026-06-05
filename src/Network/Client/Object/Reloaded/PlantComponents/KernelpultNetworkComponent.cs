@@ -28,6 +28,8 @@ internal sealed class KernelpultNetworkComponent : PlantNetworkComponent
 
     internal void SetVisuals(PlantWeapon plantWeapon)
     {
+        if (Net.Plant == null) return;
+
         if (plantWeapon == PlantWeapon.Primary)
         {
             Net.Plant.mController.AssignRenderGroupToPrefixOriginal(Animations.KERNELPULT_KERNAL_OBJECT, 0);

@@ -9,7 +9,7 @@ namespace ReplantedOnline.Data.Network;
 /// Only the owning client can modify the value, and updates are automatically propagated to all clients.
 /// </summary>
 /// <typeparam name="T"> The type of the client variable. Supported types include <see cref="string"/>, <see cref="bool"/>, numeric primitives, and <see langword="enum"/> types.</typeparam>
-internal sealed class ClientVar<T>
+internal sealed class ClientVar<T> where T : notnull
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ClientVar{T}"/> class with a default value.
@@ -36,8 +36,8 @@ internal sealed class ClientVar<T>
         get
         {
             return (T)Deserialize(
-                ReloadedLobby.NetworkTransport.GetLobbyMemberData(
-                    ReloadedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport!.GetLobbyMemberData(
+                    ReloadedLobby.LobbyData!.LobbyId,
                     _clientId,
                     _varName),
                 typeof(T));
@@ -46,10 +46,10 @@ internal sealed class ClientVar<T>
         {
             if (ReloadedClientData.LocalClient?.ClientId == _clientId)
             {
-                ReloadedLobby.NetworkTransport.SetLobbyMemberData(
-                    ReloadedLobby.LobbyData.LobbyId,
+                ReloadedLobby.NetworkTransport!.SetLobbyMemberData(
+                    ReloadedLobby.LobbyData!.LobbyId,
                     _varName,
-                    Serialize(value, typeof(T)));
+                    Serialize(value!, typeof(T)));
 
                 ReloadedLobby.LobbyData.UpdateLobbyStates();
             }
@@ -130,7 +130,7 @@ internal sealed class ClientVar<T>
             var itemType = type.GetGenericArguments()[0];
             var items = value.Split(['|'], StringSplitOptions.None);
             var listType = typeof(List<>).MakeGenericType(itemType);
-            var list = (System.Collections.IList)Activator.CreateInstance(listType);
+            var list = (System.Collections.IList)Activator.CreateInstance(listType)!;
 
             foreach (var item in items)
             {

@@ -12,7 +12,7 @@ internal sealed class LanMemberData
     /// <summary>
     /// Gets or sets the display name of the player.
     /// </summary>
-    internal string PlayerName { get; set; }
+    internal string PlayerName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the unique identifier for this member.

@@ -75,7 +75,7 @@ internal sealed class PacketReader : IPacket
             case 3: // IPEndPoint
                 string ipString = ReadString();
                 int port = ReadInt();
-                if (IPAddress.TryParse(ipString, out IPAddress address))
+                if (IPAddress.TryParse(ipString, out var address))
                 {
                     return new IPEndPoint(address, port).AsID();
                 }
@@ -104,7 +104,12 @@ internal sealed class PacketReader : IPacket
 
         if (netId == NetworkObject.NULL)
         {
-            return null;
+            return default!;
+        }
+
+        if (ReloadedLobby.LobbyData == null)
+        {
+            return default!;
         }
 
         if (ReloadedLobby.LobbyData.NetworkObjectsSpawned.TryGetValue(NetworkIdentifier.Get(netId), out var networkObj))
@@ -112,9 +117,9 @@ internal sealed class PacketReader : IPacket
             return networkObj;
         }
 
-        ReplantedOnlineMod.Logger.Warning(typeof(PacketReader), $"ReadNetworkObject has unexpectedly returned NULL! NetworkId:{netId} not found");
+        ReplantedOnlineMod.Logger.Warning(typeof(PacketReader), $"ReadNetworkObject has unexpectedly returned default! NetworkId:{netId} not found");
 
-        return null;
+        return default!;
     }
 
     /// <summary>
@@ -122,7 +127,7 @@ internal sealed class PacketReader : IPacket
     /// </summary>
     /// <typeparam name="T">The type of network object to return. Must inherit from NetworkObject.</typeparam>
     /// <returns>The decoded NetworkObject value.</returns>
-    internal T ReadNetworkObject<T>() where T : NetworkObject
+    internal T? ReadNetworkObject<T>() where T : NetworkObject
     {
         var netObj = ReadNetworkObject();
         if (netObj is T typedObj)

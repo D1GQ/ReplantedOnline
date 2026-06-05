@@ -11,7 +11,7 @@ internal static class TanglekelpPlantPatch
 {
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPostfix]
-    private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie __result)
+    private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie? __result)
     {
         if (__instance.mSeedType != SeedType.Tanglekelp) return;
 
@@ -23,7 +23,7 @@ internal static class TanglekelpPlantPatch
             {
                 if (VersusState.AmPlantSide)
                 {
-                    Zombie targetZombie = null;
+                    Zombie? targetZombie = null;
                     foreach (var zombie in __instance.mBoard.GetZombies())
                     {
                         if (zombie.mZombieType.IsGravestoneOrTarget()) continue;

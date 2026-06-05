@@ -15,6 +15,7 @@ using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
+using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded;
@@ -45,14 +46,14 @@ internal sealed class ZombieNetworked : NetworkObject
     /// Gets the current target zombie.
     /// </summary>
     [HideFromIl2Cpp]
-    internal Plant Target { get; set; }
+    internal Plant? Target { get; set; }
 
     internal WeakVar<Zombie> _z = new();
 
     /// <summary>
     /// The underlying zombie instance that this networked object represents.
     /// </summary>
-    internal Zombie Zombie => _z.Value;
+    internal Zombie? Zombie => _z.Value;
 
     /// <summary>
     /// The type of zombie this networked object represents when spawning.
@@ -79,13 +80,13 @@ internal sealed class ZombieNetworked : NetworkObject
     /// </summary>
     internal EventState Event;
 
-    internal ZombieCustomPoolLogicNetworkComponent PoolComponent;
-    internal ZombieNetworkComponent LogicComponent;
+    internal ZombieCustomPoolLogicNetworkComponent PoolComponent = default!;
+    internal ZombieNetworkComponent LogicComponent = default!;
     internal bool EnteringHouse;
 
     public override string GetObjectName()
     {
-        return $"{Enum.GetName(Zombie.mZombieType)}Zombie ({NetworkId})";
+        return $"{Enum.GetName(Zombie!.mZombieType)}Zombie ({NetworkId})";
     }
 
     [HideFromIl2Cpp]
@@ -97,7 +98,7 @@ internal sealed class ZombieNetworked : NetworkObject
 
     public override void OnInit()
     {
-        LogicComponent = (ZombieNetworkComponent)RegisterNetworkComponent.TryCreateInstance(ZombieType, typeof(ZombieNetworkComponent));
+        LogicComponent = (ZombieNetworkComponent)RegisterNetworkComponent.TryCreateInstance(ZombieType, typeof(ZombieNetworkComponent))!;
         AddNetworkComponent(LogicComponent);
 
         PoolComponent = AddNewNetworkComponent<ZombieCustomPoolLogicNetworkComponent>();
@@ -107,7 +108,7 @@ internal sealed class ZombieNetworked : NetworkObject
             LogicComponent = AddNewNetworkComponent<BungeeDropZombieComponent>();
         }
 
-        Zombie.AddNetworkedLookup(this);
+        Zombie?.AddNetworkedLookup(this);
     }
 
     private bool _waitingToDespawn;
@@ -166,6 +167,8 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.TakeDamage)]
     internal void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
     {
+        if (Zombie == null) return;
+
         int minimumHealth = 5;
         int relevantHealth;
 
@@ -196,15 +199,26 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     internal bool Dead;
+    internal bool OnDeath;
     internal void SendDeathRpc(DamageFlags damageFlags)
     {
+        if (!OnDeath)
+        {
+            OnDeath = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
+        }
         SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
     }
 
     [RpcHandler(ZombieRpcs.Death)]
     private void HandleDeathRpc(DamageFlags damageFlags)
     {
-        Zombie.PlayDeathAnimOriginal(damageFlags);
+        if (!OnDeath)
+        {
+            OnDeath = true;
+            LogicComponent.OnDeath(DeathReason.Normal);
+        }
+        Zombie?.PlayDeathAnimOriginal(damageFlags);
     }
 
     internal void SendDieLootRpc(bool withLoot)
@@ -212,7 +226,11 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Normal);
+            }
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
             DespawnAndDestroyWhenNullOrDead(true);
         }
@@ -224,14 +242,18 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Normal);
+            }
             if (withLoot)
             {
-                Zombie.DieWithLootOriginal();
+                Zombie?.DieWithLootOriginal();
             }
             else
             {
-                Zombie.DieNoLootOriginal();
+                Zombie?.DieNoLootOriginal();
             }
         }
 
@@ -246,7 +268,7 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.DragUnder)]
     private void HandleDragUnderRpc()
     {
-        Zombie.DragUnderOriginal();
+        Zombie?.DragUnderOriginal();
     }
 
     internal void SendMowDownRpc()
@@ -254,7 +276,11 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Normal);
+            }
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
             DespawnAndDestroyWhenNullOrDead(true);
         }
@@ -266,8 +292,12 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dead)
         {
             Dead = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
-            Zombie.MowDownOriginal();
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Normal);
+            }
+            Zombie?.MowDownOriginal();
         }
 
         IsReadyToDespawn = true;
@@ -300,7 +330,7 @@ internal sealed class ZombieNetworked : NetworkObject
         EnteringHouse = true;
         LogicComponent.StopLarpPos();
         Zombie?.mPosX = xPos;
-        VersusGameplayManager.EndGame(Zombie.mController.transform.position, PlayerTeam.Zombies);
+        VersusGameplayManager.EndGame(Zombie?.mController?.transform.position ?? Vector3.zero, PlayerTeam.Zombies);
     }
 
     internal void SendMindControlledRpc()
@@ -314,15 +344,19 @@ internal sealed class ZombieNetworked : NetworkObject
     private void HandleMindControlledRpc()
     {
         State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
-        Zombie.StartMindControlledOriginal();
+        Zombie?.StartMindControlledOriginal();
     }
 
     internal void SendSetFrozenRpc(bool frozen)
     {
-        this.StartCoroutine(CoroutineUtils.WaitForCondition(() => !frozen || Zombie.mChilledCounter > 0, () =>
+        this.StartCoroutine(CoroutineUtils.WaitForCondition(() => !frozen || Zombie?.mChilledCounter > 0, () =>
         {
             int counter;
-            if (frozen)
+            if (Zombie == null)
+            {
+                counter = 0;
+            }
+            else if (frozen)
             {
                 counter = Zombie.mIceTrapCounter;
             }
@@ -338,6 +372,8 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.SetFrozen)]
     private void HandleSetFrozenRpc(bool frozen, int counter)
     {
+        if (Zombie == null) return;
+
         if (frozen)
         {
             LogicComponent.StopLarpPos();
@@ -353,14 +389,18 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendApplyBurnRpc()
     {
-        bool reallyDead = Zombie.mBodyHealth <= 1800;
+        bool reallyDead = Zombie?.mBodyHealth <= 1800;
 
         SendNetworkObjectRpc(ZombieRpcs.ApplyBurn, reallyDead);
 
         if (reallyDead && !Dead)
         {
             Dead = true;
-            LogicComponent.OnDeath(DeathReason.Burned);
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Burned);
+            }
             DespawnAndDestroyWhenNullOrDead(true);
         }
     }
@@ -368,29 +408,33 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.ApplyBurn)]
     private void HandleApplyBurnRpc(bool reallyDead)
     {
-        if (Zombie.mZombieType.IsGravestoneOrTarget()) return;
+        if (Zombie?.mZombieType.IsGravestoneOrTarget() ?? false) return;
 
         Dead = Dead || reallyDead;
         if (reallyDead)
         {
-            LogicComponent.OnDeath(DeathReason.Burned);
-            Zombie.ApplyBurnOriginal();
+            if (!OnDeath)
+            {
+                OnDeath = true;
+                LogicComponent.OnDeath(DeathReason.Burned);
+            }
+            Zombie?.ApplyBurnOriginal();
             IsReadyToDespawn = true;
             return;
         }
-        Zombie.ApplyBurnOriginal();
+        Zombie?.ApplyBurnOriginal();
     }
 
     internal void SendSnapToPosRpc()
     {
-        SendNetworkObjectRpc(ZombieRpcs.SnapToPos, Zombie.mPosX);
+        SendNetworkObjectRpc(ZombieRpcs.SnapToPos, Zombie?.mPosX ?? 0);
     }
 
     [RpcHandler(ZombieRpcs.SnapToPos)]
     private void HandleSnapToPosRpc(float posX)
     {
         LogicComponent.StopLarpPos();
-        Zombie.mPosX = posX;
+        Zombie?.mPosX = posX;
     }
 
     internal void SendSetStateRpc(string state)

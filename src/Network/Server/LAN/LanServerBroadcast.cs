@@ -28,19 +28,19 @@ internal sealed class LanServerBroadcast : IDisposable
     /// <summary>
     /// Cancellation token source for the listen operation.
     /// </summary>
-    internal CancellationTokenSource ListenCTS;
+    internal CancellationTokenSource ListenCTS = default!;
 
     /// <summary>
     /// Cancellation token source for the broadcast operation.
     /// </summary>
-    internal CancellationTokenSource BroadcastCTS;
+    internal CancellationTokenSource BroadcastCTS = default!;
 
     /// <summary>
     /// Dictionary of currently discovered servers on the local network.
     /// </summary>
     internal readonly Dictionary<ID, DiscoveredServerInfo> DiscoveredServers = [];
 
-    private TaskCompletionSource<LanServerData> _discoveryCompletionSource;
+    private TaskCompletionSource<LanServerData> _discoveryCompletionSource = default!;
 
     /// <summary>
     /// Contains information about a discovered server.
@@ -50,7 +50,7 @@ internal sealed class LanServerBroadcast : IDisposable
         /// <summary>
         /// The server's lobby data.
         /// </summary>
-        public LanServerData ServerData { get; set; }
+        public LanServerData ServerData { get; set; } = default!;
 
         /// <summary>
         /// The last time a broadcast was received from this server.
@@ -95,7 +95,7 @@ internal sealed class LanServerBroadcast : IDisposable
     /// Discovers the first available lobby on the local network.
     /// </summary>
     /// <returns>A task that resolves to the first discovered server data, or null if none found.</returns>
-    internal async Task<LanServerData> DiscoverFirstLobby()
+    internal async Task<LanServerData?> DiscoverFirstLobby()
     {
         lock (_discoveryLock)
         {
@@ -105,7 +105,7 @@ internal sealed class LanServerBroadcast : IDisposable
         var startTime = DateTime.UtcNow;
         while ((DateTime.UtcNow - startTime).TotalSeconds < DISCOVERY_DURATION_SECONDS)
         {
-            LanServerData firstServer = null;
+            LanServerData? firstServer = null;
             lock (_discoveredLock)
             {
                 var validServer = DiscoveredServers.Values
@@ -162,7 +162,7 @@ internal sealed class LanServerBroadcast : IDisposable
     /// </summary>
     /// <param name="lobbyId">The lobby ID to look up.</param>
     /// <returns>The server data if found and not expired, null otherwise.</returns>
-    internal LanServerData GetDiscoveredServer(ID lobbyId)
+    internal LanServerData? GetDiscoveredServer(ID lobbyId)
     {
         lock (_discoveredLock)
         {
@@ -177,6 +177,7 @@ internal sealed class LanServerBroadcast : IDisposable
                     DiscoveredServers.Remove(lobbyId);
                 }
             }
+
             return null;
         }
     }

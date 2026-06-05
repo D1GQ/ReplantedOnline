@@ -20,6 +20,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     private bool _isDoingSpecial;
     internal override void Update()
     {
+        if (Net.Plant == null) return;
         if (Net.AmOwner)
         {
             if (!Net.Plant.mIsAsleep &&
@@ -63,7 +64,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     protected virtual void DoSpecial()
     {
         Net.Dead = true;
-        Net.Plant.DoSpecial();
+        Net.Plant?.DoSpecial();
     }
 
     protected virtual void DoSpecial_PlantSide() { }

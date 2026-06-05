@@ -16,8 +16,8 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class LobbyCodePanel
 {
-    private static PanelView Panel;
-    private static ReloadedInputField InputField;
+    private static PanelView? Panel;
+    private static ReloadedInputField? InputField;
     private static string LastText = string.Empty;
     private static bool HasInit;
 
@@ -39,7 +39,7 @@ internal static class LobbyCodePanel
         Panel.gameObject.DestroyAllTextLocalizers();
 
         // Get reference to the input field and set up validation
-        InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true);
+        InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true)!;
         if (InputField != null)
         {
             InputField.characterLimit = MatchmakingManager.CODE_LENGTH;
@@ -71,7 +71,7 @@ internal static class LobbyCodePanel
             {
                 if (InputField != null && InputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
                 {
-                    Panel.gameObject.SetActive(false);
+                    Panel?.gameObject.SetActive(false);
                     string gameCode = InputField.m_Text.ToUpper();
                     SteamClientPatch.TrySetTempApp(MatchmakingManager.GetGameCodePostfixType(gameCode));
                     MatchmakingManager.SearchSteamLobbyByGameCode(gameCode);
@@ -96,7 +96,7 @@ internal static class LobbyCodePanel
             cancelButton.onClick = new();
             cancelButton.onClick.AddListener((Action)(() =>
             {
-                Panel.gameObject.SetActive(false);
+                Panel?.gameObject.SetActive(false);
             }));
         }
     }
@@ -124,7 +124,7 @@ internal static class LobbyCodePanel
 
                 InputField?.SetText(cleanValue, false);
                 InputField?.ForceLabelUpdate();
-                LastText = InputField.text;
+                LastText = InputField?.text ?? string.Empty;
             }
         }
     }

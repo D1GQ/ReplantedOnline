@@ -13,5 +13,5 @@ internal class PacketWriterResolver : IFastPacketResolver<IPacket>
     public void Serialize(PacketWriter packetWriter, IPacket value) => packetWriter.WritePacketToBuffer(value);
 
     /// <inheritdoc/>
-    public IPacket Deserialize(PacketReader packetReader, Type type) => null;
+    public IPacket Deserialize(PacketReader packetReader, Type type) => default!;
 }

@@ -30,7 +30,7 @@ internal static class DependencyResolver
     /// The loaded <see cref="Assembly"/> if the requested assembly matches an embedded resource;
     /// otherwise, returns <c>null</c>.
     /// </returns>
-    private static Assembly ResolveEmbeddedAssembly(object sender, ResolveEventArgs args)
+    private static Assembly? ResolveEmbeddedAssembly(object? sender, ResolveEventArgs args)
     {
         // Only resolve assemblies requested locally
         if (args.RequestingAssembly != ModInfo.Assembly) return null;
@@ -42,7 +42,7 @@ internal static class DependencyResolver
             if (assemblyName.Name == dependency)
             {
                 string resourceName = $"ReplantedOnline.Resources.EmbeddedAssemblies.{dependency}.dll";
-                using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+                using Stream? stream = ModInfo.Assembly.GetManifestResourceStream(resourceName);
 
                 if (stream == null)
                 {

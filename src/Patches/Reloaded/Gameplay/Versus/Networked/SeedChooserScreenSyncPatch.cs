@@ -21,7 +21,7 @@ internal static class SeedChooserScreenSyncPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!ReloadedLobby.LobbyData.AllClientsReady()) return false;
+            if (!ReloadedLobby.LobbyData!.AllClientsReady()) return false;
 
             Rpc<ChooseSeedRpc>.Instance.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);

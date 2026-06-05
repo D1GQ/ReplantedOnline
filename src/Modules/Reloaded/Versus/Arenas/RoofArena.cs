@@ -59,7 +59,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
-        return LevelEntries.GetLevel("Level-AdventureArea5Level2");
+        return LevelEntries.GetLevel("Level-AdventureArea5Level2")!;
     }
 
     /// <inheritdoc/>

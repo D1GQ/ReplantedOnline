@@ -43,7 +43,7 @@ internal sealed class NetworkIdentifierPool : IDisposable
     /// <param name="id">The network identifier to free.</param>
     internal void Free(NetworkIdentifier id)
     {
-        if (ReloadedClientData.LocalClient.GetClientIndex() != id.ClientIndex)
+        if (ReloadedClientData.LocalClient!.GetClientIndex() != id.ClientIndex)
         {
             return;
         }

@@ -15,7 +15,7 @@ internal sealed class MagnetShroomNetworkComponent : PlantNetworkComponent
         {
             if (Net.Target != null)
             {
-                Net.Plant.MagnetShroomAttactItemOriginal(Net.Target);
+                Net.Plant?.MagnetShroomAttactItemOriginal(Net.Target);
                 Net.Target = null;
             }
         }
