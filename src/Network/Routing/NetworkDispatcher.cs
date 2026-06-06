@@ -130,7 +130,7 @@ internal static class NetworkDispatcher
     /// <param name="rpcId">The ID of the RPC method to invoke.</param>
     /// <param name="payload">The packet containing RPC-specific data.</param>
     /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpcReceiver(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
+    internal static void SendObjectRpc(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<ObjectRpcMessage>.Instance.Serialize(networkIdentifier, rpcId, packetWriter);

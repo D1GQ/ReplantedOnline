@@ -95,7 +95,7 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
                 IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
             }
         }
-        NetworkDispatcher.SendRpcReceiver(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkDispatcher.SendObjectRpc(this, Convert.ToByte(rpcId), packetWriter);
         packetWriter?.Recycle();
     }
 }
