@@ -138,7 +138,7 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (Zombie != null && !Zombie.IsDeadOrDying())
+        if (Zombie != null)
         {
             Zombie.DieNoLootOriginal();
         }

@@ -122,10 +122,7 @@ internal sealed class PlantNetworked : NetworkObject
 
         if (Plant != null)
         {
-            if (!Dead && !Plant.mDead)
-            {
-                Plant.DieOriginal();
-            }
+            Plant.DieOriginal();
         }
     }
 

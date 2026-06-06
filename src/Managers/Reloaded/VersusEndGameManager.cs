@@ -102,9 +102,6 @@ internal static class VersusEndGameManager
             }
         }
 
-        winner.Dispose();
-        loser.Dispose();
-
         Instances.GameplayActivity.StartCoroutine(CoWinScreen());
     }
 
@@ -144,7 +141,7 @@ internal static class VersusEndGameManager
     /// <summary>
     /// Represents a player nameplate on the win screen with team affiliation and win status.
     /// </summary>
-    internal class NamePlate(int playerIndex) : IDisposable
+    internal class NamePlate(int playerIndex)
     {
         /// <summary>
         /// The GameObject path for this nameplate.
@@ -315,21 +312,6 @@ internal static class VersusEndGameManager
                 var countGo = UnityEngine.Object.Instantiate(countPrefab, countPrefab.transform.parent);
                 countGo.gameObject.SetActive(true);
             }
-        }
-
-        /// <summary>
-        /// Cleans up references to GameObjects.
-        /// </summary>
-        public void Dispose()
-        {
-            NameDisplay = null!;
-            PlantFrame = null!;
-            ZombieFrame = null!;
-            PlantAvatar = null!;
-            ZombieAvatar = null!;
-            PlantTrophy = null!;
-            ZombieTrophyCount = null!;
-            PlantTrophyCount = null!;
         }
     }
 }
