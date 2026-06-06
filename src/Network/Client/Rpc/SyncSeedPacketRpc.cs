@@ -38,12 +38,11 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
             if (seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeed)
             {
                 seedPacket.PacketType = seedType;
-                seedPacket.mActive = true;
-                seedPacket.mActive = false;
             }
-            seedPacket.WasPlanted(ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX);
-            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
+            seedPacket.mActive = true;
             seedPacket.mActive = false;
+            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
+            seedPacket.mRefreshing = true;
         }
     }
 }

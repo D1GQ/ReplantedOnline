@@ -91,9 +91,9 @@ internal static class CursorSyncPatch
                     if (__instance.Board.CanTakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX) && seedPacket.mActive)
                     {
                         // Mark the packet as used and deduct the sun cost
-                        seedPacket.WasPlanted(ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
-                        seedPacket.mActive = false; // Fix issue with cooldown on GamePad 
+                        seedPacket.mActive = false;
                         seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
+                        seedPacket.mRefreshing = true;
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
                         Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
@@ -143,8 +143,9 @@ internal static class CursorSyncPatch
                     if (__instance.Board.CanTakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX))
                     {
                         // Mark the packet as used and deduct the sun cost
-                        seedPacket.WasPlanted(ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+                        seedPacket.mActive = false;
                         seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedType);
+                        seedPacket.mRefreshing = true;
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
