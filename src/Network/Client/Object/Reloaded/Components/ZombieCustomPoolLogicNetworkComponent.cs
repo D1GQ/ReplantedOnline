@@ -20,7 +20,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
     private bool _inPool;
     private bool _isDrowning;
 
-    private WhiteWaterEffect _whiteWaterEffect = null!;
+    private WhiteWaterEffect? _whiteWaterEffect = null;
 
     internal override void OnInit()
     {
@@ -43,7 +43,10 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     internal override void OnDestroyed()
     {
-        UnityEngine.Object.Destroy(_whiteWaterEffect.gameObject);
+        if (_whiteWaterEffect != null)
+        {
+            UnityEngine.Object.Destroy(_whiteWaterEffect.gameObject);
+        }
     }
 
     internal override void Update()
