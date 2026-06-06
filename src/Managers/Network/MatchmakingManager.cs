@@ -8,6 +8,7 @@ using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Discord;
+using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
@@ -41,6 +42,7 @@ internal static class MatchmakingManager
     /// <param name="gameCode"></param>
     internal static void SearchSteamLobbyByGameCode(string gameCode)
     {
+        SteamClientPatch.TrySetTempApp(GetGameCodePostfixType(gameCode));
         Transitions.SetLoading();
         ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Searching for lobby with code: {gameCode}");
 

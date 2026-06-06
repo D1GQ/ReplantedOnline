@@ -5,7 +5,6 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
@@ -73,7 +72,6 @@ internal static class LobbyCodePanel
                 {
                     Panel?.gameObject.SetActive(false);
                     string gameCode = InputField.m_Text.ToUpper();
-                    SteamClientPatch.TrySetTempApp(MatchmakingManager.GetGameCodePostfixType(gameCode));
                     MatchmakingManager.SearchSteamLobbyByGameCode(gameCode);
                 }
                 else

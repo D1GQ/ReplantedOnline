@@ -308,6 +308,8 @@ internal static class DiscordManager
                 return;
             }
 
+
+
             MatchmakingManager.SearchSteamLobbyByGameCode(secret.GameCode);
         });
     }
