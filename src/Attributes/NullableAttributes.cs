@@ -5,7 +5,7 @@ namespace System.Runtime.CompilerServices;
 /// <summary>
 /// Represents an external initialization marker for init-only properties and records.
 /// </summary>
-internal static class IsExternalInit { }
+internal static class IsExternalInit;
 
 /// <summary>
 /// Specifies nullability annotations for reference types.

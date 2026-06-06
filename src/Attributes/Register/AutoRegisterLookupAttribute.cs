@@ -105,22 +105,22 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
 /// Registers classes that implement IClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IRpc, RpcType>(rpcType) { }
+internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IRpc, RpcType>(rpcType);
 
 /// <summary>
 /// Registers classes that implement IPacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler(PacketHandlerType packetHandlerType) : AutoRegisterLookupAttribute<IPacketHandler, PacketHandlerType>(packetHandlerType) { }
+internal sealed class RegisterPacketHandler(PacketHandlerType packetHandlerType) : AutoRegisterLookupAttribute<IPacketHandler, PacketHandlerType>(packetHandlerType);
 
 /// <summary>
 /// Registers classes that implement IPlantConfig.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<IPlantConfig, SeedType>(seedType) { }
+internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<IPlantConfig, SeedType>(seedType);
 
 /// <summary>
 /// Registers classes that implement IZombieConfig.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<IZombieConfig, ZombieType>(zombieType) { }
+internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<IZombieConfig, ZombieType>(zombieType);

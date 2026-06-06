@@ -181,10 +181,10 @@ internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterC
 /// Configuration interface specifically for zombies.
 /// Implements the generic character configuration with zombie-specific types.
 /// </summary>
-internal interface IZombieConfig : ICharacterConfig<ZombieDefinition, Zombie> { }
+internal interface IZombieConfig : ICharacterConfig<ZombieDefinition, Zombie>;
 
 /// <summary>
 /// Configuration interface specifically for plants.
 /// Implements the generic character configuration with plant-specific types.
 /// </summary>
-internal interface IPlantConfig : ICharacterConfig<PlantDefinition, Plant> { }
+internal interface IPlantConfig : ICharacterConfig<PlantDefinition, Plant>;

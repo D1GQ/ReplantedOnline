@@ -90,4 +90,4 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
 /// Registers NetworkComponent classe types for factory.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-internal sealed class RegisterNetworkComponent(object @enum) : AutoRegisterFactoryAttribute<NetworkComponent, Enum>((Enum)@enum) { }
+internal sealed class RegisterNetworkComponent(object @enum) : AutoRegisterFactoryAttribute<NetworkComponent, Enum>((Enum)@enum);
