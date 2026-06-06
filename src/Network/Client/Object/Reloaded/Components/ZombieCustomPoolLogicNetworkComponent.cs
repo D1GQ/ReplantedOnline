@@ -41,6 +41,11 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         _whiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
     }
 
+    internal override void OnDestroyed()
+    {
+        UnityEngine.Object.Destroy(_whiteWaterEffect.gameObject);
+    }
+
     internal override void Update()
     {
         if (!CanGoInWater())
