@@ -245,14 +245,14 @@ internal static class NetworkDispatcher
                         SendPacket(packet, PacketHandlerType.NetworkObjectSync, PacketChannel.Buffered, false);
                         packet.Recycle();
                     }
+                }
 
-                    Processed = 5;
-                    while (ReloadedLobby.NetworkTransport!.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
-                    {
-                        if (Processed <= 0) break;
-                        ReadPacket(messageSize, PacketChannel.Rpc);
-                        Processed--;
-                    }
+                Processed = 5;
+                while (ReloadedLobby.NetworkTransport!.IsP2PPacketAvailable(out uint messageSize, PacketChannel.Rpc))
+                {
+                    if (Processed <= 0) break;
+                    ReadPacket(messageSize, PacketChannel.Rpc);
+                    Processed--;
                 }
 
                 Processed = 5;
