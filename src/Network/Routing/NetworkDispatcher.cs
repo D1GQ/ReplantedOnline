@@ -187,8 +187,8 @@ internal static class NetworkDispatcher
             }
             finally
             {
+                packetWriter.Recycle();
                 rePacket.Recycle();
-
             }
             return;
         }
@@ -355,7 +355,6 @@ internal static class NetworkDispatcher
                 ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender.Name}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
-            packetReader.Recycle();
             return;
         }
 

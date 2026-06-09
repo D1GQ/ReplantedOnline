@@ -1,6 +1,7 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs.Network;
 using System.Net;
@@ -17,9 +18,7 @@ namespace ReplantedOnline.Network.Routing.Packet;
 internal sealed class PacketWriter : IPacket
 {
     private List<byte> _data = [];
-    private static readonly Queue<PacketWriter> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
-    internal static int AmountInUse;
+    private static readonly PoolableObjects<PacketWriter> _pool = new(10);
 
     /// <summary>
     /// Gets the current length of the packet data in bytes.
@@ -32,8 +31,7 @@ internal sealed class PacketWriter : IPacket
     /// <returns>A PacketWriter instance ready for use.</returns>
     internal static PacketWriter Get()
     {
-        AmountInUse++;
-        return _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
+        return _pool.Get();
     }
 
     /// <summary>
@@ -43,8 +41,7 @@ internal sealed class PacketWriter : IPacket
     /// <returns>A PacketWriter instance initialized with the specified data.</returns>
     internal static PacketWriter Get(byte[] data)
     {
-        AmountInUse++;
-        var writer = _pool.Count > 0 ? _pool.Dequeue() : new PacketWriter();
+        var writer = _pool.Get();
         writer._data = [.. data];
         return writer;
     }
@@ -284,11 +281,8 @@ internal sealed class PacketWriter : IPacket
     /// </summary>
     internal void Recycle()
     {
-        AmountInUse--;
         _data.Clear();
-
-        if (_pool.Count < MAX_POOL_SIZE)
-            _pool.Enqueue(this);
+        _pool.Release(this);
     }
 
     /// <summary>

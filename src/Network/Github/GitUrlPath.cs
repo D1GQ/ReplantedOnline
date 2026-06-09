@@ -8,7 +8,7 @@ namespace ReplantedOnline.Network.Github;
 /// Represents a GitHub repository URL path structure for constructing raw content URLs.
 /// </summary>
 /// <param name="folder">The base folder path within the GitHub repository.</param>
-internal struct GitUrlPath(string folder)
+internal readonly struct GitUrlPath(string folder)
 {
     private const string BASE_URL = "https://raw.githubusercontent.com/D1GQ/ReplantedOnline";
 

@@ -422,6 +422,7 @@ internal sealed class ZombieNetworked : NetworkObject
             IsReadyToDespawn = true;
             return;
         }
+
         Zombie?.ApplyBurnOriginal();
     }
 

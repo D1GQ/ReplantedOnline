@@ -23,14 +23,21 @@ internal sealed class NetworkObjectSpawnCmdPacketHandler : IPacketHandler
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
         var message = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packet);
 
-        if (Validate(sender, message, packet))
+        try
         {
-            NetworkDispatcher.SendPacket(PacketWriter.Get(packetReader.GetByteBuffer()), PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main, true, sender.ClientId);
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacketHandler), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
+            if (Validate(sender, message, packet))
+            {
+                NetworkDispatcher.SendPacket(packetReader, PacketHandlerType.NetworkObjectSpawn, PacketChannel.Main, true, sender.ClientId);
+                ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacketHandler), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
+            }
+            else
+            {
+                NetworkDispatcher.SendRejectNetworkObject(message.NetworkId, sender.ClientId);
+            }
         }
-        else
+        finally
         {
-            NetworkDispatcher.SendRejectNetworkObject(message.NetworkId, sender.ClientId);
+            packet.Recycle();
         }
     }
 

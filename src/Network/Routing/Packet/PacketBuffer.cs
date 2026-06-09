@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Structs.Network;
+﻿using ReplantedOnline.Modules.Modded;
+using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Routing.Packet;
 
@@ -7,9 +8,7 @@ namespace ReplantedOnline.Network.Routing.Packet;
 /// </summary>
 internal sealed class PacketBuffer
 {
-    private static readonly Queue<PacketBuffer> _pool = [];
-    private const int MAX_POOL_SIZE = 5;
-    internal static int AmountInUse;
+    private static readonly PoolableObjects<PacketBuffer> _pool = new(5);
 
     /// <summary>
     /// The size of the packet data in bytes.
@@ -32,8 +31,7 @@ internal sealed class PacketBuffer
     /// <returns>A P2PPacketBuffer instance ready for use.</returns>
     internal static PacketBuffer Get(uint messageSize)
     {
-        AmountInUse++;
-        var p2pPacket = _pool.Count > 0 ? _pool.Dequeue() : new PacketBuffer();
+        var p2pPacket = _pool.Get();
         p2pPacket.EnsureCapacity(messageSize);
         p2pPacket.Size = messageSize;
         return p2pPacket;
@@ -62,17 +60,9 @@ internal sealed class PacketBuffer
     /// </summary>
     internal void Recycle()
     {
-        AmountInUse--;
         Size = 0;
         ClientId = 0;
-
-        if (_pool.Count < MAX_POOL_SIZE)
-        {
-            _pool.Enqueue(this);
-        }
-        else
-        {
-            Data = null;
-        }
+        Data = null;
+        _pool.Release(this);
     }
 }

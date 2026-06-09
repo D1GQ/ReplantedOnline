@@ -392,7 +392,7 @@ internal static class DiscordManager
 
         Client.OnJoin -= OnJoin;
         Client.OnJoinRequested -= OnJoinRequested;
-
+        Client.Unsubscribe(EventType.Join | EventType.JoinRequest);
         Client.ClearPresence();
         Client.Dispose();
 

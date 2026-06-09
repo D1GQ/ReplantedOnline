@@ -1,6 +1,7 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Client.Object;
 using ReplantedOnline.Structs.Network;
@@ -20,9 +21,7 @@ internal sealed class PacketReader : IPacket
 {
     private byte[] _data = [];
     private int _position = 0;
-    private static readonly Queue<PacketReader> _pool = [];
-    private const int MAX_POOL_SIZE = 10;
-    internal static int AmountInUse;
+    private static readonly PoolableObjects<PacketReader> _pool = new(10);
 
     /// <summary>
     /// Gets the number of bytes remaining to be read in the packet.
@@ -36,8 +35,7 @@ internal sealed class PacketReader : IPacket
     /// <returns>A PacketReader instance ready for reading the provided data.</returns>
     internal static PacketReader Get(byte[] data)
     {
-        AmountInUse++;
-        var reader = _pool.Count > 0 ? _pool.Dequeue() : new PacketReader();
+        var reader = _pool.Get();
         reader._data = data;
         reader._position = 0;
         return reader;
@@ -369,12 +367,9 @@ internal sealed class PacketReader : IPacket
     /// </summary>
     internal void Recycle()
     {
-        AmountInUse--;
         _data = [];
         _position = 0;
-
-        if (_pool.Count < MAX_POOL_SIZE)
-            _pool.Enqueue(this);
+        _pool.Release(this);
     }
 
     /// <summary>
