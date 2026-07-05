@@ -54,7 +54,7 @@ internal static class ModInfo
     /// <summary>
     /// The date when this version was released, formatted as mm.dd.yyyy.
     /// </summary>
-    internal static string RELEASE_DATE = GetAssemblyMetadata("BuildDate");
+    internal const string RELEASE_DATE = ThisAssembly.Metadata.BuildDate;
 
     /// <summary>
     /// The unique identifier for the mod following reverse domain name notation.
@@ -64,7 +64,12 @@ internal static class ModInfo
     /// <summary>
     /// The link for the github page.
     /// </summary>
-    internal const string GITHUB = "https://github.com/D1GQ/ReplantedOnline";
+    internal const string GITHUB = ThisAssembly.Git.RepositoryUrl;
+
+    /// <summary>
+    /// The commit hash for the current build of the mod.
+    /// </summary>
+    internal const string GITHUB_COMMIT = ThisAssembly.Git.Commit;
 
     /// <summary>
     /// That's ME!
@@ -75,17 +80,6 @@ internal static class ModInfo
     /// List of all contributors, separate by ",".
     /// </summary>
     internal const string CONTRIBUTORS = "PalmForest";
-
-    /// <summary>
-    /// Retrieves metadata from the assembly attributes.
-    /// </summary>
-    /// <param name="key">The metadata key to retrieve.</param>
-    /// <returns>The metadata value, or an empty string if not found.</returns>
-    private static string GetAssemblyMetadata(string key)
-    {
-        var attribute = Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == key);
-        return attribute?.Value ?? string.Empty;
-    }
 
     /// <summary>
     /// The signature for the mod dll file.
