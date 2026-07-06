@@ -16,21 +16,9 @@
 		<Configurations>Debug;Release;Hotfix</Configurations>
 	</PropertyGroup>
 
-	<!-- Build Events -->
-	<PropertyGroup>
-		<ModPathFile>$(MSBuildProjectDirectory)\build\mod_folder_path</ModPathFile>
-		<GamePath Condition="Exists('$(ModPathFile)')">$([System.IO.File]::ReadAllText('$(ModPathFile)').Trim())</GamePath>
-		<ModsPath>$(GamePath)\Mods</ModsPath>
-	</PropertyGroup>
-
-	<Target Name="CopyModToGame" AfterTargets="PostBuildEvent" Condition="Exists('$(ModsPath)')">
-		<Message Text="Copying mod to $(ModsPath)" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(ModsPath)" SkipUnchangedFiles="true" />
-	</Target>
-
-	<Target Name="WarnIfNoGamePath" AfterTargets="PostBuildEvent" Condition="!Exists('$(ModsPath)')">
-		<Warning Text="Game path not found. Set game path in mod_folder_path." />
-		<Message Text="Mod was NOT copied to game folder!" Importance="high" />
+	<!-- Build Scripts -->
+	<Target Name="CopyModToGame" AfterTargets="PostBuildEvent">
+		<Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\build\CopyMod.ps1&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)&quot; -AssemblyName &quot;$(AssemblyName)&quot; -Configuration &quot;$(Configuration)&quot;" />
 	</Target>
 
 	<!-- Build Metadata -->
