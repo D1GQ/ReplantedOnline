@@ -4,5 +4,13 @@
 /src/obj
 /src/.editorconfig
 /src/.vscode
-/src/References/**/**.dll
-/src/References/**/**.xml
+/src/References/Dependencies/**.dll
+/src/References/Dependencies/**.xml
+/src/References/Il2Cpp/**.dll
+/src/References/Il2Cpp/**.xml
+/src/References/MelonLoader/**.dll
+/src/References/MelonLoader/**.xml
+/src/References/Replanted/**.dll
+/src/References/Replanted/**.xml
+/src/References/UnityEngine/**.dll
+/src/References/UnityEngine/**.xml

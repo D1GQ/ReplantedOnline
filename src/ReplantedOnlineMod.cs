@@ -5,7 +5,6 @@ using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Managers.Modded;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -63,7 +62,6 @@ internal class ReplantedOnlineMod : MelonMod
 
         try
         {
-            DependencyResolver.Initialize();
             harmony.PatchAll();
             DebugLoggerPatch.Patch(harmony);
             Il2CppInteropExceptionLogPatch.Patch(harmony);
