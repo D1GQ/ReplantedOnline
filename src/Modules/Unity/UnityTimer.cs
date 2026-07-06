@@ -5,7 +5,7 @@ namespace ReplantedOnline.Modules.Unity;
 /// <summary>
 /// Timer based on Time.time
 /// </summary>
-public sealed class UnityTimer
+internal sealed class UnityTimer
 {
     private float _startTime = Time.time;
 
