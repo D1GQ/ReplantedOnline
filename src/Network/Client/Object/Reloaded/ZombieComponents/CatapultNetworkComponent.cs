@@ -18,7 +18,7 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     private bool _driving;
     internal bool ReadyToFire;
     private int _lastSummonCounter;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
 

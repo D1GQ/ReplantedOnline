@@ -8,7 +8,7 @@ using ReplantedOnline.Utilities.Modded;
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
 [RegisterPlantConfig(SeedType.Sunshroom)]
-internal class SunshroomPlantConfig : IPlantConfig
+internal sealed class SunshroomPlantConfig : IPlantConfig
 {
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)

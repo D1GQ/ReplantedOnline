@@ -8,7 +8,7 @@ using ReplantedOnline.Utilities.Modded;
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
 [RegisterPlantConfig(SeedType.Doomshroom)]
-internal class DoomshroomPlantConfig : IPlantConfig
+internal sealed class DoomshroomPlantConfig : IPlantConfig
 {
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)

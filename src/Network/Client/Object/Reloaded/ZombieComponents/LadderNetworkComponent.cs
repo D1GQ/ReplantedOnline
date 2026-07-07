@@ -1,6 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
@@ -15,7 +15,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _donePlacingLadder;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
 

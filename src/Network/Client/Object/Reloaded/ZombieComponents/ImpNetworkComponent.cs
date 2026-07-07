@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 internal sealed class ImpNetworkComponent : ZombieNetworkComponent
 {
     internal float ImpRandomArc;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie?.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
         {
@@ -19,7 +19,7 @@ internal sealed class ImpNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    public override void Serialize(PacketWriter packetWriter, bool init)
+    public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init)
         {
@@ -29,7 +29,7 @@ internal sealed class ImpNetworkComponent : ZombieNetworkComponent
         base.Serialize(packetWriter, init);
     }
 
-    public override void Deserialize(PacketReader packetReader, bool init)
+    public sealed override void Deserialize(PacketReader packetReader, bool init)
     {
         if (init)
         {

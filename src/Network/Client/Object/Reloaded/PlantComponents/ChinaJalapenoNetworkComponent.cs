@@ -18,7 +18,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     private Texture _awakeTexture = default!;
     private Texture _sleepingTexture = default!;
 
-    internal override void OnInit()
+    internal sealed override void OnInit()
     {
         if (Net.Plant == null) return;
 
@@ -38,7 +38,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     }
 
     private bool _activated;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Plant?.mController == null) return;
 

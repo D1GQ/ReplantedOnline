@@ -16,7 +16,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
     }
 
     private bool _isHigh;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Plant == null) return;
 

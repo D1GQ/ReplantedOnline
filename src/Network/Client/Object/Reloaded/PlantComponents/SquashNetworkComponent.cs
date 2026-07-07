@@ -21,7 +21,7 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
 
     private bool _looking;
     private bool _jump;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Plant! == null) return;
 

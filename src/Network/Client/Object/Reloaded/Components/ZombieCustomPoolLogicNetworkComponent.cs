@@ -10,7 +10,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Client.Object.Reloaded.Components;
 
 /// <inheritdoc/>
-internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
+internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 {
     private enum ZombieInPoolRpcs : byte
     {
@@ -22,7 +22,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 
     private WhiteWaterEffect? _whiteWaterEffect = null;
 
-    internal override void OnInit()
+    internal sealed override void OnInit()
     {
         if (!CanGoInWater() || Net.Zombie == null)
         {
@@ -41,7 +41,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         _whiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
     }
 
-    internal override void OnDestroyed()
+    internal sealed override void OnDestroyed()
     {
         if (_whiteWaterEffect != null)
         {
@@ -49,7 +49,7 @@ internal class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (!CanGoInWater())
         {

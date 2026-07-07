@@ -8,7 +8,7 @@ using ReplantedOnline.Utilities.Modded;
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
 [RegisterPlantConfig(SeedType.Puffshroom)]
-internal class PuffshroomPlantConfig : IPlantConfig
+internal sealed class PuffshroomPlantConfig : IPlantConfig
 {
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)

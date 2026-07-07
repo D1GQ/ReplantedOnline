@@ -69,19 +69,19 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal PlantNetworkComponent LogicComponent = default!;
 
-    public override string GetObjectName()
+    public sealed override string GetObjectName()
     {
         return $"{Enum.GetName(Plant!.mSeedType)}Plant ({NetworkId})";
     }
 
     [HideFromIl2Cpp]
-    protected override void OnClone(RuntimePrefab prefab)
+    protected sealed override void OnClone(RuntimePrefab prefab)
     {
         var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
         networkedDebugger.Initialize(this);
     }
 
-    public override void OnInit()
+    public sealed override void OnInit()
     {
         LogicComponent = (PlantNetworkComponent)RegisterNetworkComponent.TryCreateInstance(SeedType, typeof(PlantNetworkComponent))!;
         AddNetworkComponent(LogicComponent);
@@ -106,7 +106,7 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
-    public override void OnRejected()
+    public sealed override void OnRejected()
     {
         if (Plant == null) return;
 
@@ -116,7 +116,7 @@ internal sealed class PlantNetworked : NetworkObject
         }
     }
 
-    public override void OnDestroyed()
+    public sealed override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();
 
@@ -254,7 +254,7 @@ internal sealed class PlantNetworked : NetworkObject
     /// <param name="packetWriter">The packet writer to write data to</param>
     /// <param name="init">Whether this is initial synchronization data</param>
     [HideFromIl2Cpp]
-    public override void Serialize(PacketWriter packetWriter, bool init)
+    public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init)
         {
@@ -280,7 +280,7 @@ internal sealed class PlantNetworked : NetworkObject
     /// <param name="packetReader">The packet reader to read data from</param>
     /// <param name="init">Whether this is initial synchronization data</param>
     [HideFromIl2Cpp]
-    public override void Deserialize(PacketReader packetReader, bool init)
+    public sealed override void Deserialize(PacketReader packetReader, bool init)
     {
         if (init)
         {

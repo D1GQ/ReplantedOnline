@@ -8,7 +8,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 [RegisterNetworkComponent(ZombieType.Digger)]
 internal sealed class DiggerNetworkComponent : ZombieNetworkComponent
 {
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie?.mZombiePhase is ZombiePhase.DiggerWalking or ZombiePhase.DiggerWalkingWithoutAxe)
         {

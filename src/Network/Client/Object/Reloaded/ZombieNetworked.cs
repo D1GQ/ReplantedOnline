@@ -84,19 +84,19 @@ internal sealed class ZombieNetworked : NetworkObject
     internal ZombieNetworkComponent LogicComponent = default!;
     internal bool EnteringHouse;
 
-    public override string GetObjectName()
+    public sealed override string GetObjectName()
     {
         return $"{Enum.GetName(Zombie!.mZombieType)}Zombie ({NetworkId})";
     }
 
     [HideFromIl2Cpp]
-    protected override void OnClone(RuntimePrefab prefab)
+    protected sealed override void OnClone(RuntimePrefab prefab)
     {
         var networkedDebugger = gameObject.AddComponent<NetworkedDebugger>();
         networkedDebugger.Initialize(this);
     }
 
-    public override void OnInit()
+    public sealed override void OnInit()
     {
         LogicComponent = (ZombieNetworkComponent)RegisterNetworkComponent.TryCreateInstance(ZombieType, typeof(ZombieNetworkComponent))!;
         AddNetworkComponent(LogicComponent);
@@ -124,7 +124,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    public override void OnRejected()
+    public sealed override void OnRejected()
     {
         if (Zombie == null) return;
 
@@ -134,7 +134,7 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    public override void OnDestroyed()
+    public sealed override void OnDestroyed()
     {
         this.RemoveNetworkedLookup();
 
@@ -456,7 +456,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    public override void Serialize(PacketWriter packetWriter, bool init)
+    public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init)
         {
@@ -477,7 +477,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [HideFromIl2Cpp]
-    public override void Deserialize(PacketReader packetReader, bool init)
+    public sealed override void Deserialize(PacketReader packetReader, bool init)
     {
         if (init)
         {

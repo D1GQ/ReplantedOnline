@@ -8,7 +8,7 @@ using ReplantedOnline.Utilities.Modded;
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
 [RegisterPlantConfig(SeedType.Scaredyshroom)]
-internal class ScaredyshroomPlantConfig : IPlantConfig
+internal sealed class ScaredyshroomPlantConfig : IPlantConfig
 {
     /// <inheritdoc/>
     public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)

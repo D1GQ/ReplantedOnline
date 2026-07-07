@@ -8,7 +8,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 [RegisterNetworkComponent(ZombieType.Polevaulter)]
 internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
 {
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
 

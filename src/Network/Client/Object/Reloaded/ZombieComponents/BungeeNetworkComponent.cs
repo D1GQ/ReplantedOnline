@@ -18,7 +18,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 
     private bool _isDiving;
     private bool _isTakingPlant;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
 

@@ -17,7 +17,7 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
     }
 
     private string _chomperState = string.Empty;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Plant == null) return;
 

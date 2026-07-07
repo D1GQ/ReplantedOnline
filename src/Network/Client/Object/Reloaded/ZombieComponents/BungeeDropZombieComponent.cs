@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 /// <inheritdoc/>
 internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
 {
-    internal override void OnEnabled()
+    internal sealed override void OnEnabled()
     {
         _screamRng = Math.Min(_screamRng, 2);
         Net.StartCoroutine(CoBungeeDropZombie());

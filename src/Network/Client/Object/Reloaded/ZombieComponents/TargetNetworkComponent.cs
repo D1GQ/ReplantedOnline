@@ -13,13 +13,13 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 {
     private Vector3 _lastPos;
     private bool _hasDead;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie?.mController == null) return;
         _lastPos = Net.Zombie.mController.transform.position;
     }
 
-    internal override void OnDeath(DeathReason deathReason)
+    internal sealed override void OnDeath(DeathReason deathReason)
     {
         if (ReloadedLobby.LobbyData == null) return;
         if (deathReason != DeathReason.Normal) return;

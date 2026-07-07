@@ -18,7 +18,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _isExploding;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
 
@@ -46,7 +46,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         UpdatePositionSync();
     }
 
-    internal override void OnDestroyed()
+    internal sealed override void OnDestroyed()
     {
         int jackInTheBoxCount = 0;
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())

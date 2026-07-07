@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.ZombieComponents;
 [RegisterNetworkComponent(ZombieType.Bobsled)]
 internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
 {
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie?.mZombiePhase == ZombiePhase.ZombieNormal)
         {
@@ -18,7 +18,7 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    public override void Serialize(PacketWriter packetWriter, bool init)
+    public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init)
         {
@@ -32,7 +32,7 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
         base.Serialize(packetWriter, init);
     }
 
-    public override void Deserialize(PacketReader packetReader, bool init)
+    public sealed override void Deserialize(PacketReader packetReader, bool init)
     {
         if (init)
         {

@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 [RegisterNetworkComponent(SeedType.Magnetshroom)]
 internal sealed class MagnetShroomNetworkComponent : PlantNetworkComponent
 {
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (!Net.AmOwner)
         {

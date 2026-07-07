@@ -16,7 +16,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 
     internal bool HasExploded;
     private bool _isWakingup = true;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Plant! == null) return;
 

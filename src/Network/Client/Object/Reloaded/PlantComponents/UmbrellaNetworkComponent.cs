@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Client.Object.Reloaded.PlantComponents;
 internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
 {
     private bool _triggerd;
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.AmOwner)
         {
@@ -28,7 +28,7 @@ internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
         UpdateHealthSync();
     }
 
-    protected override void DoSpecial()
+    protected sealed override void DoSpecial()
     {
         Net.Plant?.DoSpecialOriginal();
     }

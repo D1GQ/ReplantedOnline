@@ -13,13 +13,13 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 {
     private Texture _dirtlessTexture = default!;
     private Texture _poolTexture = default!;
-    internal override void OnInit()
+    internal sealed override void OnInit()
     {
         _dirtlessTexture = ReplantedOnlineAssets.Sprites.Character.GravestoneDirtless.texture;
         _poolTexture = ReplantedOnlineAssets.Sprites.Character.GravestonePool.texture;
     }
 
-    internal override void Update()
+    internal sealed override void Update()
     {
         if (Net.Zombie?.mController == null) return;
 
@@ -42,7 +42,7 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
         Net.Zombie.mController.m_shadowController.transform.localScale = new(1.15f, 1f, 1f);
     }
 
-    internal override void OnDeath(DeathReason deathReason)
+    internal sealed override void OnDeath(DeathReason deathReason)
     {
         if (Net.Zombie == null) return;
 
