@@ -5,7 +5,7 @@ using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.ResetLobby)]
+[RegisterPacket(PacketType.ResetLobby)]
 internal sealed class ResetLobbyPacket : IPacketMessage
 {
     /// <inheritdoc/>

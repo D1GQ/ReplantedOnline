@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.NetworkObjectDespawn)]
+[RegisterPacket(PacketType.NetworkObjectDespawn)]
 internal sealed class NetworkObjectDespawnPacket : IPacketMessage<NetworkObject, bool>
 {
     /// <inheritdoc/>

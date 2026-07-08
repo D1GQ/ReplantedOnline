@@ -9,7 +9,7 @@ using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.NetworkObjectReject)]
+[RegisterPacket(PacketType.NetworkObjectReject)]
 internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifier, ID>
 {
     /// <inheritdoc/>

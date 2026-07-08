@@ -111,7 +111,7 @@ internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute
 /// Registers classes that implement IPacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler(PacketType packetHandlerType) : AutoRegisterLookupAttribute<IBasePacketMessage, PacketType>(packetHandlerType);
+internal sealed class RegisterPacket(PacketType packetHandlerType) : AutoRegisterLookupAttribute<IBasePacketMessage, PacketType>(packetHandlerType);
 
 /// <summary>
 /// Registers classes that implement IPlantConfig.

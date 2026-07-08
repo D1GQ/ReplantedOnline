@@ -16,6 +16,6 @@ internal static partial class NetworkManager
         /// Gets the singleton instance of the specified packet handler type.
         /// </summary>
         /// <value>A singleton instance of type <typeparamref name="T"/> retrieved from the packet registry.</value>
-        internal static T Singleton { get; } = RegisterPacketHandler.GetInstance<T>()!;
+        internal static T Singleton { get; } = RegisterPacket.GetInstance<T>()!;
     }
 }

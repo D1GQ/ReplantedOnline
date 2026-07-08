@@ -7,7 +7,7 @@ using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.Rpc)]
+[RegisterPacket(PacketType.Rpc)]
 internal sealed class RpcPacket : IPacketMessage<RpcType, IPacket?, bool>
 {
     /// <inheritdoc/>

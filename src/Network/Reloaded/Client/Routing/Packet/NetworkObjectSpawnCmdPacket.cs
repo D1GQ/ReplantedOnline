@@ -11,7 +11,7 @@ using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.NetworkObjectSpawnCmd)]
+[RegisterPacket(PacketType.NetworkObjectSpawnCmd)]
 internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject>
 {
     /// <inheritdoc/>

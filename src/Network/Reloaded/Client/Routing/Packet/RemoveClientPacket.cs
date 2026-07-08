@@ -8,7 +8,7 @@ using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.RemoveClient)]
+[RegisterPacket(PacketType.RemoveClient)]
 internal sealed class RemoveClientPacket : IPacketMessage<ID, BanReason>
 {
     /// <inheritdoc/>

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacketHandler(PacketType.ObjectRpc)]
+[RegisterPacket(PacketType.ObjectRpc)]
 internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacket?, bool>
 {
     /// <inheritdoc/>

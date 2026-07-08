@@ -32,7 +32,7 @@ internal interface IBasePacketMessage
     /// </returns>
     internal static bool HandlePacket(PacketType handlerType, ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        var dispatcher = RegisterPacketHandler.GetInstanceFromLookup(handlerType);
+        var dispatcher = RegisterPacket.GetInstanceFromLookup(handlerType);
         if (dispatcher != null)
         {
             dispatcher.Receive(sender, packetReader, local);
