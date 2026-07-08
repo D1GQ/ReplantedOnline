@@ -3,7 +3,6 @@ using Il2CppSteamworks.Data;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers.Modded;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
@@ -217,7 +216,7 @@ internal static class ReloadedLobby
             LobbyData = new(lobby.Id, lobby.OwnerId);
             LobbyData.InitializeData();
             ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Lobby created successfully: {LobbyData.LobbyId}");
-            MatchmakingManager.SetLobbyData(LobbyData);
+            ReloadedMatchmaking.SetLobbyData(LobbyData);
         }
         else
         {
@@ -326,7 +325,7 @@ internal static class ReloadedLobby
 
         if (AmLobbyHost())
         {
-            MatchmakingManager.UpdateLobbyJoinable(false);
+            ReloadedMatchmaking.UpdateLobbyJoinable(false);
             NetworkTransport!.SetLobbyMemberLimit(LobbyData.LobbyId, MAX_LOBBY_SIZE);
         }
 
@@ -348,7 +347,7 @@ internal static class ReloadedLobby
 
         if (AmLobbyHost())
         {
-            MatchmakingManager.UpdateLobbyJoinable();
+            ReloadedMatchmaking.UpdateLobbyJoinable();
         }
     }
 

@@ -1,7 +1,6 @@
 ﻿using ReplantedOnline.Data.Network;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Client.Object;
@@ -220,7 +219,7 @@ internal sealed class ReloadedLobbyData : IDisposable
 
         if (ReloadedLobby.AmLobbyHost())
         {
-            MatchmakingManager.UpdateLobbyJoinable();
+            ReloadedMatchmaking.UpdateLobbyJoinable();
         }
     }
 

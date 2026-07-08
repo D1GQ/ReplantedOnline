@@ -2,7 +2,6 @@
 using DiscordRPC.Message;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -310,7 +309,7 @@ internal static class DiscordManager
 
 
 
-            MatchmakingManager.SearchSteamLobbyByGameCode(secret.GameCode);
+            ReloadedMatchmaking.SearchSteamLobbyByGameCode(secret.GameCode);
         });
     }
 

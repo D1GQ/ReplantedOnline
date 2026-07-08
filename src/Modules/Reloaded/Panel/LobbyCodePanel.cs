@@ -3,8 +3,8 @@ using Il2CppReloaded.Input;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
@@ -41,7 +41,7 @@ internal static class LobbyCodePanel
         InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true)!;
         if (InputField != null)
         {
-            InputField.characterLimit = MatchmakingManager.CODE_LENGTH;
+            InputField.characterLimit = ReloadedMatchmaking.CODE_LENGTH;
             InputField.onValueChanged = null;
         }
 
@@ -68,15 +68,15 @@ internal static class LobbyCodePanel
             okButton.onClick = new();
             okButton.onClick.AddListener(() =>
             {
-                if (InputField != null && InputField.m_Text.Length == MatchmakingManager.CODE_LENGTH)
+                if (InputField != null && InputField.m_Text.Length == ReloadedMatchmaking.CODE_LENGTH)
                 {
                     Panel?.gameObject.SetActive(false);
                     string gameCode = InputField.m_Text.ToUpper();
-                    MatchmakingManager.SearchSteamLobbyByGameCode(gameCode);
+                    ReloadedMatchmaking.SearchSteamLobbyByGameCode(gameCode);
                 }
                 else
                 {
-                    CustomPopupPanel.Show("Error", $"Lobby code must contain {MatchmakingManager.CODE_LENGTH} characters!");
+                    CustomPopupPanel.Show("Error", $"Lobby code must contain {ReloadedMatchmaking.CODE_LENGTH} characters!");
                 }
             });
         }
@@ -118,7 +118,7 @@ internal static class LobbyCodePanel
             if (InputField.text != LastText)
             {
                 string currentText = InputField.text;
-                string cleanValue = new([.. currentText.Where(c => MatchmakingManager.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
+                string cleanValue = new([.. currentText.Where(c => ReloadedMatchmaking.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
 
                 InputField?.SetText(cleanValue, false);
                 InputField?.ForceLabelUpdate();

@@ -1,7 +1,7 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.MonoScripts.Unity;
+using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
@@ -182,7 +182,7 @@ internal sealed class LanServer : IDisposable
         Server.ServerData.SetPlayerCount(1);
         Server.ServerData.SetIsJoinable(true);
         Server.ServerData.SetModVersion(ModInfo.MOD_VERSION_FORMATTED);
-        Server.ServerData.SetGameCode(MatchmakingManager.GenerateGameCode(Server.ServerData.LobbyId));
+        Server.ServerData.SetGameCode(ReloadedMatchmaking.GenerateGameCode(Server.ServerData.LobbyId));
 
         Task.Run(Server.ListenForP2P, Server.P2PCTS.Token);
 

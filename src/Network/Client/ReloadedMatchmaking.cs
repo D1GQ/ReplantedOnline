@@ -6,7 +6,6 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
-using ReplantedOnline.Network.Client;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
@@ -14,13 +13,13 @@ using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Text;
 
-namespace ReplantedOnline.Managers.Network;
+namespace ReplantedOnline.Network.Client;
 
 /// <summary>
-/// Manages Steam matchmaking functionality for finding and joining multiplayer lobbies in ReplantedOnline.
-/// Handles lobby searching by game codes and generates consistent lobby identifiers.
+/// Provides matchmaking functionality for ReplantedOnline, including searching for lobbies by game code, 
+/// retrieving lobby lists, and generating consistent game codes based on lobby IDs.
 /// </summary>
-internal static class MatchmakingManager
+internal static class ReloadedMatchmaking
 {
     /// <summary>
     /// Character set used for generating game codes. Excludes confusing characters like O/0 and I/1.
@@ -44,7 +43,7 @@ internal static class MatchmakingManager
     {
         SteamClientPatch.TrySetTempApp(GetGameCodePostfixType(gameCode));
         Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Searching for lobby with code: {gameCode}");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Searching for lobby with code: {gameCode}");
 
         try
         {
@@ -59,7 +58,7 @@ internal static class MatchmakingManager
             {
                 if (task.IsFaulted)
                 {
-                    ReplantedOnlineMod.Logger.Error(typeof(MatchmakingManager), $"Lobby search failed: {task.Exception}");
+                    ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Lobby search failed: {task.Exception}");
                     Transitions.ToMainMenu(() =>
                     {
                         CustomPopupPanel.Show("Disconnected", $"An critical error occurred!");
@@ -71,7 +70,7 @@ internal static class MatchmakingManager
 
                 if (lobbies == null)
                 {
-                    ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), "No lobbies found");
+                    ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), "No lobbies found");
                     Transitions.ToMainMenu(() =>
                     {
                         CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
@@ -79,7 +78,7 @@ internal static class MatchmakingManager
                     return;
                 }
 
-                ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Found {lobbies.Length} lobbies matching filters");
+                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found {lobbies.Length} lobbies matching filters");
 
                 if (lobbies.Length > 0)
                 {
@@ -95,7 +94,7 @@ internal static class MatchmakingManager
 
                         if (modVersion != ModInfo.MOD_VERSION_FORMATTED)
                         {
-                            ReplantedOnlineMod.Logger.Warning(typeof(MatchmakingManager), $"Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
+                            ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
                                 CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
@@ -103,12 +102,12 @@ internal static class MatchmakingManager
                             return;
                         }
 
-                        ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Found matching lobby: {lobby.Id} with code {gameCode}");
+                        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found matching lobby: {lobby.Id} with code {gameCode}");
                         ReloadedLobby.JoinLobby(lobby.Id);
                     }
                     else
                     {
-                        ReplantedOnlineMod.Logger.Warning(typeof(MatchmakingManager), $"Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
                         Transitions.ToMainMenu(() =>
                         {
                             CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
@@ -119,7 +118,7 @@ internal static class MatchmakingManager
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(MatchmakingManager), $"Error starting lobby search: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting lobby search: {ex.Message}");
             Transitions.ToMainMenu();
         }
     }
@@ -133,7 +132,7 @@ internal static class MatchmakingManager
     internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError>? errorCallback = null)
     {
         Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Searching for lobbies");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Searching for lobbies");
 
         try
         {
@@ -148,7 +147,7 @@ internal static class MatchmakingManager
             {
                 if (task.IsFaulted)
                 {
-                    ReplantedOnlineMod.Logger.Error(typeof(MatchmakingManager), $"Lobby search failed: {task.Exception}");
+                    ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Lobby search failed: {task.Exception}");
                     errorCallback?.Invoke(LobbyListError.Error);
                     return;
                 }
@@ -157,19 +156,19 @@ internal static class MatchmakingManager
 
                 if (lobbies == null)
                 {
-                    ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), "No lobbies found");
+                    ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), "No lobbies found");
                     errorCallback?.Invoke(LobbyListError.NoneFound);
                     return;
                 }
 
-                ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Found {lobbies.Length} lobbies");
+                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found {lobbies.Length} lobbies");
 
                 callback(lobbies);
             }));
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(MatchmakingManager), $"Error starting lobby search: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting lobby search: {ex.Message}");
             errorCallback?.Invoke(LobbyListError.Error);
         }
     }
@@ -248,7 +247,7 @@ internal static class MatchmakingManager
         codeBuilder.Append(GetGameCodePostfix(random));
 
         string gameCode = codeBuilder.ToString();
-        ReplantedOnlineMod.Logger.Msg(typeof(MatchmakingManager), $"Generated game code: {gameCode} for lobby {lobbyId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Generated game code: {gameCode} for lobby {lobbyId}");
         return gameCode;
     }
 

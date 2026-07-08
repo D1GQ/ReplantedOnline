@@ -3,7 +3,6 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Managers.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
@@ -25,7 +24,7 @@ internal sealed class StartGameRpc : IRpcDispatcher<SelectionSet>
         NetworkDispatcher.SendRpc(RpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
         ReloadedLobby.LobbyData!.HasStarted.Value = true;
-        MatchmakingManager.UpdateLobbyJoinable();
+        ReloadedMatchmaking.UpdateLobbyJoinable();
     }
 
     /// <inheritdoc/>
