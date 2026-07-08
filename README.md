@@ -95,22 +95,23 @@ in Visual Studio and build the solution in `Release` configuration.
 
 ### Networking
 #### Client
-- `src/Network/Client/ReplantedLobby.cs` — handles Steamworks/LAN lobbies
-- `src/Network/Client/ReplantedLobbyData.cs` — handles lobby data
-- `src/Network/Client/PacketHandler` — contains packet handlers for routed packets
-- `src/Network/Client/RPC` — contains remote procedure call handlers for static RPCs
-- `src/Network/Client/Object/Reloaded` — contains synced network objects
+- `src/Network/Reloaded/Client/ReloadedMatchmaking.cs` — handles Steamworks matchmaking
+- `src/Network/Reloaded/Client/ReplantedLobby.cs` — handles Steamworks/LAN lobbies
+- `src/Network/Reloaded/Client/ReplantedLobbyData.cs` — handles lobby data
+- `src/Network/Reloaded/Client/Packet` — contains packet handlers for routed packets
+- `src/Network/Reloaded/Client/RPC` — contains remote procedure call handlers for static RPCs
+- `src/Network/Reloaded/Client/Object/Gameplay` — contains synced network objects for gameplay
 
 #### Server / Transport
-- `src/Network/Routing/Transport` — contains networking transports
-- `src/Network/Routing/NetworkDispatcher.cs` — handles packet routing and dispatching
-- `src/Network/Server/LAN` — contains LAN testing server logic
+- `src/Network/Reloaded/Client/Routing/Transport` — contains networking transports
+- `src/Network/Reloaded/Client/Routing/NetworkManager.cs` — handles packet routing and dispatching
+- `src/Network/Reloaded/Server/Lan` — contains LAN testing server logic
 
 #### Serialization
-- `src/Network/Routing/Packet/PacketWriter.cs` — handles binary serialization
-- `src/Network/Routing/Packet/PacketReader.cs` — handles binary deserialization
-- `src/Network/Routing/Packet/Messages` — contains serialized packet message types
-- `src/Network/Routing/Packet/FastResolvers` — contains fast serialization resolvers
+- `src/Network/Reloaded/Serialization/PacketWriter.cs` — handles binary serialization
+- `src/Network/Reloaded/Serialization/PacketReader.cs` — handles binary deserialization
+- `src/Network/Reloaded/Serialization/Messages` — contains serialized packet message types
+- `src/Network/Reloaded/Serialization/FastResolvers` — contains fast serialization resolvers
 
 ### Harmony Patches
 #### Other
