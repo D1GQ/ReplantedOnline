@@ -3,10 +3,10 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(ZombieType.JackInTheBox)]

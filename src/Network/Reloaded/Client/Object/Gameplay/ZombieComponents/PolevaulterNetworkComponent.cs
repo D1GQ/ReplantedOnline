@@ -1,12 +1,12 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
 /// <inheritdoc/>
-[RegisterNetworkComponent(ZombieType.DolphinRider)]
-internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
+[RegisterNetworkComponent(ZombieType.Polevaulter)]
+internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
 {
     internal sealed override void Update()
     {
@@ -16,7 +16,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump && Net.Target == null)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && Net.Target == null)
             {
                 // Send target to vault
                 Plant target = Net.Zombie.FindPlantTarget(ZombieAttackType.Vault);
@@ -24,14 +24,14 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
             }
         }
 
-        // Non owner logic is handled in DolphinRiderZombiePatch.cs
+        // Non owner logic is handled in PolevaulterZombiePatch.cs
 
-        if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinWalkingWithoutDolphin)
+        if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
         {
             Net.Target = null;
         }
 
-        if (Net.Zombie.mZombiePhase is not ZombiePhase.DolphinRiding)
+        if (Net.Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
         {
             UpdatePositionSync();
         }

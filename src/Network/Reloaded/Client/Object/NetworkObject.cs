@@ -4,7 +4,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;

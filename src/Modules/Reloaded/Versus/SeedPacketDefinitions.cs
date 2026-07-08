@@ -9,7 +9,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Il2Cpp;

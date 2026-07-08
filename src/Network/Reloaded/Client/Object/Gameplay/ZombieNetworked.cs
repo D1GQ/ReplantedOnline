@@ -9,8 +9,8 @@ using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
@@ -18,7 +18,7 @@ using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 
 /// <summary>
 /// Represents a networked zombie on the board, handling synchronization of zombie state

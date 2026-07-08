@@ -1,10 +1,10 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(ZombieType.Bobsled)]

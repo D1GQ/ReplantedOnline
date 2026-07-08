@@ -1,10 +1,10 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.PlantComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(SeedType.Kernelpult)]

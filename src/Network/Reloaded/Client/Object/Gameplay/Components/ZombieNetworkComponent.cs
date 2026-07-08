@@ -7,7 +7,7 @@ using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 /// <inheritdoc/>
 internal class ZombieNetworkComponent : NetworkComponent

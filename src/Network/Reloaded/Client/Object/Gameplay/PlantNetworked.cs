@@ -9,14 +9,14 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.MonoScripts.Network;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.PlantComponents;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 
 /// <summary>
 /// Represents a networked plant on the board, handling synchronization of plant state

@@ -3,9 +3,9 @@ using Il2CppSource.Controllers;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.PlantComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(SeedType.Chomper)]

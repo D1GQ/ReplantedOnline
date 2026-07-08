@@ -2,7 +2,7 @@
 using MelonLoader;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 

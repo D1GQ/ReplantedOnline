@@ -2,9 +2,9 @@
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(ZombieType.Bungee)]

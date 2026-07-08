@@ -4,7 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Serialization.Messages;
 using ReplantedOnline.Utilities.MelonLoader;

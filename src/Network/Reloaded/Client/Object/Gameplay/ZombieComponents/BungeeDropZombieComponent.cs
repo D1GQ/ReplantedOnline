@@ -2,11 +2,11 @@
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.ZombieComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
 /// <inheritdoc/>
 internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent

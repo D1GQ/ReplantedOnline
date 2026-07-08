@@ -1,11 +1,11 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.PlantComponents;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 
 /// <inheritdoc/>
 internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkComponent

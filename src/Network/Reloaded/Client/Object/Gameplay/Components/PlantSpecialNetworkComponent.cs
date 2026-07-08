@@ -2,7 +2,7 @@
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(SeedType.Cherrybomb)]

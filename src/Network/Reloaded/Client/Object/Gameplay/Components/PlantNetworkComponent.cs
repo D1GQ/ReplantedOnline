@@ -3,7 +3,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using UnityEngine;
 
-namespace ReplantedOnline.Network.Reloaded.Client.Object.Reloaded.Components;
+namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 /// <inheritdoc/>
 internal class PlantNetworkComponent : NetworkComponent
