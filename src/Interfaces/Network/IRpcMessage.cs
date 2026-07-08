@@ -6,8 +6,7 @@ using ReplantedOnline.Network.Reloaded.Serialization;
 namespace ReplantedOnline.Interfaces.Network;
 
 /// <summary>
-/// Defines the contract for handling Remote Procedure Calls (RPCs).
-/// Provides a structured framework for processing network commands between clients.
+/// Defines the contract for handling Remote Procedure Calls.
 /// </summary>
 internal interface IBaseRpcMessage
 {
