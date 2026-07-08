@@ -3,25 +3,26 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 [RegisterRpc(RpcType.ChooseSeed)]
-internal sealed class ChooseSeedRpc : IRpcDispatcher<ChosenSeed>
+internal sealed class ChooseSeedRpc : IRpcMessage<ChosenSeed>
 {
     /// <inheritdoc/>
     public void Send(ChosenSeed theChosenSeed)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(theChosenSeed.mSeedType);
-        NetworkManager.SendRpc(RpcType.ChooseSeed, packetWriter);
+        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.ChooseSeed, packetWriter);
         packetWriter.Recycle();
     }
 
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader)
+    public void Receive(ReloadedClientData sender, PacketReader packetReader)
     {
         // Read the chosen seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();

@@ -12,26 +12,39 @@ using ReplantedOnline.Utilities.MelonLoader;
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
 [RegisterPacketHandler(PacketType.NetworkObjectSpawnCmd)]
-internal sealed class NetworkObjectSpawnCmdPacketHandler : IPacketHandler
+internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject>
 {
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
+    public void Send(NetworkObject networkObj)
+    {
+        if (ReloadedLobby.AmLobbyHost()) return;
+
+        PacketWriter packetWriter = PacketWriter.Get();
+        Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
+
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object Request with ID: {networkObj.NetworkId} to host");
+        NetworkManager.SendPacketTo(ReloadedLobby.LobbyData!.HostId, packetWriter, PacketType.NetworkObjectSpawnCmd, PacketChannel.Main);
+        packetWriter.Recycle();
+    }
+
+    /// <inheritdoc/>
+    public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         if (!ReloadedLobby.AmLobbyHost()) return;
 
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        var message = Message<NetworkObjectSpawnMessage>.Instance.Deserialize(packet);
+        var message = Message<NetworkObjectSpawnMessage>.Singleton.Deserialize(packet);
 
         try
         {
             if (Validate(sender, message, packet))
             {
                 NetworkManager.SendPacket(packetReader, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, sender.ClientId);
-                ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacketHandler), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
+                ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacket), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
             }
             else
             {
-                NetworkManager.SendRejectNetworkObject(message.NetworkId, sender.ClientId);
+                NetworkManager.Packet<NetworkObjectRejectPacket>.Singleton.Send(message.NetworkId, sender.ClientId);
             }
         }
         finally

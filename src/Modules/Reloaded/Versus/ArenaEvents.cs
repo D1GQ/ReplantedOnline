@@ -2,6 +2,7 @@
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -70,7 +71,7 @@ internal static class ArenaEvents
         if (!ReloadedLobby.AmLobbyHost()) return;
 
         DisplayEventTitle(EventTitle.PushBack);
-        Rpc<DisplayEventTitleRpc>.Instance.Send(EventTitle.PushBack);
+        NetworkManager.Rpc<DisplayEventTitleRpc>.Singleton.Send(EventTitle.PushBack);
 
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
         {
@@ -82,7 +83,7 @@ internal static class ArenaEvents
             if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
 
             PushBackZombie(zombie);
-            Rpc<PushBackZombieRpc>.Instance.Send(zombie);
+            NetworkManager.Rpc<PushBackZombieRpc>.Singleton.Send(zombie);
         }
 
         for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)

@@ -10,7 +10,7 @@ namespace ReplantedOnline.Interfaces.Network;
 /// Implements the handler pattern for processing different types of network packets
 /// received from connected clients.
 /// </summary>
-internal interface IPacketHandler
+internal interface IBasePacketMessage
 {
     /// <summary>
     /// Processes an incoming network packet from a connected client.
@@ -19,7 +19,7 @@ internal interface IPacketHandler
     /// <param name="packetReader">The packet reader containing the raw packet data
     /// to be deserialized and processed by the handler.</param>
     /// <param name="local">Whether if this packet is from the local client.</param>
-    void Handle(ReloadedClientData sender, PacketReader packetReader, bool local);
+    void Receive(ReloadedClientData sender, PacketReader packetReader, bool local);
 
     /// <summary>
     /// Dispatches an incoming packet to the appropriate registered handler based on its tag.
@@ -37,10 +37,35 @@ internal interface IPacketHandler
         var dispatcher = RegisterPacketHandler.GetInstanceFromLookup(handlerType);
         if (dispatcher != null)
         {
-            dispatcher.Handle(sender, packetReader, local);
+            dispatcher.Receive(sender, packetReader, local);
             return true;
         }
 
         return false;
     }
+}
+
+internal interface IPacketMessage : IBasePacketMessage
+{
+    void Send();
+}
+
+internal interface IPacketMessage<Arg1> : IBasePacketMessage
+{
+    void Send(Arg1 arg1);
+}
+
+internal interface IPacketMessage<Arg1, Arg2> : IBasePacketMessage
+{
+    void Send(Arg1 arg1, Arg2 arg2);
+}
+
+internal interface IPacketMessage<Arg1, Arg2, Arg3> : IBasePacketMessage
+{
+    void Send(Arg1 arg1, Arg2 arg2, Arg3 arg3);
+}
+
+internal interface IPacketMessage<Arg1, Arg2, Arg3, Arg4> : IBasePacketMessage
+{
+    void Send(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4);
 }

@@ -9,14 +9,14 @@ namespace ReplantedOnline.Interfaces.Network;
 /// Defines the contract for handling Remote Procedure Calls (RPCs).
 /// Provides a structured framework for processing network commands between clients.
 /// </summary>
-internal interface IRpc
+internal interface IBaseRpcMessage
 {
     /// <summary>
     /// Processes an incoming RPC packet from a network client.
     /// </summary>
     /// <param name="sender">The client that sent the RPC request.</param>
     /// <param name="packetReader">The packet reader containing the RPC data to process.</param>
-    void Handle(ReloadedClientData sender, PacketReader packetReader);
+    void Receive(ReloadedClientData sender, PacketReader packetReader);
 
     /// <summary>
     /// Dispatches an incoming RPC to the appropriate handler based on the RPC type.
@@ -27,15 +27,15 @@ internal interface IRpc
     internal static void HandleRpc(RpcType rpcType, ReloadedClientData sender, PacketReader packetReader)
     {
         var handler = RegisterRpc.GetInstanceFromLookup(rpcType);
-        handler?.Handle(sender, packetReader);
+        handler?.Receive(sender, packetReader);
     }
 }
 
 /// <summary>
 /// Represents an RPC handler that can dispatch messages without additional arguments.
-/// Extends <see cref="IRpc"/> with a parameterless send capability.
+/// Extends <see cref="IBaseRpcMessage"/> with a parameterless send capability.
 /// </summary>
-internal interface IRpcDispatcher : IRpc
+internal interface IRpcMessage : IBaseRpcMessage
 {
     /// <summary>
     /// Sends the RPC message without any additional arguments.
@@ -47,7 +47,7 @@ internal interface IRpcDispatcher : IRpc
 /// Represents an RPC handler that can dispatch messages with a single additional argument.
 /// </summary>
 /// <typeparam name="Arg1">The type of the argument used when sending the RPC message.</typeparam>
-internal interface IRpcDispatcher<Arg1> : IRpc
+internal interface IRpcMessage<Arg1> : IBaseRpcMessage
 {
     /// <summary>
     /// Sends the RPC message with the specified argument.
@@ -61,7 +61,7 @@ internal interface IRpcDispatcher<Arg1> : IRpc
 /// </summary>
 /// <typeparam name="Arg1">The type of the first argument used when sending the RPC message.</typeparam>
 /// <typeparam name="Arg2">The type of the second argument used when sending the RPC message.</typeparam>
-internal interface IRpcDispatcher<Arg1, Arg2> : IRpc
+internal interface IRpcMessage<Arg1, Arg2> : IBaseRpcMessage
 {
     /// <summary>
     /// Sends the RPC message with the specified arguments.

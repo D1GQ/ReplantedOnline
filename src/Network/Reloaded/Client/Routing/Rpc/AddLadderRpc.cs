@@ -4,13 +4,14 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 [RegisterRpc(RpcType.AddLadder)]
-internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
+internal sealed class AddLadderRpc : IRpcMessage<int, int>
 {
     /// <inheritdoc/>
     public void Send(int theGridX, int theGridY)
@@ -18,12 +19,12 @@ internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
         var packetWriter = PacketWriter.Get();
         packetWriter.WritePackedInt(theGridX);
         packetWriter.WritePackedInt(theGridY);
-        NetworkManager.SendRpc(RpcType.AddLadder, packetWriter);
+        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.AddLadder, packetWriter);
         packetWriter.Recycle();
     }
 
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader)
+    public void Receive(ReloadedClientData sender, PacketReader packetReader)
     {
         if (sender.Team is PlayerTeam.Plants)
         {

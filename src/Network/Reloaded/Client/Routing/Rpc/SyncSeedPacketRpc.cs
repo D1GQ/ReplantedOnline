@@ -5,13 +5,14 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 [RegisterRpc(RpcType.SyncSeedPacket)]
-internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
+internal sealed class SyncSeedPacketRpc : IRpcMessage<SeedType>
 {
     /// <inheritdoc/>
     public void Send(SeedType seedType)
@@ -19,12 +20,12 @@ internal sealed class SyncSeedPacketRpc : IRpcDispatcher<SeedType>
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(seedType);
         packetWriter.WritePackedInt(Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets.First(packet => packet.mPacketType == seedType).Index);
-        NetworkManager.SendRpc(RpcType.SyncSeedPacket, packetWriter);
+        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.SyncSeedPacket, packetWriter);
         packetWriter.Recycle();
     }
 
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader)
+    public void Receive(ReloadedClientData sender, PacketReader packetReader)
     {
         // Read the seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();

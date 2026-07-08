@@ -6,6 +6,7 @@ using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 
@@ -245,7 +246,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
                 IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
             }
         }
-        NetworkManager.SendObjectRpc(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkManager.Packet<ObjectRpcPacket>.Singleton.Send(this, Convert.ToByte(rpcId), packetWriter);
         packetWriter?.Recycle();
     }
 
@@ -361,7 +362,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
                 networkObj.transform.SetParent(GlobalGameObjects.NetworkObjectsGo.transform);
                 callback?.Invoke(networkObj);
                 networkObj.OnInit();
-                NetworkManager.SendSpawnNetworkObject(networkObj, owner);
+                NetworkManager.Packet<NetworkObjectSpawnPacket>.Singleton.Send(networkObj, owner);
                 networkObj.gameObject.SetActive(true);
                 networkObj.OnEnabled();
                 return networkObj;
@@ -395,7 +396,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
 
         if (IsOnNetwork)
         {
-            NetworkManager.SendDespawnNetworkObject(this, waitToBeReady);
+            NetworkManager.Packet<NetworkObjectDespawnPacket>.Singleton.Send(this, waitToBeReady);
         }
     }
 

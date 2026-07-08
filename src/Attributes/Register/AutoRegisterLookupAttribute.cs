@@ -105,13 +105,13 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
 /// Registers classes that implement IClientRPC.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IRpc, RpcType>(rpcType);
+internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IBaseRpcMessage, RpcType>(rpcType);
 
 /// <summary>
 /// Registers classes that implement IPacketHandler.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacketHandler(PacketType packetHandlerType) : AutoRegisterLookupAttribute<IPacketHandler, PacketType>(packetHandlerType);
+internal sealed class RegisterPacketHandler(PacketType packetHandlerType) : AutoRegisterLookupAttribute<IBasePacketMessage, PacketType>(packetHandlerType);
 
 /// <summary>
 /// Registers classes that implement IPlantConfig.

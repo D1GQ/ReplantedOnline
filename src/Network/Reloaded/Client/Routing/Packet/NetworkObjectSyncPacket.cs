@@ -10,10 +10,15 @@ using System.Collections;
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
 [RegisterPacketHandler(PacketType.NetworkObjectSync)]
-internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
+internal sealed class NetworkObjectSyncPacket : IPacketMessage
 {
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader, bool local)
+    public void Send()
+    {
+    }
+
+    /// <inheritdoc/>
+    public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         MelonCoroutines.Start(CoWaitForNetworkObjectSync(sender, packetReader));
     }
@@ -21,7 +26,7 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
     private static IEnumerator CoWaitForNetworkObjectSync(ReloadedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetByteBuffer());
-        var message = Message<NetworkObjectSyncMessage>.Instance.Deserialize(packet);
+        var message = Message<NetworkObjectSyncMessage>.Singleton.Deserialize(packet);
 
         try
         {
@@ -31,13 +36,13 @@ internal sealed class NetworkObjectSyncPacketHandler : IPacketHandler
                 {
                     if (networkObj.OwnerId != sender.ClientId)
                     {
-                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkObjectSyncPacketHandler), $"Sync rejected: {sender.Name} is not owner of NetworkObject {message.NetworkId}");
+                        ReplantedOnlineMod.Logger.Warning(typeof(NetworkObjectSyncPacket), $"Sync rejected: {sender.Name} is not owner of NetworkObject {message.NetworkId}");
                         break;
                     }
 
                     networkObj.SyncedBits.DirtyBits = message.DirtyBits;
                     networkObj.Deserialize(packet, message.Init);
-                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSyncPacketHandler), $"Synced NetworkObject from {sender.Name}: {message.NetworkId}");
+                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSyncPacket), $"Synced NetworkObject from {sender.Name}: {message.NetworkId}");
                     break;
                 }
 

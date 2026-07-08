@@ -4,25 +4,26 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 [RegisterRpc(RpcType.StartMower)]
-internal sealed class StartMowerRpc : IRpcDispatcher<LawnMower>
+internal sealed class StartMowerRpc : IRpcMessage<LawnMower>
 {
     /// <inheritdoc/>
     public void Send(LawnMower lawnMower)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WritePackedInt(lawnMower.DataID);
-        NetworkManager.SendRpc(RpcType.StartMower, packetWriter);
+        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.StartMower, packetWriter);
         packetWriter.Recycle();
     }
 
     /// <inheritdoc/>
-    public void Handle(ReloadedClientData sender, PacketReader packetReader)
+    public void Receive(ReloadedClientData sender, PacketReader packetReader)
     {
         if (sender.Team == PlayerTeam.Plants)
         {

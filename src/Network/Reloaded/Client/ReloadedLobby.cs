@@ -8,6 +8,7 @@ using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Server.Lan;
@@ -276,7 +277,7 @@ internal static class ReloadedLobby
         if (AmLobbyHost())
         {
             ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Host initiating P2P connection with new player {clientId}");
-            NetworkManager.SendNetworkObjectsTo(clientId);
+            NetworkManager.Packet<NetworkObjectSpawnPacket>.Singleton.SendNetworkObjectsTo(clientId);
         }
     }
 

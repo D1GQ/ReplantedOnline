@@ -3,7 +3,6 @@ using MelonLoader;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Reloaded.Panel;
-using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Serialization.Messages;
 using ReplantedOnline.Structs.Network;
@@ -17,131 +16,8 @@ namespace ReplantedOnline.Network.Reloaded.Client.Routing;
 /// <summary>
 /// Manages network communication, packet routing, and synchronization of network objects in the Reloaded client.
 /// </summary>
-internal static class NetworkManager
+internal static partial class NetworkManager
 {
-    /// <summary>
-    /// Spawns all Active network objects to a new client
-    /// </summary>
-    /// <param name="targetId">The ID of the target client to receive the packet.</param>
-    internal static void SendNetworkObjectsTo(ID targetId)
-    {
-        if (ReloadedLobby.LobbyData!.NetworkObjectsSpawned.Count > 0)
-        {
-            foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
-            {
-                if (networkObj.IsOnNetwork && !networkObj.AmChild)
-                {
-                    PacketWriter packetWriter = PacketWriter.Get();
-                    Message<NetworkObjectSpawnMessage>.Instance.Serialize(packetWriter, networkObj);
-
-                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Network Objects to {targetId}");
-                    SendPacketTo(targetId, packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Buffered);
-                    packetWriter.Recycle();
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Spawns a network object instance and broadcasts it to all connected clients.
-    /// Initializes the network object with ownership and network ID before sending spawn packet.
-    /// </summary>
-    /// <param name="networkObj">The network object instance to spawn.</param>
-    /// <param name="owner">The ID of the owner who controls this network object.</param>
-    internal static void SendSpawnNetworkObject(NetworkObject networkObj, ID owner)
-    {
-        networkObj.OwnerId = owner;
-        networkObj.NetworkId = ReloadedLobby.LobbyData!.NetworkIdPool.Allocate();
-        PacketWriter packetWriter = PacketWriter.Get();
-        Message<NetworkObjectSpawnMessage>.Instance.Serialize(packetWriter, networkObj);
-
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
-        if (ReloadedLobby.AmLobbyHost())
-        {
-            SendPacket(packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Main, false);
-        }
-        else
-        {
-            SendPacketTo(ReloadedLobby.LobbyData.HostId, packetWriter, PacketType.NetworkObjectSpawnCmd, PacketChannel.Main);
-        }
-        packetWriter.Recycle();
-    }
-
-    /// <summary>
-    /// Rejects a network object spawn request and notifies the requesting client.
-    /// </summary>
-    /// <param name="networkId">The network identifier of the object being rejected.</param>
-    /// <param name="owner">The ID of the owner who requested the spawn.</param>
-    internal static void SendRejectNetworkObject(NetworkIdentifier networkId, ID owner)
-    {
-        if (owner.GetNetClient()!.AmLocal) return;
-
-        PacketWriter packetWriter = PacketWriter.Get();
-        Message<NetworkObjectRejectMessage>.Instance.Serialize(packetWriter, networkId);
-
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Reject Network Object with ID: {networkId}, Owner: {owner}");
-        SendPacketTo(owner, packetWriter, PacketType.NetworkObjectReject, PacketChannel.Main);
-        packetWriter.Recycle();
-    }
-
-    /// <summary>
-    /// Despawns a network object instance.
-    /// </summary>
-    /// <param name="networkObj">The network object instance to despawn.</param>
-    /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
-    internal static void SendDespawnNetworkObject(NetworkObject networkObj, bool waitToBeReady)
-    {
-        PacketWriter packetWriter = PacketWriter.Get();
-        Message<NetworkObjectDespawnMessage>.Instance.Serialize(packetWriter, networkObj, waitToBeReady);
-
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Despawn Network Object with ID: {networkObj.NetworkId}");
-        SendPacket(packetWriter, PacketType.NetworkObjectDespawn, PacketChannel.Main, false);
-        packetWriter.Recycle();
-
-        ReloadedLobby.LobbyData!.OnNetworkObjectDespawn(networkObj);
-    }
-
-    /// <summary>
-    /// Sends an RPC (Remote Procedure Call) to all connected clients.
-    /// </summary>
-    /// <param name="rpc">The type of RPC to send.</param>
-    /// <param name="payload">The packet containing RPC-specific data.</param>
-    /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendRpc(RpcType rpc, IPacket? payload = null, bool receiveLocally = false)
-    {
-        PacketWriter packetWriter = PacketWriter.Get();
-        Message<RpcMessage>.Instance.Serialize(packetWriter, rpc);
-        if (payload != null)
-        {
-            packetWriter.WritePacketToBuffer(payload);
-        }
-
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent RPC: {Enum.GetName(rpc)}");
-        SendPacket(packetWriter, PacketType.Rpc, PacketChannel.Rpc, receiveLocally);
-        packetWriter.Recycle();
-    }
-
-    /// <summary>
-    /// Sends an RPC (Remote Procedure Call) to a specific INetworkIdentifier instance across all clients.
-    /// </summary>
-    /// <param name="networkIdentifier">The target INetworkIdentifier instance to receive the RPC.</param>
-    /// <param name="rpcId">The ID of the RPC method to invoke.</param>
-    /// <param name="payload">The packet containing RPC-specific data.</param>
-    /// <param name="receiveLocally">Whether the local client should also process this RPC.</param>
-    internal static void SendObjectRpc(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
-    {
-        PacketWriter packetWriter = PacketWriter.Get();
-        Message<ObjectRpcMessage>.Instance.Serialize(packetWriter, networkIdentifier, rpcId);
-        if (payload != null)
-        {
-            packetWriter.WritePacketToBuffer(payload);
-        }
-
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
-        SendPacket(packetWriter, PacketType.ObjectRpc, PacketChannel.Rpc, receiveLocally);
-        packetWriter.Recycle();
-    }
-
     /// <summary>
     /// Sends a packet to all connected clients in the lobby.
     /// </summary>
@@ -174,7 +50,7 @@ internal static class NetworkManager
     internal static void SendPacketTo(ID targetId, IPacket? payload, PacketType tag, PacketChannel packetChannel)
     {
         PacketWriter packetWriter = PacketWriter.Get();
-        Message<PacketHeaderMessage>.Instance.Serialize(packetWriter, tag, payload);
+        Message<PacketHeaderMessage>.Singleton.Serialize(packetWriter, tag, payload);
 
         if (targetId.GetNetClient()!.AmLocal == true)
         {
@@ -239,7 +115,7 @@ internal static class NetworkManager
                     {
                         if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                         var packet = PacketWriter.Get();
-                        Message<NetworkObjectSyncMessage>.Instance.Serialize(packet, networkObj, false);
+                        Message<NetworkObjectSyncMessage>.Singleton.Serialize(packet, networkObj, false);
                         SendPacket(packet, PacketType.NetworkObjectSync, PacketChannel.Buffered, false);
                         packet.Recycle();
                     }
@@ -344,7 +220,7 @@ internal static class NetworkManager
     /// <param name="local">Whether if this packet is from the local client.</param>
     internal static void Streamline(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        var message = Message<PacketHeaderMessage>.Instance.Deserialize(packetReader);
+        var message = Message<PacketHeaderMessage>.Singleton.Deserialize(packetReader);
 
         if (message.SignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
         {
@@ -392,7 +268,7 @@ internal static class NetworkManager
                 }
                 break;
             default:
-                if (!IPacketHandler.HandlePacket(message.HandlerType, sender, packetReader, local))
+                if (!IBasePacketMessage.HandlePacket(message.HandlerType, sender, packetReader, local))
                 {
                     ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {message.HandlerType}");
                 }

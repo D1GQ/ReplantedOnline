@@ -12,5 +12,5 @@ internal static class Message<T> where T : IMessage, new()
     /// Gets the singleton instance of the specified message type.
     /// </summary>
     /// <value>A singleton instance of type <typeparamref name="T"/>.</value>
-    internal static T Instance { get; } = new();
+    internal static T Singleton { get; } = new();
 }

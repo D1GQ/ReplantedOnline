@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 using ReplantedOnline.Utilities.Modded;
 using static Il2CppReloaded.Constants;
@@ -96,7 +97,7 @@ internal static class CursorSyncPatch
                         seedPacket.mRefreshing = true;
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
-                        Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
+                        NetworkManager.Rpc<SyncSeedPacketRpc>.Singleton.Send(seedType);
 
                         // Prevent buzzer sound!
                         throw new SilentPatchException();
@@ -149,7 +150,7 @@ internal static class CursorSyncPatch
                         __instance.Board.TakeSunMoney(cost, ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
                         __instance.Board.ClearCursor();
                         SeedPacketDefinitions.PlaceSeed(seedType, gridX, gridY, true);
-                        Rpc<SyncSeedPacketRpc>.Instance.Send(seedType);
+                        NetworkManager.Rpc<SyncSeedPacketRpc>.Singleton.Send(seedType);
 
                         return false;
                     }

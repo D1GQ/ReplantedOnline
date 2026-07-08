@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 
@@ -95,7 +96,7 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
                 IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
             }
         }
-        NetworkManager.SendObjectRpc(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkManager.Packet<ObjectRpcPacket>.Singleton.Send(this, Convert.ToByte(rpcId), packetWriter);
         packetWriter?.Recycle();
     }
 }

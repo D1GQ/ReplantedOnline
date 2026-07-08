@@ -2,6 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
@@ -19,7 +20,7 @@ internal static class BoardSyncPatch
             if (!VersusState.AmPlantSide) return false;
 
             // Send network message to sync this action with other players
-            Rpc<AddLadderRpc>.Instance.Send(theGridX, theGridY);
+            NetworkManager.Rpc<AddLadderRpc>.Singleton.Send(theGridX, theGridY);
         }
 
         return true;
