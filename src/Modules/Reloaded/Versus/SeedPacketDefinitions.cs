@@ -130,7 +130,7 @@ internal static class SeedPacketDefinitions
         var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
         var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
-        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineAssets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
+        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
@@ -165,7 +165,7 @@ internal static class SeedPacketDefinitions
 
         var snorkelDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "Snorkel",
-            ReplantedOnlineAssets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
         if (snorkelDefinition != null)
         {
             snorkelDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
@@ -175,7 +175,7 @@ internal static class SeedPacketDefinitions
 
         var dolphinRiderDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "Dolphin Rider",
-            ReplantedOnlineAssets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
         if (dolphinRiderDefinition != null)
         {
             dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);

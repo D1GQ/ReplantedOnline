@@ -99,7 +99,7 @@ internal sealed class RpcHandlerAttribute : Attribute
     /// </summary>
     internal static void Initialize()
     {
-        foreach (var type in ModInfo.Assembly.GetTypes().Where(type => !type.IsAbstract && typeof(INetworkIdentifier).IsAssignableFrom(type)))
+        foreach (var type in ReplantedOnlineMod.ModInfo.Assembly.GetTypes().Where(type => !type.IsAbstract && typeof(INetworkIdentifier).IsAssignableFrom(type)))
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {

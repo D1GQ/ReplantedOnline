@@ -19,7 +19,7 @@ internal readonly struct ModSignature
 
     public ModSignature()
     {
-        var assemblyBytes = File.ReadAllBytes(ModInfo.Assembly.Location);
+        var assemblyBytes = File.ReadAllBytes(ReplantedOnlineMod.ModInfo.Assembly.Location);
 
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(assemblyBytes);

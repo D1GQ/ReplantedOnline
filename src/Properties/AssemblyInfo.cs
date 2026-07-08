@@ -4,10 +4,10 @@ using System.Reflection;
 
 [assembly: AssemblyTitle(nameof(ReplantedOnline))]
 [assembly: AssemblyProduct(nameof(ReplantedOnline))]
-[assembly: AssemblyVersion(ModInfo.MOD_VERSION)]
-[assembly: AssemblyFileVersion(ModInfo.MOD_VERSION)]
+[assembly: AssemblyVersion(ReplantedOnlineMod.ModInfo.MOD_VERSION)]
+[assembly: AssemblyFileVersion(ReplantedOnlineMod.ModInfo.MOD_VERSION)]
 
-[assembly: MelonInfo(typeof(ReplantedOnlineMod), ModInfo.MOD_NAME, ModInfo.MOD_VERSION_FORMATTED, ModInfo.CREATOR, ModInfo.GITHUB)]
-[assembly: MelonGame(ModInfo.Replanted.COMPANY, ModInfo.Replanted.GAME)]
-[assembly: MelonAdditionalDependencies(ModInfo.BloomEngine.BLOOM_ENGINE_NAME)]
-[assembly: MelonOptionalDependencies(ModInfo.DiscordRPC.DISCORD_RPC_NAME)]
+[assembly: MelonInfo(typeof(ReplantedOnlineMod), ReplantedOnlineMod.ModInfo.MOD_NAME, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED, ReplantedOnlineMod.ModInfo.CREATOR, ReplantedOnlineMod.ModInfo.GITHUB)]
+[assembly: MelonGame(ReplantedOnlineMod.ModInfo.Replanted.COMPANY, ReplantedOnlineMod.ModInfo.Replanted.GAME)]
+[assembly: MelonAdditionalDependencies(ReplantedOnlineMod.ModInfo.BloomEngine.BLOOM_ENGINE_NAME)]
+[assembly: MelonOptionalDependencies(ReplantedOnlineMod.ModInfo.DiscordRPC.DISCORD_RPC_NAME)]

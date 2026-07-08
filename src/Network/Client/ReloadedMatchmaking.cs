@@ -92,9 +92,9 @@ internal static class ReloadedMatchmaking
                         // Verify mod version
                         string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY);
 
-                        if (modVersion != ModInfo.MOD_VERSION_FORMATTED)
+                        if (modVersion != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
                         {
-                            ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
+                            ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                             Transitions.ToMainMenu(() =>
                             {
                                 CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
@@ -140,7 +140,7 @@ internal static class ReloadedMatchmaking
             lobbyQuery.maxResults = new Il2CppSystem.Nullable<int>(maxResults);
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ModInfo.MOD_VERSION);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION);
             lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
@@ -179,7 +179,7 @@ internal static class ReloadedMatchmaking
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(ReloadedLobbyData data)
     {
-        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ModInfo.MOD_VERSION_FORMATTED);
+        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
         ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode);
         ReloadedLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);

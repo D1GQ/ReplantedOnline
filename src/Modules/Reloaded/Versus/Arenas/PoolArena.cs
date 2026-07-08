@@ -107,7 +107,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 
         if (poolSpriteRenderer != null)
         {
-            var lineSprite = ReplantedOnlineAssets.Sprites.Arena.PoolBowlingline;
+            var lineSprite = ReplantedOnlineMod.Assets.Sprites.Arena.PoolBowlingline;
 
             var line = PvZRUtils.CreateBowlingLine(lineSprite, false);
             var mask = line.gameObject.AddComponent<SpriteRendererMask>();

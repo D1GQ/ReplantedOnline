@@ -58,7 +58,7 @@ internal abstract class CustomAssetReference
     /// <returns>True if the asset reference's GUID starts with the custom asset reference prefix; otherwise, false.</returns>
     internal static bool IsValid(AssetReference assetReference)
     {
-        return assetReference.AssetGUID.StartsWith(ReplantedOnlineAssets.CUSTOM_ASSET_REF_GUID_PREFIX);
+        return assetReference.AssetGUID.StartsWith(ReplantedOnlineMod.Constants.Assets.CUSTOM_ASSET_REF_GUID_PREFIX);
     }
 }
 
@@ -85,7 +85,7 @@ internal sealed class CustomAssetReference<T> : CustomAssetReference where T : A
     /// <param name="asset">The UnityEngine.Object to be returned when this reference is loaded.</param>
     internal CustomAssetReference(string guid, UnityEngine.Object asset)
     {
-        _guid = ReplantedOnlineAssets.CUSTOM_ASSET_REF_GUID_PREFIX + guid;
+        _guid = ReplantedOnlineMod.Constants.Assets.CUSTOM_ASSET_REF_GUID_PREFIX + guid;
         _asset = asset;
         AssetRef = (Activator.CreateInstance(typeof(T), args: _guid) as T)!;
     }

@@ -25,7 +25,7 @@ internal sealed class InfoDisplay : MonoBehaviour
 
     private void Update()
     {
-        if (ModInfo.DEBUG)
+        if (ReplantedOnlineMod.ModInfo.DEBUG)
         {
             if (Keyboard.current.f1Key.wasPressedThisFrame)
             {
@@ -122,7 +122,7 @@ internal sealed class InfoDisplay : MonoBehaviour
     /// </summary>
     private static string GetInfo()
     {
-        return $"{ModInfo.MOD_NAME}: v{ModInfo.MOD_VERSION_FORMATTED}-{ModInfo.RELEASE_DATE}";
+        return $"{ReplantedOnlineMod.ModInfo.MOD_NAME}: v{ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED}-{ReplantedOnlineMod.ModInfo.RELEASE_DATE}";
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ internal sealed class InfoDisplay : MonoBehaviour
             sb.AppendLine($" Debug Logger: True");
         }
 
-        sb.AppendLine($" Mod Signature: {ModInfo.ModSignature.SignatureHash}");
+        sb.AppendLine($" Mod Signature: {ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash}");
 
         sb.AppendLine($" Steam initialized: {SteamClient.initialized}");
 

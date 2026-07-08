@@ -21,7 +21,7 @@ internal abstract class AutoRegisterAttribute : Attribute
     /// </summary>
     internal static void RegisterAll()
     {
-        var types = ModInfo.Assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(AutoRegisterAttribute)) && !t.IsAbstract && t.IsSealed).ToArray();
+        var types = ReplantedOnlineMod.ModInfo.Assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(AutoRegisterAttribute)) && !t.IsAbstract && t.IsSealed).ToArray();
 
         foreach (var type in types)
         {
@@ -63,7 +63,7 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
     /// <inheritdoc/>
     protected override void RegisterInstances()
     {
-        var attributedTypes = ModInfo.Assembly.GetTypes().Where(t => t.GetCustomAttributes(GetType(), false).Any()).Where(t => !t.IsAbstract && !t.IsInterface);
+        var attributedTypes = ReplantedOnlineMod.ModInfo.Assembly.GetTypes().Where(t => t.GetCustomAttributes(GetType(), false).Any()).Where(t => !t.IsAbstract && !t.IsInterface);
 
         foreach (var type in attributedTypes)
         {

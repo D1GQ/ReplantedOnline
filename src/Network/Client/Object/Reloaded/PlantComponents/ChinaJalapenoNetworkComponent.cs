@@ -23,7 +23,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         if (Net.Plant == null) return;
 
         _awakeTexture = Net.Plant.mController.m_meshRenderer.material.mainTexture;
-        _sleepingTexture = ReplantedOnlineAssets.Sprites.Character.JalapenoSleeping.texture;
+        _sleepingTexture = ReplantedOnlineMod.Assets.Sprites.Character.JalapenoSleeping.texture;
         Net.Plant.mSeedType = SeedType.None;
         Net.Plant.SetSleeping(true);
         Net.Plant.PlayIdleAnim(0);

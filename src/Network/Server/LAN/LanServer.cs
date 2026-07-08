@@ -181,7 +181,7 @@ internal sealed class LanServer : IDisposable
         Server.ServerData.SetMaxPlayerCount(maxPlayers);
         Server.ServerData.SetPlayerCount(1);
         Server.ServerData.SetIsJoinable(true);
-        Server.ServerData.SetModVersion(ModInfo.MOD_VERSION_FORMATTED);
+        Server.ServerData.SetModVersion(ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
         Server.ServerData.SetGameCode(ReloadedMatchmaking.GenerateGameCode(Server.ServerData.LobbyId));
 
         Task.Run(Server.ListenForP2P, Server.P2PCTS.Token);

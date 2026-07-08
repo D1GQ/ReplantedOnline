@@ -181,7 +181,7 @@ internal static class VersusLobbyPatch
         __state = false;
         if (!ReloadedLobby.AmLobbyHost()) return false;
 
-        if (!ModInfo.DEBUG)
+        if (!ReplantedOnlineMod.ModInfo.DEBUG)
         {
             if (!ReloadedLobby.LobbyData.AllClientsReady() || ReloadedLobby.GetLobbyMemberCount() < 2)
             {

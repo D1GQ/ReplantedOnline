@@ -180,7 +180,7 @@ internal static class VersusLobbyManager
         if (!ReloadedLobby.AmLobbyHost())
             return;
 
-        if (ModInfo.DEBUG)
+        if (ReplantedOnlineMod.ModInfo.DEBUG)
         {
             VersusLobbyPatch.SetButtonsInteractable(true);
             return;

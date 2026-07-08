@@ -17,7 +17,7 @@ internal class NativeDetourHook : Attribute
     /// </summary>
     internal static void InstallAll()
     {
-        var assembly = ModInfo.Assembly;
+        var assembly = ReplantedOnlineMod.ModInfo.Assembly;
 
         foreach (var type in assembly.GetTypes())
         {

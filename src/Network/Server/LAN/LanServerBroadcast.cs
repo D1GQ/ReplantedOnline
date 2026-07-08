@@ -245,7 +245,7 @@ internal sealed class LanServerBroadcast : IDisposable
 
                 if (serverData.LobbyId == _server.ServerData.LobbyId) continue;
 
-                if (serverData.GetModVersion() != ModInfo.MOD_VERSION_FORMATTED)
+                if (serverData.GetModVersion() != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
                 {
                     continue;
                 }

@@ -294,13 +294,13 @@ internal static class DiscordManager
                 return;
             }
 
-            if (secret.ModSignatureHash != ModInfo.ModSignature.SignatureHash)
+            if (secret.ModSignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
             {
                 CustomPopupPanel.Show("Disconnected", "Failed to read secret due to hash!");
                 return;
             }
 
-            if (secret.VersionFormatted != ModInfo.MOD_VERSION_FORMATTED)
+            if (secret.VersionFormatted != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
             {
                 CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{secret.VersionFormatted}");
 
@@ -351,8 +351,8 @@ internal static class DiscordManager
 
         DiscordLobbySecret secret = new()
         {
-            ModSignatureHash = ModInfo.ModSignature.SignatureHash,
-            VersionFormatted = ModInfo.MOD_VERSION_FORMATTED,
+            ModSignatureHash = ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash,
+            VersionFormatted = ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED,
             GameCode = ReloadedLobby.GetCurrentLobbyGameCode()
         };
 

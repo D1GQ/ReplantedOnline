@@ -60,7 +60,7 @@ internal sealed class CustomGamemode : IVersusGamemode
         IArenaSetupSeedbank.AddInitialSeedsToBanks();
         ReloadedClientData.LocalClient?.Ready.Value = true;
 
-        if (ModInfo.DEBUG && ReloadedLobby.GetLobbyMemberCount() == 1)
+        if (ReplantedOnlineMod.ModInfo.DEBUG && ReloadedLobby.GetLobbyMemberCount() == 1)
         {
             if (VersusState.AmPlantSide)
             {

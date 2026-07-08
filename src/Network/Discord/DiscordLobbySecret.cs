@@ -35,7 +35,7 @@ internal sealed class DiscordLobbySecret
     {
         byte[] codeBytes = Encoding.UTF8.GetBytes(GameCode);
 
-        ModInfo.ModSignature.ScrambleBytes(codeBytes);
+        ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(codeBytes);
 
         string encodedGameCode = Convert.ToBase64String(codeBytes);
         string payload = $"{VersionFormatted}|{encodedGameCode}";
@@ -123,7 +123,7 @@ internal sealed class DiscordLobbySecret
             };
         }
 
-        ModInfo.ModSignature.ScrambleBytes(codeBytes);
+        ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(codeBytes);
 
         return new DiscordLobbySecret
         {

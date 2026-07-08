@@ -92,7 +92,7 @@ internal sealed class DetourHookAttribute : Attribute
     /// <exception cref="Exception">Thrown when a target method cannot be found for a hook.</exception>
     internal static void InstallAll()
     {
-        var assembly = ModInfo.Assembly;
+        var assembly = ReplantedOnlineMod.ModInfo.Assembly;
 
         foreach (var type in assembly.GetTypes())
         {

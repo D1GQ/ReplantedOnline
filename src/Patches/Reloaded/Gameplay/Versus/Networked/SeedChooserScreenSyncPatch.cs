@@ -26,7 +26,7 @@ internal static class SeedChooserScreenSyncPatch
             Rpc<ChooseSeedRpc>.Instance.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);
 
-            if (ModInfo.DEBUG)
+            if (ReplantedOnlineMod.ModInfo.DEBUG)
             {
                 if (ReloadedLobby.GetLobbyMemberCount() == 1)
                 {

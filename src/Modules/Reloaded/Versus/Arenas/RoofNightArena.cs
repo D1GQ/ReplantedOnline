@@ -25,7 +25,7 @@ internal sealed class RoofNightArena : RoofArena
     /// <inheritdoc/>
     public override Sprite GetThumbnail()
     {
-        return ReplantedOnlineAssets.Sprites.Arena.RoofNightThumbnail;
+        return ReplantedOnlineMod.Assets.Sprites.Arena.RoofNightThumbnail;
     }
 
     /// <inheritdoc/>

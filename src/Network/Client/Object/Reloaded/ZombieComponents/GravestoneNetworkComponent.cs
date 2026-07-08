@@ -15,8 +15,8 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
     private Texture _poolTexture = default!;
     internal sealed override void OnInit()
     {
-        _dirtlessTexture = ReplantedOnlineAssets.Sprites.Character.GravestoneDirtless.texture;
-        _poolTexture = ReplantedOnlineAssets.Sprites.Character.GravestonePool.texture;
+        _dirtlessTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestoneDirtless.texture;
+        _poolTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestonePool.texture;
     }
 
     internal sealed override void Update()

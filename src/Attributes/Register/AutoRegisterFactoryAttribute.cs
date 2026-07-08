@@ -65,7 +65,7 @@ internal abstract class AutoRegisterFactoryAttribute<T, Id>(Id identifier) : Aut
     {
         var attributeType = GetType();
 
-        var attributedTypes = ModInfo.Assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface).ToArray();
+        var attributedTypes = ReplantedOnlineMod.ModInfo.Assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface).ToArray();
 
         foreach (var type in attributedTypes)
         {

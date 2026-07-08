@@ -348,11 +348,11 @@ internal static class NetworkDispatcher
     {
         var message = Message<PacketHeaderMessage>.Instance.Deserialize(packetReader);
 
-        if (message.SignatureHash != ModInfo.ModSignature.SignatureHash)
+        if (message.SignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender.Name}, SignatureHash does not match ({ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkDispatcher), $"Can not processing {message.HandlerType} packet from {sender.Name}, SignatureHash does not match ({ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
             return;
