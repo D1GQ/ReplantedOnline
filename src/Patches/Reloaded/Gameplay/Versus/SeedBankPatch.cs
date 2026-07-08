@@ -6,7 +6,7 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using Il2CppTekly.DataModels.Models;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;

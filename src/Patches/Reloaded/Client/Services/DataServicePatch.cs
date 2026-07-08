@@ -2,7 +2,7 @@
 using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline.Patches.Reloaded.Client.Services;
 

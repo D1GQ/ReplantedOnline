@@ -4,7 +4,7 @@ using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 

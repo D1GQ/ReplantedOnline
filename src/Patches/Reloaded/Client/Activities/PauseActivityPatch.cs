@@ -2,7 +2,7 @@
 using Il2Cpp;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.TreeStateActivities;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline.Patches.Reloaded.Client.Activities;
 

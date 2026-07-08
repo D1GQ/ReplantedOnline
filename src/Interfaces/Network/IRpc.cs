@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Interfaces.Network;
 

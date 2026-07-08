@@ -11,13 +11,13 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Object;
+using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Patches.Misc;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
+using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline;
 

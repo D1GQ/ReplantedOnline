@@ -1,6 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Interfaces.Network;

@@ -1,8 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Rpc;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;

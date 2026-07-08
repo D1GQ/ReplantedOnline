@@ -4,7 +4,7 @@ using BloomEngine.ModMenu;
 using MelonLoader;
 using ReplantedOnline.Enums.Modded;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Patches.Steam;
 
 namespace ReplantedOnline.Managers.Modded;

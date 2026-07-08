@@ -4,7 +4,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 

@@ -1,0 +1,41 @@
+﻿using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Network.Reloaded.Serialization;
+
+namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
+
+/// <summary>
+/// Represents a network message for invoking Remote Procedure Calls (RPCs) on a global handler.
+/// </summary>
+internal readonly struct RpcMessage : IMessage<RpcMessage, RpcType>
+{
+    /// <summary>
+    /// Gets the delivery type for the RPC invocation.
+    /// </summary>
+    public RpcType RpcType { get; private init; }
+
+    /// <summary>
+    /// Serializes an RPC type enumeration into a packet for network transmission.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
+    /// <param name="rpcType">The RPC type configuration to serialize.</param>
+    public void Serialize(PacketWriter packetWriter, RpcType rpcType)
+    {
+        packetWriter.WriteEnum(rpcType);
+    }
+
+    /// <summary>
+    /// Deserializes an RPC type message from incoming network data.
+    /// </summary>
+    /// <param name="packetReader">The packet reader containing the RPC type data.</param>
+    /// <returns>A new RpcMessage instance with deserialized data.</returns>
+    public RpcMessage Deserialize(PacketReader packetReader)
+    {
+        RpcMessage message = new()
+        {
+            RpcType = packetReader.ReadEnum<RpcType>()
+        };
+
+        return message;
+    }
+}

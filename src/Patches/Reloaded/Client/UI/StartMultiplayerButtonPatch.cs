@@ -3,8 +3,8 @@ using Il2CppSource.Binders;
 using Il2CppTMPro;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Routing.Transport;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 

@@ -4,7 +4,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 

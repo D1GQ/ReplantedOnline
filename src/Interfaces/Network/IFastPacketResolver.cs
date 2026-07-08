@@ -1,5 +1,5 @@
 ﻿using ReplantedOnline.Attributes.Register;
-using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Interfaces.Network;
 

@@ -4,7 +4,7 @@ using Il2CppSteamworks;
 using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;

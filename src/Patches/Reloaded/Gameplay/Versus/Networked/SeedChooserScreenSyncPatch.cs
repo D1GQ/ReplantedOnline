@@ -7,8 +7,8 @@ using Il2CppSource.Binders;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Rpc;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 

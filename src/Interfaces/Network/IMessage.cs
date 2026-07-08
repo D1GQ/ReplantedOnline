@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Network.Routing.Packet;
+﻿using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Interfaces.Network;
 
@@ -37,9 +37,9 @@ internal interface IMessage<Return, Arg1> : IMessage where Return : IMessage
     /// <summary>
     /// Serializes the message data into the specified packet writer using the provided argument.
     /// </summary>
-    /// <param name="arg1">The first argument containing data required for serialization.</param>
     /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
-    void Serialize(Arg1 arg1, PacketWriter packetWriter);
+    /// <param name="arg1">The first argument containing data required for serialization.</param>
+    void Serialize(PacketWriter packetWriter, Arg1 arg1);
 
     /// <summary>
     /// Deserializes a message from the specified packet reader.
@@ -60,10 +60,10 @@ internal interface IMessage<Return, Arg1, Arg2> : IMessage where Return : IMessa
     /// <summary>
     /// Serializes the message data into the specified packet writer using the provided arguments.
     /// </summary>
+    /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
     /// <param name="arg1">The first argument containing data required for serialization.</param>
     /// <param name="arg2">The second argument containing data required for serialization.</param>
-    /// <param name="packetWriter">The packet writer to which the serialized data will be written. Cannot be null.</param>
-    void Serialize(Arg1 arg1, Arg2 arg2, PacketWriter packetWriter);
+    void Serialize(PacketWriter packetWriter, Arg1 arg1, Arg2 arg2);
 
     /// <summary>
     /// Deserializes a message from the specified packet reader.

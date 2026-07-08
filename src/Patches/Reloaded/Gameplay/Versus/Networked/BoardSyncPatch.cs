@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Rpc;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 

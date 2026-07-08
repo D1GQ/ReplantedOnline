@@ -1,9 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Network.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Object;
+using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
 using ReplantedOnline.Structs.Network;
 using System.Net;
 

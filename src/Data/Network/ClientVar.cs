@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Network.Client;
+﻿using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Data.Network;

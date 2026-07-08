@@ -1,0 +1,39 @@
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+
+namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
+
+[RegisterRpc(RpcType.AddLadder)]
+internal sealed class AddLadderRpc : IRpcDispatcher<int, int>
+{
+    /// <inheritdoc/>
+    public void Send(int theGridX, int theGridY)
+    {
+        var packetWriter = PacketWriter.Get();
+        packetWriter.WritePackedInt(theGridX);
+        packetWriter.WritePackedInt(theGridY);
+        NetworkManager.SendRpc(RpcType.AddLadder, packetWriter);
+        packetWriter.Recycle();
+    }
+
+    /// <inheritdoc/>
+    public void Handle(ReloadedClientData sender, PacketReader packetReader)
+    {
+        if (sender.Team is PlayerTeam.Plants)
+        {
+            int gridX = packetReader.ReadPackedInt();
+            int gridY = packetReader.ReadPackedInt();
+            if (Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any) != null &&
+                Instances.GameplayActivity.Board.GetLadderAt(gridX, gridY) == null)
+            {
+                Instances.GameplayActivity.Board.AddALadderOriginal(gridX, gridY);
+            }
+        }
+    }
+}

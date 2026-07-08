@@ -6,7 +6,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using UnityEngine.SceneManagement;
 
 namespace ReplantedOnline.Network.Discord;

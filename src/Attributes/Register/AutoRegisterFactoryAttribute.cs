@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Network.Client.Object.Component;
+﻿using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 
 namespace ReplantedOnline.Attributes.Register;
 

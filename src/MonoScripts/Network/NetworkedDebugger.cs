@@ -1,8 +1,8 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using MelonLoader;
 using ReplantedOnline.MonoScripts.Modded;
-using ReplantedOnline.Network.Client.Object;
-using ReplantedOnline.Network.Client.Object.Reloaded;
+using ReplantedOnline.Network.Reloaded.Client.Object;
+using ReplantedOnline.Network.Reloaded.Client.Object.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 

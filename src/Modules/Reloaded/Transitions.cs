@@ -4,7 +4,7 @@ using Il2CppTekly.TreeState;
 using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
-using ReplantedOnline.Network.Client;
+using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.MelonLoader;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;

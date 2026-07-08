@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Client;
-using ReplantedOnline.Network.Routing.Packet;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Interfaces.Network;
 
@@ -32,7 +32,7 @@ internal interface IPacketHandler
     /// <c>true</c> if a handler was found and successfully processed the packet;
     /// otherwise, <c>false</c> if no handler is registered for the specified tag.
     /// </returns>
-    internal static bool HandlePacket(PacketHandlerType handlerType, ReloadedClientData sender, PacketReader packetReader, bool local)
+    internal static bool HandlePacket(PacketType handlerType, ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         var dispatcher = RegisterPacketHandler.GetInstanceFromLookup(handlerType);
         if (dispatcher != null)
