@@ -226,7 +226,7 @@ internal static partial class NetworkManager
         {
             if (!local)
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {message.HandlerType} packet from {sender.Name}, SignatureHash does not match ({ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {message.PacketType} packet from {sender.Name}, SignatureHash does not match ({ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
             }
 
             return;
@@ -234,45 +234,26 @@ internal static partial class NetworkManager
 
         if (!local)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {message.HandlerType} packet from {sender.Name}");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {message.PacketType} packet from {sender.Name}");
         }
 
-        switch (message.HandlerType)
+        if (message.PacketType == PacketType.None)
         {
-            case PacketType.None:
-                if (!local)
-                {
-                    ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received packet with no tag");
-                }
-                else
-                {
-                    ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received local packet with no tag");
-                }
-                break;
-            case PacketType.RemoveClient:
-                if (local) break;
-                if (sender.AmHost && !ReloadedLobby.AmLobbyHost())
-                {
-                    var reason = packetReader.ReadEnum<BanReasons>();
-                    ReloadedLobby.LeaveLobby(() =>
-                    {
-                        CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");
-                    });
-                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), "P2P closed by host");
-                }
-                break;
-            case PacketType.ResetLobby:
-                if (sender.AmHost)
-                {
-                    ReloadedLobby.ResetLobby();
-                }
-                break;
-            default:
-                if (!IBasePacketMessage.HandlePacket(message.HandlerType, sender, packetReader, local))
-                {
-                    ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {message.HandlerType}");
-                }
-                break;
+            if (!local)
+            {
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received packet with no tag");
+            }
+            else
+            {
+                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received local packet with no tag");
+            }
+
+            return;
+        }
+
+        if (!IBasePacketMessage.HandlePacket(message.PacketType, sender, packetReader, local))
+        {
+            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {message.PacketType}");
         }
     }
 }

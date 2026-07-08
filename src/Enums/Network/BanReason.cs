@@ -4,7 +4,7 @@
 /// Specifies the reasons for banning a player from a ReplantedOnline lobby.
 /// Used to categorize and communicate ban reasons for moderation purposes.
 /// </summary>
-internal enum BanReasons
+internal enum BanReason
 {
     /// <summary>
     /// Player was banned by the lobby host's discretion.

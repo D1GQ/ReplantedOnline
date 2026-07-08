@@ -1,6 +1,5 @@
 ﻿using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 
@@ -10,9 +9,9 @@ namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, PacketType, IPacket>
 {
     /// <summary>
-    /// Gets the packet handler type of message this header contains.
+    /// Gets the packet type of message this header contains.
     /// </summary>
-    public PacketType HandlerType { get; private init; }
+    public PacketType PacketType { get; private init; }
 
     /// <summary>
     /// Gets the signature hash used for validating message integrity and origin.
@@ -46,7 +45,7 @@ internal readonly struct PacketHeaderMessage : IMessage<PacketHeaderMessage, Pac
         PacketType tag = packetReader.GetTag();
         PacketHeaderMessage message = new()
         {
-            HandlerType = tag,
+            PacketType = tag,
             SignatureHash = signatureHash
         };
 

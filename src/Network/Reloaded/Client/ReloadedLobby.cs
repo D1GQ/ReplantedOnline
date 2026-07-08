@@ -10,7 +10,6 @@ using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
-using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Server.Lan;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
@@ -357,7 +356,7 @@ internal static class ReloadedLobby
     /// </summary>
     /// <param name="clientId">The CLient ID of the player to remove.</param>
     /// <param name="reason">The reason for the bam.</param>
-    internal static void BanFromLobby(ID clientId, BanReasons reason)
+    internal static void BanFromLobby(ID clientId, BanReason reason)
     {
         if (!AmInLobby())
         {
@@ -383,10 +382,7 @@ internal static class ReloadedLobby
             return;
         }
 
-        var packetWriter = PacketWriter.Get();
-        packetWriter.WriteEnum(reason);
-        NetworkManager.SendPacketTo(clientId, packetWriter, PacketType.RemoveClient, PacketChannel.Main);
-        packetWriter.Recycle();
+        NetworkManager.Packet<RemoveClientPacket>.Singleton.Send(clientId, reason);
 
         clientId.Ban();
     }

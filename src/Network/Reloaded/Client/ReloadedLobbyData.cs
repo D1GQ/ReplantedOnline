@@ -1,10 +1,10 @@
 ﻿using ReplantedOnline.Data.Network;
-using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
 
@@ -233,7 +233,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         if (ReloadedLobby.AmLobbyHost())
         {
             LobbyRestarting.Value = true;
-            NetworkManager.SendPacket(null, PacketType.ResetLobby, PacketChannel.Main, false);
+            NetworkManager.Packet<ResetLobbyPacket>.Singleton.Send();
             ReloadedLobby.ResetLobby();
         }
     }
