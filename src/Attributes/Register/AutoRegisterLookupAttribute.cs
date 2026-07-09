@@ -9,11 +9,12 @@ namespace ReplantedOnline.Attributes.Register;
 /// <summary>
 /// Provides a base attribute class that extends <see cref="AutoRegisterAttribute{T}"/> with identifier-based lookup capabilities.
 /// </summary>
+/// <typeparam name="AT">The self attribute type.</typeparam>
 /// <typeparam name="T">The base type or interface that attributed classes must implement.</typeparam>
 /// <typeparam name="Id">The type used as a key for instance lookup.</typeparam>
 /// <param name="identifier">The specific identifier value to associate with this attribute.</param>
 [AttributeUsage(AttributeTargets.Class)]
-internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : AutoRegisterAttribute<T> where T : class where Id : notnull
+internal abstract class AutoRegisterLookupAttribute<AT, T, Id>(Id identifier) : AutoRegisterAttribute<T> where AT : AutoRegisterAttribute<T> where T : class where Id : notnull
 {
     /// <summary>
     /// The identifier value associated with instances registered by this attribute.
@@ -24,6 +25,11 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
     /// Static dictionary that maps identifier values to their corresponding instances for fast lookup.
     /// </summary>
     private static readonly Dictionary<Id, T> InstanceLookup = [];
+
+    /// <summary>
+    /// Static dictionary that maps instances values to their corresponding attribute for fast lookup.
+    /// </summary>
+    private static readonly Dictionary<T, AT> AttributeLookup = [];
 
     /// <summary>
     /// Gets the identifier associated with this attribute instance for lookup purposes.
@@ -69,6 +75,41 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
         return false;
     }
 
+    /// <summary>
+    /// Retrieves an attribute from the lookup dictionary by its associated instance.
+    /// </summary>
+    /// <param name="instance">The instance value to look up.</param>
+    /// <returns>The attribute associated with the specified instance, or null if not found.</returns>
+    internal static AT? GetAttributeFromLookup(T instance)
+    {
+        if (AttributeLookup.TryGetValue(instance, out var attributeLookup))
+        {
+            return attributeLookup;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Attempts to retrieve an attribute from the lookup dictionary by its associated instance.
+    /// </summary>
+    /// <param name="instance">The instance value to look up.</param>
+    /// <param name="attribute">When this method returns, contains the attribute associated with the specified instance, or <see langword="null"/> if the instance is not found.</param>
+    /// <returns>
+    /// <see langword="true"/> if the lookup dictionary contains an attribute with the specified instance; otherwise, <see langword="false"/>.
+    /// </returns>
+    internal static bool TryGetAttributeFromLookup(T instance, out AT attribute)
+    {
+        if (AttributeLookup.TryGetValue(instance, out var attributeLookup))
+        {
+            attribute = attributeLookup;
+            return true;
+        }
+
+        attribute = null!;
+        return false;
+    }
+
     /// <inheritdoc/>
     protected override void RegisterInstances()
     {
@@ -84,7 +125,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
 
                 foreach (var attribute in attributes)
                 {
-                    if (attribute is AutoRegisterAttribute autoRegisterAttribute)
+                    if (attribute is AT autoRegisterAttribute)
                     {
                         var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
 
@@ -93,6 +134,7 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
                         {
                             _instances.Add(instance);
                             InstanceLookup[identifierValue] = instance;
+                            AttributeLookup[instance] = autoRegisterAttribute;
                         }
                     }
                 }
@@ -102,25 +144,39 @@ internal abstract class AutoRegisterLookupAttribute<T, Id>(Id identifier) : Auto
 }
 
 /// <summary>
-/// Registers classes that implement IClientRPC.
+/// Registers classes that implement IBaseRpcMessage
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterRpc(RpcType rpcType) : AutoRegisterLookupAttribute<IBaseRpcMessage, RpcType>(rpcType);
+internal sealed class RegisterRpc(RpcType rpcType, bool logOnReceive = true)
+    : AutoRegisterLookupAttribute<RegisterRpc, IBaseRpcMessage, RpcType>(rpcType)
+{
+    /// <summary>
+    /// If the rpc should be logged on received.
+    /// </summary>
+    internal readonly bool LogOnReceive = logOnReceive;
+}
 
 /// <summary>
-/// Registers classes that implement IPacketHandler.
+/// Registers classes that implement IBasePacketMessage.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPacket(PacketType packetHandlerType) : AutoRegisterLookupAttribute<IBasePacketMessage, PacketType>(packetHandlerType);
+internal sealed class RegisterPacket(PacketType packetHandlerType, bool logOnReceive = true)
+    : AutoRegisterLookupAttribute<RegisterPacket, IBasePacketMessage, PacketType>(packetHandlerType)
+{
+    /// <summary>
+    /// If the packet should be logged on received.
+    /// </summary>
+    internal readonly bool LogOnReceive = logOnReceive;
+}
 
 /// <summary>
 /// Registers classes that implement IPlantConfig.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<IPlantConfig, SeedType>(seedType);
+internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<RegisterPlantConfig, IPlantConfig, SeedType>(seedType);
 
 /// <summary>
 /// Registers classes that implement IZombieConfig.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<IZombieConfig, ZombieType>(zombieType);
+internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<RegisterZombieConfig, IZombieConfig, ZombieType>(zombieType);

@@ -29,10 +29,26 @@ internal sealed class RpcPacket : IPacketMessage<RpcType, IPacket?, bool>
     public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
         var message = Message<RpcMessage>.Singleton.Deserialize(packetReader);
-        if (!local)
+
+        var rpcMessage = RegisterRpc.GetInstanceFromLookup(message.RpcType);
+        if (rpcMessage != null)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(RpcPacket), $"Processing RPC from {sender.Name}: {message.RpcType}");
+            if (RegisterRpc.TryGetAttributeFromLookup(rpcMessage, out var attr))
+            {
+                if (attr.LogOnReceive)
+                {
+                    if (!local)
+                    {
+                        ReplantedOnlineMod.Logger.Msg(typeof(RpcPacket), $"Processing RPC from {sender.Name}: {message.RpcType}");
+                    }
+                }
+            }
+
+            rpcMessage.Receive(sender, packetReader);
         }
-        IBaseRpcMessage.HandleRpc(message.RpcType, sender, packetReader);
+        else
+        {
+            ReplantedOnlineMod.Logger.Warning(typeof(RpcPacket), $"Unknown RPC from {sender.Name}: {message.RpcType}");
+        }
     }
 }

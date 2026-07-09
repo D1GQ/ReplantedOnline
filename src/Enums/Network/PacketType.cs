@@ -6,11 +6,6 @@
 internal enum PacketType
 {
     /// <summary>
-    /// No specific tag or unhandled packet type.
-    /// </summary>
-    None,
-
-    /// <summary>
     /// LAN packet used for local network discovery and communication between clients on the same network.
     /// </summary>
     Server,

@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using MelonLoader;
+using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Reloaded.Panel;
@@ -232,26 +233,23 @@ internal static partial class NetworkManager
             return;
         }
 
-        if (!local)
+        var packetMessage = RegisterPacket.GetInstanceFromLookup(message.PacketType);
+        if (packetMessage != null)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {message.PacketType} packet from {sender.Name}");
-        }
-
-        if (message.PacketType == PacketType.None)
-        {
-            if (!local)
+            if (RegisterPacket.TryGetAttributeFromLookup(packetMessage, out var attr))
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received packet with no tag");
-            }
-            else
-            {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), "Received local packet with no tag");
+                if (attr.LogOnReceive)
+                {
+                    if (!local)
+                    {
+                        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {message.PacketType} packet from {sender.Name}");
+                    }
+                }
             }
 
-            return;
+            packetMessage.Receive(sender, packetReader, local);
         }
-
-        if (!IBasePacketMessage.HandlePacket(message.PacketType, sender, packetReader, local))
+        else
         {
             ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {message.PacketType}");
         }

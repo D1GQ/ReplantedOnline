@@ -1,6 +1,4 @@
-﻿using ReplantedOnline.Attributes.Register;
-using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Network.Reloaded.Client;
+﻿using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Serialization;
 
 namespace ReplantedOnline.Interfaces.Network;
@@ -18,29 +16,6 @@ internal interface IBasePacketMessage
     /// to be deserialized and processed by the handler.</param>
     /// <param name="local">Whether if this packet is from the local client.</param>
     void Receive(ReloadedClientData sender, PacketReader packetReader, bool local);
-
-    /// <summary>
-    /// Dispatches an incoming packet to the appropriate registered handler based on its tag.
-    /// </summary>
-    /// <param name="handlerType">The packet tag identifying the type of packet received.</param>
-    /// <param name="sender">The client that sent the packet.</param>
-    /// <param name="packetReader">The packet reader containing the packet data.</param>
-    /// <param name="local">Whether if this packet is from the local client.</param>
-    /// <returns>
-    /// <c>true</c> if a handler was found and successfully processed the packet;
-    /// otherwise, <c>false</c> if no handler is registered for the specified tag.
-    /// </returns>
-    internal static bool HandlePacket(PacketType handlerType, ReloadedClientData sender, PacketReader packetReader, bool local)
-    {
-        var dispatcher = RegisterPacket.GetInstanceFromLookup(handlerType);
-        if (dispatcher != null)
-        {
-            dispatcher.Receive(sender, packetReader, local);
-            return true;
-        }
-
-        return false;
-    }
 }
 
 /// <summary>
