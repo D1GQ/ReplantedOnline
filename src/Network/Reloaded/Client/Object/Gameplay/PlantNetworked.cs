@@ -85,7 +85,11 @@ internal sealed class PlantNetworked : NetworkObject
     {
         LogicComponent = (PlantNetworkComponent)RegisterNetworkComponent.TryCreateInstance(SeedType, typeof(PlantNetworkComponent))!;
         AddNetworkComponent(LogicComponent);
-        Plant?.AddNetworkedLookup(this);
+        if (Plant != null)
+        {
+            Plant.AddNetworkedLookup(this);
+            Plant.mLaunchRate += ReplantedOnlineMod.Constants.Reloaded.PLANT_LAUNCHRATE_MULTIPLIER;
+        }
 
         if (SpawnType == SpawnType.ChinaJalapeno)
         {
