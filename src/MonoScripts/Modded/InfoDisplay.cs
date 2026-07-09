@@ -6,6 +6,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Utilities.Modded;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -45,6 +46,8 @@ internal sealed class InfoDisplay : MonoBehaviour
         }
     }
 
+    private readonly Color[] _pingColors = [Color.green, Color.yellow, Color.red];
+
     private void OnGUI()
     {
         if (Style == null)
@@ -80,7 +83,8 @@ internal sealed class InfoDisplay : MonoBehaviour
 
             if (ReloadedLobby.AmInLobby() && NetworkManager.NetworkHeartbeat != null)
             {
-                string ping = $"Ping: {NetworkManager.NetworkHeartbeat.GetEstimatedPing()}ms";
+                int estimatedPing = NetworkManager.NetworkHeartbeat.GetEstimatedPing();
+                string ping = $"Ping: {estimatedPing}ms";
                 DrawLabelWithOutline(
                     ping,
                     new Rect(
@@ -90,7 +94,7 @@ internal sealed class InfoDisplay : MonoBehaviour
                         Style.CalcSize(new GUIContent(ping)).y
                     ),
                     Style,
-                    Color.white,
+                    _pingColors.LerpColor((0f, 200f), estimatedPing),
                     Color.black
                 );
             }
