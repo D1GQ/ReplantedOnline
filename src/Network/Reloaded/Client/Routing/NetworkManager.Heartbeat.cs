@@ -36,12 +36,12 @@ internal static partial class NetworkManager
         /// <summary>
         /// Incrementing timestamp counter for tracking individual heartbeat requests.
         /// </summary>
-        private ulong _currentTimeStamp = 0;
+        private uint _currentTimeStamp = 0;
 
         /// <summary>
         /// Dictionary mapping heartbeat timestamps to their request send times.
         /// </summary>
-        private readonly Dictionary<ulong, DateTime> _heartbeatRequests = [];
+        private readonly Dictionary<uint, DateTime> _heartbeatRequests = [];
 
         /// <summary>
         /// Dictionary mapping client IDs to their most recent heartbeat response delay.
@@ -51,7 +51,7 @@ internal static partial class NetworkManager
         /// <summary>
         /// Dictionary tracking which clients have pending heartbeat requests.
         /// </summary>
-        private readonly Dictionary<ID, ulong> _clientPendingHeartbeats = [];
+        private readonly Dictionary<ID, uint> _clientPendingHeartbeats = [];
 
         /// <summary>
         /// Initializes a new instance of the heartbeat system and sets the static reference.
@@ -83,21 +83,28 @@ internal static partial class NetworkManager
                 _currentTimeStamp++;
 
                 var cutoff = DateTime.Now.AddSeconds(-HEARTBEAT_AGE_CAP_SECONDS);
-                var oldKeys = _heartbeatRequests.Where(kvp => kvp.Value < cutoff).Select(kvp => kvp.Key).ToList();
+
+                List<uint> oldKeys = [];
+                foreach (var kvp in _heartbeatRequests)
+                {
+                    if (kvp.Value < cutoff)
+                        oldKeys.Add(kvp.Key);
+                }
 
                 foreach (var key in oldKeys)
                 {
-                    var timedOutClients = _clientPendingHeartbeats
-                        .Where(kvp => kvp.Value == key)
-                        .Select(kvp => kvp.Key)
-                        .ToList();
+                    List<ID> timedOutClients = new List<ID>();
+                    foreach (var kvp in _clientPendingHeartbeats)
+                    {
+                        if (kvp.Value == key)
+                            timedOutClients.Add(kvp.Key);
+                    }
 
                     foreach (var clientId in timedOutClients)
                     {
                         if (ReloadedLobby.LobbyData.AllClients.TryGetValue(clientId, out var clientData))
                         {
                             OnClientHeartbeatTimeout?.Invoke(clientData);
-
                             _heartbeatDelaysLookup.Remove(clientId);
                         }
                     }
@@ -117,7 +124,7 @@ internal static partial class NetworkManager
         /// </summary>
         /// <param name="sender">The client that sent the heartbeat response.</param>
         /// <param name="timeStamp">The timestamp of the original heartbeat request.</param>
-        internal void HandleHeartbeat(ReloadedClientData sender, ulong timeStamp)
+        internal void HandleHeartbeat(ReloadedClientData sender, uint timeStamp)
         {
             if (!_heartbeatRequests.TryGetValue(timeStamp, out var requestTime))
                 return;
@@ -125,7 +132,6 @@ internal static partial class NetworkManager
             var delay = (float)(DateTime.Now - requestTime).TotalMilliseconds;
             _heartbeatDelaysLookup[sender.ClientId] = delay;
 
-            // Remove the pending heartbeat for this client
             if (_clientPendingHeartbeats.TryGetValue(sender.ClientId, out var pendingTimestamp) &&
                 pendingTimestamp == timeStamp)
             {
@@ -146,7 +152,13 @@ internal static partial class NetworkManager
             if (_heartbeatDelaysLookup.Count == 0)
                 return 0;
 
-            return (int)_heartbeatDelaysLookup.Values.Average();
+            float total = 0f;
+            foreach (var kvp in _heartbeatDelaysLookup)
+            {
+                total += kvp.Value;
+            }
+
+            return (int)(total / _heartbeatDelaysLookup.Count);
         }
 
         /// <summary>

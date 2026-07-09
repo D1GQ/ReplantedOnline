@@ -6,13 +6,13 @@ using ReplantedOnline.Network.Reloaded.Serialization;
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
 [RegisterPacket(PacketType.HeartbeatRequest, false)]
-internal sealed class HeartbeatRequestPacket : IPacketMessage<ulong>
+internal sealed class HeartbeatRequestPacket : IPacketMessage<uint>
 {
     /// <inheritdoc/>
-    public void Send(ulong timeStamp)
+    public void Send(uint timeStamp)
     {
         PacketWriter packetWriter = PacketWriter.Get();
-        packetWriter.WriteULong(timeStamp);
+        packetWriter.WriteUInt(timeStamp);
         NetworkManager.SendPacket(packetWriter, PacketType.HeartbeatRequest, PacketChannel.Rpc, false, false);
         packetWriter.Recycle();
     }
@@ -20,7 +20,7 @@ internal sealed class HeartbeatRequestPacket : IPacketMessage<ulong>
     /// <inheritdoc/>
     public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        ulong timeStamp = packetReader.ReadULong();
+        uint timeStamp = packetReader.ReadUInt();
         NetworkManager.Packet<HeartbeatPacket>.Singleton.Send(sender.ClientId, timeStamp);
     }
 }
