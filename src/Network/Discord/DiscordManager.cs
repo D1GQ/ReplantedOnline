@@ -307,9 +307,7 @@ internal static class DiscordManager
                 return;
             }
 
-
-
-            ReloadedMatchmaking.SearchSteamLobbyByGameCode(secret.GameCode);
+            ReloadedMatchmaking.JoinSteamLobbyByGameCode(secret.GameCode);
         });
     }
 

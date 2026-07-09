@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
+using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Text;
@@ -16,8 +17,7 @@ using System.Text;
 namespace ReplantedOnline.Network.Reloaded.Client;
 
 /// <summary>
-/// Provides matchmaking functionality for ReplantedOnline, including searching for lobbies by game code, 
-/// retrieving lobby lists, and generating consistent game codes based on lobby IDs.
+/// Provides matchmaking functionality for ReplantedOnline.
 /// </summary>
 internal static class ReloadedMatchmaking
 {
@@ -26,113 +26,109 @@ internal static class ReloadedMatchmaking
     /// </summary>
     internal static readonly char[] CODE_CHARS = "ABCDEFHIJKLMNPQRSTUVWXYZ".ToCharArray();
 
+    /// <summary>
+    /// Character set used for the postfix of game codes when the application is running as Replanted.
+    /// </summary>
     internal static readonly char[] CODE_REPLANTED_POSTFIX_CHARS = "BCDEFHIJKLM".ToCharArray();
 
+    /// <summary>
+    /// Character set used for the postfix of game codes when the application is running as Spacewar.
+    /// </summary>
     internal static readonly char[] CODE_SPACEWAR_POSTFIX_CHARS = "NPQRSTUVWXY".ToCharArray();
 
     /// <summary>
-    /// The length of generated game codes.
+    /// The length of generated game codes (excluding the postfix character).
     /// </summary>
     internal static readonly int CODE_LENGTH = 6;
 
     /// <summary>
-    /// Find lobby by Game Code.
+    /// Attempts to join a Steam lobby using the specified game code.
     /// </summary>
-    /// <param name="gameCode"></param>
-    internal static void SearchSteamLobbyByGameCode(string gameCode)
+    /// <param name="gameCode">The game code to search for and join.</param>
+    internal static void JoinSteamLobbyByGameCode(string gameCode)
     {
         SteamClientPatch.TrySetTempApp(GetGameCodePostfixType(gameCode));
         Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Searching for lobby with code: {gameCode}");
 
         try
         {
-            var lobbyQuery = SteamMatchmaking.LobbyList;
-            lobbyQuery.maxResults = new Il2CppSystem.Nullable<int>(500);
-            lobbyQuery.FilterDistanceWorldwide();
-            lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode);
-            lobbyQuery.ApplyFilters();
-
-            lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
+            FetchSteamLobbyList((result, lobbies) =>
             {
-                if (task.IsFaulted)
+                switch (result)
                 {
-                    ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Lobby search failed: {task.Exception}");
-                    Transitions.ToMainMenu(() =>
-                    {
-                        CustomPopupPanel.Show("Disconnected", $"An critical error occurred!");
-                    });
-                    return;
-                }
-
-                var lobbies = task.Result;
-
-                if (lobbies == null)
-                {
-                    ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), "No lobbies found");
-                    Transitions.ToMainMenu(() =>
-                    {
-                        CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
-                    });
-                    return;
-                }
-
-                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found {lobbies.Length} lobbies matching filters");
-
-                if (lobbies.Length > 0)
-                {
-                    var lobby = lobbies[0];
-
-                    // Double-check the game code
-                    string foundGameCode = lobby.GetData(ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
-
-                    if (foundGameCode == gameCode)
-                    {
-                        // Verify mod version
-                        string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY);
-
-                        if (modVersion != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
+                    case LobbyListResult.Succeed:
                         {
-                            ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
-                            Transitions.ToMainMenu(() =>
-                            {
-                                CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
-                            });
-                            return;
-                        }
+                            var lobby = lobbies[0];
 
-                        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found matching lobby: {lobby.Id} with code {gameCode}");
-                        ReloadedLobby.JoinLobby(lobby.Id);
-                    }
-                    else
-                    {
-                        ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
+                            // Double-check the game code
+                            string foundGameCode = lobby.GetData(ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+
+                            if (foundGameCode == gameCode)
+                            {
+                                // Verify mod version
+                                string modVersion = lobby.GetData(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY);
+
+                                if (modVersion != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
+                                {
+                                    ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
+                                    Transitions.ToMainMenu(() =>
+                                    {
+                                        CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
+                                    });
+                                    return;
+                                }
+
+                                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found matching lobby: {lobby.Id} with code {gameCode}");
+                                ReloadedLobby.JoinLobby(lobby.Id);
+                            }
+                            else
+                            {
+                                ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
+                                Transitions.ToMainMenu(() =>
+                                {
+                                    CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
+                                });
+                            }
+                        }
+                        break;
+                    case LobbyListResult.Failed:
                         Transitions.ToMainMenu(() =>
                         {
                             CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
                         });
-                    }
+                        break;
+                    case LobbyListResult.Error:
+                        Transitions.ToMainMenu(() =>
+                        {
+                            CustomPopupPanel.Show("Disconnected", $"An critical error occurred!");
+                        });
+                        break;
                 }
-            }));
+            }, 500, (ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode));
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting lobby search: {ex.Message}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting join Replanted Steam lobby by game code: {ex.Message}");
             Transitions.ToMainMenu();
         }
     }
 
     /// <summary>
-    /// Retrieves a list of available multiplayer lobbies based on specified criteria.
+    /// Fetches a list of Steam lobbies that match the specified filters.
     /// </summary>
-    /// <param name="maxResults">The maximum number of lobbies to return in the search results.</param>
-    /// <param name="callback">Callback method invoked with the array of found lobbies when the search completes successfully.</param>
-    /// <param name="errorCallback">Optional callback method invoked when an error occurs or no lobbies are found.</param>
-    internal static void GetSteamLobbyList(int maxResults, Action<Lobby[]> callback, Action<LobbyListError>? errorCallback = null)
+    /// <param name="callback">The callback to invoke when the lobby search completes. Receives a result status and an array of matching lobbies.</param>
+    /// <param name="maxResults">The maximum number of lobbies to return in the result.</param>
+    /// <param name="filters">Key-value pairs to filter the lobby search. Each pair represents a lobby data key and its expected value.</param>
+    internal static void FetchSteamLobbyList(Action<LobbyListResult, Lobby[]> callback, int maxResults, params (string Key, string Value)[] filters)
     {
-        Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Searching for lobbies");
+        if (filters.Length > 0)
+        {
+            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Fetching Replanted Steam lobbies with filters: {string.Join(", ", filters.Select(kvp => kvp.Value))}");
+        }
+        else
+        {
+            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Fetching Replanted Steam lobbies");
+        }
 
         try
         {
@@ -141,40 +137,41 @@ internal static class ReloadedMatchmaking
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
             lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION);
+            foreach (var (key, value) in filters)
+            {
+                lobbyQuery.WithKeyValue(key, value);
+            }
             lobbyQuery.ApplyFilters();
 
             lobbyQuery?.RequestAsync()?.ContinueWith((Action<Il2CppSystem.Threading.Tasks.Task<Il2CppStructArray<Lobby>>>)((task) =>
             {
                 if (task.IsFaulted)
                 {
-                    ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Lobby search failed: {task.Exception}");
-                    errorCallback?.Invoke(LobbyListError.Error);
+                    ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Replanted Steam Lobby search failed: {task.Exception}");
+                    callback.Invoke(LobbyListResult.Error, null!);
                     return;
                 }
 
-                var lobbies = task.Result;
-
-                if (lobbies == null)
+                if (task.Result == null)
                 {
-                    ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), "No lobbies found");
-                    errorCallback?.Invoke(LobbyListError.NoneFound);
+                    ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), "No Replanted Steam lobbies found");
+                    callback.Invoke(LobbyListResult.Failed, []);
                     return;
                 }
 
-                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found {lobbies.Length} lobbies");
-
-                callback(lobbies);
+                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedMatchmaking), $"Found {task.Result.Length} Replanted Steam lobbies");
+                callback.Invoke(LobbyListResult.Succeed, task.Result.ToArray().ToManagedArray());
             }));
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting lobby search: {ex.Message}");
-            errorCallback?.Invoke(LobbyListError.Error);
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting Replanted Steam lobby search: {ex.Message}");
+            callback.Invoke(LobbyListResult.Error, null!);
         }
     }
 
     /// <summary>
-    /// Sets the lobby data including version information and game code.
+    /// Sets the lobby data.
     /// </summary>
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(ReloadedLobbyData data)
@@ -186,8 +183,9 @@ internal static class ReloadedMatchmaking
     }
 
     /// <summary>
-    /// Updates the joinable state of the current lobby, optionally overriding the value. By default, the lobby is joinable if the game has not started and not joinable if the game has started.
+    /// Updates the joinable state of the current lobby.
     /// </summary>
+    /// <param name="override">Optional override value for the joinable state. If not provided, the joinable state is automatically determined based on whether the game has started.</param>
     internal static void UpdateLobbyJoinable(bool? @override = null)
     {
         if (!ReloadedLobby.AmInLobby()) return;
@@ -207,8 +205,11 @@ internal static class ReloadedMatchmaking
     }
 
     /// <summary>
-    /// Generates a consistent game code based on the lobby ID
+    /// Generates a consistent game code based on the lobby ID.
     /// </summary>
+    /// <param name="lobbyId">The lobby ID to generate a game code for.</param>
+    /// <returns>A 6-character game code consisting of letters, with the last character identifying the application type.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the lobby ID type is not supported.</exception>
     internal static string GenerateGameCode(ID lobbyId)
     {
         // Extract a numeric seed from the ID

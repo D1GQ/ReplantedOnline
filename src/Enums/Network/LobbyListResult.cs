@@ -1,14 +1,19 @@
 ﻿namespace ReplantedOnline.Enums.Network;
 
 /// <summary>
-/// Represents error states that can occur during lobby list operations.
+/// Represents the possible results of a lobby list retrieval operation.
 /// </summary>
-internal enum LobbyListError
+internal enum LobbyListResult
 {
+    /// <summary>
+    /// The lobby list was successfully retrieved.
+    /// </summary>
+    Succeed,
+
     /// <summary>
     /// No lobbies were found matching the search criteria.
     /// </summary>
-    NoneFound,
+    Failed,
 
     /// <summary>
     /// An error occurred during the lobby search operation.

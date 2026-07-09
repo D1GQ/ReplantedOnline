@@ -72,7 +72,8 @@ internal static class LobbyCodePanel
                 {
                     Panel?.gameObject.SetActive(false);
                     string gameCode = InputField.m_Text.ToUpper();
-                    ReloadedMatchmaking.SearchSteamLobbyByGameCode(gameCode);
+
+                    ReloadedMatchmaking.JoinSteamLobbyByGameCode(gameCode);
                 }
                 else
                 {
