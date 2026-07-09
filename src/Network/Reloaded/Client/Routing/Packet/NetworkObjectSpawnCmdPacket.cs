@@ -23,7 +23,7 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
         Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object Request with ID: {networkObj.NetworkId} to host");
-        NetworkManager.SendPacketTo(ReloadedLobby.LobbyData!.HostId, packetWriter, PacketType.NetworkObjectSpawnCmd, PacketChannel.Main);
+        NetworkManager.SendPacketTo(ReloadedLobby.LobbyData!.HostId, packetWriter, PacketType.NetworkObjectSpawnCmd, PacketChannel.Main, true);
         packetWriter.Recycle();
     }
 
@@ -39,7 +39,7 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
         {
             if (Validate(sender, message, packet))
             {
-                NetworkManager.SendPacket(packetReader, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, sender.ClientId);
+                NetworkManager.SendPacket(packetReader, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, true, sender.ClientId);
                 ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacket), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
             }
             else

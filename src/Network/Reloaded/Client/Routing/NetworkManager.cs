@@ -25,9 +25,10 @@ internal static partial class NetworkManager
     /// <param name="payload">The packet containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
+    /// <param name="log">If sending should be logged.</param>
     /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
     /// <param name="ignoredClientIds">Optional array of client IDs that should not receive this packet.</param>
-    internal static void SendPacket(IPacket? payload, PacketType tag, PacketChannel packetChannel, bool receiveLocally, params ID[] ignoredClientIds)
+    internal static void SendPacket(IPacket? payload, PacketType tag, PacketChannel packetChannel, bool log, bool receiveLocally, params ID[] ignoredClientIds)
     {
         foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
         {
@@ -36,7 +37,7 @@ internal static partial class NetworkManager
 
             if (ReloadedLobby.IsPlayerInOurLobby(client.ClientId))
             {
-                SendPacketTo(client.ClientId, payload, tag, packetChannel);
+                SendPacketTo(client.ClientId, payload, tag, packetChannel, log);
             }
         }
     }
@@ -48,7 +49,8 @@ internal static partial class NetworkManager
     /// <param name="payload">The packet writer containing the data to send.</param>
     /// <param name="tag">The packet tag identifying the packet type.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    internal static void SendPacketTo(ID targetId, IPacket? payload, PacketType tag, PacketChannel packetChannel)
+    /// <param name="log">If sending should be logged.</param>
+    internal static void SendPacketTo(ID targetId, IPacket? payload, PacketType tag, PacketChannel packetChannel, bool log)
     {
         PacketWriter packetWriter = PacketWriter.Get();
         Message<PacketHeaderMessage>.Singleton.Serialize(packetWriter, tag, payload);
@@ -74,7 +76,11 @@ internal static partial class NetworkManager
             ReloadedLobby.NetworkTransport!.SendP2PPacket(targetId, packetWriter.GetByteBuffer(), packetChannel, sendType);
         }
 
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {tag} packet to {targetId.GetNetClient()!.Name} -> Size: {packetWriter.Length} bytes");
+        if (log)
+        {
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {tag} packet to {targetId.GetNetClient()!.Name} -> Size: {packetWriter.Length} bytes");
+        }
+
         packetWriter.Recycle();
     }
 
@@ -91,6 +97,7 @@ internal static partial class NetworkManager
             MelonCoroutines.Stop(ListeningToken);
         }
 
+        Heartbeat.Start();
         ListeningToken = MelonCoroutines.Start(CoListening());
     }
 
@@ -109,6 +116,7 @@ internal static partial class NetworkManager
             try
             {
                 ReloadedLobby.NetworkTransport?.Tick(Time.deltaTime);
+                NetworkHeartbeat.Tick();
 
                 if (ReloadedLobby.LobbyData != null)
                 {
@@ -117,7 +125,7 @@ internal static partial class NetworkManager
                         if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
                         var packet = PacketWriter.Get();
                         Message<NetworkObjectSyncMessage>.Singleton.Serialize(packet, networkObj, false);
-                        SendPacket(packet, PacketType.NetworkObjectSync, PacketChannel.Buffered, false);
+                        SendPacket(packet, PacketType.NetworkObjectSync, PacketChannel.Buffered, true, false);
                         packet.Recycle();
                     }
                 }
@@ -153,6 +161,7 @@ internal static partial class NetworkManager
                 {
                     CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
                 });
+                Heartbeat.Dispose();
                 ListeningToken = null;
                 yield break;
             }
@@ -161,6 +170,7 @@ internal static partial class NetworkManager
         }
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), "Stoping...");
+        Heartbeat.Dispose();
 
         ListeningToken = null;
     }
@@ -178,7 +188,6 @@ internal static partial class NetworkManager
             if (ReloadedLobby.NetworkTransport!.ReadP2PPacket(buffer, channel))
             {
                 ReloadedClientData sender = buffer.ClientId.GetNetClient()!;
-                ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Received packet from {sender.Name} ({buffer.ClientId}) -> Size: {buffer.Size} bytes");
 
                 if (buffer.Size > 0)
                 {

@@ -31,7 +31,7 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
         Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
-        NetworkManager.SendPacket(packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Main, false);
+        NetworkManager.SendPacket(packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, false);
         packetWriter.Recycle();
     }
 
@@ -54,7 +54,7 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
                     Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
 
                     ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Network Objects to {targetId}");
-                    NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Buffered);
+                    NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Buffered, true);
                     packetWriter.Recycle();
                 }
             }

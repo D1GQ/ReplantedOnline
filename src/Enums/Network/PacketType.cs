@@ -54,4 +54,14 @@ internal enum PacketType
     /// Packet used for P2P session establishment and maintenance on a rpc receiver object.
     /// </summary>
     ObjectRpc,
+
+    /// <summary>
+    /// Packet used to request a heartbeat response from a client.
+    /// </summary>
+    HeartbeatRequest,
+
+    /// <summary>
+    /// Packet used to respond to a heartbeat request.
+    /// </summary>
+    Heartbeat,
 }

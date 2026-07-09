@@ -16,7 +16,7 @@ internal sealed class RemoveClientPacket : IPacketMessage<ID, BanReason>
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(banReason);
-        NetworkManager.SendPacketTo(clientId, packetWriter, PacketType.RemoveClient, PacketChannel.Main);
+        NetworkManager.SendPacketTo(clientId, packetWriter, PacketType.RemoveClient, PacketChannel.Main, true);
         packetWriter.Recycle();
     }
 

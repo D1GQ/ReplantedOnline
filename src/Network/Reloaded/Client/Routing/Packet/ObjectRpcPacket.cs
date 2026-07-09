@@ -25,7 +25,7 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
         }
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
-        NetworkManager.SendPacket(packetWriter, PacketType.ObjectRpc, PacketChannel.Rpc, receiveLocally);
+        NetworkManager.SendPacket(packetWriter, PacketType.ObjectRpc, PacketChannel.Rpc, true, receiveLocally);
         packetWriter.Recycle();
     }
 

@@ -21,7 +21,7 @@ internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifi
         Message<NetworkObjectRejectMessage>.Singleton.Serialize(packetWriter, networkId);
 
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Reject Network Object with ID: {networkId}, Owner: {owner}");
-        NetworkManager.SendPacketTo(owner, packetWriter, PacketType.NetworkObjectReject, PacketChannel.Main);
+        NetworkManager.SendPacketTo(owner, packetWriter, PacketType.NetworkObjectReject, PacketChannel.Main, true);
         packetWriter.Recycle();
     }
 

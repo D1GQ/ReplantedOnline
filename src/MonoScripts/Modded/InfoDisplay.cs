@@ -5,6 +5,7 @@ using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -62,7 +63,8 @@ internal sealed class InfoDisplay : MonoBehaviour
         // Bottom right info
         if (_enabled)
         {
-            var info = GetInfo();
+            string info = GetInfo();
+
             DrawLabelWithOutline(
                 info,
                 new Rect(
@@ -75,6 +77,23 @@ internal sealed class InfoDisplay : MonoBehaviour
                 Color.white,
                 Color.black
             );
+
+            if (ReloadedLobby.AmInLobby() && NetworkManager.NetworkHeartbeat != null)
+            {
+                string ping = $"Ping: {NetworkManager.NetworkHeartbeat.GetEstimatedPing()}ms";
+                DrawLabelWithOutline(
+                    ping,
+                    new Rect(
+                        padding,
+                        Screen.height - Style.CalcSize(new GUIContent(ping)).y - padding,
+                        Style.CalcSize(new GUIContent(ping)).x,
+                        Style.CalcSize(new GUIContent(ping)).y
+                    ),
+                    Style,
+                    Color.white,
+                    Color.black
+                );
+            }
         }
 
         // Top left debug info
