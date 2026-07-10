@@ -10,14 +10,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Bobsled)]
 internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
 {
-    internal sealed override void Update()
-    {
-        if (Net.Zombie?.mZombiePhase == ZombiePhase.ZombieNormal)
-        {
-            UpdatePositionSync();
-        }
-    }
-
     public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {
         if (init)

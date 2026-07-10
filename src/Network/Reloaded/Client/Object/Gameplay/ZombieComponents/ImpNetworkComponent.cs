@@ -11,13 +11,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 internal sealed class ImpNetworkComponent : ZombieNetworkComponent
 {
     internal float ImpRandomArc;
-    internal sealed override void Update()
-    {
-        if (Net.Zombie?.mZombiePhase is not (ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding))
-        {
-            UpdatePositionSync();
-        }
-    }
 
     public sealed override void Serialize(PacketWriter packetWriter, bool init)
     {

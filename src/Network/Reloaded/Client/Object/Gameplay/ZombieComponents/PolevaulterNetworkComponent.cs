@@ -30,10 +30,5 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
         {
             Net.Target = null;
         }
-
-        if (Net.Zombie.mZombiePhase is not ZombiePhase.PolevaulterInVault)
-        {
-            UpdatePositionSync();
-        }
     }
 }

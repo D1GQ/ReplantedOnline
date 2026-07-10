@@ -328,7 +328,6 @@ internal sealed class ZombieNetworked : NetworkObject
     private void HandleEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
-        LogicComponent.StopLarpPos();
         Zombie?.mPosX = xPos;
         VersusGameplayManager.EndGame(Zombie?.mController?.transform.position ?? Vector3.zero, PlayerTeam.Zombies);
     }
@@ -376,7 +375,6 @@ internal sealed class ZombieNetworked : NetworkObject
 
         if (frozen)
         {
-            LogicComponent.StopLarpPos();
             Zombie.HitIceTrapOriginal();
             Zombie.mIceTrapCounter = counter;
         }
@@ -434,7 +432,6 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.SnapToPos)]
     private void HandleSnapToPosRpc(float posX)
     {
-        LogicComponent.StopLarpPos();
         Zombie?.mPosX = posX;
     }
 

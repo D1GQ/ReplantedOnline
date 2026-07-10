@@ -58,8 +58,6 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         {
             Net.Target = null;
         }
-
-        UpdatePositionSync();
     }
 
     private void SendDonePlacingLadderRpc()

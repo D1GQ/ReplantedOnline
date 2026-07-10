@@ -42,8 +42,6 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
                 }
             }
         }
-
-        UpdatePositionSync();
     }
 
     internal sealed override void OnDestroyed()

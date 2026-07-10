@@ -317,6 +317,36 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
+    /// Reads a 2-byte signed integer (short) from the packet.
+    /// </summary>
+    /// <returns>The short value.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a short.</exception>
+    internal short ReadShort()
+    {
+        if (_position + 2 > _data.Length)
+            throw new IndexOutOfRangeException("Not enough data to read short");
+
+        short result = BitConverter.ToInt16(_data, _position);
+        _position += 2;
+        return result;
+    }
+
+    /// <summary>
+    /// Reads a 2-byte unsigned integer (ushort) from the packet.
+    /// </summary>
+    /// <returns>The ushort value.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a ushort.</exception>
+    internal ushort ReadUShort()
+    {
+        if (_position + 2 > _data.Length)
+            throw new IndexOutOfRangeException("Not enough data to read ushort");
+
+        ushort result = BitConverter.ToUInt16(_data, _position);
+        _position += 2;
+        return result;
+    }
+
+    /// <summary>
     /// Reads an 8-byte signed integer from the packet.
     /// </summary>
     /// <returns>The long value.</returns>

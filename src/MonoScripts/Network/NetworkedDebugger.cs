@@ -139,11 +139,6 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
             string phaseInfo = $"{zombie.mZombiePhase}: {zombie.mPhaseCounter}";
             DrawDebugInfo(worldPos + new Vector3(0f, 100f, 0f), hitboxRect, zombieNetworked.gameObject.name, phaseInfo);
-
-            if (zombieNetworked.LogicComponent.LastSyncPosX.HasValue)
-            {
-                DrawSyncPosition(zombieNetworked, worldPos);
-            }
         }
         else
         {
@@ -297,45 +292,6 @@ internal sealed class NetworkedDebugger : MonoBehaviour
         GUI.Label(new Rect(nameRect.x + 4f, nameRect.y + 2f, nameSize.x, nameSize.y), objectName, _labelStyle);
         _labelStyle.normal.textColor = originalTextColor;
     }
-
-    [HideFromIl2Cpp]
-    private void DrawSyncPosition(ZombieNetworked zombieNetworked, Vector3 currentWorldPos)
-    {
-        if (zombieNetworked.LogicComponent.LastSyncPosX == null) return;
-
-        Vector3 currentScreenPos = WorldToScreen(currentWorldPos + new Vector3(0f, 100f, 0f));
-        if (currentScreenPos.z < 0) return;
-
-        Vector3 syncWorldPos = new(
-            PvZRUtils.GetGridOffsetXPosFromBoardXPos(zombieNetworked.LogicComponent.LastSyncPosX.Value),
-            currentWorldPos.y,
-            currentWorldPos.z
-        );
-
-        Vector3 syncScreenPos = WorldToScreen(syncWorldPos + new Vector3(0f, 100f, 0f));
-
-        if (syncScreenPos.z >= 0)
-        {
-            DrawLine(currentScreenPos, syncScreenPos, 2f, Color.magenta);
-
-            Vector2 syncBoxSize = new Vector2(50f, 50f);
-            Vector2 syncScreenSize = WorldSizeToScreen(syncBoxSize.x, syncBoxSize.y, syncWorldPos);
-
-            Rect syncBoxRect = new(
-                syncScreenPos.x - syncScreenSize.x / 2f,
-                syncScreenPos.y - syncScreenSize.y / 2f,
-                syncScreenSize.x,
-                syncScreenSize.y
-            );
-
-            UpdateBoxColors(Color.magenta, new Color(1f, 0f, 1f, 0.15f));
-            GUI.Box(syncBoxRect, "", _boxFillStyle);
-            DrawBoxOutline(syncBoxRect, 2f);
-
-            UpdateBoxColors(_currentOutlineColor, _currentFillColor);
-        }
-    }
-
     private void DrawLine(Vector3 from, Vector3 to, float thickness, Color color)
     {
         Vector2 from2D = new Vector2(from.x, from.y);

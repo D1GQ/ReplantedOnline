@@ -69,8 +69,6 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
                 }
             }
         }
-
-        UpdatePositionSync();
     }
 
     private void SendDriveRpc()

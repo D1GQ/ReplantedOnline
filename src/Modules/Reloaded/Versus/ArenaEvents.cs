@@ -131,8 +131,6 @@ internal static class ArenaEvents
         if (zombieNetworked != null)
         {
             zombieNetworked.Event = EventState.PushBack;
-            zombieNetworked.LogicComponent.PosSyncingPaused = true;
-            zombieNetworked.LogicComponent.StopLarpPos();
 
             if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
             {
@@ -162,7 +160,6 @@ internal static class ArenaEvents
         zombie.mPosY = originalY;
         if (zombieNetworked != null)
         {
-            zombieNetworked.LogicComponent.PosSyncingPaused = false;
             zombieNetworked.Event = EventState.None;
         }
     }

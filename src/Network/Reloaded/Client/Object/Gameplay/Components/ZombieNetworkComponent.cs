@@ -1,10 +1,7 @@
-﻿using Il2CppInterop.Runtime.Attributes;
-using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Enums.Versus;
+﻿using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Utilities.Unity;
-using System.Collections;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -27,42 +24,107 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     internal virtual void OnDeath(DeathReason deathReason) { }
 
-    internal bool PosSyncingPaused;
-    private float _syncCooldown = 2f;
-    private float _lastPos;
-    internal override void Update()
-    {
-        UpdatePositionSync();
-    }
+    private readonly UnityTimer dirtyPosTimer = new();
+    private float? syncedPosX;
 
-    protected void UpdatePositionSync()
+    /// <summary>
+    /// Updates the zombie's position. For owner: moves the zombie and syncs position periodically.
+    /// For non-owner: moves toward the synced position with dynamic speed based on distance.
+    /// </summary>
+    /// <param name="distance">The base distance to move per update</param>
+    internal void UpdatePosition(float distance)
     {
-        if (Net.Zombie == null) return;
-        if (PosSyncingPaused) return;
+        if (Net.Zombie == null)
+            return;
+
+        // Don't allow position updates during PushBack event
+        if (Net.Event == EventState.PushBack)
+        {
+            return;
+        }
 
         if (Net.AmOwner)
         {
-            if (!Net.Zombie.mDead)
+            // Move the zombie based on walking direction
+            if (!Net.Zombie.IsWalkingBackwards())
             {
-                if (_syncCooldown <= 0f && _lastPos != Net.Zombie.mPosX)
-                {
-                    Net.MarkDirty();
-                    _syncCooldown = 2f;
-                    _lastPos = Net.Zombie.mPosX;
-                }
-                _syncCooldown -= Time.deltaTime;
+                Net.Zombie.mPosX -= distance;
+            }
+            else
+            {
+                Net.Zombie.mPosX += distance;
+            }
+
+            // Sync position to network every 0.25 seconds, but only if position changed
+            if (dirtyPosTimer.AccumulatedTime > 0.25f &&
+                syncedPosX != Net.Zombie.mPosX)
+            {
+                syncedPosX = Net.Zombie.mPosX;
+                dirtyPosTimer.Reset();
+                Net.MarkDirty();
             }
         }
         else
         {
+            // If not entering the house and is at house, skip position updates
             if (!Net.EnteringHouse)
             {
                 if (Net.Zombie.mPosX <= 0f)
                 {
-                    Net.Zombie.mPosX = 0f;
+                    return;
                 }
             }
+
+            if (syncedPosX == null)
+                return;
+
+            // Calculate the difference between current and target positions
+            float targetPos = syncedPosX.Value;
+            float currentPos = Net.Zombie.mPosX;
+            float diff = targetPos - currentPos;
+
+            if (Mathf.Abs(diff) < 0.001f)
+            {
+                Net.Zombie.mPosX = targetPos;
+                syncedPosX = null;
+                return;
+            }
+
+            // Get absolute distance
+            float diffAbs = Mathf.Abs(diff);
+
+            // Speed multiplier
+            float speedMultiplier = 1f + (diffAbs * 0.02f);
+
+            // Cap max speed
+            speedMultiplier = Mathf.Min(speedMultiplier, 5f);
+
+            // Calculate how much to move:
+            float moveAmount = Mathf.Min(diffAbs, distance * speedMultiplier);
+
+            // Determine direction to move
+            float moveDirection = Mathf.Sign(diff);
+
+            // Apply the movement
+            Net.Zombie.mPosX += moveAmount * moveDirection;
         }
+    }
+
+    /// <summary>
+    /// Smoothly interpolates the zombie's position toward the network-synced target.
+    /// </summary>
+    internal void InterpolatePosition()
+    {
+        if (Net.Zombie == null)
+            return;
+
+        if (Net.AmOwner)
+            return;
+
+        if (syncedPosX == null)
+            return;
+
+        UpdatePosition(2f);
     }
 
     public override void Serialize(PacketWriter packetWriter, bool init)
@@ -74,7 +136,8 @@ internal class ZombieNetworkComponent : NetworkComponent
         {
             packetWriter.WritePackedInt(Net.Zombie.mRow);
             packetWriter.WriteFloat(Net.Zombie.mVelX);
-            packetWriter.WriteFloat(Net.Zombie.mPosX);
+            short packedPos = (short)(Net.Zombie.mPosX * 25f);
+            packetWriter.WriteShort(packedPos);
         }
     }
 
@@ -90,104 +153,17 @@ internal class ZombieNetworkComponent : NetworkComponent
                 Net.Zombie.mRow = packetReader.ReadPackedInt();
                 Net.Zombie.mVelX = packetReader.ReadFloat();
                 Net.Zombie.UpdateAnimSpeed();
-                var posX = packetReader.ReadFloat();
-                LastSyncPosX = posX;
-                LarpPos(posX);
+                short packedPos = packetReader.ReadShort();
+
+                if (packedPos == short.MaxValue || packedPos == short.MinValue)
+                {
+                    syncedPosX = packedPos > 0 ? 1310.68f : -1310.72f;
+                }
+                else
+                {
+                    syncedPosX = packedPos / 25f;
+                }
             }
         }
-    }
-
-    private Coroutine? _larpCoroutine;
-    internal float? LastSyncPosX;
-
-    /// <summary>
-    /// Smoothly interpolates the zombie's position to the target position when distance threshold is exceeded.
-    /// </summary>
-    /// <param name="posX">The target X position to interpolate to</param>
-    private void LarpPos(float posX)
-    {
-        if (PosSyncingPaused) return;
-        if (Net.Zombie == null || Net.EnteringHouse || posX < 15f) return;
-        if (Net.Zombie.mIceTrapCounter > 0) return;
-
-        float currentX = Net.Zombie.mPosX;
-        float distance = Mathf.Abs(currentX - posX);
-
-        // Calculate threshold based on velocity (0.5 seconds of movement)
-        float threshold = Mathf.Abs(Net.Zombie.mVelX) * 0.3f;
-        threshold = Mathf.Clamp(threshold, 10f, 50f);
-
-        if (distance > threshold)
-        {
-            // Stop existing interpolation
-            StopLarpPos();
-
-            if (distance < 100f && Net.Zombie.mZombieType != ZombieType.Pogo)
-            {
-                _larpCoroutine = Net.StartCoroutine(CoLarpPos(posX));
-            }
-            else
-            {
-                Net.Zombie.mPosX = posX;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Stop larping to network pos
-    /// </summary>
-    internal void StopLarpPos()
-    {
-        if (_larpCoroutine != null)
-        {
-            _syncCooldown = 2f;
-            LastSyncPosX = null;
-            Net.StopCoroutine(_larpCoroutine);
-        }
-    }
-
-    /// <summary>
-    /// Coroutine that smoothly interpolates the zombie's position over time.
-    /// </summary>
-    /// <param name="targetX">The target X position to reach</param>
-    [HideFromIl2Cpp]
-    private IEnumerator CoLarpPos(float targetX)
-    {
-        if (this == null || Net.Zombie == null) yield break;
-
-        float startX = Net.Zombie.mPosX;
-        float distance = Mathf.Abs(targetX - startX);
-
-        // Use zombie's current velocity for interpolation speed
-        float speed = Mathf.Abs(Net.Zombie.mVelX);
-        speed = Mathf.Clamp(speed, 10f, 40f);
-
-        float duration = Mathf.Clamp(distance / speed, 0.1f, 2f);
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            if (this == null || Net.Zombie == null) yield break;
-
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / duration;
-
-            t = SmoothStep(t);
-
-            Net.Zombie.mPosX = Mathf.Lerp(startX, targetX, t);
-            yield return null;
-        }
-
-        // Ensure final position is exact
-        Net.Zombie?.mPosX = targetX;
-
-        LastSyncPosX = null;
-        _larpCoroutine = null;
-    }
-
-    private static float SmoothStep(float t)
-    {
-        return t * t * (3f - 2f * t);
     }
 }

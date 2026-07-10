@@ -33,16 +33,7 @@ internal static class LadderZombiePatch
                         }
                         else
                         {
-                            // Push back until plant side has placed ladder
-                            if (__result != null)
-                            {
-                                if (__result.mX < __instance.mX)
-                                {
-                                    __instance.mPosX -= __instance.GetZombieMoveDirection();
-                                }
-
-                                __result = null;
-                            }
+                            __result = null;
                         }
                     }
                 }

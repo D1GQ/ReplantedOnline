@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
@@ -16,6 +17,31 @@ internal static class ZombiePatch
     internal static Zombie AddZombieInRowOriginal(this Board __instance, ZombieType theZombieType, int theRow, int theFromWave, bool shakeBrush = true)
     {
         throw new NotImplementedException("Reverse Patch Stub");
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombieWalking))]
+    [HarmonyPrefix]
+    private static void Zombie_UpdateZombieWalking_Prefix(Zombie __instance, ref float __state)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            __state = __instance.mPosX;
+        }
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombieWalking))]
+    [HarmonyPostfix]
+    private static void Zombie_UpdateZombieWalking_Postfix(Zombie __instance, float __state)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            float distance = Math.Abs(__instance.mPosX - __state);
+            __instance.mPosX = __state;
+            if (__instance.TryGetNetworked<ZombieNetworked>(out var zombieNetworked))
+            {
+                zombieNetworked.LogicComponent.UpdatePosition(distance);
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.WalkIntoHouse))]
@@ -79,20 +105,15 @@ internal static class ZombiePatch
                     // Push back until plant side starts eating plant
                     if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
-                        if (__result.mX < __instance.mX)
-                        {
-                            __instance.mPosX -= __instance.GetZombieMoveDirection();
-                        }
-
                         __result = null;
                     }
                 }
                 else
                 {
-                    // Move zombie forward to get first target to start eating on
+                    // Move zombie forward to synced pos
                     if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
-                        __instance.mPosX += __instance.GetZombieMoveDirection();
+                        zombieNetworked.LogicComponent.InterpolatePosition();
                     }
                 }
             }

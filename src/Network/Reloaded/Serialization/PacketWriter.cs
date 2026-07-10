@@ -249,6 +249,24 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Writes a 2-byte signed integer (short) to the packet.
+    /// </summary>
+    /// <param name="value">The short value to write.</param>
+    internal void WriteShort(short value)
+    {
+        _data.AddRange(BitConverter.GetBytes(value));
+    }
+
+    /// <summary>
+    /// Writes a 2-byte unsigned integer (ushort) to the packet.
+    /// </summary>
+    /// <param name="value">The ushort value to write.</param>
+    internal void WriteUShort(ushort value)
+    {
+        _data.AddRange(BitConverter.GetBytes(value));
+    }
+
+    /// <summary>
     /// Writes an 8-byte signed integer to the packet.
     /// </summary>
     /// <param name="value">The long value to write.</param>

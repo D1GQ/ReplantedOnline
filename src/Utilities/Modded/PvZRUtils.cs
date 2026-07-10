@@ -126,31 +126,13 @@ internal static class PvZRUtils
     }
 
     /// <summary>
-    /// Gets the movement direction of the zombie based on its current state.
+    /// Checks if the zombie type is either a target zombie or a gravestone.
     /// </summary>
-    /// <param name="zombie">The zombie instance to get the move direction for.</param>
+    /// <param name="zombieType">The zombie type to evaluate.</param>
     /// <returns>
-    /// The movement direction value
+    /// <c>true</c> if the zombie type is <see cref="ZombieType.Target"/> or <see cref="ZombieType.Gravestone"/>;
+    /// otherwise, <c>false</c>.
     /// </returns>
-    internal static float GetZombieMoveDirection(this Zombie zombie)
-    {
-        float speed = zombie.mVelX + 0.75f;
-
-        if (!zombie.IsWalkingBackwards())
-        {
-            return -speed;
-        }
-        else
-        {
-            return speed;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the zombie type is a target zombie or gravestone.
-    /// </summary>
-    /// <param name="zombieType">The zombie type.</param>
-    /// <returns></returns>
     internal static bool IsGravestoneOrTarget(this ZombieType zombieType)
     {
         return zombieType is ZombieType.Target or ZombieType.Gravestone;

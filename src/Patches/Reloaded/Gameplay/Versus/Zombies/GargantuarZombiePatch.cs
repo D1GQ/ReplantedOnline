@@ -51,12 +51,10 @@ internal static class GargantuarZombiePatch
                     {
                         if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
-                            // If the gargantuar is in synced smashing state, move it forward to find a target
-                            zombieNetworked.LogicComponent.PosSyncingPaused = true;
-                            zombieNetworked.LogicComponent.StopLarpPos();
+                            // If the gargantuar is in synced smashing state, move it to synced pos
                             if (__result == null)
                             {
-                                __instance.mPosX += __instance.GetZombieMoveDirection();
+                                zombieNetworked.LogicComponent.InterpolatePosition();
                             }
                             else
                             {
@@ -66,15 +64,7 @@ internal static class GargantuarZombiePatch
                         else if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
                         {
                             // If the gargantuar is not in synced smashing state, move it backward if target is found
-                            if (__result != null)
-                            {
-                                if (__result.mX < __instance.mX)
-                                {
-                                    __instance.mPosX -= __instance.GetZombieMoveDirection();
-                                }
-
-                                __result = null;
-                            }
+                            __result = null;
                         }
                     }
                     else
@@ -82,7 +72,6 @@ internal static class GargantuarZombiePatch
                         // If the gargantuar is in smashing phase, clear target state
                         if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_TARGET_STATE)
                         {
-                            zombieNetworked.LogicComponent.PosSyncingPaused = false;
                             zombieNetworked.State = null;
                         }
                     }

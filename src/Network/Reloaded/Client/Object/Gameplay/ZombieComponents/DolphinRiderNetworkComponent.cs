@@ -30,10 +30,5 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
         {
             Net.Target = null;
         }
-
-        if (Net.Zombie.mZombiePhase is not ZombiePhase.DolphinRiding)
-        {
-            UpdatePositionSync();
-        }
     }
 }
