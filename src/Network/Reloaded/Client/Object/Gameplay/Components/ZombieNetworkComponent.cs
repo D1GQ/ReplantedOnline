@@ -94,7 +94,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             float diffAbs = Mathf.Abs(diff);
 
             // Speed multiplier
-            float speedMultiplier = 1f + (diffAbs * 0.02f);
+            float speedMultiplier = 0.8f + (diffAbs * 0.02f);
 
             // Cap max speed
             speedMultiplier = Mathf.Min(speedMultiplier, 5f);
