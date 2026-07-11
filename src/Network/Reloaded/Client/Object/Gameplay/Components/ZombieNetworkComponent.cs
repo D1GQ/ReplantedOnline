@@ -31,7 +31,8 @@ internal class ZombieNetworkComponent : NetworkComponent
     /// Updates the zombie's position.
     /// </summary>
     /// <param name="distance">The base distance to move per update</param>
-    internal void UpdatePosition(float distance)
+    /// <param name="useNonNetworkLogic">Use the base update position logic</param>
+    internal virtual void UpdatePosition(float distance, bool useNonNetworkLogic = false)
     {
         if (Net.Zombie == null)
             return;
@@ -42,7 +43,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             return;
         }
 
-        if (Net.AmOwner)
+        if (useNonNetworkLogic)
         {
             // Move the zombie based on walking direction
             if (!Net.Zombie.IsWalkingBackwards())
@@ -53,6 +54,13 @@ internal class ZombieNetworkComponent : NetworkComponent
             {
                 Net.Zombie.mPosX += distance;
             }
+
+            return;
+        }
+
+        if (Net.AmOwner)
+        {
+            UpdatePosition(distance, true);
 
             // Sync position to network every 0.25 seconds, but only if position changed
             if (dirtyPosTimer.AccumulatedTime > 0.25f &&
@@ -123,7 +131,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (syncedPosX == null)
             return;
 
-        UpdatePosition(2f);
+        UpdatePosition(1f);
     }
 
     public override void Serialize(PacketWriter packetWriter, bool init)
