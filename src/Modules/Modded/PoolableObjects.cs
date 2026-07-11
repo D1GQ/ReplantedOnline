@@ -1,4 +1,6 @@
-﻿namespace ReplantedOnline.Modules.Modded;
+﻿using System.Collections.Concurrent;
+
+namespace ReplantedOnline.Modules.Modded;
 
 /// <summary>
 /// Provides a generic object pool for reusing instances of type <typeparamref name="T"/>.
@@ -7,14 +9,24 @@
 /// <param name="maxPoolSize">The maximum number of objects to keep in the pool. Default is 100.</param>
 internal class PoolableObjects<T>(int maxPoolSize = 100) where T : new()
 {
-    private readonly Queue<T> _pool = new();
+    private readonly ConcurrentQueue<T> _pool = new();
     private int _amountInUse;
     private readonly int _maxPoolSize = maxPoolSize;
+    private readonly object _lock = new();
 
     /// <summary>
     /// Gets the current number of objects that have been retrieved but not yet released.
     /// </summary>
-    internal int AmountInUse => _amountInUse;
+    internal int AmountInUse
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _amountInUse;
+            }
+        }
+    }
 
     /// <summary>
     /// Retrieves an object from the pool. If the pool is empty, a new instance is created.
@@ -22,11 +34,14 @@ internal class PoolableObjects<T>(int maxPoolSize = 100) where T : new()
     /// <returns>An instance of type <typeparamref name="T"/> from the pool or a new instance.</returns>
     internal T Get()
     {
-        _amountInUse++;
-
-        if (_pool.Count > 0)
+        lock (_lock)
         {
-            return _pool.Dequeue();
+            _amountInUse++;
+        }
+
+        if (_pool.TryDequeue(out var item))
+        {
+            return item;
         }
 
         return new T();
@@ -38,11 +53,16 @@ internal class PoolableObjects<T>(int maxPoolSize = 100) where T : new()
     /// <param name="item">The object to return to the pool.</param>
     internal void Release(T item)
     {
-        _amountInUse--;
+        if (item == null) return;
 
-        if (_pool.Count < _maxPoolSize)
+        lock (_lock)
         {
-            _pool.Enqueue(item);
+            _amountInUse--;
+
+            if (_pool.Count < _maxPoolSize)
+            {
+                _pool.Enqueue(item);
+            }
         }
     }
 
@@ -51,7 +71,10 @@ internal class PoolableObjects<T>(int maxPoolSize = 100) where T : new()
     /// </summary>
     internal void Clear()
     {
-        _amountInUse = 0;
-        _pool.Clear();
+        lock (_lock)
+        {
+            _amountInUse = 0;
+            _pool.Clear();
+        }
     }
 }

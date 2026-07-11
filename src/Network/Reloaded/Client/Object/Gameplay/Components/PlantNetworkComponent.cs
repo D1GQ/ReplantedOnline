@@ -66,11 +66,23 @@ internal class PlantNetworkComponent : NetworkComponent
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WritePackedInt(Net.Plant?.mPlantHealth ?? int.MaxValue);
+        if (Net.Plant != null)
+        {
+            packetWriter.WriteBool(false);
+            packetWriter.WritePackedInt(Net.Plant.mPlantHealth);
+        }
+        else
+        {
+            packetWriter.WriteBool(true);
+        }
     }
 
     public override void Deserialize(PacketReader packetReader, bool init)
     {
+        bool isNull = packetReader.ReadBool();
+        if (isNull)
+            return;
+
         lastSyncPlantHealth = Math.Max(packetReader.ReadPackedInt(), 25);
     }
 }

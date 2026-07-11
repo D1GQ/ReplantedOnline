@@ -28,8 +28,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     private float? syncedPosX;
 
     /// <summary>
-    /// Updates the zombie's position. For owner: moves the zombie and syncs position periodically.
-    /// For non-owner: moves toward the synced position with dynamic speed based on distance.
+    /// Updates the zombie's position.
     /// </summary>
     /// <param name="distance">The base distance to move per update</param>
     internal void UpdatePosition(float distance)
