@@ -55,6 +55,7 @@ internal static class ZombiePatch
                 var zombieNetworked = __instance.GetNetworked();
                 zombieNetworked?.SendEnteringHouseRpc(__instance.mPosX);
                 VersusGameplayManager.EndGame(__instance.mController.transform.position, PlayerTeam.Zombies);
+                __instance.mBoard.mCutScene.StartZombiesWon();
             }
 
             return false;

@@ -328,8 +328,12 @@ internal sealed class ZombieNetworked : NetworkObject
     private void HandleEnteringHouseRpc(float xPos)
     {
         EnteringHouse = true;
-        Zombie?.mPosX = xPos;
         VersusGameplayManager.EndGame(Zombie?.mController?.transform.position ?? Vector3.zero, PlayerTeam.Zombies);
+        if (Zombie != null)
+        {
+            Zombie.mPosX = xPos;
+            Zombie.mBoard.mCutScene.StartZombiesWon();
+        }
     }
 
     internal void SendMindControlledRpc()

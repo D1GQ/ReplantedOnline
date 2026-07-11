@@ -65,8 +65,9 @@ internal class VersusGameplayManager
         trueFocus.transform.position = focusPos;
 
         Instances.GameplayActivity.VersusMode.SetFocusOriginal(trueFocus, Vector3.zero);
+        Instances.GameplayActivity.m_messageWidgetController.Hide();
+        Instances.GameplayActivity.Board.FreezeEffectsForCutscene(true);
         Instances.GameplayActivity.m_audioService.StopAllMusic();
-        Instances.GameplayActivity.Board.Pause(true);
         VersusEndGameManager.EndGame(winningTeam);
     }
 

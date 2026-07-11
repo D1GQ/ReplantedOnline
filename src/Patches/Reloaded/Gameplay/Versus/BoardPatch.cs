@@ -240,4 +240,16 @@ internal static class BoardPatch
 
         return true;
     }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.ZombiesWon))]
+    [HarmonyPrefix]
+    private static bool Board_ZombiesWon_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

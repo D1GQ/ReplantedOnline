@@ -1,4 +1,5 @@
-﻿using Il2CppTMPro;
+﻿using Il2CppReloaded.Services;
+using Il2CppTMPro;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
@@ -31,6 +32,10 @@ internal static class VersusEndGameManager
         Instances.GameplayActivity.Player1VersusWinData = new();
         Instances.GameplayActivity.Player2VersusWinData = new();
 
+        var audioService = Instances.GameplayActivity.m_audioService.Cast<AudioService>();
+        audioService.m_audioSources.GetAudioSource(Sound.SOUND_WINMUSIC).Stop();
+        audioService.m_audioSources.GetAudioSource(Sound.SOUND_LOSEMUSIC).Stop();
+
         // Play winning or losing sound 
         foreach (var netClient in ReloadedLobby.LobbyData!.AllClients.Values)
         {
@@ -38,11 +43,11 @@ internal static class VersusEndGameManager
             {
                 if (netClient.Team == winningTeam)
                 {
-                    Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_WINMUSIC);
+                    audioService.PlaySample(Sound.SOUND_WINMUSIC);
                 }
                 else
                 {
-                    Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_LOSEMUSIC);
+                    audioService.PlaySample(Sound.SOUND_LOSEMUSIC);
                 }
             }
         }

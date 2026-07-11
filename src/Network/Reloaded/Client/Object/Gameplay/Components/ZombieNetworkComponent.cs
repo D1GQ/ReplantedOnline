@@ -73,15 +73,6 @@ internal class ZombieNetworkComponent : NetworkComponent
         }
         else
         {
-            // If not entering the house and is at house, skip position updates
-            if (!Net.EnteringHouse)
-            {
-                if (Net.Zombie.mPosX <= 0f)
-                {
-                    return;
-                }
-            }
-
             if (syncedPosX == null)
                 return;
 
