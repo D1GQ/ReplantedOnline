@@ -50,22 +50,24 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
                 Net.Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
                 Net.Zombie.mPhaseCounter = 0;
                 Net.Zombie.mTargetPlantID = PlantID.Null;
+                Net.Zombie.PlayZombieReanim("anim_walk", ReanimLoopType.Loop, 20, 6f);
             }
             else if (ReadyToFire)
             {
                 ReadyToFire = false;
                 Net.Zombie.mPhaseCounter = 300;
                 Net.Zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
-                Net.Zombie.PlayZombieReanim("anim_shoot", ReanimLoopType.PlayOnce, 20, 24f);
+                Net.Zombie.PlayZombieReanim("anim_shoot", ReanimLoopType.PlayOnceAndHold, 20, 24f);
             }
 
             if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
             {
-                if (Net.Zombie.mPhaseCounter <= 160f)
+                if (Net.Zombie.mPhaseCounter <= 165f)
                 {
                     Net.Zombie.mZombiePhase = ZombiePhase.CatapultReloading;
                     Net.Zombie.mPhaseCounter = int.MaxValue;
                     Net.Target = null;
+                    Net.Zombie.PlayZombieReanim("anim_idle", ReanimLoopType.Loop, 20, 12f);
                 }
             }
         }
