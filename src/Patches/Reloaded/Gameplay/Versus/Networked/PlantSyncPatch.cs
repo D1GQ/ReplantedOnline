@@ -90,7 +90,17 @@ internal static class PlantSyncPatch
             var plantNetworked = __instance.GetNetworked();
             if (plantNetworked != null)
             {
-                plantNetworked.SendDieRpc();
+                if (VersusState.AmPlantSide)
+                {
+                    plantNetworked.SendDieRpc();
+                }
+                else
+                {
+                    if (!plantNetworked.Dying)
+                    {
+                        return false;
+                    }
+                }
             }
         }
 

@@ -67,6 +67,11 @@ internal sealed class PlantNetworked : NetworkObject
     /// </summary>
     internal int GridY;
 
+    /// <summary>
+    /// Gets or sets if the the plant is currently dying on the network.
+    /// </summary>
+    internal bool Dying { get; set; }
+
     internal PlantNetworkComponent LogicComponent = default!;
 
     public sealed override string GetObjectName()
@@ -103,7 +108,7 @@ internal sealed class PlantNetworked : NetworkObject
         if (!_waitingToDespawn)
         {
             _waitingToDespawn = true;
-            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => Plant == null || Plant.mDead && Dead, () =>
+            this.StartCoroutine(CoroutineUtils.WaitForCondition(() => Plant == null || Plant.mDead, () =>
             {
                 DespawnAndDestroy(waitToBeReady);
             }));
@@ -124,13 +129,12 @@ internal sealed class PlantNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (Plant != null)
+        if (Plant != null && !Dying)
         {
             Plant.DieOriginal();
         }
     }
 
-    internal bool Dead;
     private void Update()
     {
         if (!IsOnNetwork) return;
@@ -142,42 +146,45 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendDieRpc()
     {
-        if (!Dead)
+        if (!Dying)
         {
-            Dead = true;
+            Dying = true;
             SendNetworkObjectRpc(PlantRpcs.Die, Plant?.mDoSpecialCountdown ?? 0);
-            DespawnAndDestroy(true);
         }
+
+        DespawnAndDestroy(true);
     }
 
     [RpcHandler(PlantRpcs.Die)]
     private void HandleDieRpc()
     {
-        if (!Dead)
+        if (!Dying)
         {
-            Dead = true;
+            Dying = true;
             Plant?.DieOriginal();
         }
+
         IsReadyToDespawn = true;
     }
 
     internal void SendShoveledRpc()
     {
-        if (!Dead)
+        if (!Dying)
         {
-            Dead = true;
+            Dying = true;
             Plant?.DieOriginal();
             SendNetworkObjectRpc(PlantRpcs.Shoveled);
-            DespawnAndDestroy(true);
         }
+
+        DespawnAndDestroy(true);
     }
 
     [RpcHandler(PlantRpcs.Shoveled)]
     private void HandleShoveledRpc()
     {
-        if (!Dead)
+        if (!Dying)
         {
-            Dead = true;
+            Dying = true;
             Plant?.DieOriginal();
             Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
         }
@@ -187,13 +194,25 @@ internal sealed class PlantNetworked : NetworkObject
 
     internal void SendSquashPlantRpc()
     {
-        SendNetworkObjectRpc(PlantRpcs.SquishPlant);
+        if (!Dying)
+        {
+            Dying = true;
+            SendNetworkObjectRpc(PlantRpcs.SquishPlant);
+        }
+
+        DespawnAndDestroy(true);
     }
 
     [RpcHandler(PlantRpcs.SquishPlant)]
     private void HandleSquashPlantRpc()
     {
-        Plant?.SquishOriginal();
+        if (!Dying)
+        {
+            Dying = true;
+            Plant?.SquishOriginal();
+        }
+
+        IsReadyToDespawn = true;
     }
 
     internal void SendReadyToFireRpc(int row, ref PlantWeapon plantWeapon)

@@ -28,9 +28,8 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
             {
                 if (!_isDoingSpecial)
                 {
+                    Net.Dying = true;
                     SendDoSpecialRpc();
-                    Net.Dead = true;
-                    Net.DespawnAndDestroyWhenDeadOrNull(true);
                 }
             }
         }
@@ -48,6 +47,8 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
             DoSpecial_PlantSide();
             SendNetworkComponentRpc(PlantSpecialRpcs.DoSpecial);
         }
+
+        Net.DespawnAndDestroyWhenDeadOrNull(true);
     }
 
     [RpcHandler(PlantSpecialRpcs.DoSpecial)]
@@ -57,14 +58,18 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         {
             _isDoingSpecial = true;
             DoSpecial();
-            Net.IsReadyToDespawn = true;
         }
+
+        Net.IsReadyToDespawn = true;
     }
 
     protected virtual void DoSpecial()
     {
-        Net.Dead = true;
-        Net.Plant?.DoSpecial();
+        if (!Net.Dying)
+        {
+            Net.Dying = true;
+            Net.Plant?.DoSpecial();
+        }
     }
 
     protected virtual void DoSpecial_PlantSide() { }

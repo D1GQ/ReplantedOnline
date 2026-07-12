@@ -1,4 +1,5 @@
 ﻿using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using UnityEngine;
@@ -23,33 +24,32 @@ internal class PlantNetworkComponent : NetworkComponent
 
     internal virtual void OnDeath(DeathReason deathReason) { }
 
-    internal int? lastSyncPlantHealth;
-    private float _syncHealthCooldown = 2f;
     internal override void Update()
     {
         UpdateHealthSync();
     }
 
+    internal int? lastSyncPlantHealth;
+    private readonly UnityTimer _dirtyHpTimer = new();
     protected void UpdateHealthSync()
     {
         if (Net.Plant == null) return;
 
         if (Net.AmOwner)
         {
-            if (!Net.Dead && !Net.Plant.mDead)
+            if (!Net.Dying && !Net.Plant.mDead)
             {
-                if (_syncHealthCooldown <= 0f && lastSyncPlantHealth != Net.Plant.mPlantHealth)
+                if (_dirtyHpTimer.AccumulatedTime > 1f && lastSyncPlantHealth != Net.Plant.mPlantHealth)
                 {
+                    _dirtyHpTimer.Reset();
                     Net.MarkDirty();
-                    _syncHealthCooldown = 1f;
                     lastSyncPlantHealth = Net.Plant.mPlantHealth;
                 }
-                _syncHealthCooldown -= Time.deltaTime;
             }
         }
         else
         {
-            if (!Net.Dead && !Net.Plant.mDead)
+            if (!Net.Dying && !Net.Plant.mDead)
             {
                 if (lastSyncPlantHealth != null)
                 {

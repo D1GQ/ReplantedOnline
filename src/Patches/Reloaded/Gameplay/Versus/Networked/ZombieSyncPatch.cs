@@ -16,12 +16,20 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
-
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendDeathRpc(theDamageFlags);
+                if (VersusState.AmPlantSide)
+                {
+                    zombieNetworked.SendDeathRpc(theDamageFlags);
+                }
+                else
+                {
+                    if (!zombieNetworked.Dying)
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -42,12 +50,20 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
-
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendDieLootRpc(true);
+                if (VersusState.AmPlantSide)
+                {
+                    zombieNetworked.SendDieLootRpc(true);
+                }
+                else
+                {
+                    if (!zombieNetworked.Dying)
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -68,12 +84,20 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
-
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendDieLootRpc(false);
+                if (VersusState.AmPlantSide)
+                {
+                    zombieNetworked.SendDieLootRpc(false);
+                }
+                else
+                {
+                    if (!zombieNetworked.Dying)
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -120,7 +144,6 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
 
             if (!__instance.mDead)
@@ -128,7 +151,17 @@ internal static class ZombieSyncPatch
                 var zombieNetworked = __instance.GetNetworked();
                 if (zombieNetworked != null)
                 {
-                    zombieNetworked.SendMowDownRpc();
+                    if (VersusState.AmPlantSide)
+                    {
+                        zombieNetworked.SendMowDownRpc();
+                    }
+                    else
+                    {
+                        if (!zombieNetworked.Dying)
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
         }

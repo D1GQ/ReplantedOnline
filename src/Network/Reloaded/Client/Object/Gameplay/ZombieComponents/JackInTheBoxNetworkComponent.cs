@@ -26,10 +26,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         {
             if (Net.Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
-                Net.Dead = true;
-                _isExploding = true;
                 SendExplodeRpc();
-                Net.DespawnAndDestroyWhenNullOrDead(true);
             }
         }
         else
@@ -64,15 +61,26 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
 
     private void SendExplodeRpc()
     {
-        SendNetworkComponentRpc(JackInTheBoxRpcs.Explode);
+        if (!_isExploding)
+        {
+            _isExploding = true;
+            Net.Dying = true;
+            SendNetworkComponentRpc(JackInTheBoxRpcs.Explode);
+        }
+
+        Net.DespawnAndDestroyWhenNullOrDead(true);
     }
 
     [RpcHandler(JackInTheBoxRpcs.Explode)]
     private void HandleExplodeRpc()
     {
-        _isExploding = true;
-        Net.Dead = true;
-        Net.Zombie?.mPhaseCounter = 0;
+        if (!_isExploding)
+        {
+            _isExploding = true;
+            Net.Dying = true;
+            Net.Zombie?.mPhaseCounter = 0;
+        }
+
         Net.IsReadyToDespawn = true;
     }
 }

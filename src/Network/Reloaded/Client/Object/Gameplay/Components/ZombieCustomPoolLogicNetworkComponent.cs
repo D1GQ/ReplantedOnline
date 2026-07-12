@@ -200,8 +200,8 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             Net.Zombie.mController.ClipRect(new(-500, -500, 1000, 615));
             yield return null;
         }
-        Net.Dead = true;
         Net.Zombie.DieNoLootOriginal();
+        Net.Dying = true;
         Net.IsReadyToDespawn = true;
     }
 }
