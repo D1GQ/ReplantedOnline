@@ -23,6 +23,8 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
     {
         if (Net.Zombie?.mController == null) return;
 
+        Net.Zombie.mGroanCounter = int.MaxValue;
+
         if (Net.Zombie.mBoard.StageHasNoGrass())
         {
             Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;

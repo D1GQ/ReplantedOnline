@@ -252,4 +252,30 @@ internal static class BoardPatch
 
         return true;
     }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.CountZombiesOnScreen))]
+    [HarmonyPrefix]
+    private static bool Board_CountZombiesOnScreen_Prefix(Board __instance, ref int __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            int count = 0;
+            foreach (var zombie in __instance.GetZombies())
+            {
+                if (zombie.mZombieType.IsGravestoneOrTarget())
+                    continue;
+
+                if (!zombie.IsDeadOrDying() && zombie.IsOnBoard())
+                {
+                    count++;
+                }
+            }
+
+            __result = count;
+
+            return false;
+        }
+
+        return true;
+    }
 }
