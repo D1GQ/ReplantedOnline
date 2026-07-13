@@ -27,6 +27,7 @@ internal sealed class DebugArena : IArena, IArenaData
         Ladder,
         Bungee,
         Flag,
+        Garlic,
         Test
     }
 
@@ -175,6 +176,16 @@ internal sealed class DebugArena : IArena, IArenaData
                 SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 2, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 3, 4, true);
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, true);
+                break;
+            case DebugModes.Garlic:
+                for (int column = 0; column < 6; column++)
+                {
+                    for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                    {
+                        SeedPacketDefinitions.SpawnPlant(SeedType.Garlic, column, row, true);
+                    }
+                }
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Normal, 7, 2, true);
                 break;
             case DebugModes.Test:
                 break;

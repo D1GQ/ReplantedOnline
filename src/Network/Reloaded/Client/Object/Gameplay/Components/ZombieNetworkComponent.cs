@@ -132,7 +132,6 @@ internal class ZombieNetworkComponent : NetworkComponent
         packetWriter.WriteBool(Net.Zombie == null);
         if (Net.Zombie != null)
         {
-            packetWriter.WritePackedInt(Net.Zombie.mRow);
             packetWriter.WriteFloat(Net.Zombie.mVelX);
             short packedPos = (short)(Net.Zombie.mPosX * 25f);
             packetWriter.WriteShort(packedPos);
@@ -148,7 +147,6 @@ internal class ZombieNetworkComponent : NetworkComponent
             bool isZombieNull = packetReader.ReadBool();
             if (!isZombieNull && Net.Zombie != null)
             {
-                Net.Zombie.mRow = packetReader.ReadPackedInt();
                 Net.Zombie.mVelX = packetReader.ReadFloat();
                 Net.Zombie.UpdateAnimSpeed();
                 short packedPos = packetReader.ReadShort();

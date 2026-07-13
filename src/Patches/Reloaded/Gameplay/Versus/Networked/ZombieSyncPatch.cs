@@ -316,4 +316,36 @@ internal static class ZombieSyncPatch
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateYuckyFace))]
+    [HarmonyPrefix]
+    private static void Zombie_UpdateYuckyFace_Prefix(Zombie __instance, ref (int Row, int RenderOrder) __state)
+    {
+        __state = (__instance.mRow, __instance.RenderOrder);
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateYuckyFace))]
+    [HarmonyPostfix]
+    private static void Zombie_UpdateYuckyFace_Postfix(Zombie __instance, (int Row, int RenderOrder) __state)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (VersusState.AmPlantSide)
+            {
+                if (__instance.mRow != __state.Row)
+                {
+                    var zombieNetworked = __instance.GetNetworked();
+                    if (zombieNetworked != null)
+                    {
+                        zombieNetworked.SendMoveToRowRpc(__instance.mRow);
+                    }
+                }
+            }
+            else
+            {
+                __instance.mRow = __state.Row;
+                __instance.RenderOrder = __state.RenderOrder;
+            }
+        }
+    }
 }

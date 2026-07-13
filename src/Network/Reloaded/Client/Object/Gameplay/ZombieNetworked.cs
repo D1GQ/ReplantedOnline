@@ -39,7 +39,8 @@ internal sealed class ZombieNetworked : NetworkObject
         SetFrozen,
         ApplyBurn,
         SnapToPos,
-        SetState
+        SetState,
+        MoveToRow
     }
 
     /// <summary>
@@ -436,6 +437,22 @@ internal sealed class ZombieNetworked : NetworkObject
         }
 
         State = state;
+    }
+
+    internal void SendMoveToRowRpc(int row)
+    {
+        SendNetworkObjectRpc(ZombieRpcs.MoveToRow, row);
+    }
+
+    [RpcHandler(ZombieRpcs.MoveToRow)]
+    private void HandleSnapToPosRpc(int row)
+    {
+        if (Zombie == null)
+            return;
+
+        Zombie.mRow = row;
+        Zombie.mRenderOrder = Board.MakeRenderOrder(RenderLayer.Zombie, row, 4);
+        PoolComponent.WhiteWaterEffect?.UpdateSortingOrder(Zombie.mController);
     }
 
     [HideFromIl2Cpp]

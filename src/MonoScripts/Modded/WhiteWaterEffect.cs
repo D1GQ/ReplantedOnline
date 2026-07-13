@@ -61,6 +61,11 @@ internal sealed class WhiteWaterEffect : MonoBehaviour
         }
     }
 
+    internal void UpdateSortingOrder(ZombieController zombieController)
+    {
+        _sortingOrder = -14400 + (250 * zombieController.m_zombie.mRow);
+    }
+
     private void OnDisable()
     {
         _currentFrame = 0;

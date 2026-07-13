@@ -20,7 +20,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
     private bool _inPool;
     private bool _isDrowning;
 
-    private WhiteWaterEffect? _whiteWaterEffect = null;
+    internal WhiteWaterEffect? WhiteWaterEffect { get; private set; } = null;
 
     internal sealed override void OnInit()
     {
@@ -38,14 +38,14 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             Net.Zombie.mController.SetImageOverride("whitewater", string.Empty);
         }
 
-        _whiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
+        WhiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
     }
 
     internal sealed override void OnDestroyed()
     {
-        if (_whiteWaterEffect != null)
+        if (WhiteWaterEffect != null)
         {
-            UnityEngine.Object.Destroy(_whiteWaterEffect.gameObject);
+            UnityEngine.Object.Destroy(WhiteWaterEffect.gameObject);
         }
     }
 
@@ -110,57 +110,57 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
     private void UpdateWhiteWaterEffect(bool onPool)
     {
-        if (_whiteWaterEffect == null) return;
+        if (WhiteWaterEffect == null) return;
 
         var zombie = Net.Zombie;
         if (zombie == null) return;
         var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
-        _whiteWaterEffect.gameObject.SetActive(active);
+        WhiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
         {
             case ZombieType.TrashCan:
                 if (zombie.mShieldType != ShieldType.None)
                 {
-                    _whiteWaterEffect.transform.localPosition = new(-15f, 110f, 0f);
-                    _whiteWaterEffect.transform.localScale = new(1.05f, 1f, 1f);
+                    WhiteWaterEffect.transform.localPosition = new(-15f, 110f, 0f);
+                    WhiteWaterEffect.transform.localScale = new(1.05f, 1f, 1f);
                     return;
                 }
                 break;
             case ZombieType.Door:
                 if (zombie.mShieldType != ShieldType.None)
                 {
-                    _whiteWaterEffect.transform.localPosition = new(-25f, 110f, 0f);
-                    _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
+                    WhiteWaterEffect.transform.localPosition = new(-25f, 110f, 0f);
+                    WhiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
                     return;
                 }
                 break;
             case ZombieType.Newspaper:
                 if (zombie.mShieldType != ShieldType.None)
                 {
-                    _whiteWaterEffect.transform.localPosition = new(-30f, 114f, 0f);
-                    _whiteWaterEffect.transform.localScale = new(1.2f, 1f, 1f);
+                    WhiteWaterEffect.transform.localPosition = new(-30f, 114f, 0f);
+                    WhiteWaterEffect.transform.localScale = new(1.2f, 1f, 1f);
                 }
                 else
                 {
-                    _whiteWaterEffect.transform.localPosition = new(-20f, 114f, 0f);
-                    _whiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
+                    WhiteWaterEffect.transform.localPosition = new(-20f, 114f, 0f);
+                    WhiteWaterEffect.transform.localScale = new(1.1f, 1f, 1f);
                 }
                 return;
             case ZombieType.JackInTheBox:
-                _whiteWaterEffect.transform.localPosition = new(-5.9f, 114f, 0f);
-                _whiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
+                WhiteWaterEffect.transform.localPosition = new(-5.9f, 114f, 0f);
+                WhiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
                 return;
             case ZombieType.Football:
-                _whiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
-                _whiteWaterEffect.transform.localScale = new(1.25f, 1f, 1f);
+                WhiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
+                WhiteWaterEffect.transform.localScale = new(1.25f, 1f, 1f);
                 return;
             default:
                 break;
         }
 
-        _whiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
-        _whiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
+        WhiteWaterEffect.transform.localPosition = new(5f, 110f, 0f);
+        WhiteWaterEffect.transform.localScale = new(zombie.mZombieRect.width * 0.020f, 1f, 1f);
     }
 
     private bool CanGoInWater()
