@@ -6,6 +6,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
@@ -21,6 +22,21 @@ internal sealed class StartGameRpc : IRpcMessage<SelectionSet>
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteEnum(selectionSet);
+        if (selectionSet == SelectionSet.Random)
+        {
+            var zombieSeedTypes = RandomGamemode.PickZombieSeedPacketTypes();
+            var plantSeedTypes = RandomGamemode.PickPlantSeedPacketTypes(zombieSeedTypes.AsReadOnly());
+            packetWriter.WritePackedInt(zombieSeedTypes.Count);
+            foreach (var zombieSeedType in zombieSeedTypes)
+            {
+                packetWriter.WriteEnum(zombieSeedType);
+            }
+            packetWriter.WritePackedInt(plantSeedTypes.Count);
+            foreach (var plantSeedType in plantSeedTypes)
+            {
+                packetWriter.WriteEnum(plantSeedType);
+            }
+        }
         NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.StartGame, packetWriter, true);
         packetWriter.Recycle();
         ReloadedLobby.LobbyData!.HasStarted.Value = true;
@@ -34,6 +50,23 @@ internal sealed class StartGameRpc : IRpcMessage<SelectionSet>
         if (sender.AmHost)
         {
             var selectionSet = packetReader.ReadEnum<SelectionSet>();
+            if (selectionSet == SelectionSet.Random)
+            {
+                RandomGamemode.ChosenZombiesSeedTypes.Clear();
+                RandomGamemode.ChosenPlantSeedTypes.Clear();
+                int zombieSeedTypesCount = packetReader.ReadPackedInt();
+                for (int i = 0; i < zombieSeedTypesCount; i++)
+                {
+                    SeedType zombieSeedType = packetReader.ReadEnum<SeedType>();
+                    RandomGamemode.ChosenZombiesSeedTypes.Add(zombieSeedType);
+                }
+                int plantSeedTypesCount = packetReader.ReadPackedInt();
+                for (int i = 0; i < plantSeedTypesCount; i++)
+                {
+                    SeedType plantSeedType = packetReader.ReadEnum<SeedType>();
+                    RandomGamemode.ChosenPlantSeedTypes.Add(plantSeedType);
+                }
+            }
 
             ReplantedOnlineMod.Logger.Msg(typeof(StartGameRpc), "Game Starting...");
 

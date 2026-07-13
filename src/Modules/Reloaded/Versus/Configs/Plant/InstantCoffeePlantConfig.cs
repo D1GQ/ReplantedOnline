@@ -3,29 +3,19 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
-using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Plant;
 
-[RegisterPlantConfig(SeedType.Seashroom)]
-internal sealed class SeashroomPlantConfig : IPlantConfig
+[RegisterPlantConfig(SeedType.InstantCoffee)]
+internal sealed class InstantCoffeePlantConfig : IPlantConfig
 {
     /// <inheritdoc/>
-    public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena)
-    {
-        plantDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[SeedType.Seashroom];
-
-        if (arena.IsArenaAtNight())
-        {
-            // Add Cost of instant coffee to balance price
-            plantDefinition.m_versusCost += 25;
-        }
-    }
+    public void SetArenaDefinition(PlantDefinition plantDefinition, ArenaTypes arena) { }
 
     /// <inheritdoc/>
     public bool IsAllowedInArena(ArenaTypes arena)
     {
-        return arena is ArenaTypes.PoolNight;
+        return arena is ArenaTypes.Day or ArenaTypes.Pool or ArenaTypes.Roof or ArenaTypes.China;
     }
 
     /// <inheritdoc/>

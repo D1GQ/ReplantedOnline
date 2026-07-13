@@ -59,6 +59,12 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
+    public bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType)
+    {
+        return true;
+    }
+
+    /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-AdventureArea3Level2")!;

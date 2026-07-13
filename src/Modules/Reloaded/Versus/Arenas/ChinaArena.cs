@@ -57,6 +57,12 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
+    public bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType)
+    {
+        return true;
+    }
+
+    /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-China")!;

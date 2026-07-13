@@ -57,6 +57,22 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
+    public bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType)
+    {
+        if (seedType is SeedType.Peashooter or SeedType.Repeater or SeedType.Snowpea or SeedType.Threepeater)
+        {
+            return false;
+        }
+
+        if (seedType is SeedType.Puffshroom or SeedType.Fumeshroom or SeedType.Scaredyshroom)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-AdventureArea5Level2")!;

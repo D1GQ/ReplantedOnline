@@ -32,6 +32,13 @@ internal interface IArenaSetupSeedbank
     SeedType[] QuickPlayZombies { get; }
 
     /// <summary>
+    /// Determines whether a seed type is allowed to be selected in the random gamemode.
+    /// </summary>
+    /// <param name="seedType">The seed type to check.</param>
+    /// <returns>True if the seed type is allowed; otherwise, false.</returns>
+    bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType);
+
+    /// <summary>
     /// Gets the seed packet count from the current arena or default versus mode.
     /// </summary>
     /// <returns>The number of seed packets available.</returns>

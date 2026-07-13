@@ -80,10 +80,12 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal readonly static SeedType[] ExcludeFromRandomSeedTypes = [
         // Plants
+        SeedType.InstantCoffee,
         SeedType.Flowerpot,
         SeedType.Lilypad,
         SeedType.Marigold,
         SeedType.Plantern,
+        SeedType.Umbrella,
 
         // Zombies
         SeedType.ZombieBalloon
