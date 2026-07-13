@@ -71,6 +71,9 @@ internal sealed class TimerPanel : MonoBehaviour
         if (_text == null || _shovelContainer == null)
             return;
 
+        if (Instances.GameplayActivity?.VersusMode == null)
+            return;
+
         _shovelContainer.anchoredPosition = new Vector2(128f, -370f);
 
         float currentTime = Instances.GameplayActivity.VersusMode.m_versusTime;
