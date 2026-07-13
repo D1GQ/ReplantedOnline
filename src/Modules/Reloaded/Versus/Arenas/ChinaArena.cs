@@ -113,7 +113,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
         line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);
 
-        _pushBackEventTimer.Set(30f);
+        _pushBackEventTimer.Set(30f - ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME);
     }
 
     private readonly UnityTimer _pushBackEventTimer = new();

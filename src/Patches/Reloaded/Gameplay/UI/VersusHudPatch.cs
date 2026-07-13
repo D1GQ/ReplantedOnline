@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Binders;
+using Il2CppTMPro;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
@@ -43,26 +45,50 @@ internal static class VersusHudPatch
         Instances.GameplayActivity.Board.mSunMoney.OpponentItem().Amount = 9999;
 
         // Scale HUDs
-        if (plantHud.transform.Il2CppTryCast<RectTransform>(out var rect))
+        if (plantHud.transform.Il2CppTryCast<RectTransform>(out var plantHudRect))
         {
-            rect.anchoredPosition = new(35, -35);
-            rect.localScale = new Vector3(0.9f, 0.9f, 1f);
+            plantHudRect.anchoredPosition = new(35, -35);
+            plantHudRect.localScale = new Vector3(0.9f, 0.9f, 1f);
         }
-        if (zombieHud.transform.Il2CppTryCast<RectTransform>(out var rect2))
+        if (zombieHud.transform.Il2CppTryCast<RectTransform>(out var zombieHudRect))
         {
-            rect2.anchoredPosition = new(-35, -35);
-            rect2.localScale = new Vector3(0.9f, 0.9f, 1f);
+            zombieHudRect.anchoredPosition = new(-35, -35);
+            zombieHudRect.localScale = new Vector3(0.9f, 0.9f, 1f);
         }
 
+        // Set up Timer Container
+        var mainHUDLayout = plantHud.transform.parent;
+        if (mainHUDLayout != null)
+        {
+            if (mainHUDLayout.Il2CppTryCast<RectTransform>(out var mainHUDLayoutRect))
+            {
+                var shovelContainer = plantHud.transform.Find("ShovelContainer");
+                if (shovelContainer != null)
+                {
+                    if (shovelContainer.Il2CppTryCast<RectTransform>(out var shovelContainerRect))
+                    {
+                        var textPrefab = mainHUDLayout.Find("TreeOfWisdomSize")?.GetComponent<TextMeshProUGUI>();
+                        if (textPrefab != null)
+                        {
+                            TimerPanel.Initialize(mainHUDLayoutRect, textPrefab, shovelContainerRect);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Reposition pause button
         var menuButtonContainer = plantHud.transform.parent?.Find("MenuButtonVisiblityContainer");
-        if (menuButtonContainer == null) return;
-
-        if (menuButtonContainer.Find("Nested_VS").Il2CppTryCast<RectTransform>(out var rect3))
+        if (menuButtonContainer != null)
         {
-            rect3.anchoredPosition = new Vector2(-35f, 0f);
-            rect3.localScale = new Vector3(0.9f, 0.9f, 1f);
+            if (menuButtonContainer.Find("Nested_VS").Il2CppTryCast<RectTransform>(out var menuButtonContainerRect))
+            {
+                menuButtonContainerRect.anchoredPosition = new Vector2(-35f, 0f);
+                menuButtonContainerRect.localScale = new Vector3(0.9f, 0.9f, 1f);
+            }
         }
 
+        // Hide opponent currency
         if (VersusState.AmZombieSide)
         {
             var binder = plantHud.transform.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);

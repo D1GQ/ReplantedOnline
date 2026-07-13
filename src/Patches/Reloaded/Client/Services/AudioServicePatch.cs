@@ -15,7 +15,7 @@ internal static class AudioServicePatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (VersusState.VersusPhase is VersusPhase.Gameplay && VersusState.IsInCountDown)
+            if (VersusState.VersusPhase is VersusPhase.Gameplay && VersusState.IsInPreCountDown)
             {
                 // Prevent jalapeno foley from playing in ChinaJalapenoNetworkComponent.cs
                 return false;

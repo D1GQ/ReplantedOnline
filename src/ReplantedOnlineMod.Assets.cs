@@ -42,6 +42,19 @@ internal partial class ReplantedOnlineMod
                 }
             }
 
+            internal static Sprite TimerPanel
+            {
+                get
+                {
+                    if (field == null)
+                    {
+                        field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Timer-Panel.png");
+                    }
+
+                    return field!;
+                }
+            }
+
             /// <summary>
             /// Contains arena-related sprite assets.
             /// </summary>

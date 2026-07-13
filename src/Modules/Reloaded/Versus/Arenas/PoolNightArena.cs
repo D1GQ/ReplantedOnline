@@ -71,9 +71,9 @@ internal sealed class PoolNightArena : PoolArena
 
     private void UpdateFogPlants()
     {
-        if (VersusTime < 3f)
+        if (VersusTime < 0f)
         {
-            SetFogPos(Mathf.Lerp(OffScreenPlantFog, StartPlantFog, VersusTime / 3f));
+            SetFogPos(Mathf.Lerp(OffScreenPlantFog, StartPlantFog, VersusTime / ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME));
         }
         else
         {

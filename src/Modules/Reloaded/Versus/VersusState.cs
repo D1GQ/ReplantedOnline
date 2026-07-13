@@ -62,7 +62,12 @@ internal static class VersusState
     internal static bool IsInGameplay => !IsInCountDown && VersusPhase is VersusPhase.Gameplay or VersusPhase.SuddenDeath;
 
     /// <summary>
-    /// Gets when Versus Mode is in read, set, plant.
+    /// Gets when Versus Mode is in ready, set, plant.
     /// </summary>
-    internal static bool IsInCountDown => Instances.GameplayActivity.VersusMode?.m_versusTime <= 3.2f;
+    internal static bool IsInCountDown => VersusTime <= 0f;
+
+    /// <summary>
+    /// Gets when Versus Mode is before ready, set, plant.
+    /// </summary>
+    internal static bool IsInPreCountDown => VersusTime + ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME < 1f;
 }

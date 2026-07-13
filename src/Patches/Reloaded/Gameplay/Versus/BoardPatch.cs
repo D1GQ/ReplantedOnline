@@ -112,7 +112,7 @@ internal static class BoardPatch
         if (ReloadedLobby.AmInLobby())
         {
             // Prevent planting effect and sound playing during countdown
-            if (VersusState.IsInCountDown)
+            if (VersusState.IsInPreCountDown)
             {
                 return false;
             }

@@ -19,6 +19,7 @@ internal static class VersusModePatch
         if (__instance.m_gameplayInitialized == false)
         {
             __instance.m_gameplayInitialized = true;
+            __instance.m_versusTime = -ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME;
             updateInterval.Reset();
             IArena.GetCurrentArena()?.InitializeArena(__instance);
             IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);

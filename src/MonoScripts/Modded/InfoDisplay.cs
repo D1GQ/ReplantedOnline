@@ -46,7 +46,7 @@ internal sealed class InfoDisplay : MonoBehaviour
         }
     }
 
-    private readonly Color[] _pingColors = [Color.green, Color.yellow, Color.red];
+    private readonly Color[] PingColors = [Color.green, Color.yellow, Color.red];
 
     private void OnGUI()
     {
@@ -94,7 +94,7 @@ internal sealed class InfoDisplay : MonoBehaviour
                         Style.CalcSize(new GUIContent(ping)).y
                     ),
                     Style,
-                    _pingColors.LerpColor((0f, 200f), estimatedPing),
+                    PingColors.LerpColor((0f, 200f), estimatedPing),
                     Color.black
                 );
             }

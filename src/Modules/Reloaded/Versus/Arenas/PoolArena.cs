@@ -97,7 +97,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
             SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 4, true);
 
-            _pushBackEventTimer.Set(30f);
+            _pushBackEventTimer.Set(30f - ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME);
         }
 
         // Add bowling line

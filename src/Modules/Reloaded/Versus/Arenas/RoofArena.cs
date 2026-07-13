@@ -130,7 +130,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             line.color = new(0.8f, 0f, 0f, 0.5f);
         }
 
-        _pushBackEventTimer.Reset();
+        _pushBackEventTimer.Set(-ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME);
     }
 
     private readonly UnityTimer _pushBackEventTimer = new();
