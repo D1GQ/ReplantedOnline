@@ -15,7 +15,8 @@ internal static class ProjectilePatch
     [HarmonyPostfix]
     private static void Zombie_GetZombieRect_Postfix(Zombie __instance, ref Rect __result)
     {
-        if (!__instance.mZombieType.IsGravestoneOrTarget()) return;
+        if (!__instance.mZombieType.IsGravestoneOrTarget())
+            return;
 
         // Check if we're in an online multiplayer lobby
         if (ReloadedLobby.AmInLobby())
@@ -50,9 +51,10 @@ internal static class ProjectilePatch
 
     [HarmonyPatch(typeof(Projectile), nameof(Projectile.IsZombieHitBySplash))]
     [HarmonyPostfix]
-    private static void Projectile_IsZombieHitBySplash_Postfix(Projectile __instance, Zombie theZombie, ref bool __result)
+    private static void Projectile_IsZombieHitBySplash_Melonpult_Postfix(Projectile __instance, Zombie theZombie, ref bool __result)
     {
-        if (__instance.mProjectileType != ProjectileType.Melon) return;
+        if (__instance.mProjectileType != ProjectileType.Melon)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {
@@ -87,14 +89,15 @@ internal static class ProjectilePatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPrefix]
-    private static bool Plant_FindTargetZombie_Prefix(Plant __instance, ref Zombie? __result)
+    private static bool Plant_FindTargetZombie_Catapult_Prefix(Plant __instance, ref Zombie? __result)
     {
-        if (__instance.mSeedType is not (SeedType.Cabbagepult or SeedType.Kernelpult or SeedType.Melonpult)) return true;
+        if (__instance.mSeedType is not (SeedType.Cabbagepult or SeedType.Kernelpult or SeedType.Melonpult))
+            return true;
 
         if (ReloadedLobby.AmInLobby())
         {
             // From Versus Mode Console:
-            // Target zombies over gravestones for catapult plants.
+            // Target zombies over gravestones for catapult plants
             PriorityVar<Zombie> zombiePriority = new();
             foreach (var zombie in __instance.mBoard.GetZombies())
             {
@@ -124,7 +127,7 @@ internal static class ProjectilePatch
 
     [HarmonyPatch(typeof(Projectile), nameof(Projectile.FindCollisionTarget))]
     [HarmonyPostfix]
-    private static void Projectile_FindCollisionTarge_Postfix(Projectile __instance, ref Zombie? __result)
+    private static void Projectile_FindCollisionTarge_Catapult_Postfix(Projectile __instance, ref Zombie? __result)
     {
         if (__instance.mProjectileType is not (ProjectileType.Cabbage or ProjectileType.Kernel or
             ProjectileType.Butter or ProjectileType.Wintermelon)) return;
@@ -132,7 +135,7 @@ internal static class ProjectilePatch
         if (ReloadedLobby.AmInLobby())
         {
             // From Versus Mode Console:
-            // Ignore gravestone collision for catapult projectile if zombie is in range.
+            // Ignore gravestone collision for catapult projectile if zombie is in range
             if (__result != null && __result.mZombieType.IsGravestoneOrTarget())
             {
                 PriorityVar<Zombie> zombiePriority = new();
@@ -151,6 +154,24 @@ internal static class ProjectilePatch
                 {
                     __result = pZombie;
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
+    [HarmonyPostfix]
+    private static void Plant_FindTargetZombie_Puffshroom_Postfix(Plant __instance, ref Zombie? __result)
+    {
+        if (__instance.mSeedType != SeedType.Puffshroom)
+            return;
+
+        if (ReloadedLobby.AmInLobby())
+        {
+            // From Versus Mode Console:
+            // Ignore target zombies for puffshrooms
+            if (__result != null && __result.mZombieType == ZombieType.Target)
+            {
+                __result = null;
             }
         }
     }
