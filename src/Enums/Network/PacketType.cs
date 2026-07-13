@@ -56,6 +56,11 @@ internal enum PacketType
     ObjectRpc,
 
     /// <summary>
+    /// Syncs the vs mode time.
+    /// </summary>
+    SyncVersusTime,
+
+    /// <summary>
     /// Packet used to request a heartbeat response from a client.
     /// </summary>
     HeartbeatRequest,

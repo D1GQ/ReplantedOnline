@@ -346,7 +346,7 @@ internal static class SeedPacketDefinitions
         bool spawnInBack = spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes || zombieType == ZombieType.BackupDancer;
         var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnInBack ? 9 : gridX, gridY);
 
-        bool canRise = !VersusState.IsInCountDown;
+        bool canRise = !VersusState.IsInPreCountDown;
         var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
         var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
 

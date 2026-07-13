@@ -5,6 +5,8 @@ using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
@@ -14,7 +16,7 @@ internal static class VersusModePatch
 {
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPrefix]
-    private static void VersusMode_UpdateGameplay_Prefix(VersusMode __instance)
+    private static void VersusMode_UpdateGameplay_Prefix(VersusMode __instance, ref float __state)
     {
         if (__instance.m_gameplayInitialized == false)
         {
@@ -25,12 +27,14 @@ internal static class VersusModePatch
             IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
             VersusGameplayManager.OnStart();
         }
+
+        __state = __instance.m_versusTime;
     }
 
     private readonly static ExecuteInterval updateInterval = new();
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPostfix]
-    private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance)
+    private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance, float __state)
     {
         if (!ReloadedLobby.AmInLobby()) return;
 
@@ -40,6 +44,18 @@ internal static class VersusModePatch
         {
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+        }
+
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            if ((int)(__instance.m_versusTime * 2f) != (int)(__state * 2f))
+            {
+                NetworkManager.Packet<SyncVersusTimePacket>.Singleton.Send(__instance.m_versusTime);
+            }
+        }
+        else
+        {
+            __instance.m_versusTime = __state;
         }
     }
 

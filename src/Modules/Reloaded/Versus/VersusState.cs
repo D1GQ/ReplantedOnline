@@ -64,7 +64,7 @@ internal static class VersusState
     /// <summary>
     /// Gets when Versus Mode is in ready, set, plant.
     /// </summary>
-    internal static bool IsInCountDown => VersusTime <= 0f;
+    internal static bool IsInCountDown => VersusTime < 0f;
 
     /// <summary>
     /// Gets when Versus Mode is before ready, set, plant.

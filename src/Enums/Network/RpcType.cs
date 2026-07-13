@@ -44,5 +44,5 @@ internal enum RpcType
     /// <summary>
     /// Pushs back a zombie from the pushback event.
     /// </summary>
-    PushBackZombie,
+    PushBackZombie
 }

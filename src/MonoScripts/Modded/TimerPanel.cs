@@ -2,7 +2,6 @@
 using Il2CppTMPro;
 using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -69,20 +68,18 @@ internal sealed class TimerPanel : MonoBehaviour
         if (!_init)
             return;
 
-        _shovelContainer.anchoredPosition = new Vector2(128f, -370f);
-
-        if (VersusState.IsInCountDown)
-        {
-            _text.SetText("05:00");
-            _text.color = TimerColors.FirstOrDefault();
+        if (_text == null || _shovelContainer == null)
             return;
-        }
+
+        _shovelContainer.anchoredPosition = new Vector2(128f, -370f);
 
         float currentTime = Instances.GameplayActivity.VersusMode.m_versusTime;
         float suddenDeathStartTime = VersusMode.k_suddenDeathStartTime;
 
         if (currentTime < 0f)
         {
+            _text.SetText("05:00");
+            _text.color = TimerColors.FirstOrDefault();
             return;
         }
 
