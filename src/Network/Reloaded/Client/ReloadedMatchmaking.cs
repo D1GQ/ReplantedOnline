@@ -136,7 +136,7 @@ internal static class ReloadedMatchmaking
             lobbyQuery.maxResults = new Il2CppSystem.Nullable<int>(maxResults);
             lobbyQuery.FilterDistanceWorldwide();
             lobbyQuery.slotsAvailable = new Il2CppSystem.Nullable<int>(1);
-            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION);
+            lobbyQuery.WithKeyValue(ReplantedOnlineMod.Constants.Network.MOD_KEY, ReplantedOnlineMod.ModInfo.MOD_GUID);
             foreach (var (key, value) in filters)
             {
                 lobbyQuery.WithKeyValue(key, value);
@@ -176,7 +176,8 @@ internal static class ReloadedMatchmaking
     /// <param name="data">The network lobby data containing the lobby ID.</param>
     internal static void SetLobbyData(ReloadedLobbyData data)
     {
-        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
+        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_KEY, ReplantedOnlineMod.ModInfo.MOD_GUID);
+        ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
         var gameCode = GenerateGameCode(data.LobbyId);
         ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode);
         ReloadedLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
