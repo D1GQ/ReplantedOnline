@@ -78,6 +78,10 @@ internal static class ReloadedLobby
         InitializeSteam();
         InitializeLan();
         SetTransportMode(BloomEngineManager.BloomConfigs.TransportModeConfig.Value);
+        NetworkManager.Heartbeat.OnClientHeartbeatTimeout += client =>
+        {
+            OnLobbyMemberLeave(LobbyData!.ServerLobby, client.ClientId);
+        };
 
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Initialized");
     }
@@ -115,11 +119,6 @@ internal static class ReloadedLobby
         SteamNetworking.OnP2PSessionRequest += (Action<SteamId>)(steamId =>
         {
             OnP2PSessionRequest(steamId);
-        });
-
-        SteamNetworking.OnP2PConnectionFailed += (Action<SteamId, P2PSessionError>)((steamId, error) =>
-        {
-            Steam_OnP2PSessionConnectFail(steamId, error);
         });
     }
 
@@ -213,7 +212,7 @@ internal static class ReloadedLobby
         if (result == Result.OK)
         {
             LobbyData?.Dispose();
-            LobbyData = new(lobby.Id, lobby.OwnerId);
+            LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
             LobbyData.InitializeData();
             ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Lobby created successfully: {LobbyData.LobbyId}");
             ReloadedMatchmaking.SetLobbyData(LobbyData);
@@ -228,7 +227,7 @@ internal static class ReloadedLobby
     internal static void OnLobbyEnteredCompleted(ServerLobby lobby)
     {
         LobbyData?.Dispose();
-        LobbyData = new(lobby.Id, lobby.OwnerId);
+        LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
         LobbyData.LobbyCode = NetworkTransport!.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
 
         Transitions.ToVersus(() =>
@@ -238,8 +237,7 @@ internal static class ReloadedLobby
             ReloadedClientData.LocalClient?.Ready.Value = true;
         });
 
-        ProcessMemberList();
-
+        LobbyData.OnClientJoined(NetworkTransport.LocalClientId);
         DiscordManager.OnJoinLobby();
 
         int memberCount = GetLobbyMemberCount();
@@ -269,8 +267,13 @@ internal static class ReloadedLobby
             return;
         }
 
+        if (clientId.IsBanned())
+        {
+            return;
+        }
+
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Player {clientId} ({NetworkTransport!.GetMemberName(clientId)}) joined the lobby");
-        ProcessMemberList();
+        LobbyData?.OnClientJoined(clientId);
 
         // If we're the host, request P2P session with the new player
         if (AmLobbyHost())
@@ -300,54 +303,16 @@ internal static class ReloadedLobby
             }
         }
 
-        ProcessMemberList();
+        LobbyData?.OnClientLeft(clientId);
     }
 
     internal static void OnP2PSessionRequest(ID clientId)
     {
         if (clientId.IsBanned()) return;
 
-        NetworkTransport!.AcceptP2PSessionWithUser(clientId);
-        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Accepted P2P session with {clientId}");
-    }
-
-    internal static void Steam_OnP2PSessionConnectFail(ID clientId, P2PSessionError error)
-    {
-        ReplantedOnlineMod.Logger.Warning(typeof(ReloadedLobby), $"P2P session connection failed with {clientId}: {error}");
-    }
-
-    /// <summary>
-    /// Synchronizes the internal client list with the current lobby members.
-    /// </summary>
-    internal static void ProcessMemberList()
-    {
-        if (LobbyData == null) return;
-
-        if (AmLobbyHost())
+        if (IsPlayerInOurLobby(clientId))
         {
-            ReloadedMatchmaking.UpdateLobbyJoinable(false);
-            NetworkTransport!.SetLobbyMemberLimit(LobbyData.LobbyId, MAX_LOBBY_SIZE);
-        }
-
-        List<ID> members = [];
-        var num = NetworkTransport!.GetNumLobbyMembers(LobbyData.LobbyId);
-        for (int i = 0; i < num; i++)
-        {
-            var member = NetworkTransport.GetLobbyMemberByIndex(LobbyData.LobbyId, i);
-            if (!member.IsBanned())
-            {
-                members.Add(member);
-            }
-            else
-            {
-                NetworkTransport.CloseP2PSessionWithUser(member);
-            }
-        }
-        LobbyData.ProcessMembers(members);
-
-        if (AmLobbyHost())
-        {
-            ReloadedMatchmaking.UpdateLobbyJoinable();
+            NetworkTransport!.AcceptP2PSessionWithUser(clientId);
         }
     }
 

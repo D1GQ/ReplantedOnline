@@ -19,13 +19,20 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Initializes a new instance of the ReplantedLobbyData class with specified IDs.
     /// </summary>
+    /// <param name="serverLobby">The Lobby transport instance.</param>
     /// <param name="lobbyId">The Lobby ID of the lobby.</param>
     /// <param name="hostId">The Client ID of the lobby host.</param>
-    internal ReloadedLobbyData(ID lobbyId, ID hostId)
+    internal ReloadedLobbyData(ServerLobby serverLobby, ID lobbyId, ID hostId)
     {
+        ServerLobby = serverLobby;
         LobbyId = lobbyId;
         HostId = hostId;
     }
+
+    /// <summary>
+    /// Gets the lobby transport instance .
+    /// </summary>
+    internal readonly ServerLobby ServerLobby;
 
     /// <summary>
     /// Gets the Code of this lobby.
@@ -41,6 +48,11 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// Gets or Sets the Steam ID of the host.
     /// </summary>
     internal readonly ID HostId = ID.Null;
+
+    /// <summary>
+    /// Lock object used for thread synchronization when accessing or modifying the AllClients dictionary.
+    /// </summary>
+    private readonly object _lock = new();
 
     /// <summary>
     /// Gets or sets the dictionary of all connected clients in the lobby, keyed by their Steam ID.
@@ -80,6 +92,84 @@ internal sealed class ReloadedLobbyData : IDisposable
         }
 
         VersusLobbyManager.UpdateSideVisuals();
+    }
+
+    /// <summary>
+    /// Handles the event when a client joins the lobby.
+    /// </summary>
+    /// <param name="clientId">The unique identifier of the client that joined.</param>
+    internal void OnClientJoined(ID clientId)
+    {
+        ReloadedMatchmaking.UpdateLobbyJoinable(false);
+        ReloadedLobby.NetworkTransport!.SetLobbyMemberLimit(LobbyId, ReloadedLobby.MAX_LOBBY_SIZE);
+
+        lock (_lock)
+        {
+            AllClients[clientId] = new(clientId);
+        }
+
+        SortClients();
+
+        VersusLobbyManager.UpdateSideVisuals();
+
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            ReloadedMatchmaking.UpdateLobbyJoinable();
+        }
+    }
+
+    /// <summary>
+    /// Handles the event when a client leaves the lobby.
+    /// </summary>
+    /// <param name="clientId">The unique identifier of the client that left.</param>
+    internal void OnClientLeft(ID clientId)
+    {
+        ReloadedMatchmaking.UpdateLobbyJoinable(false);
+        ReloadedLobby.NetworkTransport!.SetLobbyMemberLimit(LobbyId, ReloadedLobby.MAX_LOBBY_SIZE);
+
+        lock (_lock)
+        {
+            AllClients.Remove(clientId);
+        }
+        ReloadedLobby.NetworkTransport.CloseP2PSessionWithUser(clientId);
+
+        SortClients();
+
+        VersusLobbyManager.UpdateSideVisuals();
+
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            ReloadedMatchmaking.UpdateLobbyJoinable();
+        }
+    }
+
+    /// <summary>
+    /// Sorts the client list to match the order of members in the lobby.
+    /// </summary>
+    private void SortClients()
+    {
+        int memberCount = ReloadedLobby.GetLobbyMemberCount();
+        var members = new List<ID>();
+
+        for (int i = 0; i < memberCount; i++)
+        {
+            var member = ReloadedLobby.GetLobbyMemberByIndex(i);
+            members.Add(member);
+        }
+
+        var newClients = new Dictionary<ID, ReloadedClientData>();
+        foreach (var id in members)
+        {
+            if (AllClients.TryGetValue(id, out var clientData))
+            {
+                newClients[id] = clientData;
+            }
+        }
+
+        lock (_lock)
+        {
+            AllClients = newClients;
+        }
     }
 
     /// <summary>

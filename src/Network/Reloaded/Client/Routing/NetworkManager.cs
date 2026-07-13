@@ -256,7 +256,10 @@ internal static partial class NetworkManager
                 }
             }
 
-            packetMessage.Receive(sender, packetReader, local);
+            if (sender != null)
+            {
+                packetMessage.Receive(sender, packetReader, local);
+            }
         }
         else
         {

@@ -26,7 +26,12 @@ internal static partial class NetworkManager
         /// <summary>
         /// Maximum age in seconds for heartbeat requests before they are considered stale.
         /// </summary>
-        private const int HEARTBEAT_AGE_CAP_SECONDS = 15;
+        private const int HEARTBEAT_MAX_AGE = 10;
+
+        /// <summary>
+        /// Interval in seconds between heartbeat packet sends.
+        /// </summary>
+        private const int HEARTBEAT_INTERVAL = 1;
 
         /// <summary>
         /// Timer that controls the frequency of heartbeat packet sends.
@@ -54,6 +59,11 @@ internal static partial class NetworkManager
         private readonly Dictionary<ID, uint> _clientPendingHeartbeats = [];
 
         /// <summary>
+        /// Dictionary tracking the last time each client responded to a heartbeat.
+        /// </summary>
+        private readonly Dictionary<ID, DateTime> _lastResponseTime = [];
+
+        /// <summary>
         /// Initializes a new instance of the heartbeat system and sets the static reference.
         /// </summary>
         internal static void Start()
@@ -69,53 +79,83 @@ internal static partial class NetworkManager
             if (ReloadedLobby.LobbyData == null)
                 return;
 
-            if (sendTimer.AccumulatedTime > 1f)
+            if (sendTimer.AccumulatedTime > HEARTBEAT_INTERVAL)
             {
                 sendTimer.Reset();
-                Packet<HeartbeatRequestPacket>.Singleton.Send(_currentTimeStamp);
-                _heartbeatRequests[_currentTimeStamp] = DateTime.Now;
+                SendHeartbeat();
+            }
 
-                foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
+            CheckForTimeouts();
+        }
+
+        /// <summary>
+        /// Sends a heartbeat request to all connected clients.
+        /// </summary>
+        private void SendHeartbeat()
+        {
+            Packet<HeartbeatRequestPacket>.Singleton.Send(_currentTimeStamp);
+            _heartbeatRequests[_currentTimeStamp] = DateTime.Now;
+
+            foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
+            {
+                _clientPendingHeartbeats[client.ClientId] = _currentTimeStamp;
+            }
+
+            _currentTimeStamp++;
+        }
+
+        /// <summary>
+        /// Checks for and processes any client heartbeat timeouts.
+        /// </summary>
+        private void CheckForTimeouts()
+        {
+            var cutoff = DateTime.Now.AddSeconds(-HEARTBEAT_MAX_AGE);
+
+            List<ID> timedOutClients = [];
+            foreach (var kvp in _lastResponseTime)
+            {
+                if (kvp.Value < cutoff)
                 {
-                    _clientPendingHeartbeats[client.ClientId] = _currentTimeStamp;
+                    timedOutClients.Add(kvp.Key);
                 }
+            }
 
-                _currentTimeStamp++;
-
-                var cutoff = DateTime.Now.AddSeconds(-HEARTBEAT_AGE_CAP_SECONDS);
-
-                List<uint> oldKeys = [];
-                foreach (var kvp in _heartbeatRequests)
+            foreach (var clientId in timedOutClients)
+            {
+                if (ReloadedLobby.LobbyData!.AllClients.TryGetValue(clientId, out var clientData))
                 {
-                    if (kvp.Value < cutoff)
-                        oldKeys.Add(kvp.Key);
+                    OnClientHeartbeatTimeout?.Invoke(clientData);
+                    _heartbeatDelaysLookup.Remove(clientId);
+                    _lastResponseTime.Remove(clientId);
+                    _clientPendingHeartbeats.Remove(clientId);
                 }
+            }
 
-                foreach (var key in oldKeys)
+            List<uint> oldHeartbeats = [];
+            foreach (var kvp in _heartbeatRequests)
+            {
+                if (kvp.Value < cutoff)
                 {
-                    List<ID> timedOutClients = new List<ID>();
-                    foreach (var kvp in _clientPendingHeartbeats)
+                    bool isStillPending = false;
+                    foreach (var pending in _clientPendingHeartbeats)
                     {
-                        if (kvp.Value == key)
-                            timedOutClients.Add(kvp.Key);
-                    }
-
-                    foreach (var clientId in timedOutClients)
-                    {
-                        if (ReloadedLobby.LobbyData.AllClients.TryGetValue(clientId, out var clientData))
+                        if (pending.Value == kvp.Key)
                         {
-                            OnClientHeartbeatTimeout?.Invoke(clientData);
-                            _heartbeatDelaysLookup.Remove(clientId);
+                            isStillPending = true;
+                            break;
                         }
                     }
 
-                    foreach (var clientId in timedOutClients)
+                    if (!isStillPending)
                     {
-                        _clientPendingHeartbeats.Remove(clientId);
+                        oldHeartbeats.Add(kvp.Key);
                     }
-
-                    _heartbeatRequests.Remove(key);
                 }
+            }
+
+            foreach (var timestamp in oldHeartbeats)
+            {
+                _heartbeatRequests.Remove(timestamp);
             }
         }
 
@@ -131,14 +171,49 @@ internal static partial class NetworkManager
 
             var delay = (float)(DateTime.Now - requestTime).TotalMilliseconds;
             _heartbeatDelaysLookup[sender.ClientId] = delay;
+            _lastResponseTime[sender.ClientId] = DateTime.Now;
 
-            if (_clientPendingHeartbeats.TryGetValue(sender.ClientId, out var pendingTimestamp) &&
-                pendingTimestamp == timeStamp)
+            if (_clientPendingHeartbeats.TryGetValue(sender.ClientId, out var pendingTimestamp))
             {
-                _clientPendingHeartbeats.Remove(sender.ClientId);
+                if (pendingTimestamp < timeStamp)
+                {
+                    _clientPendingHeartbeats[sender.ClientId] = timeStamp;
+
+                    bool isOldHeartbeatStillPending = false;
+                    foreach (var kvp in _clientPendingHeartbeats)
+                    {
+                        if (kvp.Value == pendingTimestamp)
+                        {
+                            isOldHeartbeatStillPending = true;
+                            break;
+                        }
+                    }
+
+                    if (!isOldHeartbeatStillPending)
+                    {
+                        _heartbeatRequests.Remove(pendingTimestamp);
+                    }
+                }
+                else if (pendingTimestamp == timeStamp)
+                {
+                    _clientPendingHeartbeats.Remove(sender.ClientId);
+                }
             }
 
-            _heartbeatRequests.Remove(timeStamp);
+            bool isStillPending = false;
+            foreach (var kvp in _clientPendingHeartbeats)
+            {
+                if (kvp.Value == timeStamp)
+                {
+                    isStillPending = true;
+                    break;
+                }
+            }
+
+            if (!isStillPending)
+            {
+                _heartbeatRequests.Remove(timeStamp);
+            }
         }
 
         /// <summary>
