@@ -19,7 +19,14 @@ internal static class DolphinRiderZombiePatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide)
+            if (VersusState.AmPlantSide)
+            {
+                if (__result != null && __result.mSeedType == SeedType.Tanglekelp)
+                {
+                    __result = null;
+                }
+            }
+            else
             {
                 if (__instance.mZombiePhase == ZombiePhase.DolphinRiding)
                 {
