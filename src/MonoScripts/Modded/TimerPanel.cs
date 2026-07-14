@@ -32,14 +32,14 @@ internal sealed class TimerPanel : MonoBehaviour
         GameObject timerPanelObj = new("TimerPanel");
         var timerPanelRect = timerPanelObj.AddComponent<RectTransform>();
         timerPanelRect.SetParent(MainHUDLayout);
-        timerPanelRect.anchoredPosition = new(0f, 950f);
+        timerPanelRect.anchoredPosition = new(0f, 968f);
         TimerPanel timerPanel = timerPanelObj.AddComponent<TimerPanel>();
 
         GameObject imageObj = new("Image");
         var imageRect = imageObj.AddComponent<RectTransform>();
         imageRect.SetParent(timerPanelRect);
         imageRect.anchoredPosition = Vector3.zero;
-        imageRect.localScale = new(5f, 2f, 1f);
+        imageRect.localScale = new(4.5f, 1.5f, 1f);
         var image = imageObj.AddComponent<Image>();
         image.sprite = ReplantedOnlineMod.Assets.Sprites.TimerPanel;
 
