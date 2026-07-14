@@ -138,7 +138,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 continue;
             }
 
-            SeedType seedType = GetRandomSeedType(plantSeedTypes.AsReadOnly(), false, i == numSeedsToAdd);
+            SeedType seedType = GetRandomSeedType(plantSeedTypes.AsReadOnly(), false, i == numSeedsToAdd - 1);
             plantSeedTypes.Add(seedType);
         }
 
