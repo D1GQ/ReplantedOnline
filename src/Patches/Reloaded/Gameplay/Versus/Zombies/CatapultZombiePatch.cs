@@ -26,4 +26,24 @@ internal static class CatapultZombiePatchPatch
             }
         }
     }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombieCatapult))]
+    [HarmonyPrefix]
+    private static void Zombie_UpdateZombieCatapult_Prefix(Zombie __instance, ref int __state)
+    {
+        __state = __instance.mSummonCounter;
+    }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateZombieCatapult))]
+    [HarmonyPostfix]
+    private static void Zombie_UpdateZombieCatapult_Postfix(Zombie __instance, int __state)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide)
+            {
+                __instance.mSummonCounter = __state;
+            }
+        }
+    }
 }

@@ -70,6 +70,12 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
                     Net.Zombie.PlayZombieReanim("anim_idle", ReanimLoopType.Loop, 20, 12f);
                 }
             }
+
+
+            if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal && Net.Zombie.mSummonCounter <= 1)
+            {
+                Net.Zombie.mController.SetImageOverride("Zombie_catapult_pole", "IMAGE_REANIM_ZOMBIE_CATAPULT_POLE");
+            }
         }
     }
 
@@ -93,9 +99,12 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     [RpcHandler(CatapultRpcs.ReadyToFire)]
     private void HandleReadyToFireRpc(Plant target, int summonCounter)
     {
+        if (Net.Zombie == null)
+            return;
+
         Net.Target = target;
         _lastSummonCounter = summonCounter;
-        Net.Zombie?.mSummonCounter = summonCounter;
+        Net.Zombie.mSummonCounter = summonCounter;
         ReadyToFire = true;
     }
 }
