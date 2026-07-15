@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
@@ -7,28 +8,20 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 
 /// <inheritdoc/>
 [RegisterNetworkComponent(SeedType.Umbrella)]
-internal sealed class UmbrellaNetworkComponent : PlantSpecialNetworkComponent
+internal sealed class UmbrellaNetworkComponent : PlantNetworkComponent
 {
-    private bool _triggerd;
-    internal sealed override void Update()
+    private enum UmbrellaRpcs : byte
     {
-        if (Net.AmOwner)
-        {
-            if (Net.Plant!.mState == PlantState.UmbrellaTriggered && !_triggerd)
-            {
-                _triggerd = true;
-                SendDoSpecialRpc();
-            }
-            else if (Net.Plant.mState != PlantState.UmbrellaTriggered)
-            {
-                _triggerd = false;
-            }
-        }
-
-        UpdateHealthSync();
+        HitAndDoSpecial
     }
 
-    protected sealed override void DoSpecial()
+    internal void SendHitAndDoSpecialRpc()
+    {
+        SendNetworkComponentRpc(UmbrellaRpcs.HitAndDoSpecial);
+    }
+
+    [RpcHandler(UmbrellaRpcs.HitAndDoSpecial)]
+    private void HandleHitAndDoSpecialRpc()
     {
         Net.Plant?.DoSpecialOriginal();
     }

@@ -17,9 +17,9 @@ internal static class BungeeZombiePatch
         // Target selection should be handled through network synchronization instead
         if (ReloadedLobby.AmInLobby())
         {
-            return false; // Skip the original method
+            return false;
         }
 
-        return true; // Allow original method in single player
+        return true;
     }
 }

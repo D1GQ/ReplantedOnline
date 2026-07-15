@@ -52,7 +52,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     }
 
     [RpcHandler(PlantSpecialRpcs.DoSpecial)]
-    internal void HandleDoSpecialRpc()
+    private void HandleDoSpecialRpc()
     {
         if (!_isDoingSpecial)
         {
