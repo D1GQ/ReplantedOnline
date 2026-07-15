@@ -25,7 +25,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     internal virtual void OnDeath(DeathReason deathReason) { }
 
     private readonly UnityTimer dirtyPosTimer = new();
-    private float? syncedPosX;
+    internal float? SyncedPosX;
 
     /// <summary>
     /// Updates the zombie's position.
@@ -64,27 +64,27 @@ internal class ZombieNetworkComponent : NetworkComponent
 
             // Sync position to network every 0.25 seconds, but only if position changed
             if (dirtyPosTimer.AccumulatedTime > 0.25f &&
-                syncedPosX != Net.Zombie.mPosX)
+                SyncedPosX != Net.Zombie.mPosX)
             {
-                syncedPosX = Net.Zombie.mPosX;
+                SyncedPosX = Net.Zombie.mPosX;
                 dirtyPosTimer.Reset();
                 Net.MarkDirty();
             }
         }
         else
         {
-            if (syncedPosX == null)
+            if (SyncedPosX == null)
                 return;
 
             // Calculate the difference between current and target positions
-            float targetPos = syncedPosX.Value;
+            float targetPos = SyncedPosX.Value;
             float currentPos = Net.Zombie.mPosX;
             float diff = targetPos - currentPos;
 
             if (Mathf.Abs(diff) < 0.001f)
             {
                 Net.Zombie.mPosX = targetPos;
-                syncedPosX = null;
+                SyncedPosX = null;
                 return;
             }
 
@@ -119,7 +119,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (Net.AmOwner)
             return;
 
-        if (syncedPosX == null)
+        if (SyncedPosX == null)
             return;
 
         UpdatePosition(1f);
@@ -153,11 +153,11 @@ internal class ZombieNetworkComponent : NetworkComponent
 
                 if (packedPos == short.MaxValue || packedPos == short.MinValue)
                 {
-                    syncedPosX = packedPos > 0 ? 1310.68f : -1310.72f;
+                    SyncedPosX = packedPos > 0 ? 1310.68f : -1310.72f;
                 }
                 else
                 {
-                    syncedPosX = packedPos / 25f;
+                    SyncedPosX = packedPos / 25f;
                 }
             }
         }

@@ -23,6 +23,13 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
                 Net.SendSetPlantTargetRpc(target);
             }
         }
+        else
+        {
+            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump)
+            {
+                SyncedPosX = null;
+            }
+        }
 
         // Non owner logic is handled in DolphinRiderZombiePatch.cs
 

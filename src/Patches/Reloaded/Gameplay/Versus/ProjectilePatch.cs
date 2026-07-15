@@ -167,7 +167,7 @@ internal static class ProjectilePatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            // From Versus Mode Console:
+            // Subject to change depending on balancing
             // Ignore target zombies for puffshrooms
             if (__result != null && __result.mZombieType == ZombieType.Target)
             {

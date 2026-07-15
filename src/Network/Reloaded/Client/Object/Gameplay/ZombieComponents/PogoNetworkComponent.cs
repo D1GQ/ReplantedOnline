@@ -32,6 +32,13 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
                 SendJumpOverRpc();
             }
         }
+        else
+        {
+            if (Net.Zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2)
+            {
+                SyncedPosX = null;
+            }
+        }
 
         if (Net.Zombie.mZombiePhase != ZombiePhase.PogoForwardBounce2)
         {

@@ -160,6 +160,7 @@ internal static class ArenaEvents
         zombie.mPosY = originalY;
         if (zombieNetworked != null)
         {
+            zombieNetworked.LogicComponent.SyncedPosX = zombie.mPosX;
             zombieNetworked.Event = EventState.None;
         }
     }

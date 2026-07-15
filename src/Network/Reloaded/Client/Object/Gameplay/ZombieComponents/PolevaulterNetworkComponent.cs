@@ -23,6 +23,13 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
                 Net.SendSetPlantTargetRpc(target);
             }
         }
+        else
+        {
+            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
+            {
+                SyncedPosX = null;
+            }
+        }
 
         // Non owner logic is handled in PolevaulterZombiePatch.cs
 
