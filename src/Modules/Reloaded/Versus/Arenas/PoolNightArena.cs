@@ -4,6 +4,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
 using UnityEngine;
 
@@ -31,10 +32,12 @@ internal sealed class PoolNightArena : PoolArena
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
     }
 
+    private readonly UnityTimer _fogPushTimer = new();
     /// <inheritdoc/>
     public override void InitializeArena(VersusMode versusMode)
     {
         base.InitializeArena(versusMode);
+        _fogPushTimer.Reset();
 
         if (VersusState.AmPlantSide)
         {
@@ -62,8 +65,7 @@ internal sealed class PoolNightArena : PoolArena
         }
     }
 
-    private float VersusTime => Instances.GameplayActivity.VersusMode.m_versusTime;
-    private static readonly float VersusTimeEnd = VersusMode.k_suddenDeathStartTime - 3f;
+    private static readonly float FogPushTimeEnd = 300f;
 
     private readonly float OffScreenPlantFog = 4200f;
     private readonly float StartPlantFog = 2100f;
@@ -71,13 +73,13 @@ internal sealed class PoolNightArena : PoolArena
 
     private void UpdateFogPlants()
     {
-        if (VersusTime < 0f)
+        if (_fogPushTimer.AccumulatedTime < ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME)
         {
-            SetFogPos(Mathf.Lerp(OffScreenPlantFog, StartPlantFog, VersusTime / ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME));
+            SetFogPos(Mathf.Lerp(OffScreenPlantFog, StartPlantFog, _fogPushTimer.AccumulatedTime / ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME));
         }
         else
         {
-            SetFogPos(Mathf.Lerp(StartPlantFog, EndPlantFog, VersusTime / VersusTimeEnd));
+            SetFogPos(Mathf.Lerp(StartPlantFog, EndPlantFog, _fogPushTimer.AccumulatedTime / FogPushTimeEnd));
         }
     }
 
@@ -87,13 +89,13 @@ internal sealed class PoolNightArena : PoolArena
 
     private void UpdateFogZombies()
     {
-        if (VersusTime < 3f)
+        if (_fogPushTimer.AccumulatedTime < ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME)
         {
-            SetFogPos(Mathf.Lerp(OffScreenZombieFog, StartZombieFog, VersusTime / 3f));
+            SetFogPos(Mathf.Lerp(OffScreenZombieFog, StartZombieFog, _fogPushTimer.AccumulatedTime / 3f));
         }
         else
         {
-            SetFogPos(Mathf.Lerp(StartZombieFog, EndZombieFog, VersusTime / VersusTimeEnd));
+            SetFogPos(Mathf.Lerp(StartZombieFog, EndZombieFog, _fogPushTimer.AccumulatedTime / FogPushTimeEnd));
         }
     }
 
