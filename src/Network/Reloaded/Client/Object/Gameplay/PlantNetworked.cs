@@ -200,7 +200,7 @@ internal sealed class PlantNetworked : NetworkObject
             SendNetworkObjectRpc(PlantRpcs.SquishPlant);
         }
 
-        DespawnAndDestroy(true);
+        DespawnAndDestroyWhenDeadOrNull(true);
     }
 
     [RpcHandler(PlantRpcs.SquishPlant)]
