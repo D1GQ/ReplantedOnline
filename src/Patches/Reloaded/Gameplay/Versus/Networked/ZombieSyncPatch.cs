@@ -275,6 +275,16 @@ internal static class ZombieSyncPatch
             if (!VersusState.AmPlantSide) return false;
             if (__instance.mZombieType.IsGravestoneOrTarget()) return false;
 
+            bool reallyDead = __instance.mBodyHealth <= 1800;
+            if (reallyDead)
+            {
+                if (__instance.mBoard.mPlantRow[__instance.mRow] == PlantRowType.Pool)
+                {
+                    __instance.DieNoLoot();
+                    return false;
+                }
+            }
+
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {

@@ -369,7 +369,8 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.SetFrozen)]
     private void HandleSetFrozenRpc(bool frozen, int counter)
     {
-        if (Zombie == null) return;
+        if (Zombie == null)
+            return;
 
         if (frozen)
         {
@@ -385,7 +386,10 @@ internal sealed class ZombieNetworked : NetworkObject
 
     internal void SendApplyBurnRpc()
     {
-        bool reallyDead = Zombie?.mBodyHealth <= 1800;
+        if (Zombie == null)
+            return;
+
+        bool reallyDead = Zombie.mBodyHealth <= 1800;
 
         SendNetworkObjectRpc(ZombieRpcs.ApplyBurn, reallyDead);
 
@@ -400,7 +404,11 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.ApplyBurn)]
     private void HandleApplyBurnRpc(bool reallyDead)
     {
-        if (Zombie?.mZombieType.IsGravestoneOrTarget() ?? false) return;
+        if (Zombie == null)
+            return;
+
+        if (Zombie.mZombieType.IsGravestoneOrTarget())
+            return;
 
         if (reallyDead && !Dying)
         {
