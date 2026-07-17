@@ -5,6 +5,7 @@ using Il2CppSource.Controllers;
 using Il2CppSpine.Unity;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -284,17 +285,17 @@ internal static class PvZRUtils
             {
                 case LawnMowerType.Lawn:
                     lawnMower.mController.OverrideScale(0.9f, 0.9f);
-                    lawnMower.mController.PlayAnimationOnTrack("normal", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    lawnMower.mController.PlayAnimationOnTrack(Animations.MOWER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.MOWER_IDLE.Fps, ReanimLoopType.Loop);
                     break;
                 case LawnMowerType.SuperMower:
                     lawnMower.mController.OverrideScale(0.8f, 0.8f);
-                    lawnMower.mController.PlayAnimationOnTrack("", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    lawnMower.mController.PlayAnimationOnTrack(Animations.SUPER_MOWER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.SUPER_MOWER_IDLE.Fps, ReanimLoopType.Loop);
                     break;
                 case LawnMowerType.Roof:
-                    lawnMower.mController.PlayAnimationOnTrack("default", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    lawnMower.mController.PlayAnimationOnTrack(Animations.ROOF_MOWER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.ROOF_MOWER_IDLE.Fps, ReanimLoopType.Loop);
                     break;
                 case LawnMowerType.Pool:
-                    lawnMower.mController.PlayAnimationOnTrack("land", CharacterAnimationTrack.Body, 0f, ReanimLoopType.Loop);
+                    lawnMower.mController.PlayAnimationOnTrack(Animations.POOL_MOWER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.POOL_MOWER_IDLE.Fps, ReanimLoopType.Loop);
                     break;
             }
         }

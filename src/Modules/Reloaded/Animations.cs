@@ -17,6 +17,15 @@ internal static class Animations
 
     internal static readonly (string Anim, float AnimRate) IMP_FLYING = ("anim_imp_flying", 18f);
 
+    internal static readonly (string Anim, int Blend, float Fps) CATAPULT_WALK = ("anim_walk", 20, 6f);
+    internal static readonly (string Anim, int Blend, float Fps) CATAPULT_SHOOT = ("anim_shoot", 20, 24f);
+    internal static readonly (string Anim, int Blend, float Fps) CATAPULT_IDLE = ("anim_idle", 20, 12f);
+    internal static readonly (string Slot, string Image) CATAPULT_POLE_OBJECT = ("Zombie_catapult_pole", "IMAGE_REANIM_ZOMBIE_CATAPULT_POLE");
+
+    internal static readonly (string Anim, int Blend, float Fps) POLEVAULTER_VAULT = ("anim_jump", 3, 20f);
+
+    internal static readonly (string Anim, int Blend, float Fps) DOLPHINRIDER_JUMP = ("anim_dolphinjump", 3, 10f);
+
     internal static readonly (string Anim, float Fps) CHOMPER_IDLE = ("idle", 10.26f);
     internal static readonly (string Anim, float Fps) CHOMPER_BITE = ("bite", 30f);
     internal static readonly (string Anim, float Fps) CHOMPER_CHEW = ("chew", 15f);
@@ -27,6 +36,13 @@ internal static class Animations
 
     internal static readonly string KERNELPULT_BUTTER_OBJECT = "Cornpult_butter";
     internal static readonly string KERNELPULT_KERNAL_OBJECT = "Cornpult_kernal";
+
+    internal static readonly (string Anim, float Fps) MOWER_IDLE = ("normal", 0f);
+    internal static readonly (string Anim, float Fps) SUPER_MOWER_IDLE = (string.Empty, 0f);
+    internal static readonly (string Anim, float Fps) ROOF_MOWER_IDLE = ("default", 0f);
+    internal static readonly (string Anim, float Fps) POOL_MOWER_IDLE = ("land", 0f);
+
+    internal static readonly (string Slot, string Image) WHITEWATER_OBJECT = ("whitewater", string.Empty);
 
     /// <summary>
     /// Initiates a "fall from sky" animation for a zombie at the specified grid position.

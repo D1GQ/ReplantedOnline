@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
@@ -50,14 +51,14 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
                 Net.Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
                 Net.Zombie.mPhaseCounter = 0;
                 Net.Zombie.mTargetPlantID = PlantID.Null;
-                Net.Zombie.PlayZombieReanim("anim_walk", ReanimLoopType.Loop, 20, 6f);
+                Net.Zombie.PlayZombieReanim(Animations.CATAPULT_WALK.Anim, ReanimLoopType.Loop, Animations.CATAPULT_WALK.Blend, Animations.CATAPULT_WALK.Fps);
             }
             else if (ReadyToFire)
             {
                 ReadyToFire = false;
                 Net.Zombie.mPhaseCounter = 300;
                 Net.Zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
-                Net.Zombie.PlayZombieReanim("anim_shoot", ReanimLoopType.PlayOnceAndHold, 20, 24f);
+                Net.Zombie.PlayZombieReanim(Animations.CATAPULT_SHOOT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.CATAPULT_SHOOT.Blend, Animations.CATAPULT_SHOOT.Fps);
             }
 
             if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
@@ -67,14 +68,14 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
                     Net.Zombie.mZombiePhase = ZombiePhase.CatapultReloading;
                     Net.Zombie.mPhaseCounter = int.MaxValue;
                     Net.Target = null;
-                    Net.Zombie.PlayZombieReanim("anim_idle", ReanimLoopType.Loop, 20, 12f);
+                    Net.Zombie.PlayZombieReanim(Animations.CATAPULT_IDLE.Anim, ReanimLoopType.Loop, Animations.CATAPULT_IDLE.Blend, Animations.CATAPULT_IDLE.Fps);
                 }
             }
 
 
             if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal && Net.Zombie.mSummonCounter <= 1)
             {
-                Net.Zombie.mController.SetImageOverride("Zombie_catapult_pole", "IMAGE_REANIM_ZOMBIE_CATAPULT_POLE");
+                Net.Zombie.mController.SetImageOverride(Animations.CATAPULT_POLE_OBJECT.Slot, Animations.CATAPULT_POLE_OBJECT.Image);
             }
         }
     }

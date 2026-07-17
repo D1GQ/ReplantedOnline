@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Unity;
@@ -35,7 +36,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             Net.Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
 
             // remove arms overlay to appear over the water
-            Net.Zombie.mController.SetImageOverride("whitewater", string.Empty);
+            Net.Zombie.mController.SetImageOverride(Animations.WHITEWATER_OBJECT.Slot, Animations.WHITEWATER_OBJECT.Image);
         }
 
         WhiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);

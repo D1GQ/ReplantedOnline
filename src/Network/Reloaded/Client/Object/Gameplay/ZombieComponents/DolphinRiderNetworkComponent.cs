@@ -3,6 +3,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
@@ -77,7 +78,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
             Instances.GameplayActivity.m_audioService.PlayFoley(FoleyType.DolphinBeforeJumping);
             Net.Zombie.mZombiePhase = ZombiePhase.DolphinInJump;
             Net.Zombie.mVelX = 0.5f;
-            Net.Zombie.PlayZombieReanim("anim_dolphinjump", ReanimLoopType.PlayOnceAndHold, 3, 10f);
+            Net.Zombie.PlayZombieReanim(Animations.DOLPHINRIDER_JUMP.Anim, ReanimLoopType.PlayOnceAndHold, Animations.DOLPHINRIDER_JUMP.Blend, Animations.DOLPHINRIDER_JUMP.Fps);
         }
     }
 }

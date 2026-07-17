@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
@@ -69,7 +70,7 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
         {
             _hasVaulted = true;
             Net.Zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
-            Net.Zombie.PlayZombieReanim("anim_jump", ReanimLoopType.PlayOnceAndHold, 3, 20f);
+            Net.Zombie.PlayZombieReanim(Animations.POLEVAULTER_VAULT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.POLEVAULTER_VAULT.Blend, Animations.POLEVAULTER_VAULT.Fps);
         }
     }
 }
