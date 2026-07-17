@@ -17,23 +17,23 @@ internal static class NetworkExtensions
     /// <summary>
     /// Lock object for thread-safe access to NetworkedLookups dictionary.
     /// </summary>
-    private static readonly object _lookupLock = new();
+    private static readonly object _lock = new();
 
     /// <summary>
-    /// Dictionary storing networked lookups by type and object instance.
+    /// Dictionary storing networked lookups.
     /// </summary>
-    internal static Dictionary<Type, Dictionary<object, NetworkObject>> NetworkedLookups = [];
+    internal static readonly Dictionary<ReloadedObject, NetworkObject> NetworkedLookups = [];
 
     /// <summary>
-    /// Associates a network object with an object instance for later retrieval.
+    /// Associates a network object with an reloaded object instance for later retrieval.
     /// </summary>
-    /// <param name="child">The object instance to associate with the network object.</param>
-    /// <param name="networkObj">The network object to associate with the object.</param>
-    internal static void AddNetworkedLookup(this object child, NetworkObject networkObj)
+    /// <param name="parent">The reloaded object instance to associate with the network object.</param>
+    /// <param name="networkObj">The network object to associate with the reloaded object.</param>
+    internal static void AddNetworkedLookup(this ReloadedObject parent, NetworkObject networkObj)
     {
-        if (child == null)
+        if (parent == null)
         {
-            throw new ArgumentNullException(nameof(child));
+            throw new ArgumentNullException(nameof(parent));
         }
 
         if (networkObj == null)
@@ -41,97 +41,72 @@ internal static class NetworkExtensions
             throw new ArgumentNullException(nameof(networkObj));
         }
 
-        lock (_lookupLock)
+        lock (_lock)
         {
-            if (!NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
-            {
-                lookup = NetworkedLookups[child.GetType()] = [];
-            }
-            lookup[child] = networkObj;
+            NetworkedLookups[parent] = networkObj;
         }
     }
 
     /// <summary>
-    /// Removes the network object association for the specified object instance.
+    /// Removes the network object association for the specified reloaded objectinstance.
     /// </summary>
-    /// <param name="child">The object instance to remove from network lookups.</param>
-    internal static void RemoveNetworkedLookup(this object child)
-    {
-        if (child == null)
-        {
-            throw new ArgumentNullException(nameof(child));
-        }
-
-        lock (_lookupLock)
-        {
-            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
-            {
-                lookup.Remove(child);
-
-                if (lookup.Count == 0)
-                {
-                    NetworkedLookups.Remove(child.GetType());
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Removes the network object association for the specified network object instance.
-    /// </summary>
-    /// <param name="parent">The network object instance to remove from network lookups.</param>
-    internal static void RemoveNetworkedLookup(this NetworkObject parent)
+    /// <param name="parent">The reloaded object instance to remove from network lookups.</param>
+    internal static void RemoveNetworkedLookup(this ReloadedObject parent)
     {
         if (parent == null)
         {
             throw new ArgumentNullException(nameof(parent));
         }
 
-        lock (_lookupLock)
+        lock (_lock)
         {
-            foreach (var kvp in NetworkedLookups)
-            {
-                var lookup = kvp.Value;
-
-                var childrenToRemove = lookup
-                    .Where(x => x.Value == parent)
-                    .Select(x => x.Key)
-                    .ToList();
-
-                foreach (var child in childrenToRemove)
-                {
-                    lookup.Remove(child);
-                }
-
-                if (lookup.Count == 0)
-                {
-                    NetworkedLookups.Remove(kvp.Key);
-                }
-            }
+            NetworkedLookups.Remove(parent);
         }
     }
 
     /// <summary>
-    /// Retrieves the network object associated with the specified object instance.
+    /// Removes the network object association for the specified network object instance.
     /// </summary>
-    /// <typeparam name="T">The type of NetworkObject to retrieve.</typeparam>
-    /// <param name="child">The object instance to look up.</param>
-    /// <returns>The associated NetworkObject instance, or null if not found.</returns>
-    internal static T? GetNetworked<T>(this object child) where T : NetworkObject
+    /// <param name="child">The child network object instance to remove from network lookups.</param>
+    internal static void RemoveNetworkedLookup(this NetworkObject child)
     {
         if (child == null)
         {
             throw new ArgumentNullException(nameof(child));
         }
 
-        lock (_lookupLock)
+        lock (_lock)
         {
-            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+            var childrenToRemove = NetworkedLookups
+                .Where(x => x.Value == child)
+                .Select(x => x.Key)
+                .ToList();
+
+            foreach (var c in childrenToRemove)
             {
-                if (lookup.TryGetValue(child, out var networkObj))
-                {
-                    return (T)networkObj;
-                }
+                NetworkedLookups.Remove(c);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the network object associated with the specified reloaded object instance.
+    /// </summary>
+    /// <typeparam name="T">The type of NetworkObject to retrieve.</typeparam>
+    /// <param name="parent">The reloaded object instance to look up.</param>
+    /// <returns>The associated NetworkObject instance, or null if not found.</returns>
+    internal static T? GetNetworked<T>(this ReloadedObject parent) where T : NetworkObject
+    {
+        if (parent == null)
+        {
+            throw new ArgumentNullException(nameof(parent));
+        }
+
+        lock (_lock)
+        {
+            if (NetworkedLookups.TryGetValue(parent, out var networkObj))
+            {
+                return (T)networkObj;
             }
         }
 
@@ -159,29 +134,26 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
-    /// Attempts to retrieve the network object associated with the specified object instance.
+    /// Attempts to retrieve the network object associated with the specified reloaded object instance.
     /// </summary>
     /// <typeparam name="T">The type of NetworkObject to retrieve. Must derive from NetworkObject.</typeparam>
-    /// <param name="child">The object instance to look up.</param>
+    /// <param name="parent">The reloaded object instance to look up.</param>
     /// <param name="networkObject">When this method returns, contains the associated NetworkObject instance if found; otherwise, null.</param>
-    /// <returns>true if a network object was successfully retrieved for the specified object; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="child"/> is null.</exception>
-    internal static bool TryGetNetworked<T>(this object child, out T networkObject) where T : NetworkObject
+    /// <returns>true if a network object was successfully retrieved for the specified reloaded object; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="parent"/> is null.</exception>
+    internal static bool TryGetNetworked<T>(this ReloadedObject parent, out T networkObject) where T : NetworkObject
     {
-        if (child == null)
+        if (parent == null)
         {
-            throw new ArgumentNullException(nameof(child));
+            throw new ArgumentNullException(nameof(parent));
         }
 
-        lock (_lookupLock)
+        lock (_lock)
         {
-            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
+            if (NetworkedLookups.TryGetValue(parent, out var networkObj))
             {
-                if (lookup.TryGetValue(child, out var networkObj))
-                {
-                    networkObject = (T)networkObj;
-                    return true;
-                }
+                networkObject = (T)networkObj;
+                return true;
             }
         }
 
@@ -190,25 +162,20 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
-    /// Checks if the object has a network look up.
+    /// Checks if the reloaded object has a network look up.
     /// </summary>
-    /// <param name="child">The object instance to look up.</param>
-    internal static bool HasNetworked(this object child)
+    /// <param name="parent">The reloaded object instance to look up.</param>
+    internal static bool HasNetworked(this ReloadedObject parent)
     {
-        if (child == null)
+        if (parent == null)
         {
             return false;
         }
 
-        lock (_lookupLock)
+        lock (_lock)
         {
-            if (NetworkedLookups.TryGetValue(child.GetType(), out var lookup))
-            {
-                return lookup.ContainsKey(child);
-            }
+            return NetworkedLookups.ContainsKey(parent);
         }
-
-        return false;
     }
 
     /// <summary>
