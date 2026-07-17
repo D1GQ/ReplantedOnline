@@ -49,44 +49,6 @@ internal static class ProjectilePatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
-    [HarmonyPatch(typeof(Projectile), nameof(Projectile.IsZombieHitBySplash))]
-    [HarmonyPostfix]
-    private static void Projectile_IsZombieHitBySplash_Melonpult_Postfix(Projectile __instance, Zombie theZombie, ref bool __result)
-    {
-        if (__instance.mProjectileType != ProjectileType.Melon)
-            return;
-
-        if (ReloadedLobby.AmInLobby())
-        {
-            // From Versus Mode Console:
-            // Prevent target zombies and gravestones from taking Melonpult splash damage
-            if (theZombie.mZombieType.IsGravestoneOrTarget())
-            {
-                if (__instance.mRow != theZombie.mRow)
-                {
-                    __result = false;
-                    return;
-                }
-
-                // Melonpult should be targeting zombies over gravestone
-                foreach (var zombie in __instance.mBoard.GetZombies())
-                {
-                    if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
-                    if (zombie.IsDeadOrDying()) continue;
-                    var zombieRect = zombie.GetZombieRectOriginal();
-                    zombieRect.m_Width += 25;
-                    if (!theZombie.GetZombieRectOriginal().Overlaps(zombieRect)) continue;
-
-                    if (zombie.mRow == theZombie.mRow)
-                    {
-                        __result = false;
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPrefix]
     private static bool Plant_FindTargetZombie_Catapult_Prefix(Plant __instance, ref Zombie? __result)
@@ -98,23 +60,31 @@ internal static class ProjectilePatch
         {
             // From Versus Mode Console:
             // Target zombies over gravestones for catapult plants
+
             PriorityVar<Zombie> zombiePriority = new();
             foreach (var zombie in __instance.mBoard.GetZombies())
             {
-                if (zombie.mRow != __instance.mRow) continue;
-                if (zombie.IsDeadOrDying()) continue;
+                if (zombie.mRow != __instance.mRow)
+                    continue;
+
+                if (zombie.IsDeadOrDying() || !zombie.HasNetworked())
+                    continue;
 
                 bool targetLast = zombie.mZombieType.IsGravestoneOrTarget();
+
                 if (!targetLast)
                 {
+                    // For normal zombies: prioritize based on position
                     zombiePriority.Compare(zombie, -zombie.mPosX);
                 }
                 else
                 {
+                    // For gravestones/targets: give them significantly lower priority
                     zombiePriority.Compare(zombie, -zombie.mPosX - 10000);
                 }
             }
 
+            // After evaluating all zombies, get the highest priority target
             if (zombiePriority.TryGet(out var pZombie))
             {
                 __result = pZombie;
@@ -125,12 +95,77 @@ internal static class ProjectilePatch
         return true;
     }
 
+    [HarmonyPatch(typeof(Projectile), nameof(Projectile.IsZombieHitBySplash))]
+    [HarmonyPostfix]
+    private static void Projectile_IsZombieHitBySplash_Melonpult_Postfix(Projectile __instance, Zombie theZombie, ref bool __result)
+    {
+        if (__instance.mProjectileType is not (ProjectileType.Melon or ProjectileType.Wintermelon))
+            return;
+
+        if (ReloadedLobby.AmInLobby())
+        {
+            // From Versus Mode Console:
+            // Prevent target zombies and gravestones from taking Melonpult splash damage
+            if (theZombie.mZombieType.IsGravestoneOrTarget())
+            {
+                // If the projectile is on a different row than the target, it shouldn't hit
+                if (__instance.mRow != theZombie.mRow)
+                {
+                    __result = false;
+                    return;
+                }
+
+                foreach (var zombie in __instance.mBoard.GetZombies())
+                {
+                    if (zombie == theZombie)
+                        continue;
+
+                    if (zombie.mRow != theZombie.mRow)
+                        continue;
+
+                    if (zombie.IsDeadOrDying() || !zombie.HasNetworked())
+                        continue;
+
+                    if (!zombie.mZombieType.IsGravestoneOrTarget())
+                    {
+                        // If a normal zombie is in front of the target,
+                        // the splash should hit the normal zombie instead
+                        if (zombie.mPosX < theZombie.mPosX)
+                        {
+                            __result = false;
+                            return;
+                        }
+
+                        // Check for collision/overlap between the projectile's splash area and the zombie
+                        var rect = __instance.GetProjectileRect();
+                        var zombieRect = zombie.GetZombieRectOriginal();
+                        zombieRect.m_Width += 25; // Slightly increase hitbox for more lenient detection
+
+                        // If there's overlap the splash hits the zombie
+                        // and shouldn't also hit the target/gravestone behind it
+                        if (Common.GetRectOverlap(ref rect, ref zombieRect) > 1)
+                        {
+                            __result = false;
+                            return;
+                        }
+                    }
+                    else if (zombie.mPosX < theZombie.mPosX)
+                    {
+                        // Another target/gravestone in front blocks the splash from reaching this one
+                        __result = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Projectile), nameof(Projectile.FindCollisionTarget))]
     [HarmonyPostfix]
-    private static void Projectile_FindCollisionTarge_Catapult_Postfix(Projectile __instance, ref Zombie? __result)
+    private static void Projectile_FindCollisionTarget_Catapult_Postfix(Projectile __instance, ref Zombie? __result)
     {
-        if (__instance.mProjectileType is not (ProjectileType.Cabbage or ProjectileType.Kernel or
-            ProjectileType.Butter or ProjectileType.Wintermelon)) return;
+        if (__instance.mProjectileType is not (ProjectileType.Cabbage or ProjectileType.Kernel or ProjectileType.Butter
+            or ProjectileType.Melon or ProjectileType.Wintermelon)) return;
 
         if (ReloadedLobby.AmInLobby())
         {
@@ -141,15 +176,33 @@ internal static class ProjectilePatch
                 PriorityVar<Zombie> zombiePriority = new();
                 foreach (var zombie in __instance.mBoard.GetZombies())
                 {
-                    if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
-                    if (zombie.mRow != __instance.mRow) continue;
+                    if (zombie == __result)
+                        continue;
+
+                    if (zombie.mZombieType.IsGravestoneOrTarget())
+                        continue;
+
+                    if (zombie.IsDeadOrDying() || !zombie.HasNetworked())
+                        continue;
+
+                    if (zombie.mRow != __instance.mRow)
+                        continue;
+
+                    // Check if the normal zombie overlaps with or is in front of the gravestone
+                    var resultZombieRect = __result.GetZombieRectOriginal();
                     var zombieRect = zombie.GetZombieRectOriginal();
                     zombieRect.m_Width += 25;
-                    if (!__result.GetZombieRectOriginal().Overlaps(zombieRect)) continue;
 
+                    // Skip zombies that don't overlap with the gravestone and or behind it
+                    if (Common.GetRectOverlap(ref resultZombieRect, ref zombieRect) <= 0 &&
+                        zombie.mPosX > __result.mPosX)
+                        continue;
+
+                    // Add this zombie to the priority queue, prioritizes zombies further left
                     zombiePriority.Compare(zombie, -zombie.mPosX);
                 }
 
+                // If we found a valid normal zombie to target instead of the gravestone
                 if (zombiePriority.TryGet(out var pZombie))
                 {
                     __result = pZombie;
