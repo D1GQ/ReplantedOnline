@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Utilities.Modded;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
@@ -21,29 +20,18 @@ internal static class DolphinRiderZombiePatch
         {
             if (VersusState.AmPlantSide)
             {
-                if (__result != null && __result.mSeedType == SeedType.Tanglekelp)
+                if (__result != null)
                 {
-                    __result = null;
+                    if (__result.mSeedType == SeedType.Tanglekelp)
+                    {
+                        __result = null;
+                        return;
+                    }
                 }
             }
             else
             {
-                if (__instance.mZombiePhase == ZombiePhase.DolphinRiding)
-                {
-                    // Wait for plant side to find target to vault
-                    var zombieNetworked = __instance.GetNetworked();
-                    if (zombieNetworked != null)
-                    {
-                        if (zombieNetworked.Target != null)
-                        {
-                            __result = zombieNetworked.Target;
-                        }
-                        else
-                        {
-                            __result = null;
-                        }
-                    }
-                }
+                __result = null;
             }
         }
     }
