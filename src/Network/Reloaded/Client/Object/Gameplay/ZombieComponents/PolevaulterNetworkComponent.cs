@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -8,6 +9,12 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Polevaulter)]
 internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
 {
+    private enum PolevaulterRpcs : byte
+    {
+        Vault
+    }
+
+    private bool _hasVaulted;
     internal sealed override void Update()
     {
         if (Net.Zombie == null) return;
@@ -16,11 +23,10 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && Net.Target == null)
+            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && !_hasVaulted)
             {
-                // Send target to vault
-                Plant target = Net.Zombie.FindPlantTarget(ZombieAttackType.Vault);
-                Net.SendSetPlantTargetRpc(target);
+                _hasVaulted = true;
+                SendVaultRpc();
             }
         }
         else
@@ -30,12 +36,40 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
                 SyncedPosX = null;
             }
         }
+    }
 
-        // Non owner logic is handled in PolevaulterZombiePatch.cs
+    internal override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    {
+        if (Net.Zombie == null)
+            return;
 
-        if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterPostVault)
+        if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
         {
-            Net.Target = null;
+            return;
+        }
+
+        base.UpdatePosition(distance, useNonNetworkLogic);
+    }
+
+    private void SendVaultRpc()
+    {
+        if (Net.Zombie == null)
+            return;
+
+        SendNetworkComponentRpc(PolevaulterRpcs.Vault);
+    }
+
+    [RpcHandler(PolevaulterRpcs.Vault)]
+    private void HandleVaultRpc()
+    {
+        if (Net.Zombie == null)
+            return;
+
+        if (!_hasVaulted)
+        {
+            _hasVaulted = true;
+            Net.Zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
+            Net.Zombie.PlayZombieReanim("anim_jump", ReanimLoopType.PlayOnceAndHold, 3, 20f);
         }
     }
 }
