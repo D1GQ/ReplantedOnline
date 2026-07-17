@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Utilities.Modded;
@@ -15,14 +16,15 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         Activate
     }
 
-    private Texture _awakeTexture = default!;
+    private Texture _originalTexture = default!;
     private Texture _sleepingTexture = default!;
 
     internal sealed override void OnInit()
     {
-        if (Net.Plant == null) return;
+        if (Net.Plant == null)
+            return;
 
-        _awakeTexture = Net.Plant.mController.m_meshRenderer.material.mainTexture;
+        _originalTexture = Net.Plant.mController.m_meshRenderer.material.mainTexture;
         _sleepingTexture = ReplantedOnlineMod.Assets.Sprites.Character.JalapenoSleeping.texture;
         Net.Plant.mSeedType = SeedType.None;
         Net.Plant.SetSleeping(true);
@@ -40,7 +42,8 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     private bool _activated;
     internal sealed override void Update()
     {
-        if (Net.Plant?.mController == null) return;
+        if (Net.Plant?.mController == null)
+            return;
 
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
 
@@ -72,7 +75,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (_activated)
         {
-            Net.Plant.mController.m_meshRenderer.material.mainTexture = _awakeTexture;
+            Net.Plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
             base.Update();
         }
         else
@@ -96,6 +99,14 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         {
             Net.Plant?.mController?.m_materialEffectController.SetHighContrastColor(new Color(1f, 1f, 0f), 0f);
         }
+    }
+
+    internal override void OnDeath(DeathReason deathReason)
+    {
+        if (Net.Plant == null)
+            return;
+
+        Net.Plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
     }
 
     internal void SendActivateRpc()

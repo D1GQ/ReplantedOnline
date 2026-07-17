@@ -11,17 +11,23 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Gravestone)]
 internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 {
+    private Texture _originalTexture = default!;
     private Texture _dirtlessTexture = default!;
     private Texture _poolTexture = default!;
     internal sealed override void OnInit()
     {
+        if (Net.Zombie?.mController == null)
+            return;
+
+        _originalTexture = Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture;
         _dirtlessTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestoneDirtless.texture;
         _poolTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestonePool.texture;
     }
 
     internal sealed override void Update()
     {
-        if (Net.Zombie?.mController == null) return;
+        if (Net.Zombie?.mController == null)
+            return;
 
         Net.Zombie.mGroanCounter = int.MaxValue;
 
@@ -46,8 +52,10 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 
     internal sealed override void OnDeath(DeathReason deathReason)
     {
-        if (Net.Zombie == null) return;
+        if (Net.Zombie?.mController == null)
+            return;
 
+        Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _originalTexture;
         Instances.GameplayActivity.Board.m_vsGravestones.Remove(Net.Zombie);
         Net.Zombie.mGraveX = 0;
         Net.Zombie.mGraveY = 0;
