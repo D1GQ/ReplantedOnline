@@ -213,7 +213,7 @@ internal sealed class ZombieNetworked : NetworkObject
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
         }
 
-        DespawnAndDestroy(true);
+        DespawnAndDestroyWhenNullOrDead(true);
     }
 
     [RpcHandler(ZombieRpcs.Death)]
