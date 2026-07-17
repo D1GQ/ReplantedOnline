@@ -25,27 +25,15 @@ internal sealed class QuickplayGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        if (VersusState.AmPlantSide)
+        var plantSeedBankInfo = PvZRUtils.GetPlantSeedBankInfo();
+        var zombieSeedBankInfo = PvZRUtils.GetZombieSeedBankInfo();
+        foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
         {
-            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
-            {
-                PvZRUtils.GetLocalSeedBankInfo().mSeedBank.AddSeed(seedType, true);
-            }
-            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
-            {
-                PvZRUtils.GetOpponentSeedBankInfo().mSeedBank.AddSeed(seedType, true);
-            }
+            plantSeedBankInfo.mSeedBank.AddSeed(seedType, true);
         }
-        else if (VersusState.AmZombieSide)
+        foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
         {
-            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayZombies())
-            {
-                PvZRUtils.GetLocalSeedBankInfo().mSeedBank.AddSeed(seedType, true);
-            }
-            foreach (var seedType in IArenaSetupSeedbank.GetQuickPlayPlants())
-            {
-                PvZRUtils.GetOpponentSeedBankInfo().mSeedBank.AddSeed(seedType, true);
-            }
+            zombieSeedBankInfo.mSeedBank.AddSeed(seedType, true);
         }
     }
 

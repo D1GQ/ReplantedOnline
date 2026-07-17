@@ -83,12 +83,12 @@ internal sealed class CustomGamemode : IVersusGamemode
 
     private static void SetupDebugPlantSide()
     {
-        var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
+        var zombieSeedBankInfo = PvZRUtils.GetZombieSeedBankInfo();
         SeedType[] quickPlayZombies = IArenaSetupSeedbank.GetQuickPlayZombies();
 
-        for (int i = opponentSeedBankInfo.mSeedsInBank; i < quickPlayZombies.Length; i++)
+        for (int i = zombieSeedBankInfo.mSeedsInBank; i < quickPlayZombies.Length; i++)
         {
-            opponentSeedBankInfo.AddSeedFromChooser(quickPlayZombies[i]);
+            zombieSeedBankInfo.AddSeedFromChooser(quickPlayZombies[i]);
         }
 
         var seedChooserVSSwap = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
@@ -103,12 +103,12 @@ internal sealed class CustomGamemode : IVersusGamemode
 
     private static void SetupDebugZombieSide()
     {
-        var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
+        var plantSeedBankInfo = PvZRUtils.GetPlantSeedBankInfo();
         SeedType[] quickPlayPlants = IArenaSetupSeedbank.GetQuickPlayPlants();
 
-        for (int i = opponentSeedBankInfo.mSeedsInBank; i < quickPlayPlants.Length; i++)
+        for (int i = plantSeedBankInfo.mSeedsInBank; i < quickPlayPlants.Length; i++)
         {
-            opponentSeedBankInfo.AddSeedFromChooser(quickPlayPlants[i]);
+            plantSeedBankInfo.AddSeedFromChooser(quickPlayPlants[i]);
         }
     }
 

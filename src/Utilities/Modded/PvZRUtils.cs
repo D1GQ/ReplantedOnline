@@ -7,6 +7,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Network.Reloaded.Client;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -139,6 +140,65 @@ internal static class PvZRUtils
         return zombieType is ZombieType.Target or ZombieType.Gravestone;
     }
 
+
+    /// <summary>
+    /// Gets the team associated with the seed bank.
+    /// </summary>
+    /// <param name="seedBank">The seed bank reference.</param>
+    /// <returns>
+    /// <see cref="PlayerTeam.Plants"/> if the seed bank belongs to the board's main seed bank;
+    /// otherwise, <see cref="PlayerTeam.Zombies"/>.
+    /// </returns>
+    internal static PlayerTeam GetSeedBankTeam(this SeedBank seedBank)
+    {
+        if (ReloadedClientData.LocalClient!.Team == PlayerTeam.Zombies)
+        {
+            return seedBank.PlayerIndex == ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX ? PlayerTeam.Plants : PlayerTeam.Zombies;
+        }
+        else
+        {
+            return seedBank.PlayerIndex == ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX ? PlayerTeam.Plants : PlayerTeam.Zombies;
+        }
+    }
+
+    /// <summary>
+    /// Gets the seed bank information for the plant side.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the plants seed bank data.
+    /// </returns>
+    internal static SeedChooserScreen.SeedBankInfo GetPlantSeedBankInfo()
+    {
+        foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
+        {
+            if (bankInfo.mSeedBank.GetSeedBankTeam() == PlayerTeam.Plants)
+            {
+                return bankInfo;
+            }
+        }
+
+        throw new Exception("Unable to find plant seed bank.");
+    }
+
+    /// <summary>
+    /// Gets the seed bank information for the zombie side.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the zombies seed bank data.
+    /// </returns>
+    internal static SeedChooserScreen.SeedBankInfo GetZombieSeedBankInfo()
+    {
+        foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
+        {
+            if (bankInfo.mSeedBank.GetSeedBankTeam() == PlayerTeam.Zombies)
+            {
+                return bankInfo;
+            }
+        }
+
+        throw new Exception("Unable to find zombie seed bank.");
+    }
+
     /// <summary>
     /// Adds a seed from the seed chooser screen to the seed bank and updates its state.
     /// </summary>
@@ -162,28 +222,6 @@ internal static class PvZRUtils
                 break;
             }
         }
-    }
-
-    /// <summary>
-    /// Gets the seed bank information for the local player.
-    /// </summary>
-    /// <returns>
-    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the local player's seed bank data.
-    /// </returns>
-    internal static SeedChooserScreen.SeedBankInfo GetLocalSeedBankInfo()
-    {
-        return Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX];
-    }
-
-    /// <summary>
-    /// Gets the seed bank information for the opponent player.
-    /// </summary>
-    /// <returns>
-    /// The <see cref="SeedChooserScreen.SeedBankInfo"/> instance containing the opponent player's seed bank data.
-    /// </returns>
-    internal static SeedChooserScreen.SeedBankInfo GetOpponentSeedBankInfo()
-    {
-        return Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items[ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX];
     }
 
     /// <summary>

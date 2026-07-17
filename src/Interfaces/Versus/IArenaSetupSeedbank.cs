@@ -1,7 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Interfaces.Versus;
@@ -108,26 +106,15 @@ internal interface IArenaSetupSeedbank
     /// </summary>
     internal static void AddInitialSeedsToBanks()
     {
-        var localSeedBankInfo = PvZRUtils.GetLocalSeedBankInfo();
-        var opponentSeedBankInfo = PvZRUtils.GetOpponentSeedBankInfo();
-        localSeedBankInfo.ClearAllSeedsInSeedBack();
-        opponentSeedBankInfo.ClearAllSeedsInSeedBack();
+        var plantSeedBankInfo = PvZRUtils.GetPlantSeedBankInfo();
+        var zombieSeedBankInfo = PvZRUtils.GetZombieSeedBankInfo();
+        plantSeedBankInfo.ClearAllSeedsInSeedBack();
+        zombieSeedBankInfo.ClearAllSeedsInSeedBack();
 
-        if (ReloadedClientData.LocalClient?.Team == PlayerTeam.Plants)
+        for (int i = 0; i < GetStartingSeedPacketCount(); i++)
         {
-            for (int i = 0; i < GetStartingSeedPacketCount(); i++)
-            {
-                localSeedBankInfo.AddSeedFromChooser(GetQuickPlayPlants()[i]);
-                opponentSeedBankInfo.AddSeedFromChooser(GetQuickPlayZombies()[i]);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < GetStartingSeedPacketCount(); i++)
-            {
-                localSeedBankInfo.AddSeedFromChooser(GetQuickPlayZombies()[i]);
-                opponentSeedBankInfo.AddSeedFromChooser(GetQuickPlayPlants()[i]);
-            }
+            plantSeedBankInfo.AddSeedFromChooser(GetQuickPlayPlants()[i]);
+            zombieSeedBankInfo.AddSeedFromChooser(GetQuickPlayZombies()[i]);
         }
     }
 
