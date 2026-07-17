@@ -64,7 +64,7 @@ internal static class MatchmakingPatch
 
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(ISteamMatchmaking), nameof(ISteamMatchmaking.GetNumLobbyMembers))]
-    internal static int GetNumLobbyMembersOriginal(this ISteamMatchmaking __instance, SteamId steamIDLobby)
+    private static int GetNumLobbyMembersOriginal(this ISteamMatchmaking __instance, SteamId steamIDLobby)
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }
@@ -89,7 +89,7 @@ internal static class MatchmakingPatch
 
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(ISteamMatchmaking), nameof(ISteamMatchmaking.GetLobbyMemberByIndex))]
-    internal static SteamId GetLobbyMemberByIndexOriginal(this ISteamMatchmaking __instance, SteamId steamIDLobby, int iMember)
+    private static SteamId GetLobbyMemberByIndexOriginal(this ISteamMatchmaking __instance, SteamId steamIDLobby, int iMember)
     {
         throw new NotImplementedException("Reverse Patch Stub");
     }

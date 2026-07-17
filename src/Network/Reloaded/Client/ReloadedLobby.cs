@@ -230,17 +230,21 @@ internal static class ReloadedLobby
         LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
         LobbyData.LobbyCode = NetworkTransport!.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
 
+        int memberCount = GetLobbyMemberCount();
+        for (int i = 0; i < memberCount; i++)
+        {
+            var member = GetLobbyMemberByIndex(i);
+            LobbyData.OnClientJoined(member);
+
+        }
+
         Transitions.ToVersus(() =>
         {
             NetworkManager.StartListening();
             LobbyData.UpdateLobbyStates();
             ReloadedClientData.LocalClient?.Ready.Value = true;
         });
-
-        LobbyData.OnClientJoined(NetworkTransport.LocalClientId);
         DiscordManager.OnJoinLobby();
-
-        int memberCount = GetLobbyMemberCount();
 
         if (memberCount > 1)
         {
@@ -353,12 +357,21 @@ internal static class ReloadedLobby
     }
 
     /// <summary>
+    /// Gets the number of clients currently in the lobby.
+    /// </summary>
+    /// <returns>The number of lobby clients.</returns>
+    internal static int GetLobbyClientCount()
+    {
+        return LobbyData!.AllClients.Count;
+    }
+
+    /// <summary>
     /// Gets the number of members currently in the lobby.
     /// </summary>
     /// <returns>The number of lobby members.</returns>
     internal static int GetLobbyMemberCount()
     {
-        return LobbyData!.AllClients.Count;
+        return NetworkTransport!.GetNumLobbyMembers(LobbyData!.LobbyId);
     }
 
     /// <summary>

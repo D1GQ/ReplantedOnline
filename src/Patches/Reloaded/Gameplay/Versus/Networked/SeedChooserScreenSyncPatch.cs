@@ -29,7 +29,7 @@ internal static class SeedChooserScreenSyncPatch
 
             if (ReplantedOnlineMod.ModInfo.DEBUG)
             {
-                if (ReloadedLobby.GetLobbyMemberCount() == 1)
+                if (ReloadedLobby.GetLobbyClientCount() == 1)
                 {
                     var seedChooserVSSwap = UnityEngine.Object.FindObjectOfType<SeedChooserVSSwap>();
                     seedChooserVSSwap.playerTurn = 0;

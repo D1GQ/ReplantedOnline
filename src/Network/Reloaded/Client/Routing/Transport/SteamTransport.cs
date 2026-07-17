@@ -2,7 +2,6 @@
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
 
@@ -115,7 +114,7 @@ internal sealed class SteamTransport : INetworkTransport
     public int GetNumLobbyMembers(ID lobbyId)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
-            return SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(id);
+            return SteamMatchmaking.Internal.GetNumLobbyMembers(id);
         throw new ArgumentException("GetNumLobbyMembers requires a SteamId");
     }
 
@@ -123,7 +122,7 @@ internal sealed class SteamTransport : INetworkTransport
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
-            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndexOriginal(id, memberIndex);
+            var member = SteamMatchmaking.Internal.GetLobbyMemberByIndex(id, memberIndex);
             return member.AsID();
         }
         throw new ArgumentException("GetLobbyMemberByIndex requires a SteamId");

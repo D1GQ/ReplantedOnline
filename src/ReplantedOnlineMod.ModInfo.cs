@@ -15,7 +15,7 @@ internal partial class ReplantedOnlineMod
 #if DEBUG
         internal const bool DEBUG = true;
 #else
-    internal const bool DEBUG = false;
+        internal const bool DEBUG = false;
 #endif
 
         /// <summary>
@@ -41,7 +41,7 @@ internal partial class ReplantedOnlineMod
         /// <summary>
         /// The hotfix number for hotfix releases.
         /// </summary>
-        internal const string HOTFIX_NUM = "0";
+        internal const string HOTFIX_NUM = "1";
 
         /// <summary>
         /// The formatted version string of the mod using semantic versioning.
@@ -49,7 +49,7 @@ internal partial class ReplantedOnlineMod
 #if DEBUG
         internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-debug-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #elif HOTFIX
-    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-hotfix{HOTFIX_NUM}";
+        internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-hotfix{HOTFIX_NUM}";
 #else
     internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #endif

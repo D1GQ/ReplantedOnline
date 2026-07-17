@@ -187,7 +187,7 @@ internal static class VersusLobbyManager
         }
 
         bool shouldEnableButtons = !ReloadedLobby.LobbyData.PickingSides.Value
-            && ReloadedLobby.GetLobbyMemberCount() > 1
+            && ReloadedLobby.GetLobbyClientCount() > 1
             && ReloadedLobby.LobbyData.AllClientsReady();
 
         VersusLobbyPatch.SetButtonsInteractable(shouldEnableButtons);

@@ -149,7 +149,7 @@ internal static class DiscordManager
         if (!ReloadedLobby.AmInLobby()) return;
         if (!Presence.HasParty()) return;
 
-        int size = ReloadedLobby.GetLobbyMemberCount();
+        int size = ReloadedLobby.GetLobbyClientCount();
         if (size == LastPartySize) return;
 
         LastPartySize = size;
