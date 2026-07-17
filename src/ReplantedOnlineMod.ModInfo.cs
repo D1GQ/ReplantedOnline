@@ -36,7 +36,7 @@ internal partial class ReplantedOnlineMod
         /// <summary>
         /// The number of the release.
         /// </summary>
-        internal const string MOD_RELEASE_INFO = "15";
+        internal const string MOD_RELEASE_INFO = "16";
 
         /// <summary>
         /// The hotfix number for hotfix releases.
