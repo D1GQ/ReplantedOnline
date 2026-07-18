@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Reloaded.Client;
 internal sealed class ReloadedClientData
 {
     /// <summary>
-    /// Initializes a new instance of the NetClient class.
+    /// Initializes a new instance of the ReloadedClientData class.
     /// </summary>
     /// <param name="id">The ID of the client.</param>
     internal ReloadedClientData(ID id)
@@ -37,12 +37,12 @@ internal sealed class ReloadedClientData
     internal ClientVar<bool> Ready { get; }
 
     /// <summary>
-    /// Get the local NetClient
+    /// Get the local ReloadedClientData
     /// </summary>
     internal static ReloadedClientData? LocalClient { get; private set; }
 
     /// <summary>
-    /// Get the opponent NetClient
+    /// Get the opponent ReloadedClientData
     /// </summary>
     internal static ReloadedClientData? OpponentClient { get; private set; }
 
@@ -93,7 +93,7 @@ internal sealed class ReloadedClientData
     }
 
     /// <summary>
-    /// Gets the plants NetClient
+    /// Gets the plants ReloadedClientData
     /// </summary>
     internal static ReloadedClientData? GetPlantClient()
     {
@@ -114,7 +114,7 @@ internal sealed class ReloadedClientData
     }
 
     /// <summary>
-    /// Gets the zombies NetClient
+    /// Gets the zombies ReloadedClientData
     /// </summary>
     internal static ReloadedClientData? GetZombieClient()
     {

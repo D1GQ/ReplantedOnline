@@ -52,10 +52,15 @@ internal static partial class NetworkManager
     /// <param name="log">If sending should be logged.</param>
     internal static void SendPacketTo(ID targetId, IPacket? payload, PacketType tag, PacketChannel packetChannel, bool log)
     {
+        if (!targetId.TryGetClientData(out var client))
+        {
+            return;
+        }
+
         PacketWriter packetWriter = PacketWriter.Get();
         Message<PacketHeaderMessage>.Singleton.Serialize(packetWriter, tag, payload);
 
-        if (targetId.GetNetClient()!.AmLocal == true)
+        if (client.AmLocal == true)
         {
             var rePacket = PacketReader.Get(packetWriter.GetByteBuffer());
             try
@@ -78,7 +83,7 @@ internal static partial class NetworkManager
 
         if (log)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {tag} packet to {targetId.GetNetClient()!.Name} -> Size: {packetWriter.Length} bytes");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {tag} packet to {client.Name} -> Size: {packetWriter.Length} bytes");
         }
 
         packetWriter.Recycle();
@@ -187,7 +192,7 @@ internal static partial class NetworkManager
         {
             if (ReloadedLobby.NetworkTransport!.ReadP2PPacket(buffer, channel))
             {
-                ReloadedClientData sender = buffer.ClientId.GetNetClient()!;
+                ReloadedClientData? sender = buffer.ClientId.GetClientData();
 
                 if (buffer.Size > 0)
                 {
@@ -228,9 +233,15 @@ internal static partial class NetworkManager
     /// <param name="sender">The client that sent the packet.</param>
     /// <param name="packetReader">The packet reader containing the packet data.</param>
     /// <param name="local">Whether if this packet is from the local client.</param>
-    internal static void Streamline(ReloadedClientData sender, PacketReader packetReader, bool local)
+    internal static void Streamline(ReloadedClientData? sender, PacketReader packetReader, bool local)
     {
         var message = Message<PacketHeaderMessage>.Singleton.Deserialize(packetReader);
+
+        if (sender == null)
+        {
+            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {message.PacketType} packet, sender client is null...");
+            return;
+        }
 
         if (message.SignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
         {
@@ -256,10 +267,7 @@ internal static partial class NetworkManager
                 }
             }
 
-            if (sender != null)
-            {
-                packetMessage.Receive(sender, packetReader, local);
-            }
+            packetMessage.Receive(sender, packetReader, local);
         }
         else
         {

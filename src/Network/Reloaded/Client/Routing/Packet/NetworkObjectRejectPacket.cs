@@ -15,7 +15,8 @@ internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifi
     /// <inheritdoc/>
     public void Send(NetworkIdentifier networkId, ID owner)
     {
-        if (owner.GetNetClient()!.AmLocal) return;
+        if (owner.GetClientData()?.AmLocal == true)
+            return;
 
         PacketWriter packetWriter = PacketWriter.Get();
         Message<NetworkObjectRejectMessage>.Singleton.Serialize(packetWriter, networkId);

@@ -179,11 +179,11 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
-    /// Retrieves a NetClient instance by Client ID from the current lobby.
+    /// Retrieves a ReloadedClientData instance by Client ID from the current lobby.
     /// </summary>
     /// <param name="clientId">The Client ID to search for.</param>
-    /// <returns>The NetClient instance if found in the current lobby, otherwise null.</returns>
-    internal static ReloadedClientData? GetNetClient(this ID clientId)
+    /// <returns>The ReloadedClientData instance if found in the current lobby, otherwise null.</returns>
+    internal static ReloadedClientData? GetClientData(this ID clientId)
     {
         if (ReloadedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var client) == true)
         {
@@ -194,16 +194,16 @@ internal static class NetworkExtensions
     }
 
     /// <summary>
-    /// Attempts to retrieve a NetClient instance by Client ID from the current lobby.
+    /// Attempts to retrieve a ReloadedClientData instance by Client ID from the current lobby.
     /// </summary>
     /// <param name="clientId">The Client ID to search for.</param>
-    /// <param name="client">When this method returns, contains the NetClient instance if found; otherwise, the default value.</param>
-    /// <returns>true if the NetClient was found in the current lobby; otherwise, false.</returns>
-    internal static bool TryGetNetClient(this ID clientId, out ReloadedClientData client)
+    /// <param name="client">When this method returns, contains the ReloadedClientData instance if found; otherwise, the default value.</param>
+    /// <returns>true if the ReloadedClientData was found in the current lobby; otherwise, false.</returns>
+    internal static bool TryGetClientData(this ID clientId, out ReloadedClientData client)
     {
-        if (ReloadedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var rClient) == true)
+        if (ReloadedLobby.LobbyData?.AllClients.TryGetValue(clientId, out var clientData) == true)
         {
-            client = rClient;
+            client = clientData;
             return true;
         }
 
