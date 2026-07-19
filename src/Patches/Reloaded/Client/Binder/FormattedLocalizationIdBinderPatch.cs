@@ -13,6 +13,12 @@ internal static class FormattedLocalizationIdBinderPatch
     [HarmonyPrefix]
     private static bool FormattedLocalizationIdBinder_BindValue_Prefix(FormattedLocalizationIdBinder __instance, string value)
     {
+        if (value.StartsWith("raw:"))
+        {
+            __instance.m_text.SetText(value[4..]);
+            return false;
+        }
+
         if (value.StartsWith(ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX))
         {
             var customSeedTypeIntString = value[ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX.Length..];

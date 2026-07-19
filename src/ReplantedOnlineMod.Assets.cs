@@ -227,6 +227,19 @@ internal partial class ReplantedOnlineMod
                         return field!;
                     }
                 }
+
+                internal static Sprite YetiSeedPacketIcon
+                {
+                    get
+                    {
+                        if (field == null)
+                        {
+                            field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.Yeti-Seedpacket.png");
+                        }
+
+                        return field!;
+                    }
+                }
             }
 
             internal static class WhiteWaterSpriteSheet

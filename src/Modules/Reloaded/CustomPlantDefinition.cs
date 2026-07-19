@@ -19,28 +19,27 @@ internal static class CustomPlantDefinition
     /// Creates a zombie seed packet definition for a custom seed type.
     /// </summary>
     /// <param name="customSeedType">The custom seed type that must have a valid zombie type configured.</param>
-    /// <param name="name">The base name used for localization and asset identification.</param>
+    /// <param name="translationStr">The translation string used for localization and asset identification.</param>
     /// <param name="seedPacketSprite">The sprite image to use for the zombies seedpacket icom.</param>
     /// <returns>
     /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.
     /// </returns>
-    internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string name, Sprite seedPacketSprite)
+    internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationStr, Sprite seedPacketSprite)
     {
         if (!customSeedType.HasValidZombieType())
         {
             return null;
         }
 
-        string translationName = name.ToUpper().Replace(' ', '_');
-        string nameTrim = name.ToUpper().Replace(" ", "");
+        string nameTrim = translationStr.ToUpper().Replace("_", "");
 
         var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();
         customPlantDefinition.name = $"CustomPlantDefinition-{nameTrim}";
 
         customPlantDefinition.m_seedType = customSeedType;
         customPlantDefinition.m_animationType = customSeedType;
-        customPlantDefinition.m_plantName = translationName + "_ZOMBIE";
+        customPlantDefinition.m_plantName = translationStr;
         customPlantDefinition.m_defaultSkin = "Normal";
 
         CustomAssetReference<AssetReferenceSprite> seedPacketImageAsset = new($"CustomPlantDefinition:{nameTrim}-SeedPacketIcon", seedPacketSprite);

@@ -13,7 +13,7 @@ echo   1. Copying game DLL references from your MelonLoader installation
 echo      - Copies required DLLs from your game folder to the project
 echo.
 echo   2. Downloading external dependencies
-echo      - Downloads BloomEngine.dll and other required libraries
+echo      - Downloads required libraries
 echo.
 echo This is required for the project to compile successfully.
 echo.

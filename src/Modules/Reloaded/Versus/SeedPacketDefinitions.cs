@@ -164,7 +164,7 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusCost = 25;
 
         var snorkelDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "Snorkel",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "SNORKEL_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
         if (snorkelDefinition != null)
         {
@@ -174,13 +174,23 @@ internal static class SeedPacketDefinitions
         }
 
         var dolphinRiderDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "Dolphin Rider",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
         if (dolphinRiderDefinition != null)
         {
             dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
             dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
             dolphinRiderDefinition.m_versusCost = 150;
+        }
+
+        var yetiDefinition = CustomPlantDefinition
+            .CreateZombieSeedPacketDefinition(CustomSeedType.Yeti, "ZOMBIE_YETI",
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon);
+        if (yetiDefinition != null)
+        {
+            yetiDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
+            yetiDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
+            yetiDefinition.m_versusCost = 200;
         }
     }
 
@@ -595,7 +605,7 @@ internal static class SeedPacketDefinitions
     /// <returns>True if the zombie should spawn at the back of the lawn; false otherwise.</returns>
     internal static bool ZombieSpawnsInBack(ZombieType zombieType)
     {
-        if (zombieType is ZombieType.Bobsled or ZombieType.Balloon or ZombieType.DolphinRider or ZombieType.Snorkel)
+        if (zombieType is ZombieType.Bobsled or ZombieType.Balloon or ZombieType.DolphinRider or ZombieType.Snorkel or ZombieType.Yeti)
         {
             return true;
         }

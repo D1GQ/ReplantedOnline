@@ -87,9 +87,35 @@ internal static class SeedChooserPatch
         RepositionAllZombieSeeds();
     }
 
+    private static readonly ChosenSeed HiddenChosenSeed = new()
+    {
+        mIsImitater = true // For some reason this hides the seed in the chooser!
+    };
+
     static void RepositionAllZombieSeeds()
     {
         var screen = Instances.GameplayActivity.SeedChooserScreen;
+
+        // Sort seeds by cost
+        screen.mChosenZombies.Sort((Func<ChosenSeed, ChosenSeed, int>)((cz1, cz2) =>
+        {
+            bool isSpecial1 = cz1.mSeedType == SeedType.ZombieGravestone;
+            bool isSpecial2 = cz2.mSeedType == SeedType.ZombieGravestone;
+
+            if (isSpecial1 == isSpecial2)
+            {
+                var definition1 = Instances.IDataService.GetPlantDefinition(cz1.mSeedType);
+                var definition2 = Instances.IDataService.GetPlantDefinition(cz2.mSeedType);
+                return definition1.m_versusCost.CompareTo(definition2.m_versusCost);
+            }
+
+            return isSpecial1 ? -1 : 1;
+        }));
+
+        // Work around for hard coded index 20 being not suggested.
+        screen.mChosenZombies.Remove(HiddenChosenSeed);
+        screen.mChosenZombies.Insert(20, HiddenChosenSeed);
+
         var seeds = screen.mChosenZombies;
         bool has7Rows = screen.Has7Rows();
 
