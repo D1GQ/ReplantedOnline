@@ -62,18 +62,20 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         if (zombie.mBoard == null) return;
         if (zombie.mController == null) return;
 
-        int leftGrid = zombie.mBoard.PixelToGridX(zombie.mPosX + 75f, zombie.mRow);
-        int rightGrid = zombie.mBoard.PixelToGridX(zombie.mPosX + 45f, zombie.mRow);
-        bool onPoolLeft = zombie.mBoard.IsPoolSquare(leftGrid, zombie.mRow);
-        bool onPoolRight = zombie.mBoard.IsPoolSquare(rightGrid, zombie.mRow);
-        bool onPool = onPoolLeft && onPoolRight;
+        var groundType = zombie.mBoard.mPlantRow[zombie.mRow];
+        if (groundType != PlantRowType.Pool)
+        {
+            return;
+        }
+
+        bool onPool = zombie.mPosX > 0f && zombie.mPosX < 680f;
 
         if (Net.Event == EventState.PushBack)
         {
             onPool = false;
         }
 
-        if (!_inPool && onPool && zombie.mPosX < 680f)
+        if (!_inPool && onPool)
         {
             _inPool = true;
             zombie.mZombieHeight = ZombieHeight.InToPool;
@@ -155,6 +157,10 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             case ZombieType.Football:
                 WhiteWaterEffect.transform.localPosition = new(0f, 105f, 0f);
                 WhiteWaterEffect.transform.localScale = new(1.25f, 1f, 1f);
+                return;
+            case ZombieType.Yeti:
+                WhiteWaterEffect.transform.localPosition = new(15f, 155f, 0f);
+                WhiteWaterEffect.transform.localScale = new(1.7f, 1f, 1f);
                 return;
             default:
                 break;

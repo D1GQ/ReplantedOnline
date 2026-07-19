@@ -25,7 +25,7 @@ internal static class CustomPlantDefinition
     /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.
     /// </returns>
-    internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationStr, Sprite seedPacketSprite)
+    internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string translationStr, Sprite seedPacketSprite, string? description = null)
     {
         if (!customSeedType.HasValidZombieType())
         {
@@ -57,8 +57,15 @@ internal static class CustomPlantDefinition
             customPlantDefinition.m_previewSpriteScale = 1f;
             customPlantDefinition.m_previewSpriteOffset = new(115f, -184f);
 
-            customPlantDefinition.m_plantToolTip =
-                ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX + (int)(SeedType)customSeedType;
+            if (description == null)
+            {
+                customPlantDefinition.m_plantToolTip =
+                    ReplantedOnlineMod.Constants.Reloaded.REDIRECT_ALMANAC_PREFIX + (int)(SeedType)customSeedType;
+            }
+            else
+            {
+                customPlantDefinition.m_plantToolTip = "raw:" + description;
+            }
 
             break;
         }

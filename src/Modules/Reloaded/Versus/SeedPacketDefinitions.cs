@@ -185,7 +185,8 @@ internal static class SeedPacketDefinitions
 
         var yetiDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.Yeti, "ZOMBIE_YETI",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon);
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon,
+            "A curious creature that can only be killed by insta plants.");
         if (yetiDefinition != null)
         {
             yetiDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
