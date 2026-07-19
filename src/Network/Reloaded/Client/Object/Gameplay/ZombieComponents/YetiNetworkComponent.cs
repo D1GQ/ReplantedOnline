@@ -15,14 +15,14 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     private enum YetiRpcs : byte
     {
         RunBack,
-        Angry
+        Enraged
     }
 
     internal enum YetiState
     {
         Curious,
         Runningback,
-        Angry
+        Enraged
     }
 
     internal override void OnInit()
@@ -49,8 +49,8 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
             case YetiState.Runningback:
                 UpdateRunningback();
                 break;
-            case YetiState.Angry:
-                UpdateAngry();
+            case YetiState.Enraged:
+                UpdateEnraged();
                 break;
         }
     }
@@ -66,7 +66,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
 
         if (Net.AmOwner)
         {
-            if (TryGoIntoAngryState())
+            if (TryGoIntoEnragedState())
             {
                 return;
             }
@@ -87,7 +87,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
 
         if (Net.AmOwner)
         {
-            if (TryGoIntoAngryState())
+            if (TryGoIntoEnragedState())
             {
                 return;
             }
@@ -98,22 +98,22 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Net.Zombie.UpdateAnimSpeed();
     }
 
-    private bool TryGoIntoAngryState()
+    private bool TryGoIntoEnragedState()
     {
         if (Net.Zombie == null)
             return false;
 
         if (Net.Zombie.mBodyHealth <= (100000 - 1500))
         {
-            CurrentState = YetiState.Angry;
-            SendAngryRpc();
+            CurrentState = YetiState.Enraged;
+            SendEnragedRpc();
             return true;
         }
 
         return false;
     }
 
-    private void UpdateAngry()
+    private void UpdateEnraged()
     {
         if (Net.Zombie == null)
             return;
@@ -144,7 +144,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendAngryRpc()
+    private void SendEnragedRpc()
     {
         if (Net.Zombie == null)
             return;
@@ -153,18 +153,18 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Net.Zombie.mBodyHealth = 500;
         Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
-        SendNetworkComponentRpc(YetiRpcs.Angry);
+        SendNetworkComponentRpc(YetiRpcs.Enraged);
     }
 
-    [RpcHandler(YetiRpcs.Angry)]
-    private void HandleAngryRpc()
+    [RpcHandler(YetiRpcs.Enraged)]
+    private void HandleEnragedRpc()
     {
         if (Net.Zombie == null)
             return;
 
-        if (CurrentState != YetiState.Angry)
+        if (CurrentState != YetiState.Enraged)
         {
-            CurrentState = YetiState.Angry;
+            CurrentState = YetiState.Enraged;
             Net.Zombie.mBodyMaxHealth = 500;
             Net.Zombie.mBodyHealth = 500;
             Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);

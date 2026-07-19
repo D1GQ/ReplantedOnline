@@ -22,7 +22,7 @@ internal static class YetiZombiePatch
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null && zombieNetworked.TryGetNetworkComponent<YetiNetworkComponent>(out var comp))
             {
-                if (comp.CurrentState != YetiNetworkComponent.YetiState.Angry)
+                if (comp.CurrentState != YetiNetworkComponent.YetiState.Enraged)
                 {
                     __result = null;
                 }
