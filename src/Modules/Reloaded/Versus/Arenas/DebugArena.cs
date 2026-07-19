@@ -20,6 +20,7 @@ internal sealed class DebugArena : IArena, IArenaData
     {
         Default,
         Gargantuar,
+        Yeti,
         Pogo,
         Catapult,
         Bobsled,
@@ -66,6 +67,12 @@ internal sealed class DebugArena : IArena, IArenaData
     public void UpdateArena(VersusMode versusMode)
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
+
+        Instances.GameplayActivity.Board.mSunMoney.LocalItem().Amount = 999;
+        foreach (var seed in Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets)
+        {
+            seed.mRefreshTime = 0;
+        }
 
         if (ReloadedLobby.AmLobbyHost())
         {
@@ -139,6 +146,10 @@ internal sealed class DebugArena : IArena, IArenaData
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 3, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 3, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 3, true);
+                break;
+            case DebugModes.Yeti:
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Yeti, 8, 2, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
                 break;
             case DebugModes.Pogo:
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Pogo, 7, 2, true);
