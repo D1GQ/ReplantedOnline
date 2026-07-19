@@ -49,7 +49,7 @@ internal sealed class ZombieNetworked : NetworkObject
     [HideFromIl2Cpp]
     internal Plant? Target { get; set; }
 
-    internal WeakVar<Zombie> _z = new();
+    internal readonly LazyReference<Zombie> _z = new();
 
     /// <summary>
     /// The underlying zombie instance that this networked object represents.

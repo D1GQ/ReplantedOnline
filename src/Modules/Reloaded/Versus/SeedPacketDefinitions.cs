@@ -300,7 +300,7 @@ internal static class SeedPacketDefinitions
     {
         var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
         {
-            net._p = new(() => plant?.mController?.m_plant);
+            net._p.SetTarget(() => plant?.mController?.m_plant);
             net.SeedType = plant.mSeedType;
             net.SpawnType = spawnType;
             net.GridX = gridX;
@@ -485,7 +485,7 @@ internal static class SeedPacketDefinitions
     {
         var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
         {
-            net._z = new(() => zombie?.mController?.m_zombie);
+            net._z.SetTarget(() => zombie?.mController?.m_zombie);
             net.ZombieType = zombie.mZombieType;
             net.SpawnType = spawnType;
             net.GridX = gridX;
