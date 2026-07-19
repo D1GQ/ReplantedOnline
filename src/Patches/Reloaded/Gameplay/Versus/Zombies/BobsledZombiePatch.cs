@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -135,7 +136,7 @@ internal static class BobsledZombiePatch
         {
             var passenger = passengers[i] = SeedPacketDefinitions.SpawnZombie(ZombieType.Bobsled, 9, leader.mRow, false).Zombie;
             passenger.mRelatedZombieID = leader.DataID;
-            SeedPacketDefinitions.SpawnZombieOnNetwork(passenger, 9, leader.mRow);
+            SeedPacketDefinitions.SpawnZombieOnNetwork(passenger, 9, leader.mRow, SpawnType.None);
         }
     }
 

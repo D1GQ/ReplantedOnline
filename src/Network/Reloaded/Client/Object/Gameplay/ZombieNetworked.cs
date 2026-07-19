@@ -453,7 +453,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.MoveToRow)]
-    private void HandleSnapToPosRpc(int row)
+    private void HandleMoveToRowRpc(int row)
     {
         if (Zombie == null)
             return;
