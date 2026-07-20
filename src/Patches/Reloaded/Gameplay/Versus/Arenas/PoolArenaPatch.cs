@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
-using Il2CppSource.Controllers;
+using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
 
@@ -25,9 +25,46 @@ internal static class PoolArenaPatch
         return true;
     }
 
+    [HarmonyPatch(typeof(Board), nameof(Board.LeftFogColumn))]
+    [HarmonyPostfix]
+    private static void Board_LeftFogColumn_Postfix(ref int __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            __result = PoolNightArena.NextFogPos + 1;
+        }
+    }
+
     [HarmonyPatch(typeof(Board), nameof(Board.UpdateFog))]
+    [HarmonyPostfix]
+    private static void Board_UpdateFog_Postfix(Board __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Clear fog around plants
+            foreach (var plant in __instance.GetPlants())
+            {
+                switch (plant.mSeedType)
+                {
+                    case SeedType.Plantern:
+                        FogUtils.ClearFogAroundPlant(__instance, plant, 3);
+                        break;
+                    case SeedType.Torchwood:
+                        FogUtils.ClearFogAroundPlant(__instance, plant, 2);
+                        break;
+                    case SeedType.Lilypad:
+                        break;
+                    default:
+                        FogUtils.ClearFogAroundPlant(__instance, plant, 1);
+                        break;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Board), nameof(Board.ClearFogAroundPlant))]
     [HarmonyPrefix]
-    private static bool Board_UpdateFog_Prefix()
+    private static bool Board_ClearFogAroundPlant_Prefix()
     {
         if (ReloadedLobby.AmInLobby())
         {
@@ -35,25 +72,6 @@ internal static class PoolArenaPatch
         }
 
         return true;
-    }
-
-    [HarmonyPatch(typeof(FogController), nameof(FogController.SetTarget))]
-    [HarmonyPrefix]
-    private static bool FogController_SetTarget_Prefix()
-    {
-        if (ReloadedLobby.AmInLobby())
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch(typeof(FogController), nameof(FogController.SetTarget))]
-    internal static void SetTargetOriginal(this FogController __instance, int target, TodCurves curveType, float delay = 0f, float duration = 2f, bool ignoreDupeCheck = false)
-    {
-        throw new NotImplementedException("Reverse Patch Stub");
     }
 
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.CanTargetPlant))]

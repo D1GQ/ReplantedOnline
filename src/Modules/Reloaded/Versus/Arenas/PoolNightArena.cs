@@ -3,10 +3,6 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Modules.Unity;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
-using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
@@ -32,22 +28,15 @@ internal sealed class PoolNightArena : PoolArena
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
     }
 
-    private readonly UnityTimer _fogPushTimer = new();
-    /// <inheritdoc/>
+    private const float FOG_PUSH_TIME_SURPLUS = 90f;
+    private static float nextFogPushTime;
+    internal static int NextFogPos;
+
     public override void InitializeArena(VersusMode versusMode)
     {
         base.InitializeArena(versusMode);
-        _fogPushTimer.Reset();
-
-        if (VersusState.AmPlantSide)
-        {
-            versusMode.m_app.BackgroundController.FogController.SetTargetOriginal(0, TodCurves.Constant, 0, 0);
-        }
-        else if (VersusState.AmZombieSide)
-        {
-            versusMode.m_app.BackgroundController.FogController.transform.localScale = new Vector3(-1f, 1f, 1f);
-            versusMode.m_app.BackgroundController.FogController.SetTargetOriginal(0, TodCurves.Constant, 0, 0);
-        }
+        nextFogPushTime = FOG_PUSH_TIME_SURPLUS;
+        NextFogPos = 4;
     }
 
     /// <inheritdoc/>
@@ -55,53 +44,25 @@ internal sealed class PoolNightArena : PoolArena
     {
         base.UpdateArena(versusMode);
 
-        if (VersusState.AmPlantSide)
+        if (!VersusState.AmPlantSide)
         {
-            UpdateFogPlants();
+            // Make fog transparent
+            foreach (var row in versusMode.m_board.mApp.BackgroundController.m_fogController.m_rows)
+            {
+                foreach (var tile in row.tiles)
+                {
+                    tile.m_initialAlpha = 0.2f;
+                }
+            }
         }
-        else if (VersusState.AmZombieSide)
+
+        if (NextFogPos > 1)
         {
-            UpdateFogZombies();
+            if (VersusState.VersusTime > nextFogPushTime)
+            {
+                nextFogPushTime += FOG_PUSH_TIME_SURPLUS;
+                versusMode.m_board.mApp.BackgroundController.m_fogController.ScheduleTarget(NextFogPos--, TodCurves.EaseInOut);
+            }
         }
-    }
-
-    private static readonly float FogPushTimeEnd = 300f;
-
-    private readonly float OffScreenPlantFog = 4200f;
-    private readonly float StartPlantFog = 2100f;
-    private readonly float EndPlantFog = 3100f;
-
-    private void UpdateFogPlants()
-    {
-        if (_fogPushTimer.AccumulatedTime < ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME)
-        {
-            SetFogPos(Mathf.Lerp(OffScreenPlantFog, StartPlantFog, _fogPushTimer.AccumulatedTime / ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME));
-        }
-        else
-        {
-            SetFogPos(Mathf.Lerp(StartPlantFog, EndPlantFog, _fogPushTimer.AccumulatedTime / FogPushTimeEnd));
-        }
-    }
-
-    private readonly float OffScreenZombieFog = 0f;
-    private readonly float StartZombieFog = 2393f;
-    private readonly float EndZombieFog = 1041f;
-
-    private void UpdateFogZombies()
-    {
-        if (_fogPushTimer.AccumulatedTime < ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME)
-        {
-            SetFogPos(Mathf.Lerp(OffScreenZombieFog, StartZombieFog, _fogPushTimer.AccumulatedTime / 3f));
-        }
-        else
-        {
-            SetFogPos(Mathf.Lerp(StartZombieFog, EndZombieFog, _fogPushTimer.AccumulatedTime / FogPushTimeEnd));
-        }
-    }
-
-    private static void SetFogPos(float pos)
-    {
-        var fog = Instances.GameplayActivity.BackgroundController.FogController;
-        fog.transform.localPosition = new Vector3(pos, -1150f, 0f);
     }
 }

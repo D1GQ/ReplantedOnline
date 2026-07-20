@@ -82,7 +82,6 @@ internal static class SeedPacketDefinitions
         SeedType.Flowerpot,
         SeedType.Lilypad,
         SeedType.Marigold,
-        SeedType.Plantern,
         SeedType.Umbrella,
 
         // Zombies
@@ -151,6 +150,7 @@ internal static class SeedPacketDefinitions
         SetVersusDefinitionFromBase(SeedType.Lilypad, 0.5f);
         SetVersusDefinitionFromBase(SeedType.Tanglekelp);
         SetVersusDefinitionFromBase(SeedType.Seashroom);
+        SetVersusDefinitionFromBase(SeedType.Plantern);
         SetVersusDefinitionFromBase(SeedType.Blover);
 
         var balloonDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieBalloon);
