@@ -1,7 +1,10 @@
-﻿using ReplantedOnline.Enums.Versus;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -41,6 +44,25 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (Net.Event == EventState.PushBack)
         {
             return;
+        }
+
+        // Movement debuffs
+        if (Net.Zombie.mZombieType is not (ZombieType.DolphinRider or ZombieType.Snorkel))
+        {
+            if (Net.PoolComponent.InPool)
+            {
+                distance *= 0.95f;
+            }
+        }
+
+        if (VersusState.Arena == ArenaTypes.PoolNight)
+        {
+            var gridX = PvZRUtils.ReloadedObjectXToGridX(Net.Zombie.mX);
+            if (gridX >= Net.Zombie.mBoard.LeftFogColumn() &&
+                FogUtils.GetFogAt(Net.Zombie.mBoard, gridX, Net.Zombie.mRow + 1) > 100)
+            {
+                distance *= 0.9f;
+            }
         }
 
         if (useNonNetworkLogic)

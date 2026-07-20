@@ -18,7 +18,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         Drown
     }
 
-    private bool _inPool;
+    internal bool InPool;
     private bool _isDrowning;
 
     internal WhiteWaterEffect? WhiteWaterEffect { get; private set; } = null;
@@ -75,26 +75,26 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             onPool = false;
         }
 
-        if (!_inPool && onPool)
+        if (!InPool && onPool)
         {
-            _inPool = true;
+            InPool = true;
             zombie.mZombieHeight = ZombieHeight.InToPool;
             zombie.StartWalkAnim(0);
             zombie.PoolSplash(true);
             zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white * 0f;
         }
-        else if (_inPool && !onPool)
+        else if (InPool && !onPool)
         {
             zombie.mZombieHeight = ZombieHeight.OutOfPool;
             zombie.PoolSplash(true);
             zombie.mController.ClearClipRect();
             zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white;
-            _inPool = false;
+            InPool = false;
         }
 
         UpdateWhiteWaterEffect(onPool);
 
-        if (_inPool)
+        if (InPool)
         {
             zombie.mController.ClipRect(new(-500, -500, 1000, 615));
 
@@ -117,7 +117,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
         var zombie = Net.Zombie;
         if (zombie == null) return;
-        var active = _inPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
+        var active = InPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
         WhiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
