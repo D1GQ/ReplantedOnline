@@ -35,6 +35,8 @@ internal static class PoolArenaPatch
         }
     }
 
+
+    private static readonly bool[] TargetZombieRows = new bool[6];
     [HarmonyPatch(typeof(Board), nameof(Board.UpdateFog))]
     [HarmonyPostfix]
     private static void Board_UpdateFog_Postfix(Board __instance)
@@ -57,6 +59,30 @@ internal static class PoolArenaPatch
                     default:
                         FogUtils.ClearFogAroundPlant(__instance, plant, 1);
                         break;
+                }
+            }
+
+            // Clear fog on lanes that have no target zombie
+            for (int i = 0; i < TargetZombieRows.Length; i++)
+            {
+                TargetZombieRows[i] = false;
+            }
+
+            foreach (var zombie in __instance.GetZombies())
+            {
+                if (zombie.mZombieType == ZombieType.Target)
+                    TargetZombieRows[zombie.mRow] = true;
+            }
+
+            for (int i = 0; i < TargetZombieRows.Length; i++)
+            {
+                var targetZombieRow = TargetZombieRows[i];
+                if (!targetZombieRow)
+                {
+                    for (int column = 0; column < 9; column++)
+                    {
+                        FogUtils.SetFogAt(__instance, column, i + 1, 0);
+                    }
                 }
             }
         }

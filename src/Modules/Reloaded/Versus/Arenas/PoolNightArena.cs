@@ -28,6 +28,7 @@ internal sealed class PoolNightArena : PoolArena
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
     }
 
+    private const float COLUMN_TO_FOG_UNITS = 250f;
     private const float FOG_PUSH_TIME_SURPLUS = 90f;
     private static float nextFogPushTime;
     internal static int NextFogPos;

@@ -55,6 +55,30 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Converts a ReloadedObject X position to a normalized grid position.
+    /// </summary>
+    /// <param name="X">The ReloadedObject X coordinate to convert.</param>
+    /// <returns>
+    /// The normalized grid position as a float.
+    /// </returns>
+    internal static float ReloadedObjectXToGridXNormalized(float X)
+    {
+        return (X - 40) / 80f;
+    }
+
+    /// <summary>
+    /// Converts a ReloadedObject Y position to a normalized grid position.
+    /// </summary>
+    /// <param name="Y">The ReloadedObject Y coordinate to convert.</param>
+    /// <returns>
+    /// The normalized grid position as a float.
+    /// </returns>
+    internal static float ReloadedObjectYToGridYNormalized(float Y)
+    {
+        return (Y / 80f) - 1f;
+    }
+
+    /// <summary>
     /// Gets the local player's item from a multiplayer collection.
     /// </summary>
     /// <typeparam name="T">The type of items in the multiplayer collection.</typeparam>
