@@ -81,23 +81,29 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             zombie.mZombieHeight = ZombieHeight.InToPool;
             zombie.StartWalkAnim(0);
             zombie.PoolSplash(true);
-            zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white * 0f;
         }
         else if (InPool && !onPool)
         {
             zombie.mZombieHeight = ZombieHeight.OutOfPool;
             zombie.PoolSplash(true);
+            InPool = false;
+        }
+
+        if (InPool || zombie.mAltitude < 5)
+        {
+            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
+            zombie.mController.m_shadowController.m_spriteRenderer.color = Color.clear;
+        }
+        else
+        {
             zombie.mController.ClearClipRect();
             zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white;
-            InPool = false;
         }
 
         UpdateWhiteWaterEffect(onPool);
 
         if (InPool)
         {
-            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
-
             if (Net.AmOwner)
             {
                 if (!_isDrowning && zombie.mZombieType == ZombieType.Imp && zombie.mZombiePhase == ZombiePhase.ZombieNormal)
