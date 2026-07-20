@@ -67,12 +67,10 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie?.mController == null)
             return;
-
-        Net.Zombie.mGroanCounter = int.MaxValue;
 
         if (Net.Zombie.mBoard.StageHasNoGrass())
         {

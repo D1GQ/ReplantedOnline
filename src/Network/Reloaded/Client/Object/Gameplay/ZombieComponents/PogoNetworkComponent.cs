@@ -18,7 +18,7 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
 
     private bool _inJump;
 
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie == null) return;
 

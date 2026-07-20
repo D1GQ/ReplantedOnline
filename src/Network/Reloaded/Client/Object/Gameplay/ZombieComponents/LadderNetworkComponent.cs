@@ -15,7 +15,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _donePlacingLadder;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie == null) return;
 

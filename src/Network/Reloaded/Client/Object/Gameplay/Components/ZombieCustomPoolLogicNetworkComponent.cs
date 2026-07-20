@@ -50,7 +50,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         }
     }
 
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (!CanGoInWater())
         {

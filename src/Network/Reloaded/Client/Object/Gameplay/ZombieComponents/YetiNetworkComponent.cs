@@ -36,7 +36,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     }
 
     internal YetiState CurrentState = YetiState.Curious;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie == null)
             return;

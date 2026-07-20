@@ -18,7 +18,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _hasJumped;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie == null) return;
 

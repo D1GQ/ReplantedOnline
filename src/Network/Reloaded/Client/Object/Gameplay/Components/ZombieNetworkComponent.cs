@@ -25,6 +25,28 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     internal virtual void OnInit() { }
 
+    private static readonly ZombieType[] NonGroaningZombies =
+    [
+        ZombieType.Gravestone,
+        ZombieType.Target,
+        ZombieType.Yeti
+    ];
+
+    internal sealed override void Update()
+    {
+        if (Net.Zombie == null)
+            return;
+
+        if (NonGroaningZombies.Contains(Net.Zombie.mZombieType))
+        {
+            Net.Zombie.mGroanCounter = int.MaxValue;
+        }
+
+        OnUpdate();
+    }
+
+    internal virtual void OnUpdate() { }
+
     internal virtual void OnDeath(DeathReason deathReason) { }
 
     private readonly UnityTimer dirtyPosTimer = new();

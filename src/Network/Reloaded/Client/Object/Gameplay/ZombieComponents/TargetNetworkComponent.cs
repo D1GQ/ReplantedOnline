@@ -13,10 +13,9 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 {
     private Vector3 _lastPos;
     private bool _hasDead;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie?.mController == null) return;
-        Net.Zombie.mGroanCounter = int.MaxValue;
         _lastPos = Net.Zombie.mController.transform.position;
     }
 

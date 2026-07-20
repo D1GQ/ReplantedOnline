@@ -18,7 +18,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _isExploding;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate()
     {
         if (Net.Zombie == null) return;
 
