@@ -89,15 +89,22 @@ internal static class VersusHudPatch
         }
 
         // Hide opponent currency
-        if (VersusState.AmZombieSide)
+        if (VersusState.AmPlantSide)
+        {
+            var binder = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+            SetUnknownCount(binder);
+        }
+        else if (VersusState.AmZombieSide)
         {
             var binder = plantHud.transform.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
             SetUnknownCount(binder);
         }
         else
         {
-            var binder = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
-            SetUnknownCount(binder);
+            var plantBinder = plantHud.transform.Find("SeedBankContainer/SeedBank/SunAmount_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+            var zombieBinder = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Seedpacks_Background")?.GetComponentInChildren<NumberLabelBinder>(true);
+            SetUnknownCount(plantBinder);
+            SetUnknownCount(zombieBinder);
         }
     }
 

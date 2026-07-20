@@ -65,19 +65,14 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         IArenaSetupSeedbank.AddInitialSeedsToBanks();
 
-        if (VersusState.AmPlantSide)
+        foreach (var seedType in ChosenPlantSeedTypes)
         {
-            foreach (var seedType in ChosenPlantSeedTypes)
-            {
-                versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-            }
+            PvZRUtils.GetPlantSeedBankInfo().mSeedBank.AddSeed(seedType, true);
         }
-        else if (VersusState.AmZombieSide)
+
+        foreach (var seedType in ChosenZombiesSeedTypes)
         {
-            foreach (var seedType in ChosenZombiesSeedTypes)
-            {
-                versusMode.m_board.SeedBanks.LocalItem().AddSeed(seedType, true);
-            }
+            PvZRUtils.GetZombieSeedBankInfo().mSeedBank.AddSeed(seedType, true);
         }
 
         // Set opponent seeds to hide, which will be revealed once SyncSeedPacketRpc.cs is received
@@ -155,7 +150,8 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <exception cref="Exception">Thrown when no valid seed type is found.</exception>
     private static SeedType GetRandomSeedType(ReadOnlyCollection<SeedType> currentSeedTypes, bool zombieSeedTypes, bool excludeDependentSeedTypes)
     {
-        var shuffledSeedTypes = Enum.GetValues<SeedType>().Shuffle().ToList();
+        List<SeedType> customSeedTypes = [.. CustomSeedType.CustomSeedTypes.Select(s => (SeedType)s)];
+        List<SeedType> shuffledSeedTypes = [.. Enum.GetValues<SeedType>().Concat(customSeedTypes).Shuffle()];
 
         foreach (var seedType in shuffledSeedTypes)
         {
