@@ -2,6 +2,7 @@
 using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.DataModels;
+using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -68,13 +69,76 @@ internal static class SeedChooserPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            // Fix plant seed not suggest not updating properly
-            foreach (var seed in __instance.mChosenSeeds)
+            // Update seed packet states in chooser 
+            foreach (var chosenPlant in __instance.mChosenSeeds)
             {
-                bool notSuggested = false;
-                notSuggested = notSuggested || __instance.SeedNotRecommendedToPick(seed.mSeedType) != RecommentedFlags.None;
-                notSuggested = notSuggested || seed.mSeedState == ChosenSeedState.SeedInBank;
-                seed.mNotSuggested = notSuggested;
+#if DEBUG
+                if (VersusState.Arena == Enums.Versus.ArenaTypes.Debug)
+                {
+                    if (chosenPlant.mSeedState == ChosenSeedState.SeedPacketHidden)
+                    {
+                        chosenPlant.mSeedState = ChosenSeedState.SeedInChooser;
+                    }
+                    chosenPlant.mNotSuggested = chosenPlant.mSeedState == ChosenSeedState.SeedInBank;
+                    continue;
+                }
+#endif
+
+                var flags = __instance.SeedNotRecommendedToPick(chosenPlant.mSeedType);
+                var hasNocturnalFlag = flags.HasFlag(RecommentedFlags.NotRecommentedNocturnal);
+                var isAllowed = ICharacterConfig.IsAllowedInArena(chosenPlant.mSeedType, VersusState.Arena) &&
+                    (flags.HasFlag(RecommentedFlags.None) || hasNocturnalFlag);
+
+                bool notSuggested = !isAllowed ||
+                                    hasNocturnalFlag;
+
+                if (!isAllowed)
+                {
+                    chosenPlant.mSeedState = ChosenSeedState.SeedPacketHidden;
+                }
+                else if (chosenPlant.mSeedState == ChosenSeedState.SeedPacketHidden)
+                {
+                    chosenPlant.mSeedState = ChosenSeedState.SeedInChooser;
+                }
+
+                notSuggested = notSuggested ||
+                               !flags.HasFlag(RecommentedFlags.None) ||
+                               chosenPlant.mSeedState == ChosenSeedState.SeedInBank;
+
+                chosenPlant.mNotSuggested = notSuggested;
+            }
+
+            foreach (var chosenZombie in __instance.mChosenZombies)
+            {
+#if DEBUG
+                if (VersusState.Arena == Enums.Versus.ArenaTypes.Debug)
+                {
+                    if (chosenZombie.mSeedState == ChosenSeedState.SeedPacketHidden)
+                    {
+                        chosenZombie.mSeedState = ChosenSeedState.SeedInChooser;
+                    }
+                    chosenZombie.mNotSuggested = chosenZombie.mSeedState == ChosenSeedState.SeedInBank;
+                    continue;
+                }
+#endif
+
+                var isAllowed = ICharacterConfig.IsAllowedInArena(chosenZombie.mSeedType, VersusState.Arena);
+
+                bool notSuggested = !isAllowed;
+
+                if (!isAllowed)
+                {
+                    chosenZombie.mSeedState = ChosenSeedState.SeedPacketHidden;
+                }
+                else if (chosenZombie.mSeedState == ChosenSeedState.SeedPacketHidden)
+                {
+                    chosenZombie.mSeedState = ChosenSeedState.SeedInChooser;
+                }
+
+                notSuggested = notSuggested ||
+                               chosenZombie.mSeedState == ChosenSeedState.SeedInBank;
+
+                chosenZombie.mNotSuggested = notSuggested;
             }
         }
     }

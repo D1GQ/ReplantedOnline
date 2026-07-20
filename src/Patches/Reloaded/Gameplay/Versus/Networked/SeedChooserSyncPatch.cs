@@ -14,7 +14,7 @@ using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 [HarmonyPatch]
-internal static class SeedChooserScreenSyncPatch
+internal static class SeedChooserSyncPatch
 {
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.ClickedSeedInChooser))]
     [HarmonyPrefix]
@@ -22,7 +22,11 @@ internal static class SeedChooserScreenSyncPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!ReloadedLobby.LobbyData!.AllClientsReady()) return false;
+            if (!ReloadedLobby.LobbyData!.AllClientsReady())
+                return false;
+
+            if (theChosenSeed.mSeedState != ChosenSeedState.SeedInChooser)
+                return false;
 
             NetworkManager.Rpc<ChooseSeedRpc>.Singleton.Send(theChosenSeed);
             __instance.ClickedSeedInChooserOriginal(theChosenSeed, playerIndex);

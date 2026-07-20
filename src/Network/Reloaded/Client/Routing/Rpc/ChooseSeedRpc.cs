@@ -29,7 +29,9 @@ internal sealed class ChooseSeedRpc : IRpcMessage<ChosenSeed>
         var SeedChooserScreen = Instances.GameplayActivity.SeedChooserScreen;
         var theChosenSeed = SeedChooserScreen.GetChosenSeedFromType(seedType);
 
-        // Use player index 1 (opposite player) when choosing seed for remote player
+        if (theChosenSeed.mSeedState == ChosenSeedState.SeedPacketHidden)
+            return;
+
         SeedChooserScreen.ClickedSeedInChooserOriginal(theChosenSeed, ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX);
     }
 }

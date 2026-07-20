@@ -52,11 +52,6 @@ internal sealed class CustomGamemode : IVersusGamemode
             yield return null;
         }
 
-        List<ChosenSeed> chosenSeeds = [
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds,
-            .. Instances.GameplayActivity.SeedChooserScreen.mChosenZombies,
-        ];
-
         IArenaSetupSeedbank.AddInitialSeedsToBanks();
         ReloadedClientData.LocalClient?.Ready.Value = true;
 
@@ -77,8 +72,6 @@ internal sealed class CustomGamemode : IVersusGamemode
         {
             SetupTurnOrder();
         }
-
-        HideDisallowedSeeds(chosenSeeds);
     }
 
     private static void SetupDebugPlantSide()
@@ -133,17 +126,6 @@ internal sealed class CustomGamemode : IVersusGamemode
         {
             InputNavigationManager.Instance.RemoveLayer(versusChooserSwapBinder.m_player1Input.Cast<IInputNavigationLayer>());
             versusChooserSwapBinder.m_player2Input.IgnoreInput1 = true;
-        }
-    }
-
-    private static void HideDisallowedSeeds(List<ChosenSeed> chosenSeeds)
-    {
-        foreach (var seedPacket in chosenSeeds)
-        {
-            if (!ICharacterConfig.IsAllowedInArena(seedPacket.mSeedType, VersusState.Arena))
-            {
-                seedPacket.mSeedState = ChosenSeedState.SeedPacketHidden;
-            }
         }
     }
 }
