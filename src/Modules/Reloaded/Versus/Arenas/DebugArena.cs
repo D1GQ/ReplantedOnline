@@ -66,6 +66,11 @@ internal sealed class DebugArena : IArena, IArenaData
     /// <inheritdoc/>
     public void UpdateArena(VersusMode versusMode)
     {
+        if (versusMode.m_versusTime > 0)
+        {
+            versusMode.m_versusTime = 0;
+        }
+
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
 
         Instances.GameplayActivity.Board.mSunMoney.LocalItem().Amount = 999;
