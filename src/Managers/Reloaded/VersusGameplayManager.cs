@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppReloaded.Input;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
@@ -9,6 +10,7 @@ using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ReplantedOnline.Managers.Reloaded;
 
@@ -69,6 +71,37 @@ internal class VersusGameplayManager
         Instances.GameplayActivity.Board.FreezeEffectsForCutscene(true);
         Instances.GameplayActivity.m_audioService.StopAllMusic();
         VersusEndGameManager.EndGame(winningTeam);
+    }
+
+    internal static void Update()
+    {
+        if (VersusState.AmPlantSide)
+        {
+            if (VersusState.IsInGameplay)
+            {
+                // Add shovel keybinds for keyboard and mouse
+                if (Instances.GameplayActivity.InputService.CurrentControlType == ControlType.MKB)
+                {
+                    if (Keyboard.current.backquoteKey.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame)
+                    {
+                        if (!Instances.GameplayDataProvider.m_boardToolsModel.m_shovelModel.IsSelected)
+                        {
+                            Instances.GameplayDataProvider.m_boardToolsModel.SetSelected(
+                                Instances.GameplayDataProvider.m_boardToolsModel.m_shovelModel,
+                                ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+
+                            // Add double audio like base game
+                            Instances.GameplayActivity.m_audioService.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_SHOVEL);
+                        }
+                        else
+                        {
+                            Instances.GameplayDataProvider.m_boardToolsModel.ClearSelected(
+                                ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     internal static int GetSkyRate()

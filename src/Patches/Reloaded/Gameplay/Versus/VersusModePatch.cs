@@ -44,6 +44,7 @@ internal static class VersusModePatch
         {
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+            VersusGameplayManager.Update();
         }
 
         if (ReloadedLobby.AmLobbyHost())
