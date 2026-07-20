@@ -193,6 +193,9 @@ internal static class PvZRUtils
     /// </returns>
     internal static SeedChooserScreen.SeedBankInfo GetPlantSeedBankInfo()
     {
+        if (Instances.GameplayActivity?.SeedChooserScreen == null)
+            return null!;
+
         foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
         {
             if (bankInfo.mSeedBank.GetSeedBankTeam() == PlayerTeam.Plants)
@@ -212,6 +215,9 @@ internal static class PvZRUtils
     /// </returns>
     internal static SeedChooserScreen.SeedBankInfo GetZombieSeedBankInfo()
     {
+        if (Instances.GameplayActivity?.SeedChooserScreen == null)
+            return null!;
+
         foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
         {
             if (bankInfo.mSeedBank.GetSeedBankTeam() == PlayerTeam.Zombies)

@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Utilities.Il2Cpp;
+using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Modules.Reloaded;
@@ -122,5 +123,7 @@ internal static class LevelEntries
             level.m_gameArea = GameArea.Day;
             level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1")!.BackgroundPrefab;
         }
+        PvZRUtils.GetPlantSeedBankInfo()?.ClearAllSeedsInSeedBack();
+        PvZRUtils.GetZombieSeedBankInfo()?.ClearAllSeedsInSeedBack();
     }
 }

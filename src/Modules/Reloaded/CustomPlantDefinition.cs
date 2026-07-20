@@ -21,6 +21,7 @@ internal static class CustomPlantDefinition
     /// <param name="customSeedType">The custom seed type that must have a valid zombie type configured.</param>
     /// <param name="translationStr">The translation string used for localization and asset identification.</param>
     /// <param name="seedPacketSprite">The sprite image to use for the zombies seedpacket icom.</param>
+    /// <param name="description">An optional description used for the seedpacket.</param>
     /// <returns>
     /// A new <see cref="PlantDefinition"/> instance configured as a zombie seed packet,
     /// or <c>null</c> if the provided <paramref name="customSeedType"/> does not have a valid zombie type.

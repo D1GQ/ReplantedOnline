@@ -58,6 +58,11 @@ internal abstract class CustomAssetReference
     /// <returns>True if the asset reference's GUID starts with the custom asset reference prefix; otherwise, false.</returns>
     internal static bool IsValid(AssetReference assetReference)
     {
+        if (assetReference == null)
+        {
+            return false;
+        }
+
         return assetReference.AssetGUID.StartsWith(ReplantedOnlineMod.Constants.Assets.CUSTOM_ASSET_REF_GUID_PREFIX);
     }
 }
