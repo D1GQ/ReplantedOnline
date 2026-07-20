@@ -62,6 +62,23 @@ internal static class SeedChooserPatch
         return true;
     }
 
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
+    [HarmonyPostfix]
+    private static void SeedChooserScreen_Update_Postfix(SeedChooserScreen __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Fix plant seed not suggest not updating properly
+            foreach (var seed in __instance.mChosenSeeds)
+            {
+                bool notSuggested = false;
+                notSuggested = notSuggested || __instance.SeedNotRecommendedToPick(seed.mSeedType) != RecommentedFlags.None;
+                notSuggested = notSuggested || seed.mSeedState == ChosenSeedState.SeedInBank;
+                seed.mNotSuggested = notSuggested;
+            }
+        }
+    }
+
     private static void AddCustomZombiesToChosen()
     {
         var customSeedsToAdd = CustomSeedType.CustomSeedTypes.ToList();
