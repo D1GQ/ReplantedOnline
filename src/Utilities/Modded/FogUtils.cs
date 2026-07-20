@@ -50,15 +50,15 @@ internal static class FogUtils
                     bool shouldClear;
                     if (radius == 1)
                     {
-                        shouldClear = (distX == 0 && distY == 0);
+                        shouldClear = distX == 0 && distY == 0;
                     }
                     else if (radius == 3)
                     {
-                        shouldClear = (distX < 4 && distY < 3 && (distX + distY) != 5);
+                        shouldClear = distX < 4 && distY < 3 && (distX + distY) != 5;
                     }
                     else
                     {
-                        shouldClear = (distX + distY <= radius);
+                        shouldClear = distX + distY <= radius;
                     }
 
                     if (shouldClear)
@@ -88,7 +88,7 @@ internal static class FogUtils
         if (_fogFieldOffset.HasValue)
             return _fogFieldOffset.Value;
 
-        // Get the field info for mGridCelFog
+        // Get class and field pointer
         IntPtr klassPtr = Il2CppClassPointerStore<Board>.NativeClassPtr;
         IntPtr fieldPtr = IL2CPP.GetIl2CppField(klassPtr, nameof(Board.mGridCelFog));
 
