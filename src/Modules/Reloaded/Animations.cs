@@ -14,6 +14,7 @@ namespace ReplantedOnline.Modules.Reloaded;
 internal static class Animations
 {
     internal static readonly string GARGANTUAR_THROW = "anim_gargantuar_throw";
+    internal static readonly (string Slot, string Image) GARGANTUAR_POLE_OBJECT = ("Zombie_gargantuar_telephonepole", "");
 
     internal static readonly (string Anim, float AnimRate) IMP_FLYING = ("anim_imp_flying", 18f);
 
