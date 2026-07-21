@@ -301,13 +301,13 @@ internal static class VersusLobbyManager
             {
                 Instances.VersusDataModel.m_player1Model.m_isZombiesModel.Value = true;
                 gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX;
-                versusData.UpdateZombiesPlayer("input1", "input1", 0);
+                versusData.UpdateZombiesPlayer("input1", "input1", ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
             }
             else if (team is PlayerTeam.Plants)
             {
                 Instances.VersusDataModel.m_player1Model.m_isPlantsModel.Value = true;
                 gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX;
-                versusData.UpdatePlantsPlayer("input1", "input1", 0);
+                versusData.UpdatePlantsPlayer("input1", "input1", ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
             }
         }
     }

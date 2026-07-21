@@ -9,6 +9,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -206,7 +207,7 @@ internal static class GargantuarZombiePatch
         // Hide the real imp visually until the throw animation reaches the right point
         imp.mController.gameObject.SetActive(false);
 
-        Instances.GameplayActivity?.StartCoroutine(CoWaitForGargantuarToFinish(gargantuar, () =>
+        Instances.GameplayActivity?.StartCoroutine(CoWaitForGargantuarToFinish(gargantuar, imp, () =>
         {
             // Hide the imp visually on gargantuar
             gargantuar.mController.AssignRenderGroupToPrefix("Zombie_imp", -1);
@@ -303,8 +304,15 @@ internal static class GargantuarZombiePatch
     }
 
     // Waits for the Gargantuar's throw animation to reach the point where the imp is thrown before executing the callback
-    private static IEnumerator CoWaitForGargantuarToFinish(Zombie gargantuar, Action callback)
+    private static IEnumerator CoWaitForGargantuarToFinish(Zombie gargantuar, Zombie imp, Action callback)
     {
+        var gargantuarNetworked = gargantuar.GetNetworked();
+
+        if (gargantuarNetworked == null)
+        {
+            yield break;
+        }
+
         while (true)
         {
             if (!ReloadedLobby.AmInLobby())
@@ -312,9 +320,31 @@ internal static class GargantuarZombiePatch
                 yield break;
             }
 
-            if (gargantuar.mZombiePhase == ZombiePhase.GargantuarThrowing)
+            if (gargantuarNetworked == null || !gargantuarNetworked.IsOnNetwork ||
+                gargantuarNetworked.Zombie == null || gargantuarNetworked.Zombie.IsDeadOrDying())
             {
-                if (gargantuar.mController.ShouldTriggerTimedEvent(0.72f, CharacterAnimationTrack.Body))
+                if (imp != null)
+                {
+                    var impNetworked = imp.GetNetworked();
+                    if (impNetworked != null)
+                    {
+                        if (impNetworked.AmOwner)
+                        {
+                            impNetworked.DespawnAndDestroy();
+                        }
+                    }
+                    else
+                    {
+                        imp.DieNoLootOriginal();
+                    }
+                }
+
+                yield break;
+            }
+
+            if (gargantuarNetworked.Zombie.mZombiePhase == ZombiePhase.GargantuarThrowing)
+            {
+                if (gargantuarNetworked.Zombie.mController.ShouldTriggerTimedEvent(0.72f, CharacterAnimationTrack.Body))
                 {
                     break;
                 }

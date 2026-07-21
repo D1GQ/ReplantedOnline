@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Exceptions;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -15,6 +16,23 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class BobsledZombiePatch
 {
+    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
+    [HarmonyPriority(Priority.First)]
+    [HarmonyPrefix]
+    private static bool Board_AddZombieInRow_Prefix(ZombieType theZombieType, int theRow, ref Zombie __result)
+    {
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            if (theZombieType == ZombieType.Bobsled)
+            {
+                __result = SeedPacketDefinitions.SpawnZombie(theZombieType, 0, theRow, SpawnType.Background, true).Zombie;
+                throw new SilentPatchException();
+            }
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.Update))]
     [HarmonyPrefix]
     private static bool Zombie_Update_Prefix(Zombie __instance)
