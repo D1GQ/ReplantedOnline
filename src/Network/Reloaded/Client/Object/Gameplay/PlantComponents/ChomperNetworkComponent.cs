@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 
@@ -29,7 +30,8 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
             if (_chomperState != plantState)
             {
                 _chomperState = plantState;
-                SendChomperStateRpc(plantState);
+                bool hasTarget = Net.Plant.FindTargetZombieOriginal(Net.Plant.mRow, PlantWeapon.Primary) != null;
+                SendChomperStateRpc(plantState, hasTarget);
             }
         }
         else
@@ -67,13 +69,13 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         UpdateHealthSync();
     }
 
-    private void SendChomperStateRpc(PlantState plantState)
+    private void SendChomperStateRpc(PlantState plantState, bool hasTarget)
     {
-        SendNetworkComponentRpc(ChomperRpcs.ChomperState, plantState);
+        SendNetworkComponentRpc(ChomperRpcs.ChomperState, plantState, hasTarget);
     }
 
     [RpcHandler(ChomperRpcs.ChomperState)]
-    private void HandleChomperStateRpc(PlantState plantState)
+    private void HandleChomperStateRpc(PlantState plantState, bool hasTarget)
     {
         _chomperState = plantState;
 
@@ -84,7 +86,10 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
                 break;
             case PlantState.ChomperBitingMissed:
                 Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.BigChomp);
-                Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.Splat);
+                if (hasTarget)
+                {
+                    Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.Splat);
+                }
                 break;
         }
     }

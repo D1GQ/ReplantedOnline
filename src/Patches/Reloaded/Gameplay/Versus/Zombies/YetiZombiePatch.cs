@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Plants;
 using ReplantedOnline.Utilities.Modded;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
@@ -73,8 +74,7 @@ internal static class YetiZombiePatch
                 if (__instance.mStateCountdown > 1)
                     return true;
 
-                Zombie target = __instance.FindTargetZombie(__instance.mRow, PlantWeapon.Primary);
-
+                var target = __instance.FindTargetZombieOriginal(__instance.mRow, PlantWeapon.Primary);
                 if (target != null && target.mZombieType == ZombieType.Yeti)
                 {
                     __instance.mApp.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.BigChomp);
