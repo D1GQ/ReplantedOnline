@@ -2,6 +2,7 @@
 using Il2CppSource.Controllers;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -16,52 +17,49 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         ChomperState
     }
 
-    private string _chomperState = string.Empty;
+    private PlantState _chomperState = PlantState.Notready;
     internal sealed override void Update()
     {
         if (Net.Plant == null) return;
 
         if (Net.AmOwner)
         {
-            string plantStateStr = Net.Plant.mState.ToString();
+            var plantState = Net.Plant.mState;
 
-            if (_chomperState != plantStateStr)
+            if (_chomperState != plantState)
             {
-                _chomperState = plantStateStr;
-                SendChomperStateRpc(plantStateStr);
+                _chomperState = plantState;
+                SendChomperStateRpc(plantState);
             }
         }
         else
         {
-            if (Enum.TryParse(_chomperState, out PlantState state))
+            if (Net.Plant.mState != _chomperState && _chomperState != PlantState.Notready)
             {
-                if (Net.Plant.mState != state)
+                if (_chomperState == PlantState.ChomperBiting)
                 {
-                    if (state == PlantState.ChomperBiting)
-                    {
-                        Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_BITE.Fps, ReanimLoopType.PlayOnce);
-                        _chomperState = PlantState.ChomperBitingMissed.ToString();
-                    }
-                    else if (state == PlantState.ChomperDigesting)
-                    {
-                        Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_CHEW.Fps, ReanimLoopType.Loop);
-                    }
-                    else if (state == PlantState.ChomperSwallowing)
-                    {
-                        Net.Plant.mState = PlantState.ChomperDigesting;
-                        Net.Plant.mStateCountdown = 0;
-                        return;
-                    }
-
-                    Net.Plant.mState = state;
-                    Net.Plant.mStateCountdown = int.MaxValue;
+                    Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_BITE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_BITE.Fps, ReanimLoopType.PlayOnce);
+                    _chomperState = PlantState.ChomperBitingMissed;
                 }
-                else if (state == PlantState.Ready)
+                else if (_chomperState == PlantState.ChomperDigesting)
                 {
-                    if (!Net.Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE.Anim))
-                    {
-                        Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_IDLE.Fps, ReanimLoopType.Loop);
-                    }
+                    Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_CHEW.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_CHEW.Fps, ReanimLoopType.Loop);
+                }
+                else if (_chomperState == PlantState.ChomperSwallowing)
+                {
+                    Net.Plant.mState = PlantState.ChomperDigesting;
+                    Net.Plant.mStateCountdown = 0;
+                    return;
+                }
+
+                Net.Plant.mState = _chomperState;
+                Net.Plant.mStateCountdown = int.MaxValue;
+            }
+            else if (_chomperState == PlantState.Ready)
+            {
+                if (!Net.Plant.mController.IsAnimationPlaying(Animations.CHOMPER_IDLE.Anim))
+                {
+                    Net.Plant.mController.PlayAnimationOnTrack(Animations.CHOMPER_IDLE.Anim, CharacterAnimationTrack.Body, Animations.CHOMPER_IDLE.Fps, ReanimLoopType.Loop);
                 }
             }
         }
@@ -69,14 +67,25 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         UpdateHealthSync();
     }
 
-    private void SendChomperStateRpc(string state)
+    private void SendChomperStateRpc(PlantState plantState)
     {
-        SendNetworkComponentRpc(ChomperRpcs.ChomperState, state);
+        SendNetworkComponentRpc(ChomperRpcs.ChomperState, plantState);
     }
 
     [RpcHandler(ChomperRpcs.ChomperState)]
-    private void HandleChomperStateRpc(string state)
+    private void HandleChomperStateRpc(PlantState plantState)
     {
-        _chomperState = state;
+        _chomperState = plantState;
+
+        switch (_chomperState)
+        {
+            case PlantState.ChomperBitingGotOne:
+                Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.BigChomp);
+                break;
+            case PlantState.ChomperBitingMissed:
+                Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.BigChomp);
+                Instances.GameplayActivity.m_audioService.PlayFoley(Il2CppReloaded.Services.FoleyType.Splat);
+                break;
+        }
     }
 }

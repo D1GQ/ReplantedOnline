@@ -7,14 +7,11 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class BungeeZombiePatch
 {
-    /// Prevents Bungee Zombies from picking random targets in multiplayer
-    /// This fixes synchronization issues with Bungee Zombie spawning positions
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.PickBungeeZombieTarget))]
     [HarmonyPrefix]
     private static bool Zombie_PickBungeeZombieTarget_Prefix()
     {
-        // Disable random Bungee Zombie target selection in multiplayer
-        // Target selection should be handled through network synchronization instead
+        // Prevents Bungee Zombies from picking random targets
         if (ReloadedLobby.AmInLobby())
         {
             return false;

@@ -74,7 +74,6 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
             if (Net.Zombie.mPosX < 350 && CurrentState != YetiState.Runningback)
             {
                 CurrentState = YetiState.Runningback;
-                Net.Zombie.mZombiePhase = ZombiePhase.YetiRunning;
                 SendRunBackRpc();
             }
         }
