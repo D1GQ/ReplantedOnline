@@ -16,12 +16,25 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class BobsledZombiePatch
 {
+    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]
+    [HarmonyPrefix]
+    private static bool VersusMode_UpdateBobsledSpawning_Prefix()
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (!VersusState.AmPlantSide)
+                return false;
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
     [HarmonyPriority(Priority.First)]
     [HarmonyPrefix]
     private static bool Board_AddZombieInRow_Prefix(ZombieType theZombieType, int theRow, ref Zombie __result)
     {
-        if (ReloadedLobby.AmLobbyHost())
+        if (VersusState.AmPlantSide)
         {
             if (theZombieType == ZombieType.Bobsled)
             {

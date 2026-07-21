@@ -5,29 +5,12 @@ using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
 [HarmonyPatch]
 internal static class BoardPatch
 {
-    /// Reworks wave zombie spawning to use RPCs for network synchronization
-    /// Handles zombies spawned during waves
-    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
-    [HarmonyPrefix]
-    private static bool Board_AddZombieInRow_Prefix(ref Zombie __result)
-    {
-        if (ReloadedLobby.AmInLobby() && VersusState.IsInGameplay)
-        {
-            // Remove normal zombie spawning from gameplay
-            __result = ObjectUtils.CreateReloadedObject<Zombie>();
-            return false;
-        }
-
-        return true;
-    }
-
     private static readonly ExecuteInterval _initLawnMowersInterval = new();
     [HarmonyPatch(typeof(Board), nameof(Board.InitLawnMowers))]
     [HarmonyPrefix]

@@ -3,7 +3,6 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
-using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
@@ -90,21 +89,5 @@ internal static class VersusModePatch
     internal static void SetFocusOriginal(this VersusMode __instance, GameObject focusTarget, Vector3 focusOffset)
     {
         throw new NotImplementedException("Reverse Patch Stub");
-    }
-
-    [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateBobsledSpawning))]
-    [HarmonyPrefix]
-    private static bool VersusMode_UpdateBobsledSpawning_Prefix()
-    {
-        // Only apply these changes when in an online lobby
-        if (ReloadedLobby.AmInLobby())
-        {
-            if (!VersusState.AmPlantSide)
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

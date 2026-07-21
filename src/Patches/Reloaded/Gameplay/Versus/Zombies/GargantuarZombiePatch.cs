@@ -187,7 +187,7 @@ internal static class GargantuarZombiePatch
         gargantuar.mHasObject = false;
 
         // Play throw sound
-        Instances.GameplayActivity?.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_THROW);
+        Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_THROW);
     }
 
     private static void HandleImpThrown(Zombie gargantuar)

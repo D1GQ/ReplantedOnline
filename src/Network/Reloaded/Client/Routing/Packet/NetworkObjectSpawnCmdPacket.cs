@@ -62,18 +62,18 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
 
         if (NetworkObject.NetworkPrefabs.TryGetValue(message.PrefabId, out var prefab))
         {
-            if (sender.Team is PlayerTeam.Plants)
+            if (sender.Team == PlayerTeam.Plants)
             {
                 if (prefab is ZombieNetworked)
                 {
                     ZombieType zombieType = packet.ReadEnum<ZombieType>();
-                    if (zombieType is not (ZombieType.Imp or ZombieType.BackupDancer))
+                    if (zombieType is not (ZombieType.Imp or ZombieType.BackupDancer or ZombieType.Bobsled))
                     {
                         return false;
                     }
                 }
             }
-            else if (sender.Team is PlayerTeam.Zombies)
+            else if (sender.Team == PlayerTeam.Zombies)
             {
                 if (prefab is PlantNetworked)
                 {
@@ -84,6 +84,10 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
             {
                 return false;
             }
+        }
+        else
+        {
+            return false;
         }
 
         return true;
