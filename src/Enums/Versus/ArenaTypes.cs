@@ -11,10 +11,14 @@ internal enum ArenaTypes
     Day,
 
     /// <summary>
+    /// Arena is set during CloudyDay.
+    /// </summary>
+    CloudyDay,
+
+    /// <summary>
     /// Arena is set during nighttime.
     /// </summary>
     Night,
-
 
     /// <summary>
     /// Arena is set in the backyard pool.

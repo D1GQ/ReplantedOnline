@@ -6,6 +6,7 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using Il2CppTekly.DataModels.Models;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
 
@@ -82,6 +83,26 @@ internal static class SeedBankPatch
         if (__instance.gameObject.name == "SeedBackground")
         {
             __instance.enabled = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(SeedPacket), nameof(SeedPacket.Update))]
+    [HarmonyPrefix]
+    private static void SeedPacket_Update_Prefix(SeedPacket __instance, ref int __state)
+    {
+        __state = __instance.mRefreshTime;
+    }
+
+    [HarmonyPatch(typeof(SeedPacket), nameof(SeedPacket.Update))]
+    [HarmonyPostfix]
+    private static void SeedPacket_Update_Postfix(SeedPacket __instance, int __state)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (__instance.mRefreshTime != __state)
+            {
+                __instance.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(__instance.mPacketType);
+            }
         }
     }
 

@@ -239,10 +239,6 @@ internal static partial class NetworkManager
         /// <summary>
         /// Disposes of the current heartbeat instance and clears the static reference.
         /// </summary>
-        /// <remarks>
-        /// This should be called when the network manager is being shut down to ensure
-        /// proper cleanup of resources.
-        /// </remarks>
         internal static void Dispose()
         {
             NetworkHeartbeat = null!;

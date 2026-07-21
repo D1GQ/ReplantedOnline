@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using Il2CppSource.Utils;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -104,6 +105,14 @@ internal static class LevelEntries
             cursorObject.mController = Instances.GameplayActivity.CreateCursorController(cursorObject.CursorType, cursorObject);
         }
         DataModelUtils.UpdateGameplayBoard(Instances.GameplayActivity.RootModel, Instances.GameplayActivity.Board, Instances.GameplayActivity.m_seedChooserScreen);
+
+        // Set up cloudy day
+        if (arenaType == ArenaTypes.CloudyDay)
+        {
+            Instances.GameplayActivity.m_cloudyDayMode = new(Instances.GameplayActivity, ReloadedGameMode.CloudyDay);
+            Instances.GameplayActivity.m_cloudyDayMode.m_weatherForecast.Clear();
+            Instances.GameplayActivity.m_cloudyDayMode.GenerateWeatherForecast();
+        }
 
         // Play selecting seeds music
         if (selectionSet == SelectionSet.CustomAll)

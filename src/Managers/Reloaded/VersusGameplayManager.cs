@@ -7,6 +7,7 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -180,19 +181,31 @@ internal class VersusGameplayManager
     /// <returns></returns>
     internal static int GetSeedPacketRefreshTime(SeedType seedType)
     {
-        if (VersusState.VersusPhase == VersusPhase.SuddenDeath)
+        var definition = Instances.IDataService.GetPlantDefinition(seedType);
+        if (definition != null)
         {
-            return Instances.IDataService.GetPlantDefinition(seedType)?.m_versusSuddenDeathRefreshTime ?? 0;
+            int refreshTime;
+            if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
+            {
+                refreshTime = definition.m_versusBaseRefreshTime;
+            }
+            else
+            {
+                refreshTime = definition.m_versusSuddenDeathRefreshTime;
+            }
+
+            CloudyDayArenaPatch.ApplyRefreshTimeReduction(ref refreshTime);
+
+            if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+            {
+                return refreshTime;
+            }
+
+            float normalized = Mathf.Clamp01(VersusState.VersusTime / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
+            float time = Mathf.Lerp(refreshTime * 2, refreshTime, normalized);
+            return Mathf.FloorToInt(time);
         }
 
-        if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
-        {
-            return Instances.IDataService.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
-        }
-
-        float normalized = Mathf.Clamp01(VersusState.VersusTime / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
-        int baseTime = Instances.IDataService.GetPlantDefinition(seedType)?.m_versusBaseRefreshTime ?? 0;
-        float time = Mathf.Lerp(baseTime * 2, baseTime, normalized);
-        return Mathf.FloorToInt(time);
+        return 0;
     }
 }
