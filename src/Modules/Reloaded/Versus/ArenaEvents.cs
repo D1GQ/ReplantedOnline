@@ -93,6 +93,9 @@ internal static class ArenaEvents
                 var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
                 if (plant == null)
                 {
+                    if (Instances.GameplayActivity.Board.GetGridItemAt(GridItemType.Crater, gridX, gridY) != null)
+                        continue;
+
                     if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
                     {
                         SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
