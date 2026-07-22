@@ -184,7 +184,7 @@ internal static class SeedChooserPatch
             var disableOverlayImage = disableOverlay.GetComponent<Image>();
             if (disableOverlayImage != null)
             {
-                disableOverlayImage.color = new(0f, 0f, 0f, 0.9f);
+                disableOverlayImage.color = new(0f, 0f, 0f, 0.8f);
             }
         }
 
