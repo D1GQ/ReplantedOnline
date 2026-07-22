@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
+using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
@@ -68,7 +69,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
 
     internal static bool IsRaining;
     private static float nextWeatherChangeTime;
-    private void UpdateWeather(CloudyDayMode cloudyDayMode)
+    private static void UpdateWeather(CloudyDayMode cloudyDayMode)
     {
         if (VersusState.VersusTimeSynced > nextWeatherChangeTime - 3f)
         {
@@ -155,6 +156,25 @@ internal sealed class CloudyDayArena : IArena, IArenaData
 
             seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
         }
+    }
+
+    internal static int GetCostReduction(SeedType seedType, int cost)
+    {
+        return (int)(Math.Round(cost * 0.5f / 5, MidpointRounding.AwayFromZero) * 5);
+    }
+
+    internal static void ApplyRefreshTimeReduction(SeedType seedType, ref int refreshTime)
+    {
+        if (VersusState.Arena != ArenaTypes.CloudyDay)
+            return;
+
+        if (VersusState.VersusTimeSynced <= 30f)
+            return;
+
+        if (!IsRaining)
+            return;
+
+        refreshTime = Mathf.Min(100, (int)(Math.Pow(refreshTime, 0.7f) * 1.5f));
     }
 
     /// <inheritdoc/>

@@ -4,10 +4,10 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -194,7 +194,7 @@ internal class VersusGameplayManager
                 refreshTime = definition.m_versusSuddenDeathRefreshTime;
             }
 
-            CloudyDayArenaPatch.ApplyRefreshTimeReduction(ref refreshTime);
+            CloudyDayArena.ApplyRefreshTimeReduction(seedType, ref refreshTime);
 
             if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
             {

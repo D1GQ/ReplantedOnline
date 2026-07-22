@@ -63,6 +63,9 @@ internal sealed class TimerPanel : MonoBehaviour
 
         timerPanel._shovelContainer = shovelContainer;
         timerPanel._init = true;
+
+        // Fix rain causing rendering issues on panel, i have no idea how this fixes it but it does lol
+        timerPanelRect.anchoredPosition3D = new(0f, 968f, -1f);
     }
 
     private void Update()

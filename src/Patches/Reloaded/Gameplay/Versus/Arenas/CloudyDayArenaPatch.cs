@@ -1,12 +1,10 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using Il2CppReloaded.TreeStateActivities;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
-using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Arenas;
 
@@ -31,7 +29,7 @@ internal static class CloudyDayArenaPatch
 
     [HarmonyPatch(typeof(Plant), nameof(Plant.GetCost))]
     [HarmonyPrefix]
-    private static bool Plant_GetCost_Prefix(GameplayActivity gLawnApp, SeedType theSeedType, ref int __result)
+    private static bool Plant_GetCost_Prefix(SeedType theSeedType, ref int __result)
     {
         if (VersusState.Arena != ArenaTypes.CloudyDay)
             return true;
@@ -43,26 +41,12 @@ internal static class CloudyDayArenaPatch
                 var definition = Instances.IDataService.GetPlantDefinition(theSeedType);
                 if (definition != null)
                 {
-                    __result = (int)(Math.Round(definition.m_versusCost * 0.5f / 5, MidpointRounding.AwayFromZero) * 5);
+                    __result = CloudyDayArena.GetCostReduction(theSeedType, definition.m_versusCost);
                     return false;
                 }
             }
         }
 
         return true;
-    }
-
-    internal static void ApplyRefreshTimeReduction(ref int refreshTime)
-    {
-        if (VersusState.Arena != ArenaTypes.CloudyDay)
-            return;
-
-        if (VersusState.VersusTimeSynced <= 30f)
-            return;
-
-        if (!CloudyDayArena.IsRaining)
-            return;
-
-        refreshTime = Mathf.Min(100, (int)(Math.Pow(refreshTime, 0.7f) * 1.5f));
     }
 }
