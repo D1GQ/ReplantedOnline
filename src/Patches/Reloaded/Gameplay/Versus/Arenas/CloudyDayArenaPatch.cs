@@ -38,7 +38,7 @@ internal static class CloudyDayArenaPatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            if (VersusState.VersusTime > 30f && CloudyDayArena.IsRaining)
+            if (VersusState.VersusTimeSynced > 30f && CloudyDayArena.IsRaining)
             {
                 var definition = Instances.IDataService.GetPlantDefinition(theSeedType);
                 if (definition != null)
@@ -57,7 +57,7 @@ internal static class CloudyDayArenaPatch
         if (VersusState.Arena != ArenaTypes.CloudyDay)
             return;
 
-        if (VersusState.VersusTime <= 30f)
+        if (VersusState.VersusTimeSynced <= 30f)
             return;
 
         if (!CloudyDayArena.IsRaining)

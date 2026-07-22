@@ -70,7 +70,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     private static float nextWeatherChangeTime;
     private void UpdateWeather(CloudyDayMode cloudyDayMode)
     {
-        if (VersusState.VersusTime > nextWeatherChangeTime - 3f)
+        if (VersusState.VersusTimeSynced > nextWeatherChangeTime - 3f)
         {
             if (!cloudyDayMode.m_wasMessageDisplayed)
             {
@@ -87,7 +87,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
             }
         }
 
-        if (VersusState.VersusTime > nextWeatherChangeTime)
+        if (VersusState.VersusTimeSynced > nextWeatherChangeTime)
         {
             if (!IsRaining)
             {

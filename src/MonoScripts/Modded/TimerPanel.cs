@@ -2,6 +2,7 @@
 using Il2CppTMPro;
 using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -32,7 +33,8 @@ internal sealed class TimerPanel : MonoBehaviour
         GameObject timerPanelObj = new("TimerPanel");
         var timerPanelRect = timerPanelObj.AddComponent<RectTransform>();
         timerPanelRect.SetParent(MainHUDLayout);
-        timerPanelRect.anchoredPosition = new(0f, 968f);
+        timerPanelRect.SetSiblingIndex(6);
+        timerPanelRect.anchoredPosition3D = new(0f, 968f, 0f);
         TimerPanel timerPanel = timerPanelObj.AddComponent<TimerPanel>();
 
         GameObject imageObj = new("Image");
@@ -48,7 +50,7 @@ internal sealed class TimerPanel : MonoBehaviour
         timerPanel._text.SetText(string.Empty);
         timerPanel._text.transform.SetParent(timerPanelRect);
         timerPanel._text.transform.localScale = new(1.8f, 1.8f, 1.8f);
-        timerPanel._text.gameObject.DestroyAllImageLocalizers();
+        timerPanel._text.gameObject.DestroyAllTextLocalizers();
         timerPanel._text.gameObject.SetActive(true);
         if (timerPanel._text.transform.Il2CppTryCast<RectTransform>(out var textRect))
         {
@@ -76,7 +78,7 @@ internal sealed class TimerPanel : MonoBehaviour
 
         _shovelContainer.anchoredPosition = new Vector2(128f, -370f);
 
-        float currentTime = Instances.GameplayActivity.VersusMode.m_versusTime;
+        float currentTime = VersusState.VersusTimeSynced;
         float suddenDeathStartTime = VersusMode.k_suddenDeathStartTime;
 
         if (currentTime < 0f)

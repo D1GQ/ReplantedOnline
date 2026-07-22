@@ -59,7 +59,7 @@ internal sealed class PoolNightArena : PoolArena
 
         if (NextFogPos > 1)
         {
-            if (VersusState.VersusTime > nextFogPushTime)
+            if (VersusState.VersusTimeSynced > nextFogPushTime)
             {
                 nextFogPushTime += FOG_PUSH_TIME_SURPLUS;
                 versusMode.m_board.mApp.BackgroundController.m_fogController.ScheduleTarget(NextFogPos--, TodCurves.EaseInOut);

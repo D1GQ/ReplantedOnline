@@ -22,9 +22,9 @@ internal static class VersusState
     internal static SelectionSet SelectionSet => Instances.GameplayActivity?.VersusMode?.SelectionSet ?? SelectionSet.QuickPlay;
 
     /// <summary>
-    /// Gets the amount of time the game mode has been going on.
+    /// Gets the amount of time the game mode has been going on, this vaule is synced between clients.
     /// </summary>
-    internal static float VersusTime => Instances.GameplayActivity?.VersusMode?.m_versusTime ?? 0f;
+    internal static float VersusTimeSynced => Instances.GameplayActivity?.VersusMode?.m_versusTime ?? 0f;
 
     /// <summary>
     /// Determines if the local player is currently on the zombie team.
@@ -64,10 +64,10 @@ internal static class VersusState
     /// <summary>
     /// Gets when Versus Mode is in ready, set, plant.
     /// </summary>
-    internal static bool IsInCountDown => VersusTime < 0f;
+    internal static bool IsInCountDown => VersusTimeSynced < 0f;
 
     /// <summary>
     /// Gets when Versus Mode is before ready, set, plant.
     /// </summary>
-    internal static bool IsInPreCountDown => VersusTime + ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME < 1f;
+    internal static bool IsInPreCountDown => VersusTimeSynced + ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME < 1f;
 }

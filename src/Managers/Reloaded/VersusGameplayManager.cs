@@ -169,7 +169,7 @@ internal class VersusGameplayManager
     /// </summary>
     internal static int FlagSpawnAmount()
     {
-        float normalized = Mathf.Clamp01(VersusState.VersusTime / VersusMode.k_suddenDeathStartTime);
+        float normalized = Mathf.Clamp01(VersusState.VersusTimeSynced / VersusMode.k_suddenDeathStartTime);
         float value = Mathf.Lerp(5f, 10f, normalized);
         return Mathf.FloorToInt(value);
     }
@@ -201,7 +201,7 @@ internal class VersusGameplayManager
                 return refreshTime;
             }
 
-            float normalized = Mathf.Clamp01(VersusState.VersusTime / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
+            float normalized = Mathf.Clamp01(VersusState.VersusTimeSynced / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
             float time = Mathf.Lerp(refreshTime * 2, refreshTime, normalized);
             return Mathf.FloorToInt(time);
         }

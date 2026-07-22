@@ -36,7 +36,7 @@ internal sealed class FlagZombieSpecialSpawn(ZombieType zombieType, int chance =
         if (_chance <= 0)
             return false;
 
-        float normalized = Mathf.Clamp01(VersusState.VersusTime / VersusMode.k_suddenDeathStartTime);
+        float normalized = Mathf.Clamp01(VersusState.VersusTimeSynced / VersusMode.k_suddenDeathStartTime);
         if (Common.RandRangeInt(1, 100) <= Mathf.FloorToInt(_chance * normalized))
         {
             _chance = Math.Max(_chance - _decreaseBy, 0);
