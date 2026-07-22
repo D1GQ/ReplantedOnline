@@ -5,8 +5,6 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Structs.Reloaded;
-using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
@@ -38,32 +36,7 @@ internal class DayArena : IArena, IArenaData
     /// <inheritdoc/>
     public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        if (seedType is SeedType.Umbrella or SeedType.Blover)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.Plantern)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsAquatic(seedType) || seedType == CustomSeedType.DolphinRider || seedType == CustomSeedType.Snorkel)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
-        {
-            return CustomRecommentedFlags.NotRecommended;
-        }
-
-        return CustomRecommentedFlags.Recommended;
+        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

@@ -15,11 +15,6 @@ internal interface IArenaSetupSeedbank
     int SeedPacketCount { get; }
 
     /// <summary>
-    /// Gets the amount of starting seed packets.
-    /// </summary>
-    int StartingSeedPacketCount { get; }
-
-    /// <summary>
     /// Gets the array of plant seed types for quick play selection.
     /// </summary>
     SeedType[] QuickPlayPlants { get; }
@@ -42,22 +37,6 @@ internal interface IArenaSetupSeedbank
         else
         {
             return VersusMode.k_numPackets;
-        }
-    }
-
-    /// <summary>
-    /// Gets the starting seed packet count from the current arena or default value.
-    /// </summary>
-    /// <returns>The number of starting seed packets (default is 1).</returns>
-    internal static int GetStartingSeedPacketCount()
-    {
-        if (IArena.GetCurrentArena() is IArenaSetupSeedbank setupSeedbank)
-        {
-            return setupSeedbank.StartingSeedPacketCount;
-        }
-        else
-        {
-            return 1;
         }
     }
 
@@ -103,31 +82,5 @@ internal interface IArenaSetupSeedbank
         var zombieSeedBankInfo = PvZRUtils.GetZombieSeedBankInfo();
         plantSeedBankInfo.ClearAllSeedsInSeedBack();
         zombieSeedBankInfo.ClearAllSeedsInSeedBack();
-
-        for (int i = 0; i < GetStartingSeedPacketCount(); i++)
-        {
-            plantSeedBankInfo.AddSeedFromChooser(GetQuickPlayPlants()[i]);
-            zombieSeedBankInfo.AddSeedFromChooser(GetQuickPlayZombies()[i]);
-        }
-    }
-
-    /// <summary>
-    /// Determines whether the specified seed type should be excluded from random selection.
-    /// </summary>
-    /// <param name="seedType">The seed type to check.</param>
-    /// <returns>True if the seed type matches any of the starting quick play plants or zombies; otherwise, false.</returns>
-    internal static bool ExcludeSeedFromRandom(SeedType seedType)
-    {
-        for (int i = 0; i < GetStartingSeedPacketCount(); i++)
-        {
-            var plantSeedType = GetQuickPlayPlants()[i];
-            var zombieSeedType = GetQuickPlayZombies()[i];
-            if (seedType == plantSeedType || seedType == zombieSeedType)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

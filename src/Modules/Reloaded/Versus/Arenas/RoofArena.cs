@@ -7,7 +7,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -27,9 +26,6 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 
     /// <inheritdoc/>
     public int SeedPacketCount => 7;
-
-    /// <inheritdoc/>
-    public int StartingSeedPacketCount => 2;
 
     /// <inheritdoc/>
     public SeedType[] QuickPlayPlants
@@ -77,8 +73,13 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
+        if (seedType == SeedType.Flowerpot)
+        {
+            return CustomRecommentedFlags.Required | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
         if (seedType == SeedType.ZombieDigger)
         {
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
@@ -89,43 +90,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        if (seedType is SeedType.Umbrella or SeedType.Blover)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.Plantern)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType is SeedType.Peashooter or SeedType.Repeater or SeedType.Snowpea or
-            SeedType.Threepeater or SeedType.Splitpea or SeedType.Starfruit)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType is SeedType.Puffshroom or SeedType.Scaredyshroom)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsAquatic(seedType) || seedType == CustomSeedType.DolphinRider || seedType == CustomSeedType.Snorkel)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
-        {
-            return CustomRecommentedFlags.NotRecommended;
-        }
-
-        return CustomRecommentedFlags.Recommended;
+        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

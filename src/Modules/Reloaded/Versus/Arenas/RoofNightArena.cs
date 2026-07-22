@@ -36,32 +36,6 @@ internal sealed class RoofNightArena : RoofArena
     }
 
     /// <inheritdoc/>
-    public override CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
-    {
-        if (seedType == SeedType.Seashroom)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType is SeedType.Puffshroom or SeedType.Scaredyshroom)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom | CustomRecommentedFlags.ExcludeFromRandomDependency;
-        }
-
-        if (Plant.IsNocturnal(seedType))
-        {
-            return CustomRecommentedFlags.Recommended;
-        }
-
-        return base.GetSeedTypeCustomRecommentedFlags(seedType);
-    }
-
-    /// <inheritdoc/>
     public override void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
     {
         seedPacketDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[seedPacketDefinition.SeedType];

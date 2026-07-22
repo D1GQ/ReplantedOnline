@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
@@ -36,17 +37,7 @@ internal sealed class NightArena : DayArena
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom | CustomRecommentedFlags.ExcludeFromRandomDependency;
-        }
-
-        if (Plant.IsNocturnal(seedType))
-        {
-            return CustomRecommentedFlags.Recommended;
-        }
-
-        return base.GetSeedTypeCustomRecommentedFlags(seedType);
+        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

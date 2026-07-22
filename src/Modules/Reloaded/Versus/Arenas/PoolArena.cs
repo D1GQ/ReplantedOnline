@@ -30,9 +30,6 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     public int SeedPacketCount => 7;
 
     /// <inheritdoc/>
-    public int StartingSeedPacketCount => 2;
-
-    /// <inheritdoc/>
     public SeedType[] QuickPlayPlants
     {
         get
@@ -72,29 +69,14 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        if (seedType is SeedType.Umbrella or SeedType.Blover)
+        if (seedType == SeedType.Lilypad)
         {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
+            return CustomRecommentedFlags.Required | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        if (seedType == SeedType.Plantern)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
-        {
-            return CustomRecommentedFlags.NotRecommended;
-        }
-
-        return CustomRecommentedFlags.Recommended;
+        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

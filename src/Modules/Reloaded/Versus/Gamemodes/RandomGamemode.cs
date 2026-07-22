@@ -76,7 +76,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         }
 
         // Set opponent seeds to hide, which will be revealed once SyncSeedPacketRpc.cs is received
-        for (int i = IArenaSetupSeedbank.GetStartingSeedPacketCount(); i < Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count; i++)
+        for (int i = 0; i < Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count; i++)
         {
             SeedPacket seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[i];
             seedPacket.mActive = false;
@@ -98,9 +98,12 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         List<SeedType> zombieSeedTypes = [];
 
-        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
+        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount();
         for (int i = 0; i < numSeedsToAdd; i++)
         {
+            if (TryAddRequiredSeedType(zombieSeedTypes, true))
+                continue;
+
             SeedType seedType = GetRandomSeedType(zombieSeedTypes.AsReadOnly(), true, false);
             zombieSeedTypes.Add(seedType);
         }
@@ -117,18 +120,17 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         List<SeedType> plantSeedTypes = [];
 
-        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
+        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount();
         for (int i = 0; i < numSeedsToAdd; i++)
         {
-            if (TryAddStartingPlantSeedType(plantSeedTypes, VersusState.Arena))
-            {
+            if (TryAddRequiredSeedType(plantSeedTypes, false))
                 continue;
-            }
+
+            if (TryAddStartingPlantSeedType(plantSeedTypes, VersusState.Arena))
+                continue;
 
             if (TryAddDependentPlantSeedType(plantSeedTypes, zombieSeedTypes))
-            {
                 continue;
-            }
 
             SeedType seedType = GetRandomSeedType(plantSeedTypes.AsReadOnly(), false, i == numSeedsToAdd - 1);
             plantSeedTypes.Add(seedType);
@@ -185,9 +187,6 @@ internal sealed class RandomGamemode : IVersusGamemode
                 .HasFlag(CustomRecommentedFlags.ExcludeFromRandom))
                 continue;
 
-            if (IArenaSetupSeedbank.ExcludeSeedFromRandom(seedType))
-                continue;
-
             if (SeedPacketDefinitions.NoneSeedTypes.Contains(seedType))
                 continue;
 
@@ -205,6 +204,50 @@ internal sealed class RandomGamemode : IVersusGamemode
         }
 
         throw new Exception("No valid seed type found.");
+    }
+
+    /// <summary>
+    /// Attempts to add a required seed type to the seed list based on arena requirements and currency-producing seed availability.
+    /// </summary>
+    /// <param name="seedTypes">The current list of seed types. If a required seed is found, it will be added to this list.</param>
+    /// <param name="zombieSeedTypes">If true, checks for required zombie seed types; if false, checks for required plant seed types.</param>
+    /// <returns>True if a required seed type was successfully added; otherwise, false.</returns>
+    private static bool TryAddRequiredSeedType(List<SeedType> seedTypes, bool zombieSeedTypes)
+    {
+        var arena = IArena.GetCurrentArena();
+
+        List<SeedType> customSeedTypes = [.. CustomSeedType.CustomSeedTypes.Select(s => (SeedType)s)];
+        List<SeedType> shuffledSeedTypes = [.. Enum.GetValues<SeedType>().Concat(customSeedTypes).Shuffle()];
+        List<SeedType> availableSeedTypes = [];
+
+        foreach (var seedType in shuffledSeedTypes)
+        {
+            if (seedTypes.Contains(seedType))
+                continue;
+
+            if (Challenge.IsZombieSeedType(seedType) != zombieSeedTypes)
+                continue;
+
+            if (!arena.GetSeedTypeCustomRecommentedFlags(seedType)
+                .HasFlag(CustomRecommentedFlags.Required))
+                continue;
+
+            if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+            {
+                if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Any(seedTypes.Contains))
+                    continue;
+            }
+
+            availableSeedTypes.Add(seedType);
+        }
+
+        if (availableSeedTypes.Count > 0)
+        {
+            seedTypes.Add(availableSeedTypes.Shuffle().First());
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -7,7 +7,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -27,9 +26,6 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 
     /// <inheritdoc/>
     public int SeedPacketCount => 7;
-
-    /// <inheritdoc/>
-    public int StartingSeedPacketCount => 2;
 
     /// <inheritdoc/>
     public SeedType[] QuickPlayPlants
@@ -79,37 +75,17 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
+        if (seedType == SeedType.Flowerpot)
+        {
+            return CustomRecommentedFlags.Required | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
         if (seedType == SeedType.Spikeweed)
         {
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        if (seedType is SeedType.Umbrella or SeedType.Blover)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.Plantern)
-        {
-            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsAquatic(seedType) || seedType == CustomSeedType.DolphinRider || seedType == CustomSeedType.Snorkel)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
-        }
-
-        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
-        {
-            return CustomRecommentedFlags.NotRecommended;
-        }
-
-        return CustomRecommentedFlags.Recommended;
+        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

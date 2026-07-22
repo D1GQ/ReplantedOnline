@@ -7,8 +7,10 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
+using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,13 +31,14 @@ internal static class SeedChooserPatch
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
             SeedChooserEntries.Clear();
             __instance.m_entriesModel.Clear();
-            for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds.Count; i++)
+            for (int i = 0; i < __instance.m_seedChooserScreen.mChosenSeeds.Count; i++)
             {
-                var plantChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds[i];
+                var plantChosenSeed = __instance.m_seedChooserScreen.mChosenSeeds[i];
+                if (plantChosenSeed.mSeedType == SeedType.None) continue;
                 if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(plantChosenSeed.mSeedType)) continue;
                 PlantDefinition plantDefinition = Instances.IDataService.GetPlantDefinition(plantChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
-                SeedChooserEntryModel entry = new(plantDefinition, plantChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
+                SeedChooserEntryModel entry = new(plantDefinition, plantChosenSeed, __instance.m_seedChooserScreen, __instance, false, i);
                 __instance.m_entriesModel.Add(i.ToString(), entry);
                 SeedChooserEntries.Add(entry);
             }
@@ -60,6 +63,7 @@ internal static class SeedChooserPatch
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Count; i++)
             {
                 var zombieChosenSeed = Instances.GameplayActivity.SeedChooserScreen.mChosenZombies[i];
+                if (zombieChosenSeed.mSeedType == SeedType.None) continue;
                 if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(zombieChosenSeed.mSeedType)) continue;
                 PlantDefinition plantDefinition = Instances.IDataService.GetPlantDefinition(zombieChosenSeed.mSeedType);
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
@@ -99,22 +103,156 @@ internal static class SeedChooserPatch
         RepositionAllZombieSeeds();
     }
 
+    private static readonly ChosenSeed HiddenChosenSeed = new()
+    {
+        mSeedType = SeedType.Gatlingpea, // Need to use unused valid seed type
+        mSeedState = ChosenSeedState.SeedInBank,
+        mImitaterType = SeedType.None,
+        mIsImitater = true // For some reason this hides the seed in the chooser
+    };
+
+    static void RepositionAllZombieSeeds()
+    {
+        var screen = Instances.GameplayActivity.SeedChooserScreen;
+
+        screen.mChosenZombies.Remove(HiddenChosenSeed);
+
+        // Sort seeds by cost
+        screen.mChosenZombies.Sort((Func<ChosenSeed, ChosenSeed, int>)((cz1, cz2) =>
+        {
+            bool isGravestone1 = cz1.mSeedType == SeedType.ZombieGravestone;
+            bool isGravestone2 = cz2.mSeedType == SeedType.ZombieGravestone;
+
+            if (isGravestone1 == isGravestone2)
+            {
+                var definition1 = Instances.IDataService.GetPlantDefinition(cz1.mSeedType);
+                var definition2 = Instances.IDataService.GetPlantDefinition(cz2.mSeedType);
+                return definition1.m_versusCost.CompareTo(definition2.m_versusCost);
+            }
+
+            return isGravestone1 ? -1 : 1;
+        }));
+
+        // Work around for hard coded index 20 being not suggested.
+        screen.mChosenZombies.Insert(20, HiddenChosenSeed);
+
+        var seeds = screen.mChosenZombies;
+        bool has7Rows = screen.Has7Rows();
+
+        for (int i = 0; i < seeds.Count; i++)
+        {
+            var seed = seeds[i];
+
+            int row = i >> 3;
+            int col = i & 7;
+
+            if (!has7Rows)
+                seed.mX = row * 0x49 + 0x80;
+            else
+                seed.mX = row * 0x46 + 0x7b;
+
+            seed.mY = col * 0x35 + 0x16;
+
+            seed.mStartX = seed.mX;
+            seed.mStartY = seed.mY;
+            seed.mEndX = seed.mX;
+            seed.mEndY = seed.mY;
+        }
+    }
+
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
+    [HarmonyPrefix]
+    private static void SeedChooserScreen_Update_Prefix(SeedChooserScreen __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Prevent sunflower from automatically being picked
+            __instance.mChosenSeeds.Insert(1, HiddenChosenSeed);
+        }
+    }
+
+    private static readonly UnityTimer FlashRequiredTimer = new();
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
     [HarmonyPostfix]
     private static void SeedChooserScreen_Update_Postfix(SeedChooserScreen __instance)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            // Update seed packet states in chooser 
-            foreach (var entry in SeedChooserEntries)
+            __instance.mChosenSeeds.Remove(HiddenChosenSeed);
+
+            bool doFlash = FlashRequiredTimer.HasElapsed(2f);
+            bool doResetFlash = FlashRequiredTimer.HasElapsed(1f);
+
+            foreach (var seedEntry in SeedChooserEntries)
             {
-                SetSeedPacketRecommendations(entry, entry.m_chosenSeed);
+                if (doFlash)
+                {
+                    FlashRequiredSeedType(seedEntry.m_chosenSeed);
+                }
+                else if (doResetFlash)
+                {
+                    seedEntry.m_chosenSeed.mFlashing = false;
+                }
+
+                // Update seed packet recommendation in chooser.
+                SetSeedPacketRecommendations(seedEntry, seedEntry.m_chosenSeed);
             }
 
-            foreach (var entry in SeedChooserZombieEntries)
+            foreach (var seedEntry in SeedChooserZombieEntries)
             {
-                SetSeedPacketRecommendations(entry, entry.m_chosenSeed);
+                if (doFlash)
+                {
+                    FlashRequiredSeedType(seedEntry.m_chosenSeed);
+                }
+                else if (doResetFlash)
+                {
+                    seedEntry.m_chosenSeed.mFlashing = false;
+                }
+
+                // Update seed packet recommendation in chooser.
+                SetSeedPacketRecommendations(seedEntry, seedEntry.m_chosenSeed);
             }
+
+            if (doFlash)
+            {
+                FlashRequiredTimer.Reset();
+            }
+        }
+    }
+
+    private static void FlashRequiredSeedType(ChosenSeed chosen)
+    {
+        if (chosen.mSeedState != ChosenSeedState.SeedInChooser)
+            return;
+
+        var seedType = chosen.mSeedType;
+        bool isZombie = Challenge.IsZombieSeedType(seedType);
+        var flags = IArena.GetCurrentArena().GetSeedTypeCustomRecommentedFlags(seedType);
+
+        if (flags.HasFlag(CustomRecommentedFlags.Required))
+        {
+            if (isZombie != (VersusState.VersusPhase == VersusPhase.ChooseZombiePacket))
+                return;
+
+            if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee) &&
+                flags.HasFlag(CustomRecommentedFlags.NotRecommended))
+                return;
+
+            if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+            {
+                foreach (var st in SeedPacketDefinitions.CurrencyProducingSeedTypes)
+                {
+                    if (Challenge.IsZombieSeedType(st) != isZombie)
+                        continue;
+
+                    if (PvZRUtils.IsSeedTypeInAnySeedBank(st))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            chosen.mFlashing = true;
         }
     }
 
@@ -189,61 +327,6 @@ internal static class SeedChooserPatch
         }
 
         return true;
-    }
-
-    private static readonly ChosenSeed HiddenChosenSeed = new()
-    {
-        mSeedType = SeedType.Gatlingpea, // Need to use unused valid seed type
-        mIsImitater = true // For some reason this hides the seed in the chooser
-    };
-
-    static void RepositionAllZombieSeeds()
-    {
-        var screen = Instances.GameplayActivity.SeedChooserScreen;
-
-        screen.mChosenZombies.Remove(HiddenChosenSeed);
-
-        // Sort seeds by cost
-        screen.mChosenZombies.Sort((Func<ChosenSeed, ChosenSeed, int>)((cz1, cz2) =>
-        {
-            bool isGravestone1 = cz1.mSeedType == SeedType.ZombieGravestone;
-            bool isGravestone2 = cz2.mSeedType == SeedType.ZombieGravestone;
-
-            if (isGravestone1 == isGravestone2)
-            {
-                var definition1 = Instances.IDataService.GetPlantDefinition(cz1.mSeedType);
-                var definition2 = Instances.IDataService.GetPlantDefinition(cz2.mSeedType);
-                return definition1.m_versusCost.CompareTo(definition2.m_versusCost);
-            }
-
-            return isGravestone1 ? -1 : 1;
-        }));
-
-        // Work around for hard coded index 20 being not suggested.
-        screen.mChosenZombies.Insert(20, HiddenChosenSeed);
-
-        var seeds = screen.mChosenZombies;
-        bool has7Rows = screen.Has7Rows();
-
-        for (int i = 0; i < seeds.Count; i++)
-        {
-            var seed = seeds[i];
-
-            int row = i >> 3;
-            int col = i & 7;
-
-            if (!has7Rows)
-                seed.mX = row * 0x49 + 0x80;
-            else
-                seed.mX = row * 0x46 + 0x7b;
-
-            seed.mY = col * 0x35 + 0x16;
-
-            seed.mStartX = seed.mX;
-            seed.mStartY = seed.mY;
-            seed.mEndX = seed.mX;
-            seed.mEndY = seed.mY;
-        }
     }
 
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.SeedNotAllowedToPick))]

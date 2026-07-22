@@ -44,8 +44,6 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal readonly static SeedType[] HideInChooserSeedTypes = [
         // Plants
-        SeedType.Flowerpot,
-        SeedType.Lilypad,
         SeedType.Marigold
     ];
 

@@ -12,22 +12,27 @@ internal enum CustomRecommentedFlags : byte
     Recommended = 0,
 
     /// <summary>
+    /// The seed type is really recommended to use in the current arena.
+    /// </summary>
+    Required = 1 << 0,
+
+    /// <summary>
     /// The seed type is not recommended for use in the current arena.
     /// </summary>
-    NotRecommended = 1 << 0,
+    NotRecommended = 1 << 1,
 
     /// <summary>
     /// The seed type is not allowed to be used in the current arena.
     /// </summary>
-    NotAllowed = 1 << 1,
+    NotAllowed = 1 << 2,
 
     /// <summary>
     /// The seed type should be excluded from random selection.
     /// </summary>
-    ExcludeFromRandom = 1 << 2,
+    ExcludeFromRandom = 1 << 3,
 
     /// <summary>
     /// The seed type should be excluded from random selection due to dependency requirements.
     /// </summary>
-    ExcludeFromRandomDependency = 1 << 3
+    ExcludeFromRandomDependency = 1 << 4
 }

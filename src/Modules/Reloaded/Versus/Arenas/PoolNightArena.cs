@@ -34,32 +34,6 @@ internal sealed class PoolNightArena : PoolArena
     internal static int NextFogPos;
 
     /// <inheritdoc/>
-    public override CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
-    {
-        if (seedType == SeedType.Blover)
-        {
-            return CustomRecommentedFlags.Recommended;
-        }
-
-        if (seedType == SeedType.Plantern)
-        {
-            return CustomRecommentedFlags.Recommended;
-        }
-
-        if (seedType == SeedType.InstantCoffee)
-        {
-            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom | CustomRecommentedFlags.ExcludeFromRandomDependency;
-        }
-
-        if (Plant.IsNocturnal(seedType))
-        {
-            return CustomRecommentedFlags.Recommended;
-        }
-
-        return base.GetSeedTypeCustomRecommentedFlags(seedType);
-    }
-
-    /// <inheritdoc/>
     public override void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
     {
         seedPacketDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[seedPacketDefinition.SeedType];
