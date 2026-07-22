@@ -172,4 +172,7 @@
 			<HintPath>References\Il2Cpp\Il2CppSystem.Core.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Modules\Reloaded\Versus\Configs\Plant\" />
+	</ItemGroup>
 </Project>

@@ -57,6 +57,17 @@ internal sealed class DebugArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
+    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    {
+        return CustomRecommentedFlags.Recommended;
+    }
+
+    /// <inheritdoc/>
+    public void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
+    {
+    }
+
+    /// <inheritdoc/>
     public void InitializeArena(VersusMode versusMode)
     {
         Mode = DebugModes.Default;

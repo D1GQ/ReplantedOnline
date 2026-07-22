@@ -284,6 +284,32 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Determines whether the specified seed type exists in either the plant or zombie seed banks.
+    /// </summary>
+    /// <param name="seedType">The seed type to search for in the seed banks.</param>
+    /// <returns><c>true</c> if the seed type is found in either seed bank; otherwise, <c>false</c>.</returns>
+    internal static bool IsSeedTypeInAnySeedBank(SeedType seedType)
+    {
+        foreach (var seedPacket in GetPlantSeedBankInfo().mSeedBank.SeedPackets)
+        {
+            if (seedPacket.mPacketType == seedType)
+            {
+                return true;
+            }
+        }
+
+        foreach (var seedPacket in GetZombieSeedBankInfo().mSeedBank.SeedPackets)
+        {
+            if (seedPacket.mPacketType == seedType)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Initializes a lawn mower instance with the appropriate settings based on the game state and arena type.
     /// </summary>
     /// <param name="lawnMower">The lawn mower instance to initialize.</param>

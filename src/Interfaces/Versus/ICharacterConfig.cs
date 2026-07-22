@@ -2,9 +2,7 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Utilities.Il2Cpp;
 
 namespace ReplantedOnline.Interfaces.Versus;
 
@@ -47,29 +45,6 @@ internal interface ICharacterConfig
     }
 
     /// <summary>
-    /// Sets up arena definitions for all registered character configurations.
-    /// Iterates through all zombie and plant definitions and applies them to matching configurations.
-    /// </summary>
-    internal static void SetArenaDefinitions(ArenaTypes arena)
-    {
-        foreach (var plantDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
-        {
-            if (RegisterPlantConfig.TryGetInstanceFromLookup(plantDefinition.SeedType, out var config))
-            {
-                config.SetArenaDefinition(plantDefinition, arena);
-            }
-        }
-
-        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
-        {
-            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieDefinition.ZombieType, out var config))
-            {
-                config.SetArenaDefinition(zombieDefinition, arena);
-            }
-        }
-    }
-
-    /// <summary>
     /// Determines whether a seed type can be placed at the given grid coordinates in the specified arena.
     /// Checks both zombie and plant configurations based on the seed type.
     /// </summary>
@@ -104,39 +79,6 @@ internal interface ICharacterConfig
 
         return true;
     }
-
-    /// <summary>
-    /// Gets rather if a seedtype is allowd to be used in the arena.
-    /// </summary>
-    /// <param name="seedType">The seed type to check placement for</param>
-    /// <param name="arena">The arena type where placement is being attempted</param>
-    /// <returns>True if the seed can be used in the arena</returns>
-    internal static bool IsAllowedInArena(SeedType seedType, ArenaTypes arena)
-    {
-        if (!Challenge.IsZombieSeedType(seedType))
-        {
-            if (RegisterPlantConfig.TryGetInstanceFromLookup(seedType, out var config))
-            {
-                if (!config.IsAllowedInArena(arena))
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
-            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieType, out var config))
-            {
-                if (!config.IsAllowedInArena(arena))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
 }
 
 /// <summary>
@@ -146,19 +88,6 @@ internal interface ICharacterConfig
 /// <typeparam name="CharacterType">The runtime character type (e.g., Zombie, Plant)</typeparam>
 internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterConfig
 {
-    /// <summary>
-    /// Gets rather if the character definition is allowd to be used in the arena.
-    /// </summary>
-    /// <param name="arena">The current arena type</param>
-    bool IsAllowedInArena(ArenaTypes arena);
-
-    /// <summary>
-    /// Configures the character definition with initial values and properties for arena.
-    /// </summary>
-    /// <param name="definition">The definition object to configure</param>
-    /// <param name="arena">The current arena type</param>
-    void SetArenaDefinition(DefinitionType definition, ArenaTypes arena);
-
     /// <summary>
     /// Determines whether the character can be placed at the specified grid coordinates in the given arena.
     /// </summary>

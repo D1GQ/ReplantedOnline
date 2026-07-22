@@ -49,4 +49,32 @@ internal static class CloudyDayArenaPatch
 
         return true;
     }
+
+
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.SeedNotRecommendedToPick))]
+    [HarmonyPrefix]
+    private static bool SeedChooserScreen_Update_Prefix(SeedType theSeedType, ref RecommentedFlags __result)
+    {
+        if (VersusState.Arena != ArenaTypes.CloudyDay)
+            return true;
+
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Set to recommended
+            if (Plant.IsNocturnal(theSeedType))
+            {
+                __result = RecommentedFlags.None;
+                return false;
+            }
+
+            // Set to not recommended
+            if (theSeedType == SeedType.InstantCoffee)
+            {
+                __result = RecommentedFlags.NotRecommentedNocturnal;
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

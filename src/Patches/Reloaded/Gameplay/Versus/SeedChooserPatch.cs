@@ -1,18 +1,25 @@
 ﻿using HarmonyLib;
+using Il2Cpp;
 using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.DataModels;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
 [HarmonyPatch]
 internal static class SeedChooserPatch
 {
+    private static readonly List<SeedChooserEntryModel> SeedChooserEntries = [];
+    private static readonly List<SeedChooserEntryModel> SeedChooserZombieEntries = [];
+
     [HarmonyPatch(typeof(SeedChooserDataModel), nameof(SeedChooserDataModel.UpdateEntries))]
     [HarmonyPrefix]
     private static bool SeedChooserEntryModel_UpdateEntries_Prefix(SeedChooserDataModel __instance)
@@ -20,6 +27,7 @@ internal static class SeedChooserPatch
         if (ReloadedLobby.AmInLobby())
         {
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
+            SeedChooserEntries.Clear();
             __instance.m_entriesModel.Clear();
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenSeeds.Count; i++)
             {
@@ -29,6 +37,7 @@ internal static class SeedChooserPatch
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, plantChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
                 __instance.m_entriesModel.Add(i.ToString(), entry);
+                SeedChooserEntries.Add(entry);
             }
 
             return false;
@@ -46,6 +55,7 @@ internal static class SeedChooserPatch
             AddCustomZombiesToChosen();
 
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
+            SeedChooserZombieEntries.Clear();
             __instance.m_zombieEntriesModel.Clear();
             for (int i = 0; i < Instances.GameplayActivity.SeedChooserScreen.mChosenZombies.Count; i++)
             {
@@ -55,92 +65,13 @@ internal static class SeedChooserPatch
                 if (plantDefinition == null || plantDefinition.VersusBaseRefreshTime == 0) continue;
                 SeedChooserEntryModel entry = new(plantDefinition, zombieChosenSeed, Instances.GameplayActivity.SeedChooserScreen, __instance, false, i);
                 __instance.m_zombieEntriesModel.Add(i.ToString(), entry);
+                SeedChooserZombieEntries.Add(entry);
             }
 
             return false;
         }
 
         return true;
-    }
-
-    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
-    [HarmonyPostfix]
-    private static void SeedChooserScreen_Update_Postfix(SeedChooserScreen __instance)
-    {
-        if (ReloadedLobby.AmInLobby())
-        {
-            // Update seed packet states in chooser 
-            foreach (var chosenPlant in __instance.mChosenSeeds)
-            {
-#if DEBUG
-                if (VersusState.Arena == Enums.Versus.ArenaTypes.Debug)
-                {
-                    if (chosenPlant.mSeedState == ChosenSeedState.SeedPacketHidden)
-                    {
-                        chosenPlant.mSeedState = ChosenSeedState.SeedInChooser;
-                    }
-                    chosenPlant.mNotSuggested = chosenPlant.mSeedState == ChosenSeedState.SeedInBank;
-                    continue;
-                }
-#endif
-
-                var flags = __instance.SeedNotRecommendedToPick(chosenPlant.mSeedType);
-                var hasNocturnalFlag = flags.HasFlag(RecommentedFlags.NotRecommentedNocturnal);
-                var isAllowed = ICharacterConfig.IsAllowedInArena(chosenPlant.mSeedType, VersusState.Arena) &&
-                    (flags.HasFlag(RecommentedFlags.None) || hasNocturnalFlag);
-
-                bool notSuggested = !isAllowed ||
-                                    hasNocturnalFlag;
-
-                if (!isAllowed)
-                {
-                    chosenPlant.mSeedState = ChosenSeedState.SeedPacketHidden;
-                }
-                else if (chosenPlant.mSeedState == ChosenSeedState.SeedPacketHidden)
-                {
-                    chosenPlant.mSeedState = ChosenSeedState.SeedInChooser;
-                }
-
-                notSuggested = notSuggested ||
-                               !flags.HasFlag(RecommentedFlags.None) ||
-                               chosenPlant.mSeedState == ChosenSeedState.SeedInBank;
-
-                chosenPlant.mNotSuggested = notSuggested;
-            }
-
-            foreach (var chosenZombie in __instance.mChosenZombies)
-            {
-#if DEBUG
-                if (VersusState.Arena == Enums.Versus.ArenaTypes.Debug)
-                {
-                    if (chosenZombie.mSeedState == ChosenSeedState.SeedPacketHidden)
-                    {
-                        chosenZombie.mSeedState = ChosenSeedState.SeedInChooser;
-                    }
-                    chosenZombie.mNotSuggested = chosenZombie.mSeedState == ChosenSeedState.SeedInBank;
-                    continue;
-                }
-#endif
-
-                var isAllowed = ICharacterConfig.IsAllowedInArena(chosenZombie.mSeedType, VersusState.Arena);
-
-                bool notSuggested = !isAllowed;
-
-                if (!isAllowed)
-                {
-                    chosenZombie.mSeedState = ChosenSeedState.SeedPacketHidden;
-                }
-                else if (chosenZombie.mSeedState == ChosenSeedState.SeedPacketHidden)
-                {
-                    chosenZombie.mSeedState = ChosenSeedState.SeedInChooser;
-                }
-
-                notSuggested = notSuggested ||
-                               chosenZombie.mSeedState == ChosenSeedState.SeedInBank;
-
-                chosenZombie.mNotSuggested = notSuggested;
-            }
-        }
     }
 
     private static void AddCustomZombiesToChosen()
@@ -166,6 +97,98 @@ internal static class SeedChooserPatch
         }
 
         RepositionAllZombieSeeds();
+    }
+
+    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
+    [HarmonyPostfix]
+    private static void SeedChooserScreen_Update_Postfix(SeedChooserScreen __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Update seed packet states in chooser 
+            foreach (var entry in SeedChooserEntries)
+            {
+                SetSeedPacketRecommendations(entry, entry.m_chosenSeed);
+            }
+
+            foreach (var entry in SeedChooserZombieEntries)
+            {
+                SetSeedPacketRecommendations(entry, entry.m_chosenSeed);
+            }
+        }
+    }
+
+    private static void SetSeedPacketRecommendations(SeedChooserEntryModel seedChooserEntryModel, ChosenSeed chosen)
+    {
+        var flags = IArena.GetCurrentArena().GetSeedTypeCustomRecommentedFlags(chosen.mSeedType);
+
+        bool isNotAllowed = flags.HasFlag(CustomRecommentedFlags.NotAllowed);
+        bool isNotRecommended = flags.HasFlag(CustomRecommentedFlags.NotRecommended) ||
+            chosen.mSeedState != ChosenSeedState.SeedInChooser;
+
+        if (isNotAllowed)
+        {
+            chosen.mSeedState = ChosenSeedState.SeedPacketHidden;
+        }
+        else if (chosen.mSeedState == ChosenSeedState.SeedPacketHidden)
+        {
+            chosen.mSeedState = ChosenSeedState.SeedInChooser;
+        }
+
+        chosen.mNotSuggested = isNotAllowed || isNotRecommended;
+    }
+
+    [HarmonyPatch(typeof(VSTooltipHider), nameof(VSTooltipHider.Update))]
+    [HarmonyPostfix]
+    private static void VSTooltipHider_Update_Postfix(VSTooltipHider __instance)
+    {
+        var seedPacket = __instance.transform;
+        var grid = seedPacket.parent;
+        var seedChooser = grid.parent;
+        if (seedChooser.name == "SeedChooser")
+        {
+            for (int i = 0; i < SeedChooserEntries.Count; i++)
+            {
+                SeedChooserEntryModel? entry = SeedChooserEntries[i];
+                if (SetSeedPacketDisabled(seedPacket, entry, i))
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < SeedChooserZombieEntries.Count; i++)
+            {
+                SeedChooserEntryModel? entry = SeedChooserZombieEntries[i];
+                if (SetSeedPacketDisabled(seedPacket, entry, i))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static bool SetSeedPacketDisabled(Transform seedPacket, SeedChooserEntryModel seedChooserEntryModel, int index)
+    {
+        if (index != seedPacket.GetSiblingIndex() - 1)
+            return false;
+
+        bool isDisabled = seedChooserEntryModel.m_chosenSeed.mSeedState != ChosenSeedState.SeedInChooser;
+
+        var disableOverlay = seedPacket.Find("Offset/DisabledGameObject");
+        if (disableOverlay != null)
+        {
+            disableOverlay.gameObject.SetActive(isDisabled);
+
+            var disableOverlayImage = disableOverlay.GetComponent<Image>();
+            if (disableOverlayImage != null)
+            {
+                disableOverlayImage.color = new(0f, 0f, 0f, 0.9f);
+            }
+        }
+
+        return true;
     }
 
     private static readonly ChosenSeed HiddenChosenSeed = new()

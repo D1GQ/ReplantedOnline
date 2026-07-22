@@ -98,9 +98,7 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         List<SeedType> zombieSeedTypes = [];
 
-        int numSeedsToAdd = Instances.GameplayActivity.Board.SeedBanks.LocalItem().NumPackets -
-            Instances.GameplayActivity.Board.SeedBanks.LocalItem().GetPacketCount();
-
+        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
         for (int i = 0; i < numSeedsToAdd; i++)
         {
             SeedType seedType = GetRandomSeedType(zombieSeedTypes.AsReadOnly(), true, false);
@@ -118,9 +116,8 @@ internal sealed class RandomGamemode : IVersusGamemode
     internal static List<SeedType> PickPlantSeedPacketTypes(ReadOnlyCollection<SeedType> zombieSeedTypes)
     {
         List<SeedType> plantSeedTypes = [];
-        int numSeedsToAdd = Instances.GameplayActivity.Board.SeedBanks.LocalItem().NumPackets -
-            Instances.GameplayActivity.Board.SeedBanks.LocalItem().GetPacketCount();
 
+        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount() - IArenaSetupSeedbank.GetStartingSeedPacketCount();
         for (int i = 0; i < numSeedsToAdd; i++)
         {
             if (TryAddStartingPlantSeedType(plantSeedTypes, VersusState.Arena))
@@ -150,6 +147,8 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <exception cref="Exception">Thrown when no valid seed type is found.</exception>
     private static SeedType GetRandomSeedType(ReadOnlyCollection<SeedType> currentSeedTypes, bool zombieSeedTypes, bool excludeDependentSeedTypes)
     {
+        var arena = IArena.GetCurrentArena();
+
         List<SeedType> customSeedTypes = [.. CustomSeedType.CustomSeedTypes.Select(s => (SeedType)s)];
         List<SeedType> shuffledSeedTypes = [.. Enum.GetValues<SeedType>().Concat(customSeedTypes).Shuffle()];
 
@@ -157,31 +156,20 @@ internal sealed class RandomGamemode : IVersusGamemode
         {
             if (excludeDependentSeedTypes)
             {
-                bool isDependent = false;
-                foreach (var dependencies in PlantSeedTypeDependencies)
+                bool hasDependency = false;
+                foreach (var (hasDeps, deps) in PlantSeedTypeDependencies)
                 {
-                    if (dependencies.Key.Contains(seedType))
+                    if (hasDeps.Contains(seedType) && !deps.Any(s => !currentSeedTypes.Contains(s) &&
+                    arena.GetSeedTypeCustomRecommentedFlags(s) !=
+                    CustomRecommentedFlags.ExcludeFromRandomDependency))
                     {
-                        foreach (var dep in dependencies.Value)
-                        {
-                            if (!ShouldExcludeDependency(dep))
-                            {
-                                isDependent = true;
-                                break;
-                            }
-                        }
-
-                        if (isDependent)
-                        {
-                            break;
-                        }
+                        hasDependency = true;
+                        break;
                     }
                 }
 
-                if (isDependent)
-                {
+                if (hasDependency)
                     continue;
-                }
             }
 
             if (currentSeedTypes.Contains(seedType))
@@ -190,11 +178,11 @@ internal sealed class RandomGamemode : IVersusGamemode
             if (Challenge.IsZombieSeedType(seedType) != zombieSeedTypes)
                 continue;
 
-            if (!ICharacterConfig.IsAllowedInArena(seedType, VersusState.Arena))
+            if (Plant.IsUpgrade(seedType))
                 continue;
 
-            if (IArena.GetCurrentArena() is IArenaSetupSeedbank arenaSetupSeedbank &&
-                !arenaSetupSeedbank.IsSeedTypeAllowedInRandomGamemode(seedType))
+            if (arena.GetSeedTypeCustomRecommentedFlags(seedType)
+                .HasFlag(CustomRecommentedFlags.ExcludeFromRandom))
                 continue;
 
             if (IArenaSetupSeedbank.ExcludeSeedFromRandom(seedType))
@@ -203,10 +191,14 @@ internal sealed class RandomGamemode : IVersusGamemode
             if (SeedPacketDefinitions.NoneSeedTypes.Contains(seedType))
                 continue;
 
-            if (SeedPacketDefinitions.ExcludeFromRandomSeedTypes.Contains(seedType))
+            if (SeedPacketDefinitions.HideInChooserSeedTypes.Contains(seedType))
                 continue;
 
-            if (Instances.IDataService.GetPlantDefinition(seedType).VersusCost == 0)
+            if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+                continue;
+
+            var plantDef = Instances.IDataService.GetPlantDefinition(seedType);
+            if (plantDef == null || plantDef.VersusCost == 0)
                 continue;
 
             return seedType;
@@ -223,36 +215,15 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <returns>True if a dependent seed was added, otherwise false.</returns>
     private static bool TryAddStartingPlantSeedType(List<SeedType> plantSeedTypes, ArenaTypes arenaType)
     {
-        foreach (var dependency in StartingPlantDependencies)
+        foreach (var (arenaTypes, dependentSeeds) in StartingPlantDependencies)
         {
-            bool arenaMatch = false;
-
-            foreach (var arena in dependency.Key)
-            {
-                if (arena == arenaType)
-                {
-                    arenaMatch = true;
-                    break;
-                }
-            }
-
-            if (!arenaMatch)
+            if (!arenaTypes.Contains(arenaType))
                 continue;
 
-            bool hasDependent = false;
-            foreach (var dependentSeed in dependency.Value)
-            {
-                if (plantSeedTypes.Contains(dependentSeed))
-                {
-                    hasDependent = true;
-                    break;
-                }
-            }
-
-            if (hasDependent)
+            if (dependentSeeds.Any(plantSeedTypes.Contains))
                 continue;
 
-            var shuffled = dependency.Value.Shuffle();
+            var shuffled = dependentSeeds.Shuffle();
             plantSeedTypes.Add(shuffled.First());
             return true;
         }
@@ -268,54 +239,35 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <returns>True if a dependent seed was added, otherwise false.</returns>
     private static bool TryAddDependentPlantSeedType(List<SeedType> plantSeedTypes, ReadOnlyCollection<SeedType> zombieSeedTypes)
     {
-        foreach (var dependency in PlantSeedTypeDependencies)
-        {
-            bool requiredSeedsPresent = false;
-            foreach (var needed in dependency.Key)
-            {
-                if (plantSeedTypes.Contains(needed) || zombieSeedTypes.Contains(needed))
-                {
-                    requiredSeedsPresent = true;
-                    break;
-                }
-            }
+        var arena = IArena.GetCurrentArena();
 
-            if (!requiredSeedsPresent)
+        foreach (var (hasDeps, deps) in PlantSeedTypeDependencies)
+        {
+            if (!hasDeps.Any(plantSeedTypes.Contains) && !hasDeps.Any(zombieSeedTypes.Contains))
                 continue;
 
-            var availableDependents = new List<SeedType>();
-            foreach (var dependentSeed in dependency.Value)
+            if (deps.Any(plantSeedTypes.Contains))
+                continue;
+
+            List<SeedType> availableDependents = [];
+            foreach (var dependent in deps)
             {
-                if (!plantSeedTypes.Contains(dependentSeed) && !ShouldExcludeDependency(dependentSeed))
-                {
-                    availableDependents.Add(dependentSeed);
-                }
+                var flags = arena.GetSeedTypeCustomRecommentedFlags(dependent);
+                if (flags.HasFlag(CustomRecommentedFlags.ExcludeFromRandomDependency))
+                    continue;
+
+                if (flags.HasFlag(CustomRecommentedFlags.NotAllowed))
+                    continue;
+
+                availableDependents.Add(dependent);
             }
 
             if (availableDependents.Count > 0)
             {
-                var shuffled = availableDependents.Shuffle();
-                plantSeedTypes.Add(shuffled.First());
+                plantSeedTypes.Add(availableDependents.Shuffle().First());
                 return true;
             }
         }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Determines whether a seed type should be excluded as a dependency.
-    /// </summary>
-    /// <param name="seedType">The seed type to check.</param>
-    /// <returns>True if the seed type should be excluded; otherwise, false.</returns>
-    private static bool ShouldExcludeDependency(SeedType seedType)
-    {
-        if (IArena.GetCurrentArena() is IArenaSetupSeedbank arenaSetupSeedbank &&
-            !arenaSetupSeedbank.IsSeedTypeAllowedInRandomGamemode(seedType))
-            return true;
-
-        if (!ICharacterConfig.IsAllowedInArena(seedType, VersusState.Arena))
-            return true;
 
         return false;
     }

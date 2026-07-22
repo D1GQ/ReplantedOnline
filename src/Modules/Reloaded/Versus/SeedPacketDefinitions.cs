@@ -44,8 +44,9 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal readonly static SeedType[] HideInChooserSeedTypes = [
         // Plants
-        SeedType.Lilypad,
         SeedType.Flowerpot,
+        SeedType.Lilypad,
+        SeedType.Marigold
     ];
 
     /// <summary>
@@ -74,21 +75,6 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
-    /// Collection of seed types that should be excluded from random selection pools.
-    /// </summary>
-    internal readonly static SeedType[] ExcludeFromRandomSeedTypes = [
-        // Plants
-        SeedType.InstantCoffee,
-        SeedType.Flowerpot,
-        SeedType.Lilypad,
-        SeedType.Marigold,
-        SeedType.Umbrella,
-
-        // Zombies
-        SeedType.ZombieBalloon
-    ];
-
-    /// <summary>
     /// Collection of seed types that produce currency, sun or brains.
     /// </summary>
     internal readonly static SeedType[] CurrencyProducingSeedTypes = [
@@ -103,17 +89,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Collection of seed types that sleep by default.
     /// </summary>
-    internal readonly static SeedType[] SleepingPlants = [
-        SeedType.Puffshroom,
-        SeedType.Seashroom,
-        SeedType.Scaredyshroom,
-        SeedType.Sunshroom,
-        SeedType.Fumeshroom,
-        SeedType.Magnetshroom,
-        SeedType.Hypnoshroom,
-        SeedType.Iceshroom,
-        SeedType.Doomshroom
-    ];
+    internal readonly static SeedType[] SleepingPlants = [.. Enum.GetValues<SeedType>().Where(Plant.IsNocturnal)];
 
     /// <summary>
     /// A lookup of the original seed packet cost.
@@ -130,11 +106,6 @@ internal static class SeedPacketDefinitions
         var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
         slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
-
-        foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
-        {
-            BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
-        }
 
         foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
@@ -192,6 +163,11 @@ internal static class SeedPacketDefinitions
             yetiDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
             yetiDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
             yetiDefinition.m_versusCost = 200;
+        }
+
+        foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
         }
     }
 

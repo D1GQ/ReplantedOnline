@@ -59,12 +59,6 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType)
-    {
-        return true;
-    }
-
-    /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-AdventureArea3Level2")!;
@@ -75,6 +69,37 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         versusLevelData.m_gameArea = GameArea.Pool;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
+    }
+
+    /// <inheritdoc/>
+    public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    {
+        if (seedType is SeedType.Umbrella or SeedType.Blover)
+        {
+            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType == SeedType.Plantern)
+        {
+            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType == SeedType.InstantCoffee)
+        {
+            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
+        {
+            return CustomRecommentedFlags.NotRecommended;
+        }
+
+        return CustomRecommentedFlags.Recommended;
+    }
+
+    /// <inheritdoc/>
+    public virtual void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
+    {
     }
 
     /// <inheritdoc/>

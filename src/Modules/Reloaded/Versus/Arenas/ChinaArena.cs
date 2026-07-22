@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -57,12 +58,6 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public bool IsSeedTypeAllowedInRandomGamemode(SeedType seedType)
-    {
-        return true;
-    }
-
-    /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-China")!;
@@ -79,6 +74,47 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         versusLevelData.m_gameArea = GameArea.China;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
+    }
+
+    /// <inheritdoc/>
+    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    {
+        if (seedType == SeedType.Spikeweed)
+        {
+            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType is SeedType.Umbrella or SeedType.Blover)
+        {
+            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType == SeedType.Plantern)
+        {
+            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (Plant.IsAquatic(seedType) || seedType == CustomSeedType.DolphinRider || seedType == CustomSeedType.Snorkel)
+        {
+            return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType == SeedType.InstantCoffee)
+        {
+            return CustomRecommentedFlags.Recommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (Plant.IsNocturnal(seedType) && !PvZRUtils.IsSeedTypeInAnySeedBank(SeedType.InstantCoffee))
+        {
+            return CustomRecommentedFlags.NotRecommended;
+        }
+
+        return CustomRecommentedFlags.Recommended;
+    }
+
+    /// <inheritdoc/>
+    public void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
+    {
     }
 
     /// <inheritdoc/>

@@ -56,7 +56,10 @@ internal static class LevelEntries
     internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
     {
         var arenaType = VersusState.Arena;
-        ICharacterConfig.SetArenaDefinitions(arenaType);
+        foreach (var plantDefinition in Instances.GameplayActivity.m_dataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            IArena.GetCurrentArena().SetSeedPacketDefinition(plantDefinition);
+        }
 
         var versusLevel = GetLevel("Level-Versus");
         var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
