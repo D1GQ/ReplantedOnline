@@ -36,7 +36,7 @@ internal partial class ReplantedOnlineMod
         /// <summary>
         /// The number of the release.
         /// </summary>
-        internal const string MOD_RELEASE_INFO = "17";
+        internal const string MOD_RELEASE_INFO = "18";
 
         /// <summary>
         /// The hotfix number for hotfix releases.
@@ -51,7 +51,7 @@ internal partial class ReplantedOnlineMod
 #elif HOTFIX
         internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}-hotfix{HOTFIX_NUM}";
 #else
-    internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
+        internal const string MOD_VERSION_FORMATTED = $"{MOD_VERSION}-{MOD_RELEASE}{MOD_RELEASE_INFO}";
 #endif
 
         /// <summary>
