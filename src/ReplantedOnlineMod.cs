@@ -133,7 +133,7 @@ internal partial class ReplantedOnlineMod : MelonMod
         DiscordManager.Update();
         LobbyCodePanel.ValidateText();
 
-        if (Instances.GameplayActivity.SeedChooserScreen != null)
+        if (Instances.GameplayActivity?.SeedChooserScreen != null)
         {
             SeedChooserPatch.UpdateSeedChooserScreen(Instances.GameplayActivity.SeedChooserScreen);
         }
