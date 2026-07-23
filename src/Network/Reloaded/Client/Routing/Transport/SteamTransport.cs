@@ -4,6 +4,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
+using System.Collections.Concurrent;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 
@@ -66,17 +67,31 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== Lobby Data Methods =====
+    internal static readonly ConcurrentDictionary<string, string> SteamLobbyDataCatched = [];
     public string GetLobbyData(ID lobbyId, string pchKey)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
-            return SteamMatchmaking.Internal.GetLobbyData(id, pchKey);
+        {
+            if (!SteamLobbyDataCatched.TryGetValue(pchKey, out var value))
+            {
+                value = SteamMatchmaking.Internal.GetLobbyData(id, pchKey);
+                SteamLobbyDataCatched[pchKey] = value;
+            }
+
+            return value;
+        }
+
         throw new ArgumentException("GetLobbyData requires a SteamId");
     }
 
     public bool SetLobbyData(ID lobbyId, string pchKey, string pchValue)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
+        {
+            SteamLobbyDataCatched[pchKey] = pchValue;
             return SteamMatchmaking.Internal.SetLobbyData(id, pchKey, pchValue);
+        }
+
         throw new ArgumentException("SetLobbyData requires a SteamId");
     }
 
@@ -95,19 +110,46 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== Lobby Member Data Methods =====
+    internal static readonly ConcurrentDictionary<SteamId, Dictionary<string, string>> SteamLobbyMemberDataCatched = [];
     public string GetLobbyMemberData(ID lobbyId, ID clientId, string pchKey)
     {
         if (lobbyId.TryGetSteamId(out SteamId lid) && clientId.TryGetSteamId(out SteamId cid))
-            return SteamMatchmaking.Internal.GetLobbyMemberData(lid, cid, pchKey);
+        {
+            if (!SteamLobbyMemberDataCatched.TryGetValue(cid, out var memberData))
+            {
+                memberData = [];
+                SteamLobbyMemberDataCatched[cid] = memberData;
+            }
+
+            if (!memberData.TryGetValue(pchKey, out var value))
+            {
+                value = SteamMatchmaking.Internal.GetLobbyMemberData(lid, cid, pchKey);
+                memberData[pchKey] = value;
+            }
+
+            return value;
+        }
+
         throw new ArgumentException("GetLobbyMemberData requires SteamIds");
     }
 
     public void SetLobbyMemberData(ID lobbyId, string pchKey, string pchValue)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
+        {
+            var localClientId = SteamUser.Internal.GetSteamID();
+            if (!SteamLobbyMemberDataCatched.TryGetValue(localClientId, out var memberData))
+            {
+                memberData = [];
+                SteamLobbyMemberDataCatched[localClientId] = memberData;
+            }
+            memberData[pchKey] = pchValue;
             SteamMatchmaking.Internal.SetLobbyMemberData(id, pchKey, pchValue);
+        }
         else
+        {
             throw new ArgumentException("SetLobbyMemberData requires a SteamId");
+        }
     }
 
     // ===== Lobby Member Management Methods =====
@@ -193,12 +235,19 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("SetLobbyType requires a SteamId");
     }
 
+    internal static ID LobbyOwnerCatched = ID.Null;
     public ID GetLobbyOwner(ID lobbyId)
     {
+        if (LobbyOwnerCatched != ID.Null)
+        {
+            return LobbyOwnerCatched;
+        }
+
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
             var owner = SteamMatchmaking.Internal.GetLobbyOwner(id);
-            return owner.AsID();
+            LobbyOwnerCatched = owner.AsID();
+            return LobbyOwnerCatched;
         }
         throw new ArgumentException("GetLobbyOwner requires a SteamId");
     }

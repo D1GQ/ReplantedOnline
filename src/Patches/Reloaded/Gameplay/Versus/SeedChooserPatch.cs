@@ -147,13 +147,26 @@ internal static class SeedChooserPatch
         }
     }
 
-    private static readonly UnityTimer FlashRequiredTimer = new();
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
     [HarmonyPrefix]
-    private static bool SeedChooserScreen_Update_Prefix(SeedChooserScreen __instance)
+    private static bool SeedChooserScreen_Update_Prefix()
     {
         if (ReloadedLobby.AmInLobby())
         {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static readonly UnityTimer FlashRequiredTimer = new();
+    internal static void UpdateSeedChooserScreen(SeedChooserScreen seedChooserScreen)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (VersusState.VersusPhase is not (VersusPhase.ChoosePlantPacket or VersusPhase.ChooseZombiePacket))
+                return;
+
             bool flash = FlashRequiredTimer.HasElapsed(2f);
             bool resetFlash = FlashRequiredTimer.HasElapsed(1f);
 
@@ -163,10 +176,10 @@ internal static class SeedChooserPatch
                 var chosenSeed = seedEntry.m_chosenSeed;
                 if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)
                 {
-                    chosenSeed.mTimeInMotion += Time.deltaTime * 0.4f;
+                    chosenSeed.mTimeInMotion += Time.deltaTime;
                     if (chosenSeed.mTimeInMotion >= chosenSeed.mDurationOfMotion)
                     {
-                        __instance.LandAllFlyingSeeds();
+                        seedChooserScreen.LandAllFlyingSeeds();
                     }
                 }
 
@@ -189,10 +202,10 @@ internal static class SeedChooserPatch
                 var chosenSeed = seedEntry.m_chosenSeed;
                 if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)
                 {
-                    chosenSeed.mTimeInMotion += Time.deltaTime * 0.4f;
+                    chosenSeed.mTimeInMotion += Time.deltaTime;
                     if (chosenSeed.mTimeInMotion >= chosenSeed.mDurationOfMotion)
                     {
-                        __instance.LandAllFlyingSeeds();
+                        seedChooserScreen.LandAllFlyingSeeds();
                     }
                 }
 
@@ -213,11 +226,7 @@ internal static class SeedChooserPatch
             {
                 FlashRequiredTimer.Reset();
             }
-
-            return false;
         }
-
-        return true;
     }
 
     private static void FlashRequiredSeedType(ChosenSeed chosen)

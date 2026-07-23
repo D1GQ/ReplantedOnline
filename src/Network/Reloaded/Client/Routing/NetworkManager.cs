@@ -120,7 +120,7 @@ internal static partial class NetworkManager
         {
             try
             {
-                ReloadedLobby.NetworkTransport?.Tick(Time.deltaTime);
+                ReloadedLobby.NetworkTransport!.Tick(Time.deltaTime);
                 NetworkHeartbeat.Tick();
 
                 if (ReloadedLobby.LobbyData != null)

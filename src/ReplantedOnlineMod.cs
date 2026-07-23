@@ -5,19 +5,21 @@ using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Managers.Modded;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.MonoScripts.Unity;
-using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Github;
+using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Patches.Misc;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
-using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline;
 
@@ -130,6 +132,11 @@ internal partial class ReplantedOnlineMod : MelonMod
 
         DiscordManager.Update();
         LobbyCodePanel.ValidateText();
+
+        if (Instances.GameplayActivity.SeedChooserScreen != null)
+        {
+            SeedChooserPatch.UpdateSeedChooserScreen(Instances.GameplayActivity.SeedChooserScreen);
+        }
     }
 
     public override void OnApplicationQuit()

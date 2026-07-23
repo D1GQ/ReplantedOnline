@@ -98,21 +98,32 @@ internal static class ReloadedLobby
 
         SteamMatchmaking.OnLobbyEntered += (Action<Lobby>)(lobby =>
         {
+            SteamTransport.LobbyOwnerCatched = ID.Null;
+            SteamTransport.SteamLobbyDataCatched.Clear();
+            SteamTransport.SteamLobbyMemberDataCatched.Clear();
             OnLobbyEnteredCompleted(new ServerLobby(lobby));
         });
 
         SteamMatchmaking.OnLobbyDataChanged += (Action<Lobby>)((lobby) =>
         {
+            SteamTransport.SteamLobbyDataCatched.Clear();
             OnLobbyDataChanged(new ServerLobby(lobby));
+        });
+
+        SteamMatchmaking.OnLobbyMemberDataChanged += (Action<Lobby, Friend>)((lobby, friend) =>
+        {
+            SteamTransport.SteamLobbyMemberDataCatched.Clear();
         });
 
         SteamMatchmaking.OnLobbyMemberJoined += (Action<Lobby, Friend>)((lobby, friend) =>
         {
+            SteamTransport.LobbyOwnerCatched = ID.Null;
             OnLobbyMemberJoined(new ServerLobby(lobby), friend.Id);
         });
 
         SteamMatchmaking.OnLobbyMemberLeave += (Action<Lobby, Friend>)((lobby, user) =>
         {
+            SteamTransport.LobbyOwnerCatched = ID.Null;
             OnLobbyMemberLeave(new ServerLobby(lobby), user.Id);
         });
 

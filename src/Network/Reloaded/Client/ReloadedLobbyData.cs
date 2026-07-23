@@ -70,31 +70,6 @@ internal sealed class ReloadedLobbyData : IDisposable
     internal NetworkIdentifierPool NetworkIdPool = new();
 
     /// <summary>
-    /// Processes the current list of lobby members, adding new clients and removing disconnected ones.
-    /// </summary>
-    /// <param name="members">The current list of Steam IDs of members in the lobby.</param>
-    internal void ProcessMembers(List<ID> members)
-    {
-        var ids = AllClients.Keys.ToArray();
-
-        // Add new members that aren't already in our client list
-        foreach (var member in members)
-        {
-            if (ids.Contains(member)) continue;
-            AllClients[member] = new(member);
-        }
-
-        // Remove members that are no longer in the lobby or banned
-        foreach (var id in ids)
-        {
-            if (members.Contains(id)) continue;
-            AllClients.Remove(id);
-        }
-
-        VersusLobbyManager.UpdateSideVisuals();
-    }
-
-    /// <summary>
     /// Handles the event when a client joins the lobby.
     /// </summary>
     /// <param name="clientId">The unique identifier of the client that joined.</param>
