@@ -103,19 +103,9 @@ internal static class SeedChooserPatch
         RepositionAllZombieSeeds();
     }
 
-    private static readonly ChosenSeed HiddenChosenSeed = new()
-    {
-        mSeedType = SeedType.Gatlingpea, // Need to use unused valid seed type
-        mSeedState = ChosenSeedState.SeedInBank,
-        mImitaterType = SeedType.None,
-        mIsImitater = true // For some reason this hides the seed in the chooser
-    };
-
     static void RepositionAllZombieSeeds()
     {
         var screen = Instances.GameplayActivity.SeedChooserScreen;
-
-        screen.mChosenZombies.Remove(HiddenChosenSeed);
 
         // Sort seeds by cost
         screen.mChosenZombies.Sort((Func<ChosenSeed, ChosenSeed, int>)((cz1, cz2) =>
@@ -132,9 +122,6 @@ internal static class SeedChooserPatch
 
             return isGravestone1 ? -1 : 1;
         }));
-
-        // Work around for hard coded index 20 being not suggested.
-        screen.mChosenZombies.Insert(20, HiddenChosenSeed);
 
         var seeds = screen.mChosenZombies;
         bool has7Rows = screen.Has7Rows();
@@ -160,64 +147,77 @@ internal static class SeedChooserPatch
         }
     }
 
-    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
-    [HarmonyPrefix]
-    private static void SeedChooserScreen_Update_Prefix(SeedChooserScreen __instance)
-    {
-        if (ReloadedLobby.AmInLobby())
-        {
-            // Prevent sunflower from automatically being picked
-            __instance.mChosenSeeds.Insert(1, HiddenChosenSeed);
-        }
-    }
-
     private static readonly UnityTimer FlashRequiredTimer = new();
     [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.Update))]
-    [HarmonyPostfix]
-    private static void SeedChooserScreen_Update_Postfix(SeedChooserScreen __instance)
+    [HarmonyPrefix]
+    private static bool SeedChooserScreen_Update_Prefix(SeedChooserScreen __instance)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            __instance.mChosenSeeds.Remove(HiddenChosenSeed);
-
-            bool doFlash = FlashRequiredTimer.HasElapsed(2f);
-            bool doResetFlash = FlashRequiredTimer.HasElapsed(1f);
+            bool flash = FlashRequiredTimer.HasElapsed(2f);
+            bool resetFlash = FlashRequiredTimer.HasElapsed(1f);
 
             foreach (var seedEntry in SeedChooserEntries)
             {
-                if (doFlash)
+                // Update flying plant seedpackets
+                var chosenSeed = seedEntry.m_chosenSeed;
+                if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)
                 {
-                    FlashRequiredSeedType(seedEntry.m_chosenSeed);
+                    chosenSeed.mTimeInMotion += Time.deltaTime * 0.4f;
+                    if (chosenSeed.mTimeInMotion >= chosenSeed.mDurationOfMotion)
+                    {
+                        __instance.LandAllFlyingSeeds();
+                    }
                 }
-                else if (doResetFlash)
+
+                if (flash)
                 {
-                    seedEntry.m_chosenSeed.mFlashing = false;
+                    FlashRequiredSeedType(chosenSeed);
+                }
+                else if (resetFlash)
+                {
+                    chosenSeed.mFlashing = false;
                 }
 
                 // Update seed packet recommendation in chooser.
-                SetSeedPacketRecommendations(seedEntry, seedEntry.m_chosenSeed);
+                SetSeedPacketRecommendations(seedEntry, chosenSeed);
             }
 
             foreach (var seedEntry in SeedChooserZombieEntries)
             {
-                if (doFlash)
+                // Update flying zombie seedpackets
+                var chosenSeed = seedEntry.m_chosenSeed;
+                if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)
                 {
-                    FlashRequiredSeedType(seedEntry.m_chosenSeed);
+                    chosenSeed.mTimeInMotion += Time.deltaTime * 0.4f;
+                    if (chosenSeed.mTimeInMotion >= chosenSeed.mDurationOfMotion)
+                    {
+                        __instance.LandAllFlyingSeeds();
+                    }
                 }
-                else if (doResetFlash)
+
+                if (flash)
                 {
-                    seedEntry.m_chosenSeed.mFlashing = false;
+                    FlashRequiredSeedType(chosenSeed);
+                }
+                else if (resetFlash)
+                {
+                    chosenSeed.mFlashing = false;
                 }
 
                 // Update seed packet recommendation in chooser.
-                SetSeedPacketRecommendations(seedEntry, seedEntry.m_chosenSeed);
+                SetSeedPacketRecommendations(seedEntry, chosenSeed);
             }
 
-            if (doFlash)
+            if (flash)
             {
                 FlashRequiredTimer.Reset();
             }
+
+            return false;
         }
+
+        return true;
     }
 
     private static void FlashRequiredSeedType(ChosenSeed chosen)
