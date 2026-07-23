@@ -115,7 +115,7 @@ internal static class ArenaSelectorPanel
     }
 
     /// <summary>
-    /// Configures keyboard/controller navigation between the arena selection buttons and existing UI buttons.
+    /// Configures controller navigation between the arena selection buttons and existing UI buttons.
     /// </summary>
     /// <param name="VsSideChooser">The PanelView component containing the selection sets.</param>
     /// <param name="forward">The forward navigation button (typically "-->" arrow).</param>
@@ -128,12 +128,14 @@ internal static class ArenaSelectorPanel
 
         Navigation forwardNav = forward.navigation;
         forwardNav.selectOnLeft = back;
-        forwardNav.selectOnDown = others[2];
+        forwardNav.selectOnRight = back;
+        forwardNav.selectOnDown = others[3];
         forward.navigation = forwardNav;
 
         Navigation backNav = back.navigation;
+        backNav.selectOnLeft = forward;
         backNav.selectOnRight = forward;
-        backNav.selectOnDown = others[1];
+        backNav.selectOnDown = others[0];
         back.navigation = backNav;
 
         for (int i = 0; i < others.Length; i++)
@@ -141,7 +143,7 @@ internal static class ArenaSelectorPanel
             Button button = others[i];
             Navigation buttonNav = button.navigation;
 
-            if (i < 2)
+            if (i < 3)
             {
                 buttonNav.selectOnUp = back;
             }

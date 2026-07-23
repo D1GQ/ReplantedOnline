@@ -33,90 +33,117 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
-        // Only modify UI if we're in an online lobby
         if (!ReloadedLobby.AmInLobby()) return;
 
-        // Find the VS side chooser panel
         VsSideChooser = __instance.m_panels.FirstOrDefault(pan => pan.gameObject.name == "P_VsSideChooser");
-        if (VsSideChooser != null)
+        if (VsSideChooser == null) return;
+
+        VsSideChooser.gameObject.DestroyAllTextLocalizers();
+
+        InteractableBlocker = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/DisableInteraction")?.gameObject;
+        InteractableGamePad = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/SelectionSets_SidesChosenNavLayer")?.gameObject;
+
+        if (ReloadedLobby.AmLobbyHost())
         {
-            VsSideChooser.gameObject.DestroyAllTextLocalizers();
-
-            InteractableBlocker = VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/DisableInteraction")?.gameObject ?? null;
-            InteractableGamePad = VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/SelectionSets_SidesChosenNavLayer")?.gameObject ?? null;
-
-            if (ReloadedLobby.AmLobbyHost())
-            {
-                // Host gets all game mode options
-                VsSideChooser.SetVSButton("QuickPlay", () =>
-                {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Quickplay);
-                });
-                VsSideChooser.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
-
-                VsSideChooser.SetVSButton("Custom", () =>
-                {
-                    CustomPopupPanel.Show("Under Construction", "This game mode will be coming soon!");
-                });
-                VsSideChooser.SetVsButtonTitle("Custom", "Speed\nBattle");
-
-                // Temporarily disable on release builds 
-                VsSideChooser.SetVSButton("CustomAll", () =>
-                {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Custom);
-                });
-                VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
-
-                // Temporarily disable on release builds 
-                VsSideChooser.SetVSButton("Random", () =>
-                {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Random);
-                });
-
-                VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
-            }
-            else
-            {
-                // Non-host players wait for host to choose
-                VsSideChooser.RemoveSelectionButtons(); // Remove all selection buttons
-
-                InteractableBlocker?.transform?.localScale = new(10f, 10f, 10f); // Block all input as non host
-
-                VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerTop")?.gameObject?.SetActive(false);
-                VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
-            }
-
-            ArenaSelectorPanel.Create(VsSideChooser);
-            VersusLobbyManager.SetTextComps(VsSideChooser);
-            VersusLobbyManager.UpdateSideVisuals();
+            SetupHostUI(VsSideChooser);
         }
+        else
+        {
+            SetupClientUI(VsSideChooser);
+        }
+
+        ArenaSelectorPanel.Create(VsSideChooser);
+        VersusLobbyManager.SetTextComps(VsSideChooser);
+        VersusLobbyManager.UpdateSideVisuals();
+    }
+
+    private static void SetupHostUI(PanelView panelView)
+    {
+        panelView.SetVSButton("QuickPlay", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Quickplay));
+        panelView.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
+
+        panelView.RemoveVSButton("Custom");
+
+        panelView.SetVSButton("CustomAll", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Custom));
+        panelView.SetVsButtonTitle("CustomAll", "Custom\nBattle");
+
+        panelView.SetVSButton("Random", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Random));
+
+        FixNavigation(panelView);
+        panelView.transform.Find("Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
+    }
+
+    private static void SetupClientUI(PanelView panelView)
+    {
+        panelView.RemoveSelectionButtons();
+        InteractableBlocker?.transform?.localScale = new(10f, 10f, 10f);
+        panelView.transform.Find("Canvas/Layout/Center/Panel/ControllerTop")?.gameObject?.SetActive(false);
+        panelView.transform.Find("Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);
+    }
+
+    private static void FixNavigation(PanelView panelView)
+    {
+        var selectionSets = panelView.transform.Find("Canvas/Layout/Center/Panel/SelectionSets");
+        if (selectionSets == null) return;
+
+        Button[] buttons = selectionSets.GetComponentsInChildren<Button>();
+        if (buttons.Length < 3) return;
+
+        Button? quickPlay = buttons.FirstOrDefault(b => b.name.Contains("QuickPlay"));
+        Button? customAll = buttons.FirstOrDefault(b => b.name.Contains("CustomAll"));
+
+        if (quickPlay == null || customAll == null) return;
+
+        var quickNav = quickPlay.navigation;
+        quickNav.mode = Navigation.Mode.Explicit;
+        quickNav.selectOnRight = customAll;
+        quickPlay.navigation = quickNav;
+
+        var customNav = customAll.navigation;
+        customNav.mode = Navigation.Mode.Explicit;
+        customNav.selectOnLeft = quickPlay;
+        customAll.navigation = customNav;
     }
 
     [HarmonyPatch(typeof(BackgroundController), nameof(BackgroundController.Awake))]
     [HarmonyPostfix]
-    private static void PanelViewContainer_Awake_Postfix(BackgroundController __instance)
+    private static void BackgroundController_Awake_Postfix(BackgroundController __instance)
     {
-        if (!ReloadedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby() || VsSideChooser == null) return;
 
-        // Use Rip clouds as lobby background 
-        if (LobbyBackground == null && VsSideChooser != null)
+        if (LobbyBackground == null)
         {
-            LobbyBackground = UnityEngine.Object.Instantiate(__instance.transform.Find("Sky RIP").gameObject, VsSideChooser.transform.parent);
+            LobbyBackground = UnityEngine.Object.Instantiate(
+                __instance.transform.Find("Sky RIP").gameObject,
+                VsSideChooser.transform.parent
+            );
+
             LobbyBackground.SetActive(true);
+
             foreach (var spriteRenderer in LobbyBackground.transform.GetComponentsInChildren<SpriteRenderer>())
             {
                 spriteRenderer.sortingLayerID = 0;
             }
+
             LobbyBackground.transform.position = new Vector3(0f, 0f, -100f);
             LobbyBackground.transform.localScale = Vector3.one * 2f;
-            var lowerClouds = UnityEngine.Object.Instantiate(LobbyBackground.transform.Find("RIP SkySprites Parent/Clouds_RIP"), LobbyBackground.transform.Find("RIP SkySprites Parent"));
+
+            var lowerClouds = UnityEngine.Object.Instantiate(
+                LobbyBackground.transform.Find("RIP SkySprites Parent/Clouds_RIP"),
+                LobbyBackground.transform.Find("RIP SkySprites Parent")
+            );
             lowerClouds.transform.localPosition = new Vector3(0f, -900f, 0f);
         }
     }
 
-    internal static void HideLobbyBackground()
+    internal static void HideLobbyBackground() => LobbyBackground?.SetActive(false);
+
+    internal static void SetButtonsInteractable(bool interactable)
     {
-        LobbyBackground?.SetActive(false);
+        if (InteractableBlocker == null || InteractableGamePad == null) return;
+
+        InteractableBlocker.SetActive(!interactable);
+        InteractableGamePad.SetActive(interactable);
     }
 
     private static void SetVSButton(this PanelView panelView, string name, Action callback)
@@ -127,17 +154,19 @@ internal static class VersusLobbyPatch
     private static IEnumerator CoSetVSButton(PanelView panelView, string name, Action callback)
     {
         yield return new WaitForSeconds(0.5f);
-        var button = panelView?.transform?.Find($"Canvas/Layout/Center/Panel/SelectionSets/{name}")?.GetComponentInChildren<Button>(true);
-        if (button != null)
-        {
-            button.onClick = new();
-            button.onClick.AddListener(callback);
-            var bt = button.GetComponentInChildren<ButtonTransition>(true);
-            if (bt != null)
-            {
-                UnityEngine.Object.Destroy(bt);
-            }
-        }
+
+        var button = panelView?.transform
+            ?.Find($"Canvas/Layout/Center/Panel/SelectionSets/{name}")
+            ?.GetComponentInChildren<Button>(true);
+
+        if (button == null)
+            yield break;
+
+        button.onClick = new();
+        button.onClick.AddListener(callback);
+
+        var bt = button.GetComponentInChildren<ButtonTransition>(true);
+        if (bt != null) UnityEngine.Object.Destroy(bt);
     }
 
     private static void SetVsButtonTitle(this PanelView panelView, string name, string title)
@@ -148,30 +177,17 @@ internal static class VersusLobbyPatch
 
     private static void RemoveVSButton(this PanelView panelView, string name)
     {
-        // Remove specific game mode button
         var button = panelView.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/{name}")?.gameObject;
-        if (button != null)
-        {
-            UnityEngine.Object.Destroy(button);
-        }
+        if (button != null) UnityEngine.Object.Destroy(button);
     }
 
     private static void RemoveSelectionButtons(this PanelView panelView)
     {
-        // Remove all game mode selection buttons (for non-host players)
-        var buttons = panelView.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets")?.gameObject;
-        if (buttons != null)
-        {
-            UnityEngine.Object.Destroy(buttons);
-        }
-    }
+        var buttons = panelView.transform
+            .Find("Canvas/Layout/Center/Panel/SelectionSets")
+            ?.gameObject;
 
-    internal static void SetButtonsInteractable(bool interactable)
-    {
-        if (InteractableBlocker == null || InteractableGamePad == null) return;
-
-        InteractableBlocker.SetActive(!interactable);
-        InteractableGamePad.SetActive(interactable);
+        if (buttons != null) UnityEngine.Object.Destroy(buttons);
     }
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Confirm))]
@@ -225,8 +241,7 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void Cancel_Postfix(VersusPlayerModel __instance, bool __state)
     {
-        if (!__state) return;
-        if (ReloadedLobby.LobbyData == null) return;
+        if (!__state || ReloadedLobby.LobbyData == null) return;
 
         ReloadedLobby.LobbyData.HostTeam.Value = PlayerTeam.None;
     }
