@@ -9,7 +9,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
 internal sealed class DolphinRiderZombieConfig : IZombieConfig
 {
     /// <inheritdoc/>
-    public bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY)
+    public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY)
     {
         // Only in pool
         if (gridY is 2 or 3)

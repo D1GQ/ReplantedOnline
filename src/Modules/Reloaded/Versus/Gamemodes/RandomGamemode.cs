@@ -14,16 +14,16 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 /// <summary>
 /// Versus Gamemode that has random seed and zombie packets.
 /// </summary>
-[RegisterVersusGameMode]
+[RegisterVersusGamemode(VersusGamemodeType.Random)]
 internal sealed class RandomGamemode : IVersusGamemode
 {
     /// <summary>
     /// Defines seed type dependencies for the plant side based on the arena type, one random value seed will be added.
     /// </summary>
-    internal static readonly Dictionary<ArenaTypes[], SeedType[]> StartingPlantDependencies = new()
+    internal static readonly Dictionary<ArenaType[], SeedType[]> StartingPlantDependencies = new()
     {
-        { [ArenaTypes.Day, ArenaTypes.Night, ArenaTypes.Pool, ArenaTypes.PoolNight, ArenaTypes.China], [SeedType.Peashooter, SeedType.Repeater, SeedType.Snowpea, SeedType.Cabbagepult] },
-        { [ArenaTypes.Roof, ArenaTypes.RoofNight], [SeedType.Cabbagepult, SeedType.Kernelpult] }
+        { [ArenaType.Day, ArenaType.Night, ArenaType.Pool, ArenaType.PoolNight, ArenaType.China], [SeedType.Peashooter, SeedType.Repeater, SeedType.Snowpea, SeedType.Cabbagepult] },
+        { [ArenaType.Roof, ArenaType.RoofNight], [SeedType.Cabbagepult, SeedType.Kernelpult] }
     };
 
     /// <summary>
@@ -126,7 +126,7 @@ internal sealed class RandomGamemode : IVersusGamemode
             if (TryAddRequiredSeedType(plantSeedTypes, false))
                 continue;
 
-            if (TryAddStartingPlantSeedType(plantSeedTypes, VersusState.Arena))
+            if (TryAddStartingPlantSeedType(plantSeedTypes, VersusState.ArenaSynced))
                 continue;
 
             if (TryAddDependentPlantSeedType(plantSeedTypes, zombieSeedTypes))
@@ -256,7 +256,7 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <param name="plantSeedTypes">Current plant seeds. Will be modified if dependencies are found.</param>
     /// <param name="arenaType">The current arena type.</param>
     /// <returns>True if a dependent seed was added, otherwise false.</returns>
-    private static bool TryAddStartingPlantSeedType(List<SeedType> plantSeedTypes, ArenaTypes arenaType)
+    private static bool TryAddStartingPlantSeedType(List<SeedType> plantSeedTypes, ArenaType arenaType)
     {
         foreach (var (arenaTypes, dependentSeeds) in StartingPlantDependencies)
         {

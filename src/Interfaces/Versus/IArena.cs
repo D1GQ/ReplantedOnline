@@ -12,11 +12,6 @@ namespace ReplantedOnline.Interfaces.Versus;
 internal interface IArena
 {
     /// <summary>
-    /// Gets the type identifier for this arena.
-    /// </summary>
-    ArenaTypes Type { get; }
-
-    /// <summary>
     /// Gets the default spawn type for zombies in this arena.
     /// </summary>
     SpawnType DefaultZombieSpawnType { get; }
@@ -61,14 +56,6 @@ internal interface IArena
     /// <returns>The currently active IArena implementation, or null if no matching arena is found</returns>
     internal static IArena GetCurrentArena()
     {
-        foreach (var arena in RegisterArena.Instances)
-        {
-            if (arena.Type == VersusState.Arena)
-            {
-                return arena;
-            }
-        }
-
-        return default!;
+        return RegisterArena.GetInstanceFromLookup(VersusState.ArenaSynced)!;
     }
 }

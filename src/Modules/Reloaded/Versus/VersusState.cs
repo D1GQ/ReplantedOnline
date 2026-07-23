@@ -17,11 +17,6 @@ internal static class VersusState
     internal static VersusPhase VersusPhase => Instances.GameplayActivity?.VersusMode?.Phase ?? VersusPhase.PickSides;
 
     /// <summary>
-    /// Gets the current selection set being used for the versus match.
-    /// </summary>
-    internal static SelectionSet SelectionSet => Instances.GameplayActivity?.VersusMode?.SelectionSet ?? SelectionSet.QuickPlay;
-
-    /// <summary>
     /// Gets the amount of time the game mode has been going on, this vaule is synced between clients.
     /// </summary>
     internal static float VersusTimeSynced => Instances.GameplayActivity?.VersusMode?.m_versusTime ?? 0f;
@@ -52,9 +47,14 @@ internal static class VersusState
     internal static ID ZombieClientId => ReloadedClientData.GetZombieClient()?.ClientId ?? 0;
 
     /// <summary>
+    /// Gets the current gamemode type.
+    /// </summary>
+    internal static VersusGamemodeType GamemodeSynced => ReloadedLobby.LobbyData?.Gamemode ?? default;
+
+    /// <summary>
     /// Gets the current arena type.
     /// </summary>
-    internal static ArenaTypes Arena => ReloadedLobby.LobbyData?.Arena.Value ?? ArenaTypes.Day;
+    internal static ArenaType ArenaSynced => ReloadedLobby.LobbyData?.Arena.Value ?? ArenaType.Day;
 
     /// <summary>
     /// Gets when Versus Mode is in its gameplay state.

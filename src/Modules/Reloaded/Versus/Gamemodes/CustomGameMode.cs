@@ -18,7 +18,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 /// <summary>
 /// Versus Gamemode that allows the players to choose their seed and zombie packets.
 /// </summary>
-[RegisterVersusGameMode]
+[RegisterVersusGamemode(VersusGamemodeType.Custom)]
 internal sealed class CustomGamemode : IVersusGamemode
 {
     /// <inheritdoc/>

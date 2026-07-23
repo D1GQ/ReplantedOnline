@@ -498,7 +498,7 @@ internal static class SeedPacketDefinitions
 
         if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
         {
-            if (zombieType == ZombieType.Gravestone && VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+            if (zombieType == ZombieType.Gravestone && VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China)
             {
                 return SpawnType.FallFromSky;
             }
@@ -510,7 +510,7 @@ internal static class SeedPacketDefinitions
         var isForceXPos = ZombieSpawnsInBack(zombieType);
         if (isDefault && !isForceXPos)
         {
-            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
             {
                 if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
                 {
@@ -540,7 +540,7 @@ internal static class SeedPacketDefinitions
             return false;
         }
 
-        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.Arena, gridX, gridY))
+        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.ArenaSynced, gridX, gridY))
         {
             return false;
         }
@@ -603,7 +603,7 @@ internal static class SeedPacketDefinitions
 
         bungee.mBungeeTargetRenderOrder = bungee.RenderOrder;
 
-        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        if (VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight)
         {
             // Offset based off roof elevation 
             bungee.mImageOffsetY = Mathf.Lerp(80f, 0f, Mathf.Clamp01(bungee.mBoard.PixelToGridX(bungee.mPosX, bungee.mPosY) / 5f));

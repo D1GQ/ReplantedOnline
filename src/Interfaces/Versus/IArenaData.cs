@@ -34,13 +34,13 @@ internal interface IArenaData
         return GetLevelEntryData().EntryThumbnail.Asset.Cast<Sprite>();
     }
 
-    public static CustomRecommentedFlags GetDefaultRecommentedFlags(SeedType seedType, ArenaTypes arenaType)
+    public static CustomRecommentedFlags GetDefaultRecommentedFlags(SeedType seedType, ArenaType arenaType)
     {
         bool isNight = arenaType.IsArenaAtNight();
-        bool isCloudy = arenaType == ArenaTypes.CloudyDay;
-        bool isPool = arenaType is ArenaTypes.Pool or ArenaTypes.PoolNight;
-        bool isFog = arenaType == ArenaTypes.PoolNight;
-        bool hasNoDirt = arenaType is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China;
+        bool isCloudy = arenaType == ArenaType.CloudyDay;
+        bool isPool = arenaType is ArenaType.Pool or ArenaType.PoolNight;
+        bool isFog = arenaType == ArenaType.PoolNight;
+        bool hasNoDirt = arenaType is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China;
 
         if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
         {

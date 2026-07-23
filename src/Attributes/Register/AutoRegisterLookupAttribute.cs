@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
 using System.Reflection;
@@ -180,3 +181,15 @@ internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLooku
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<RegisterZombieConfig, IZombieConfig, ZombieType>(zombieType);
+
+/// <summary>
+/// Registers classes that implement IArena.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterArena(ArenaType arenaType) : AutoRegisterLookupAttribute<RegisterArena, IArena, ArenaType>(arenaType);
+
+/// <summary>
+/// Registers classes that implement IVersusGamemode.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class RegisterVersusGamemode(VersusGamemodeType gamemode) : AutoRegisterLookupAttribute<RegisterVersusGamemode, IVersusGamemode, VersusGamemodeType>(gamemode);

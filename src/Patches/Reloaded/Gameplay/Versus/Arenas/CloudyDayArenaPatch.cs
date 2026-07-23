@@ -15,7 +15,7 @@ internal static class CloudyDayArenaPatch
     [HarmonyPostfix]
     private static void Plant_PlantInitialize_Postfix(Plant __instance)
     {
-        if (VersusState.Arena != ArenaTypes.CloudyDay)
+        if (VersusState.ArenaSynced != ArenaType.CloudyDay)
             return;
 
         if (ReloadedLobby.AmInLobby())
@@ -31,7 +31,7 @@ internal static class CloudyDayArenaPatch
     [HarmonyPrefix]
     private static bool Plant_GetCost_Prefix(SeedType theSeedType, ref int __result)
     {
-        if (VersusState.Arena != ArenaTypes.CloudyDay)
+        if (VersusState.ArenaSynced != ArenaType.CloudyDay)
             return true;
 
         if (ReloadedLobby.AmInLobby())
@@ -55,7 +55,7 @@ internal static class CloudyDayArenaPatch
     [HarmonyPrefix]
     private static bool SeedChooserScreen_Update_Prefix(SeedType theSeedType, ref RecommentedFlags __result)
     {
-        if (VersusState.Arena != ArenaTypes.CloudyDay)
+        if (VersusState.ArenaSynced != ArenaType.CloudyDay)
             return true;
 
         if (ReloadedLobby.AmInLobby())

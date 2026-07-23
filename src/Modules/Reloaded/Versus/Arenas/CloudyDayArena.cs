@@ -13,12 +13,9 @@ using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.CloudyDay)]
 internal sealed class CloudyDayArena : IArena, IArenaData
 {
-    /// <inheritdoc/>
-    public ArenaTypes Type => ArenaTypes.CloudyDay;
-
     /// <inheritdoc/>
     public MusicTune Music => MusicTune.MinigameLoonboon;
 
@@ -41,7 +38,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     /// <inheritdoc/>
     public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.CloudyDay);
     }
 
     /// <inheritdoc/>
@@ -176,7 +173,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
 
     internal static void ApplyRefreshTimeReduction(SeedType seedType, ref int refreshTime)
     {
-        if (VersusState.Arena != ArenaTypes.CloudyDay)
+        if (VersusState.ArenaSynced != ArenaType.CloudyDay)
             return;
 
         if (VersusState.VersusTimeSynced <= 30f)

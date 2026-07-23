@@ -20,7 +20,7 @@ internal static class BoardPatch
         {
             if (_initLawnMowersInterval.Execute())
             {
-                if (VersusState.Arena == ArenaTypes.China)
+                if (VersusState.ArenaSynced == ArenaType.China)
                 {
                     if (ReloadedLobby.AmLobbyHost())
                     {

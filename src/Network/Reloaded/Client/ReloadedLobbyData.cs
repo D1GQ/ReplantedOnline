@@ -279,7 +279,12 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Gets or sets the currently selected arena for the game.
     /// </summary>
-    internal LobbyVar<ArenaTypes> Arena { get; } = new(nameof(Arena), ArenaTypes.Day);
+    internal LobbyVar<ArenaType> Arena { get; } = new(nameof(Arena), ArenaType.Day);
+
+    /// <summary>
+    /// Gets or sets the currently selected Gamemode for the game.
+    /// </summary>
+    internal VersusGamemodeType Gamemode { get; set; } = default;
 
     /// <summary>
     /// Indicates whether the client is ready to process network objects.
@@ -303,7 +308,8 @@ internal sealed class ReloadedLobbyData : IDisposable
         PickingSides.Value = false;
         HasStarted.Value = false;
         HostTeam.Value = PlayerTeam.None;
-        Arena.Value = ArenaTypes.Day;
+        Arena.Value = ArenaType.Day;
+        Gamemode = default;
         ReadyForNetworkObjects = false;
         ZombieLife = 3;
 

@@ -53,23 +53,23 @@ internal static class LevelEntries
     /// <summary>
     /// Configures the versus arena level based on the current lobby arena type.
     /// </summary>
-    internal static void SetupVersusArenaForGameplay(SelectionSet selectionSet)
+    internal static void SetupVersusArenaForGameplay(VersusGamemodeType gamemode)
     {
-        var arenaType = VersusState.Arena;
+        var arenaType = VersusState.ArenaSynced;
         foreach (var plantDefinition in Instances.GameplayActivity.m_dataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
             IArena.GetCurrentArena().SetSeedPacketDefinition(plantDefinition);
         }
 
         var versusLevel = GetLevel("Level-Versus");
-        var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
+        var arena = RegisterArena.GetInstanceFromLookup(arenaType);
         if (arena is IArenaData data && versusLevel != null)
         {
             data.SetupVersusLevel(versusLevel);
         }
 
         // Hide arena changing
-        if (selectionSet != SelectionSet.CustomAll)
+        if (gamemode != VersusGamemodeType.Custom)
         {
             Transitions.SetFade();
             Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.5f, Transitions.FadeIn));
@@ -110,7 +110,7 @@ internal static class LevelEntries
         DataModelUtils.UpdateGameplayBoard(Instances.GameplayActivity.RootModel, Instances.GameplayActivity.Board, Instances.GameplayActivity.m_seedChooserScreen);
 
         // Set up cloudy day
-        if (arenaType == ArenaTypes.CloudyDay)
+        if (arenaType == ArenaType.CloudyDay)
         {
             Instances.GameplayActivity.m_cloudyDayMode = new(Instances.GameplayActivity, ReloadedGameMode.CloudyDay);
             Instances.GameplayActivity.m_cloudyDayMode.m_weatherForecast.Clear();
@@ -118,7 +118,7 @@ internal static class LevelEntries
         }
 
         // Play selecting seeds music
-        if (selectionSet == SelectionSet.CustomAll)
+        if (gamemode == VersusGamemodeType.Custom)
         {
             Instances.GameplayActivity.Music.PlayMusic(MusicTune.ZenGarden, 0, 0);
         }

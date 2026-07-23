@@ -80,7 +80,7 @@ internal static class ArenaEvents
             if (zombie.IsDeadOrDying()) continue;
             if (zombie.mVelX <= 0f) continue;
             if (zombie.mPosX > 490f) continue;
-            if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
+            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
 
             PushBackZombie(zombie);
             NetworkManager.Rpc<PushBackZombieRpc>.Singleton.Send(zombie);
@@ -96,11 +96,11 @@ internal static class ArenaEvents
                     if (Instances.GameplayActivity.Board.GetGridItemAt(GridItemType.Crater, gridX, gridY) != null)
                         continue;
 
-                    if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight or ArenaTypes.China)
+                    if (VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China)
                     {
                         SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
                     }
-                    else if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+                    else if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
                     {
                         if (Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
                         {

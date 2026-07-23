@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS0162
 
 using HarmonyLib;
-using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using Il2CppSource.DataModels;
 using Il2CppSource.UI;
@@ -51,7 +50,7 @@ internal static class VersusLobbyPatch
                 // Host gets all game mode options
                 VsSideChooser.SetVSButton("QuickPlay", () =>
                 {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(SelectionSet.QuickPlay);
+                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Quickplay);
                 });
                 VsSideChooser.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
 
@@ -64,14 +63,14 @@ internal static class VersusLobbyPatch
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("CustomAll", () =>
                 {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(SelectionSet.CustomAll);
+                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Custom);
                 });
                 VsSideChooser.SetVsButtonTitle("CustomAll", "Custom\nBattle");
 
                 // Temporarily disable on release builds 
                 VsSideChooser.SetVSButton("Random", () =>
                 {
-                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(SelectionSet.Random);
+                    NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Random);
                 });
 
                 VsSideChooser.transform.Find($"Canvas/Layout/Center/Panel/ControllerBottom")?.gameObject?.SetActive(false);

@@ -3,7 +3,7 @@
 /// <summary>
 /// Specifies the different visual and gameplay variations for an arena.
 /// </summary>
-internal enum ArenaTypes
+internal enum ArenaType
 {
     /// <summary>
     /// Arena is set during daytime.

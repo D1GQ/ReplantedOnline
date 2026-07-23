@@ -20,7 +20,7 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class ArenaSelectorPanel
 {
-    private static readonly ArenaTypes[] DisabledArenas = [];
+    private static readonly ArenaType[] DisabledArenas = [];
 
     private static GameObject? Panel;
     private static Image? Preview;
@@ -84,7 +84,7 @@ internal static class ArenaSelectorPanel
             SetupNavigation(VsSideChooser, forward, back);
         }
 
-        SetPreview(VersusState.Arena);
+        SetPreview(VersusState.ArenaSynced);
     }
 
     /// <summary>
@@ -158,11 +158,11 @@ internal static class ArenaSelectorPanel
     /// Updates the preview image based on the specified arena type.
     /// </summary>
     /// <param name="arenaType">The arena type (Day or Night) to display a preview for.</param>
-    internal static void SetPreview(ArenaTypes arenaType)
+    internal static void SetPreview(ArenaType arenaType)
     {
         if (Panel == null || Preview == null) return;
 
-        var arena = RegisterArena.Instances.FirstOrDefault(a => a.Type == arenaType);
+        var arena = RegisterArena.GetInstanceFromLookup(arenaType);
         if (arena != null && arena is IArenaData data)
         {
             Preview.sprite = data.GetThumbnail();

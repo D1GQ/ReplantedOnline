@@ -12,12 +12,9 @@ using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.China)]
 internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
 {
-    /// <inheritdoc/>
-    public ArenaTypes Type => ArenaTypes.China;
-
     /// <inheritdoc/>
     public MusicTune Music => MusicTune.RoofGrazetheroof;
 
@@ -85,7 +82,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.China);
     }
 
     /// <inheritdoc/>

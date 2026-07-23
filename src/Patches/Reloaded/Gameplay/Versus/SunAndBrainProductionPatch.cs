@@ -77,7 +77,7 @@ internal static class SunAndBrainProductionPatch
                     return;
                 }
 
-                if (VersusState.Arena == ArenaTypes.CloudyDay && CloudyDayArena.IsRaining)
+                if (VersusState.ArenaSynced == ArenaType.CloudyDay && CloudyDayArena.IsRaining)
                 {
                     __instance.mPhaseCounter += 1;
                     return;

@@ -12,11 +12,11 @@ using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.Roof)]
 internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
 {
     /// <inheritdoc/>
-    public virtual ArenaTypes Type => ArenaTypes.Roof;
+    public virtual ArenaType Type => ArenaType.Roof;
 
     /// <inheritdoc/>
     public virtual MusicTune Music => MusicTune.RoofGrazetheroof;
@@ -88,6 +88,17 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
         if (seedType == SeedType.Spikeweed)
         {
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType is SeedType.Peashooter or SeedType.Repeater or SeedType.Snowpea or
+            SeedType.Threepeater or SeedType.Splitpea or SeedType.Starfruit)
+        {
+            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
+        }
+
+        if (seedType is SeedType.Puffshroom or SeedType.Scaredyshroom)
+        {
+            return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
         return IArenaData.GetDefaultRecommentedFlags(seedType, Type);

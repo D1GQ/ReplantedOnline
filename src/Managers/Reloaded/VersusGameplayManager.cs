@@ -53,7 +53,7 @@ internal class VersusGameplayManager
 
     internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)
     {
-        IVersusGamemode.GetCurrentGamemode()?.OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
+        IVersusGamemode.GetCurrentGamemode().OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
 
         if (winningTeam is PlayerTeam.Plants)
         {
@@ -140,16 +140,16 @@ internal class VersusGameplayManager
     {
         List<FlagZombieSpecialSpawn> zombies = [];
 
-        switch (VersusState.Arena)
+        switch (VersusState.ArenaSynced)
         {
-            case ArenaTypes.Night:
+            case ArenaType.Night:
                 zombies.Add(new(ZombieType.Pail, 15, 13)); // 15% -> 2% -> 0%
                 zombies.Add(new(ZombieType.Newspaper, 15, 10)); // 15% -> 5% -> 0%
                 zombies.Add(new(ZombieType.TrafficCone, 25, 10)); // 25% -> 15% -> 0%
                 break;
-            case ArenaTypes.Roof:
-            case ArenaTypes.RoofNight:
-            case ArenaTypes.China:
+            case ArenaType.Roof:
+            case ArenaType.RoofNight:
+            case ArenaType.China:
                 // Bungees ether takes a plant or drops another FlagZombieSpecialSpawn zombie type from this list
                 zombies.Add(new(ZombieType.Bungee, 75, 35)); // 75% -> 40% -> 5% | 15% chance to spawn normal bungee in FlagZombiePatch.cs
                 zombies.Add(new(ZombieType.Pail, 15, 10)); // 15% -> 5% -> 0%

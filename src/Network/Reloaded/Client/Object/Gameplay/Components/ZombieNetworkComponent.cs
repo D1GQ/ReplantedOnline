@@ -77,7 +77,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             }
         }
 
-        if (VersusState.Arena == ArenaTypes.PoolNight)
+        if (VersusState.ArenaSynced == ArenaType.PoolNight)
         {
             var gridX = PvZRUtils.ReloadedObjectXToGridX(Net.Zombie.mX);
             if (gridX >= Net.Zombie.mBoard.LeftFogColumn() &&

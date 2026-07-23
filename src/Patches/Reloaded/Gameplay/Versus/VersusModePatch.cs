@@ -23,7 +23,7 @@ internal static class VersusModePatch
             __instance.m_versusTime = -ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME;
             updateInterval.Reset();
             IArena.GetCurrentArena()?.InitializeArena(__instance);
-            IVersusGamemode.GetCurrentGamemode()?.OnGameplayStart(__instance);
+            IVersusGamemode.GetCurrentGamemode().OnGameplayStart(__instance);
             VersusGameplayManager.OnStart();
         }
 
@@ -42,7 +42,7 @@ internal static class VersusModePatch
         if (updateInterval.Execute())
         {
             IArena.GetCurrentArena()?.UpdateArena(__instance);
-            IVersusGamemode.GetCurrentGamemode()?.UpdateGameplay(__instance);
+            IVersusGamemode.GetCurrentGamemode().UpdateGameplay(__instance);
             VersusGameplayManager.Update();
         }
 

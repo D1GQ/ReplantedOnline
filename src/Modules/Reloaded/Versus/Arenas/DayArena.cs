@@ -8,12 +8,9 @@ using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.Day)]
 internal class DayArena : IArena, IArenaData
 {
-    /// <inheritdoc/>
-    public virtual ArenaTypes Type => ArenaTypes.Day;
-
     /// <inheritdoc/>
     public virtual MusicTune Music => MusicTune.MinigameLoonboon;
 
@@ -36,7 +33,7 @@ internal class DayArena : IArena, IArenaData
     /// <inheritdoc/>
     public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.Day);
     }
 
     /// <inheritdoc/>

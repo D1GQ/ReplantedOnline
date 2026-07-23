@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
@@ -15,14 +16,14 @@ using ReplantedOnline.Utilities.MelonLoader;
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
 [RegisterRpc(RpcType.StartGame)]
-internal sealed class StartGameRpc : IRpcMessage<SelectionSet>
+internal sealed class StartGameRpc : IRpcMessage<VersusGamemodeType>
 {
     /// <inheritdoc/>
-    public void Send(SelectionSet selectionSet)
+    public void Send(VersusGamemodeType gamemode)
     {
         var packetWriter = PacketWriter.Get();
-        packetWriter.WriteEnum(selectionSet);
-        if (selectionSet == SelectionSet.Random)
+        packetWriter.WriteEnum(gamemode);
+        if (gamemode == VersusGamemodeType.Random)
         {
             var zombieSeedTypes = RandomGamemode.PickZombieSeedPacketTypes();
             var plantSeedTypes = RandomGamemode.PickPlantSeedPacketTypes(zombieSeedTypes.AsReadOnly());
@@ -49,8 +50,8 @@ internal sealed class StartGameRpc : IRpcMessage<SelectionSet>
         // Only process StartGame RPCs from the actual lobby host
         if (sender.AmHost)
         {
-            var selectionSet = packetReader.ReadEnum<SelectionSet>();
-            if (selectionSet == SelectionSet.Random)
+            var gamemode = packetReader.ReadEnum<VersusGamemodeType>();
+            if (gamemode == VersusGamemodeType.Random)
             {
                 RandomGamemode.ChosenZombiesSeedTypes.Clear();
                 RandomGamemode.ChosenPlantSeedTypes.Clear();
@@ -71,9 +72,9 @@ internal sealed class StartGameRpc : IRpcMessage<SelectionSet>
             ReplantedOnlineMod.Logger.Msg(typeof(StartGameRpc), "Game Starting...");
 
             // Configure the game with the host's selected game mode
-            LevelEntries.SetupVersusArenaForGameplay(selectionSet);
-            Instances.GameplayActivity.VersusMode.SelectionSet = selectionSet;
-            IVersusGamemode.GetCurrentGamemode()?.OnGameModeStart(Instances.GameplayActivity.VersusMode);
+            ReloadedLobby.LobbyData?.Gamemode = gamemode;
+            LevelEntries.SetupVersusArenaForGameplay(gamemode);
+            IVersusGamemode.GetCurrentGamemode().OnGameModeStart(Instances.GameplayActivity.VersusMode);
             VersusLobbyPatch.HideLobbyBackground();
             InputManager.SetListeningForNewDevice(false);
         }

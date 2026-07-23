@@ -11,7 +11,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 /// <summary>
 /// Versus Gamemode that has preset of seed and zombie packets.
 /// </summary>
-[RegisterVersusGameMode]
+[RegisterVersusGamemode(VersusGamemodeType.Quickplay)]
 internal sealed class QuickplayGamemode : IVersusGamemode
 {
     /// <inheritdoc/>

@@ -2,7 +2,6 @@
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 
 namespace ReplantedOnline.Interfaces.Versus;
 
@@ -40,18 +39,9 @@ internal interface IVersusGamemode
     /// <summary>
     /// Retrieves the current versus gamemode.
     /// </summary>
-    /// <returns>
-    /// The appropriate IVersusGamemode implementation for the current selection:
-    /// Returns null if the SelectionSet doesn't match any known gamemode.
-    /// </returns>
-    internal static IVersusGamemode? GetCurrentGamemode()
+    /// <returns>The currently active IVersusGamemode implementation, or null if no matching arena is found</returns>
+    internal static IVersusGamemode GetCurrentGamemode()
     {
-        return VersusState.SelectionSet switch
-        {
-            SelectionSet.QuickPlay => RegisterVersusGameMode.GetInstance<QuickplayGamemode>(),
-            SelectionSet.Random => RegisterVersusGameMode.GetInstance<RandomGamemode>(),
-            SelectionSet.CustomAll => RegisterVersusGameMode.GetInstance<CustomGamemode>(),
-            _ => null,
-        };
+        return RegisterVersusGamemode.GetInstanceFromLookup(VersusState.GamemodeSynced)!;
     }
 }

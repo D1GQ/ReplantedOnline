@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.RoofNight)]
 internal sealed class RoofNightArena : RoofArena
 {
     /// <inheritdoc/>
-    public override ArenaTypes Type => ArenaTypes.RoofNight;
+    public override ArenaType Type => ArenaType.RoofNight;
 
     /// <inheritdoc/>
     public override MusicTune Music => MusicTune.NightMoongrains;

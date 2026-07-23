@@ -1,5 +1,4 @@
 ﻿using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Interfaces.Versus;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -90,15 +89,3 @@ internal abstract class AutoRegisterAttribute<T> : AutoRegisterAttribute where T
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 internal sealed class RegisterFastPacketResolver : AutoRegisterAttribute<IFastPacketResolver>;
-
-/// <summary>
-/// Registers classes that implement IArena.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterArena : AutoRegisterAttribute<IArena>;
-
-/// <summary>
-/// Registers classes that implement IVersusGamemode.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterVersusGameMode : AutoRegisterAttribute<IVersusGamemode>;

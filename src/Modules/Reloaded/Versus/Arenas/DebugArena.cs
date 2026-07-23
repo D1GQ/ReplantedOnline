@@ -13,7 +13,7 @@ using UnityEngine.InputSystem;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.Debug)]
 internal sealed class DebugArena : IArena, IArenaData
 {
     private enum DebugModes
@@ -33,9 +33,6 @@ internal sealed class DebugArena : IArena, IArenaData
     }
 
     private DebugModes Mode = DebugModes.Default;
-
-    /// <inheritdoc/>
-    public ArenaTypes Type => ArenaTypes.Debug;
 
     /// <inheritdoc/>
     public MusicTune Music => MusicTune.None;

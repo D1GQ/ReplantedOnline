@@ -14,11 +14,11 @@ using UnityEngine;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.Pool)]
 internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
 {
     /// <inheritdoc/>
-    public virtual ArenaTypes Type => ArenaTypes.Pool;
+    public virtual ArenaType Type => ArenaType.Pool;
 
     /// <inheritdoc/>
     public virtual MusicTune Music => MusicTune.PoolWaterygraves;

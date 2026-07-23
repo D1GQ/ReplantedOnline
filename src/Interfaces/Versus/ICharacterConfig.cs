@@ -53,7 +53,7 @@ internal interface ICharacterConfig
     /// <param name="gridX">The X grid coordinate (column)</param>
     /// <param name="gridY">The Y grid coordinate (row)</param>
     /// <returns>True if the seed can be placed at the specified location; false if any matching configuration disallows placement</returns>
-    internal static bool CanBePlacedAt(SeedType seedType, ArenaTypes arena, int gridX, int gridY)
+    internal static bool CanBePlacedAt(SeedType seedType, ArenaType arena, int gridX, int gridY)
     {
         if (!Challenge.IsZombieSeedType(seedType))
         {
@@ -95,7 +95,7 @@ internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterC
     /// <param name="gridX">The X grid coordinate (column)</param>
     /// <param name="gridY">The Y grid coordinate (row)</param>
     /// <returns>True if the character can be placed at the specified location; otherwise, false</returns>
-    bool CanBePlacedAt(ArenaTypes arena, int gridX, int gridY);
+    bool CanBePlacedAt(ArenaType arena, int gridX, int gridY);
 
     /// <summary>
     /// Called when a character is planted on the board.

@@ -6,11 +6,11 @@ using ReplantedOnline.Enums.Versus;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.PoolNight)]
 internal sealed class PoolNightArena : PoolArena
 {
     /// <inheritdoc/>
-    public override ArenaTypes Type => ArenaTypes.PoolNight;
+    public override ArenaType Type => ArenaType.PoolNight;
 
     /// <inheritdoc/>
     public override MusicTune Music => MusicTune.FogRigormormist;

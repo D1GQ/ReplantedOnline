@@ -344,12 +344,12 @@ internal static class PvZRUtils
         lawnMower.mLastPortalX = -1;
 
         // Determine mower type based on Arena
-        if (VersusState.Arena is ArenaTypes.Roof or ArenaTypes.RoofNight)
+        if (VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight)
         {
             lawnMower.mMowerType = LawnMowerType.Roof;
             lawnMower.mMowerState = LawnMowerState.Ready;
         }
-        else if (VersusState.Arena is ArenaTypes.Pool or ArenaTypes.PoolNight)
+        else if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
         {
             var groundType = lawnMower.mBoard.mPlantRow[row];
             if (groundType == PlantRowType.Pool)

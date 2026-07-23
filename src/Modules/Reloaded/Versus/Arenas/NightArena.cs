@@ -7,12 +7,9 @@ using ReplantedOnline.Interfaces.Versus;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
-[RegisterArena]
+[RegisterArena(ArenaType.Night)]
 internal sealed class NightArena : DayArena
 {
-    /// <inheritdoc/>
-    public override ArenaTypes Type => ArenaTypes.Night;
-
     /// <inheritdoc/>
     public override MusicTune Music => MusicTune.PuzzleCerebrawl;
 
@@ -37,7 +34,7 @@ internal sealed class NightArena : DayArena
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.Night);
     }
 
     /// <inheritdoc/>
