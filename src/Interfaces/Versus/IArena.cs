@@ -50,12 +50,23 @@ internal interface IArena
     /// <returns>True if the seed type can be placed at the specified location; otherwise, false</returns>
     bool CanBePlacedAt(SeedType seedType, int gridX, int gridY);
 
+    private static IArena? currentArenaCached;
+
+    /// <summary>
+    /// Captures the current arena instance from the registered arena lookup.
+    /// </summary>
+    internal static void CatchCurrentArena()
+    {
+        currentArenaCached = RegisterArena.GetInstanceFromLookup(VersusState.ArenaSynced)!;
+    }
+
     /// <summary>
     /// Retrieves the current active arena instance.
     /// </summary>
-    /// <returns>The currently active IArena implementation, or null if no matching arena is found</returns>
+    /// <returns>The currently active IArena implementation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no arena instance is cached.</exception>
     internal static IArena GetCurrentArena()
     {
-        return RegisterArena.GetInstanceFromLookup(VersusState.ArenaSynced)!;
+        return currentArenaCached!;
     }
 }

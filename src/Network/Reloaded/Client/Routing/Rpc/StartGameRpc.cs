@@ -73,6 +73,8 @@ internal sealed class StartGameRpc : IRpcMessage<VersusGamemodeType>
 
             // Configure the game with the host's selected game mode
             ReloadedLobby.LobbyData?.Gamemode = gamemode;
+            IArena.CatchCurrentArena();
+            IVersusGamemode.CatchCurrentGamemode();
             LevelEntries.SetupVersusArenaForGameplay(gamemode);
             IVersusGamemode.GetCurrentGamemode().OnGameModeStart(Instances.GameplayActivity.VersusMode);
             VersusLobbyPatch.HideLobbyBackground();

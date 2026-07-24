@@ -36,12 +36,22 @@ internal interface IVersusGamemode
     /// <param name="winningTeam">The team that won the match.</param>
     void OnGameplayEnd(VersusMode versusMode, PlayerTeam winningTeam);
 
+    private static IVersusGamemode? currentGamemodeCached;
+    /// <summary>
+    /// Captures the current gamemode instance from the registered gamemode lookup.
+    /// </summary>
+    internal static void CatchCurrentGamemode()
+    {
+        currentGamemodeCached = RegisterVersusGamemode.GetInstanceFromLookup(VersusState.GamemodeSynced)!;
+    }
+
     /// <summary>
     /// Retrieves the current versus gamemode.
     /// </summary>
-    /// <returns>The currently active IVersusGamemode implementation, or null if no matching arena is found</returns>
+    /// <returns>The currently active IVersusGamemode implementation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no gamemode instance is cached.</exception>
     internal static IVersusGamemode GetCurrentGamemode()
     {
-        return RegisterVersusGamemode.GetInstanceFromLookup(VersusState.GamemodeSynced)!;
+        return currentGamemodeCached!;
     }
 }

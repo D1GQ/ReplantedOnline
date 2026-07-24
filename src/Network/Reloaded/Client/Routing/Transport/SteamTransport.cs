@@ -67,15 +67,15 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== Lobby Data Methods =====
-    internal static readonly ConcurrentDictionary<string, string> SteamLobbyDataCatched = [];
+    internal static readonly ConcurrentDictionary<string, string> SteamLobbyDataCached = [];
     public string GetLobbyData(ID lobbyId, string pchKey)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
-            if (!SteamLobbyDataCatched.TryGetValue(pchKey, out var value))
+            if (!SteamLobbyDataCached.TryGetValue(pchKey, out var value))
             {
                 value = SteamMatchmaking.Internal.GetLobbyData(id, pchKey);
-                SteamLobbyDataCatched[pchKey] = value;
+                SteamLobbyDataCached[pchKey] = value;
             }
 
             return value;
@@ -88,7 +88,7 @@ internal sealed class SteamTransport : INetworkTransport
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
-            SteamLobbyDataCatched[pchKey] = pchValue;
+            SteamLobbyDataCached[pchKey] = pchValue;
             return SteamMatchmaking.Internal.SetLobbyData(id, pchKey, pchValue);
         }
 
@@ -98,7 +98,11 @@ internal sealed class SteamTransport : INetworkTransport
     public bool DeleteLobbyData(ID lobbyId, string pchKey)
     {
         if (lobbyId.TryGetSteamId(out SteamId id))
+        {
+            SteamLobbyDataCached.Remove(pchKey, out _);
             return SteamMatchmaking.Internal.DeleteLobbyData(id, pchKey);
+        }
+
         throw new ArgumentException("DeleteLobbyData requires a SteamId");
     }
 
@@ -110,15 +114,15 @@ internal sealed class SteamTransport : INetworkTransport
     }
 
     // ===== Lobby Member Data Methods =====
-    internal static readonly ConcurrentDictionary<SteamId, Dictionary<string, string>> SteamLobbyMemberDataCatched = [];
+    internal static readonly ConcurrentDictionary<SteamId, Dictionary<string, string>> SteamLobbyMemberDataCached = [];
     public string GetLobbyMemberData(ID lobbyId, ID clientId, string pchKey)
     {
         if (lobbyId.TryGetSteamId(out SteamId lid) && clientId.TryGetSteamId(out SteamId cid))
         {
-            if (!SteamLobbyMemberDataCatched.TryGetValue(cid, out var memberData))
+            if (!SteamLobbyMemberDataCached.TryGetValue(cid, out var memberData))
             {
                 memberData = [];
-                SteamLobbyMemberDataCatched[cid] = memberData;
+                SteamLobbyMemberDataCached[cid] = memberData;
             }
 
             if (!memberData.TryGetValue(pchKey, out var value))
@@ -138,10 +142,10 @@ internal sealed class SteamTransport : INetworkTransport
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
             var localClientId = SteamUser.Internal.GetSteamID();
-            if (!SteamLobbyMemberDataCatched.TryGetValue(localClientId, out var memberData))
+            if (!SteamLobbyMemberDataCached.TryGetValue(localClientId, out var memberData))
             {
                 memberData = [];
-                SteamLobbyMemberDataCatched[localClientId] = memberData;
+                SteamLobbyMemberDataCached[localClientId] = memberData;
             }
             memberData[pchKey] = pchValue;
             SteamMatchmaking.Internal.SetLobbyMemberData(id, pchKey, pchValue);
@@ -235,24 +239,27 @@ internal sealed class SteamTransport : INetworkTransport
         throw new ArgumentException("SetLobbyType requires a SteamId");
     }
 
-    internal static ID LobbyOwnerCatched = ID.Null;
+    internal static ID LobbyOwnerCached = ID.Null;
     public ID GetLobbyOwner(ID lobbyId)
     {
-        if (LobbyOwnerCatched != ID.Null)
+        if (LobbyOwnerCached != ID.Null)
         {
-            return LobbyOwnerCatched;
+            return LobbyOwnerCached;
         }
 
         if (lobbyId.TryGetSteamId(out SteamId id))
         {
             var owner = SteamMatchmaking.Internal.GetLobbyOwner(id);
-            LobbyOwnerCatched = owner.AsID();
-            return LobbyOwnerCatched;
+            LobbyOwnerCached = owner.AsID();
+            return LobbyOwnerCached;
         }
         throw new ArgumentException("GetLobbyOwner requires a SteamId");
     }
 
     public void Dispose()
     {
+        SteamLobbyDataCached.Clear();
+        SteamLobbyMemberDataCached.Clear();
+        LobbyOwnerCached = ID.Null;
     }
 }
