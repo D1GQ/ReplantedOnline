@@ -319,7 +319,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         var hostTeam = HostTeam.Value;
         if (hostTeam is PlayerTeam.None)
         {
-            VersusLobbyManager.ResetPlayerInput();
+            InputManager.ResetPlayerInput();
             UnsetAllTeams();
             VersusLobbyManager.UpdateSideVisuals();
         }
@@ -330,13 +330,13 @@ internal sealed class ReloadedLobbyData : IDisposable
             {
                 ReloadedClientData.LocalClient!.Team = hostTeam;
                 ReloadedClientData.OpponentClient?.Team = otherTeam;
-                VersusLobbyManager.SetPlayerInput(hostTeam);
+                InputManager.SetPlayerInput(hostTeam);
             }
             else
             {
                 ReloadedClientData.LocalClient!.Team = otherTeam;
                 ReloadedClientData.OpponentClient?.Team = hostTeam;
-                VersusLobbyManager.SetPlayerInput(otherTeam);
+                InputManager.SetPlayerInput(otherTeam);
             }
 
             VersusLobbyManager.UpdateSideVisuals();

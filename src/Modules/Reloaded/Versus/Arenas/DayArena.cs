@@ -33,7 +33,7 @@ internal class DayArena : IArena, IArenaData
     /// <inheritdoc/>
     public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.Day);
+        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.Day);
     }
 
     /// <inheritdoc/>

@@ -34,7 +34,7 @@ internal sealed class NightArena : DayArena
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.Night);
+        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.Night);
     }
 
     /// <inheritdoc/>

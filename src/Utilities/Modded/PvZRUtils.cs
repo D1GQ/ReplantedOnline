@@ -8,7 +8,6 @@ using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -177,14 +176,17 @@ internal static class PvZRUtils
     /// </returns>
     internal static PlayerTeam GetSeedBankTeam(this SeedBank seedBank)
     {
-        if (ReloadedClientData.LocalClient!.Team == PlayerTeam.Zombies)
+        if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == seedBank.PlayerIndex)
         {
-            return seedBank.PlayerIndex == ReplantedOnlineMod.Constants.Reloaded.OPPONENT_PLAYER_INDEX ? PlayerTeam.Plants : PlayerTeam.Zombies;
+            return PlayerTeam.Plants;
         }
-        else
+
+        if (Instances.GameplayActivity.VersusMode.ZombiePlayerIndex == seedBank.PlayerIndex)
         {
-            return seedBank.PlayerIndex == ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX ? PlayerTeam.Plants : PlayerTeam.Zombies;
+            return PlayerTeam.Zombies;
         }
+
+        return PlayerTeam.None;
     }
 
     /// <summary>
@@ -341,19 +343,20 @@ internal static class PvZRUtils
     /// <returns><c>true</c> if the seed type is found in either seed bank; otherwise, <c>false</c>.</returns>
     internal static bool IsSeedTypeInAnySeedBank(SeedType seedType)
     {
-        foreach (var seedPacket in GetPlantSeedBankInfo().mSeedBank.SeedPackets)
+        foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
         {
-            if (seedPacket.mPacketType == seedType)
-            {
-                return true;
-            }
-        }
+            if (bankInfo?.mSeedBank == null)
+                continue;
 
-        foreach (var seedPacket in GetZombieSeedBankInfo().mSeedBank.SeedPackets)
-        {
-            if (seedPacket.mPacketType == seedType)
+            foreach (var seedPacket in bankInfo.mSeedBank.SeedPackets)
             {
-                return true;
+                if (seedPacket == null)
+                    continue;
+
+                if (seedPacket.mPacketType == seedType)
+                {
+                    return true;
+                }
             }
         }
 

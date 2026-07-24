@@ -28,6 +28,8 @@ internal static class SeedChooserPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
+            FlashRequiredTimer.Reset();
+
             // Add all the seeds that are in the seed chooser screen, instead of just the ones that are in the seed chooser data model
             SeedChooserEntries.Clear();
             __instance.m_entriesModel.Clear();
@@ -175,6 +177,9 @@ internal static class SeedChooserPatch
 
             foreach (var seedEntry in SeedChooserEntries)
             {
+                if (seedEntry == null)
+                    continue;
+
                 // Update flying plant seedpackets
                 var chosenSeed = seedEntry.m_chosenSeed;
                 if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)
@@ -201,6 +206,9 @@ internal static class SeedChooserPatch
 
             foreach (var seedEntry in SeedChooserZombieEntries)
             {
+                if (seedEntry == null)
+                    continue;
+
                 // Update flying zombie seedpackets
                 var chosenSeed = seedEntry.m_chosenSeed;
                 if (chosenSeed.mSeedState == ChosenSeedState.SeedFlyingToBank && chosenSeed.mFlying)

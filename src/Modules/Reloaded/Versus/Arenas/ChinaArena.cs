@@ -82,7 +82,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.China);
+        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.China);
     }
 
     /// <inheritdoc/>

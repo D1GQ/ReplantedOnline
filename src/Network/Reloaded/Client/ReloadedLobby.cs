@@ -157,7 +157,7 @@ internal static class ReloadedLobby
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Restarting the lobby");
         ReloadedClientData.LocalClient?.Ready.Value = false;
         DiscordManager.OnLobbyRestart();
-        VersusLobbyManager.ResetPlayerInput();
+        InputManager.ResetPlayerInput();
         InputManager.SetListeningForNewDevice(true);
         LobbyData!.UnsetAllTeams();
         LobbyData.LocalDespawnAll();

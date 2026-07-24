@@ -101,7 +101,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArena.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

@@ -38,7 +38,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     /// <inheritdoc/>
     public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
     {
-        return IArenaData.GetDefaultRecommentedFlags(seedType, ArenaType.CloudyDay);
+        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.CloudyDay);
     }
 
     /// <inheritdoc/>

@@ -285,43 +285,4 @@ internal static class VersusLobbyManager
         PickSides?.SetText(DefaultHeaderText);
         CopyingLobbyCode = false;
     }
-
-    /// <summary>
-    /// Set player input mappings based on their assigned side (zombie or plant).
-    /// </summary>
-    internal static void SetPlayerInput(PlayerTeam team)
-    {
-        ResetPlayerInput();
-
-        var versusData = Instances.VersusDataModel;
-        var gameplayActivity = Instances.GameplayActivity;
-        if (versusData != null && gameplayActivity != null)
-        {
-            if (team is PlayerTeam.Zombies)
-            {
-                Instances.VersusDataModel.m_player1Model.m_isZombiesModel.Value = true;
-                gameplayActivity.VersusMode.ZombiePlayerIndex = ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX;
-                versusData.UpdateZombiesPlayer("input1", "input1", ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
-            }
-            else if (team is PlayerTeam.Plants)
-            {
-                Instances.VersusDataModel.m_player1Model.m_isPlantsModel.Value = true;
-                gameplayActivity.VersusMode.PlantPlayerIndex = ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX;
-                versusData.UpdatePlantsPlayer("input1", "input1", ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
-            }
-        }
-    }
-
-    /// <summary>
-    /// reset player input mappings to default values.
-    /// </summary>
-    internal static void ResetPlayerInput()
-    {
-        Instances.VersusDataModel?.m_player1Model?.m_isZombiesModel?.Value = false;
-        Instances.VersusDataModel?.m_player1Model?.m_isPlantsModel?.Value = false;
-        Instances.GameplayActivity?.VersusMode?.ZombiePlayerIndex = ReplantedOnlineMod.Constants.Reloaded.DEFAULT_PLAYER_INDEX;
-        Instances.GameplayActivity?.VersusMode?.PlantPlayerIndex = ReplantedOnlineMod.Constants.Reloaded.DEFAULT_PLAYER_INDEX;
-        Instances.VersusDataModel?.UpdateZombiesPlayer("default", "input1", ReplantedOnlineMod.Constants.Reloaded.DEFAULT_PLAYER_INDEX);
-        Instances.VersusDataModel?.UpdatePlantsPlayer("default", "input1", ReplantedOnlineMod.Constants.Reloaded.DEFAULT_PLAYER_INDEX);
-    }
 }

@@ -76,7 +76,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.Required | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArenaData.GetDefaultRecommentedFlags(seedType, Type);
+        return IArena.GetDefaultRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>
