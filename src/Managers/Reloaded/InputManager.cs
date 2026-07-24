@@ -1,4 +1,7 @@
-﻿using ReplantedOnline.Modules.Modded.Instance;
+﻿using Il2CppReloaded.Input;
+using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded.Versus;
+using UnityEngine.InputSystem;
 
 namespace ReplantedOnline.Managers.Reloaded;
 
@@ -31,6 +34,40 @@ internal static class InputManager
         else
         {
             playerInput.Player.DeactivateInput();
+        }
+    }
+
+    /// <summary>
+    /// Update input listening.
+    /// </summary>
+    internal static void Update()
+    {
+        if (VersusState.AmPlantSide)
+        {
+            if (VersusState.IsInGameplay)
+            {
+                // Add shovel keybinds for keyboard and mouse
+                if (Instances.GameplayActivity.InputService.CurrentControlType == ControlType.MKB)
+                {
+                    if (Keyboard.current.backquoteKey.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame)
+                    {
+                        if (!Instances.GameplayDataProvider.m_boardToolsModel.m_shovelModel.IsSelected)
+                        {
+                            Instances.GameplayDataProvider.m_boardToolsModel.SetSelected(
+                                Instances.GameplayDataProvider.m_boardToolsModel.m_shovelModel,
+                                ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+
+                            // Add double audio like base game
+                            Instances.GameplayActivity.m_audioService.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_SHOVEL);
+                        }
+                        else
+                        {
+                            Instances.GameplayDataProvider.m_boardToolsModel.ClearSelected(
+                                ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX);
+                        }
+                    }
+                }
+            }
         }
     }
 }

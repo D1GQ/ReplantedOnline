@@ -4,6 +4,7 @@ using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Managers.Modded;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -119,6 +120,7 @@ internal partial class ReplantedOnlineMod : MelonMod
         if (LoadFailed == true) return;
         if (!loaded) return;
 
+        InputManager.Update();
         PatchManager.UpdatePatchs();
         DiscordManager.Update();
         LobbyCodePanel.ValidateText();
