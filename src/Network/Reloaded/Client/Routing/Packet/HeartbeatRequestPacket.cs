@@ -13,7 +13,7 @@ internal sealed class HeartbeatRequestPacket : IPacketMessage<uint>
     {
         PacketWriter packetWriter = PacketWriter.Get();
         packetWriter.WriteUInt(timeStamp);
-        NetworkManager.SendPacket(packetWriter, PacketType.HeartbeatRequest, PacketChannel.Rpc, false, false);
+        NetworkManager.SendPacket(packetWriter, PacketType.HeartbeatRequest, PacketChannel.Buffered, false, false);
         packetWriter.Recycle();
     }
 

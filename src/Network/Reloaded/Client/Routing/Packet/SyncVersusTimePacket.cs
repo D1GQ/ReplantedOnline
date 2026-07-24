@@ -14,7 +14,7 @@ internal sealed class SyncVersusTimePacket : IPacketMessage<float>
     {
         PacketWriter packetWriter = PacketWriter.Get();
         packetWriter.WriteFloat(time);
-        NetworkManager.SendPacket(packetWriter, PacketType.SyncVersusTime, PacketChannel.Rpc, false, false);
+        NetworkManager.SendPacket(packetWriter, PacketType.SyncVersusTime, PacketChannel.Buffered, false, false);
         packetWriter.Recycle();
     }
 

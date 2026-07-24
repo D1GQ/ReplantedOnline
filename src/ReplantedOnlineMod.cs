@@ -1,11 +1,9 @@
 ﻿#pragma warning disable CS0162
 
 using MelonLoader;
-using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Managers.Modded;
-using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -16,8 +14,7 @@ using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Github;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Patches.Misc;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+using ReplantedOnline.Patches;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
 
@@ -28,8 +25,6 @@ namespace ReplantedOnline;
 /// </summary>
 internal partial class ReplantedOnlineMod : MelonMod
 {
-    private static readonly HarmonyLib.Harmony harmony = new(ModInfo.MOD_GUID);
-
     internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""));
     internal static MelonLogger.Instance DebugLogger { get; } = new(ModInfo.MOD_NAME.Replace(" ", "") + "Debug");
 
@@ -66,11 +61,12 @@ internal partial class ReplantedOnlineMod : MelonMod
 
         try
         {
-            harmony.PatchAll();
-            DebugLoggerPatch.Patch(harmony);
-            Il2CppInteropExceptionLogPatch.Patch(harmony);
-            DetourHookAttribute.InstallAll();
-            NativeDetourHook.InstallAll();
+            if (!PatchManager.PatchAll())
+            {
+                LoadFailed = true;
+                return;
+            }
+
             AutoRegisterAttribute.RegisterAll();
             NetworkObject.InitializePrefabs();
             RpcHandlerAttribute.Initialize();
@@ -92,16 +88,9 @@ internal partial class ReplantedOnlineMod : MelonMod
     {
         if (LoadFailed == true) return;
 
-        // Fix constant "Memory Access Violations" on older versions of Unity Explorer!
-        // I personally prefer using this older version because it allows to access custom classes https://github.com/sinai-dev/UnityExplorer
-        try
-        {
-            UniverseLibPatch.Patch(harmony);
-        }
-        catch (Exception ex)
+        if (!PatchManager.PatchAllLate())
         {
             LoadFailed = true;
-            Logger.BigError(typeof(ReplantedOnlineMod), ex.ToString());
         }
     }
 
@@ -130,13 +119,9 @@ internal partial class ReplantedOnlineMod : MelonMod
         if (LoadFailed == true) return;
         if (!loaded) return;
 
+        PatchManager.UpdatePatchs();
         DiscordManager.Update();
         LobbyCodePanel.ValidateText();
-
-        if (Instances.GameplayActivity?.SeedChooserScreen != null)
-        {
-            SeedChooserPatch.UpdateSeedChooserScreen(Instances.GameplayActivity.SeedChooserScreen);
-        }
     }
 
     public override void OnApplicationQuit()

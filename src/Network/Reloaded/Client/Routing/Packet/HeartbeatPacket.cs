@@ -14,7 +14,7 @@ internal sealed class HeartbeatPacket : IPacketMessage<ID, uint>
     {
         PacketWriter packetWriter = PacketWriter.Get();
         packetWriter.WriteUInt(timeStamp);
-        NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.Heartbeat, PacketChannel.Rpc, false);
+        NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.Heartbeat, PacketChannel.Buffered, false);
         packetWriter.Recycle();
     }
 

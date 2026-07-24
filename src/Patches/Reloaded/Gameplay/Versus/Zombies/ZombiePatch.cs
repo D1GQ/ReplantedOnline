@@ -6,13 +6,14 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
 [HarmonyPatch]
 internal static class ZombiePatch
 {
+    private static readonly Zombie UnusedZombie = new();
+
     [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
     [HarmonyPrefix]
     private static bool Board_AddZombieInRow_Prefix(ref Zombie __result)
@@ -20,7 +21,7 @@ internal static class ZombiePatch
         if (ReloadedLobby.AmInLobby() && VersusState.IsInGameplay)
         {
             // Remove normal zombie spawning from gameplay
-            __result = ObjectUtils.CreateReloadedObject<Zombie>();
+            __result = UnusedZombie;
             return false;
         }
 

@@ -160,8 +160,11 @@ internal static class SeedChooserPatch
     }
 
     private static readonly UnityTimer FlashRequiredTimer = new();
-    internal static void UpdateSeedChooserScreen(SeedChooserScreen seedChooserScreen)
+    internal static void UpdateSeedChooserScreen(SeedChooserScreen? seedChooserScreen)
     {
+        if (seedChooserScreen == null)
+            return;
+
         if (ReloadedLobby.AmInLobby())
         {
             if (VersusState.VersusPhase is not (VersusPhase.ChoosePlantPacket or VersusPhase.ChooseZombiePacket))
@@ -289,6 +292,9 @@ internal static class SeedChooserPatch
     [HarmonyPostfix]
     private static void VSTooltipHider_Update_Postfix(VSTooltipHider __instance)
     {
+        if (VersusState.VersusPhase is not (VersusPhase.ChoosePlantPacket or VersusPhase.ChooseZombiePacket))
+            return;
+
         var seedPacket = __instance.transform;
         var grid = seedPacket.parent;
         var seedChooser = grid.parent;
