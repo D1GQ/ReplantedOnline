@@ -4,10 +4,12 @@ using Il2CppReloaded.Utils;
 using Il2CppSource.Controllers;
 using Il2CppSpine.Unity;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -227,6 +229,55 @@ internal static class PvZRUtils
         }
 
         throw new Exception("Unable to find zombie seed bank.");
+    }
+
+    /// <summary>
+    /// Sets the disabled state of a seed packet and updates its visual cross indicator.
+    /// </summary>
+    /// <param name="seedBank">The seed bank containing the seed packet.</param>
+    /// <param name="seedPacket">The seed packet to modify.</param>
+    /// <param name="disable">True to disable the packet; false to enable it.</param>
+    internal static void SetSeedPacketDisabled(this SeedBank seedBank, SeedPacket seedPacket, bool disable)
+    {
+        var seedPacketGo = GetSeedPacketGameObjectInBank(seedBank, seedPacket);
+        if (seedPacketGo == null)
+            return;
+
+        if (disable)
+        {
+            seedPacket.mActive = true;
+            seedPacket.mRefreshCounter = 0;
+            seedPacket.mRefreshTime = int.MaxValue;
+            seedPacket.mRefreshing = true;
+            seedPacketGo.transform.Find("Cross").gameObject.SetActive(true);
+        }
+        else
+        {
+            seedPacket.mRefreshing = true;
+            seedPacket.mRefreshCounter = 0;
+            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
+            seedPacket.mActive = false;
+            seedPacketGo.transform.Find("Cross").gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Gets the GameObject representing a seed packet in the specified seed bank.
+    /// </summary>
+    /// <param name="seedBank">The seed bank containing the packet.</param>
+    /// <param name="seedPacket">The seed packet to locate.</param>
+    /// <returns>The GameObject if found; otherwise, null.</returns>
+    internal static GameObject? GetSeedPacketGameObjectInBank(this SeedBank seedBank, SeedPacket seedPacket)
+    {
+        var team = seedBank.GetSeedBankTeam();
+        if (team == PlayerTeam.Plants)
+        {
+            return VersusHudPatch.GetPlantSeedPacket(seedPacket.Index);
+        }
+        else
+        {
+            return VersusHudPatch.GetZombieSeedPacket(seedPacket.Index);
+        }
     }
 
     /// <summary>

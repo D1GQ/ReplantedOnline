@@ -106,6 +106,30 @@ internal static class VersusHudPatch
             SetUnknownCount(plantBinder);
             SetUnknownCount(zombieBinder);
         }
+
+        SetupSeedPacketCross();
+    }
+
+    private static void SetupSeedPacketCross()
+    {
+        if (plantHud == null || zombieHud == null)
+            return;
+
+        var plantCross = plantHud.transform.Find("SeedBankContainer/SeedBank/SeedPacks_Layout/Cross");
+        var plantSeedpacketPrefab = plantHud.transform.Find("SeedBankContainer/SeedBank/SeedPacks_Layout/P_GamePlay_SeedChooser_Item");
+        if (plantCross != null && plantSeedpacketPrefab != null)
+        {
+            plantCross.SetParent(plantSeedpacketPrefab);
+            plantCross.Cast<RectTransform>().anchoredPosition3D = new(100f, -125f, 0f);
+        }
+
+        var zombieCross = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/Cross");
+        var zombieSeedpacketPrefab = zombieHud.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout/P_GamePlay_SeedChooser_Item");
+        if (zombieCross != null && zombieSeedpacketPrefab != null)
+        {
+            zombieCross.SetParent(zombieSeedpacketPrefab);
+            zombieCross.Cast<RectTransform>().anchoredPosition3D = new(100f, -125f, 0f);
+        }
     }
 
     private static void SetUnknownCount(NumberLabelBinder? binder)
@@ -115,5 +139,15 @@ internal static class VersusHudPatch
 
         binder.m_formatString = "???";
         binder.BindNumber(0);
+    }
+
+    internal static GameObject? GetPlantSeedPacket(int index)
+    {
+        return plantHud?.transform.Find("SeedBankContainer/SeedBank/SeedPacks_Layout")?.GetChild(index + 2)?.gameObject;
+    }
+
+    internal static GameObject? GetZombieSeedPacket(int index)
+    {
+        return zombieHud?.transform.Find("VersusBankContainer/P_VsZombiePacks_Layout")?.GetChild(index + 2)?.gameObject;
     }
 }

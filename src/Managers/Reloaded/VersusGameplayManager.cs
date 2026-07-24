@@ -5,7 +5,6 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -18,10 +17,9 @@ namespace ReplantedOnline.Managers.Reloaded;
 /// </summary>
 internal class VersusGameplayManager
 {
-    internal static void OnStart()
+    internal static void OnStart(VersusMode versusMode)
     {
-        VersusHudPatch.SetHuds();
-
+        isInSuddenDeath = false;
         List<SeedPacket> allSeedPackets =
         [
             .. Instances.GameplayActivity.Board.SeedBanks.LocalItem().SeedPackets,
@@ -47,6 +45,28 @@ internal class VersusGameplayManager
         }));
 
         ReloadedLobby.LobbyData?.ReadyForNetworkObjects = true;
+    }
+
+    private static bool isInSuddenDeath;
+    internal static void Update(VersusMode versusMode)
+    {
+        if (!isInSuddenDeath)
+        {
+            if (VersusState.VersusTimeSynced >= VersusMode.k_suddenDeathStartTime)
+            {
+                isInSuddenDeath = true;
+                foreach (var seedBank in versusMode.m_board.SeedBanks.m_values)
+                {
+                    foreach (var seedPacket in seedBank.mSeedPackets)
+                    {
+                        if (!SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedPacket.PacketType))
+                            continue;
+
+                        seedBank.SetSeedPacketDisabled(seedPacket, true);
+                    }
+                }
+            }
+        }
     }
 
     internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)

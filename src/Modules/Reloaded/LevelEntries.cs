@@ -7,6 +7,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -122,6 +123,8 @@ internal static class LevelEntries
         {
             Instances.GameplayActivity.Music.PlayMusic(MusicTune.ZenGarden, 0, 0);
         }
+
+        VersusHudPatch.SetHuds();
     }
 
     /// <summary>

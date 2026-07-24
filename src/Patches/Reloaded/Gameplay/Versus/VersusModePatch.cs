@@ -24,7 +24,7 @@ internal static class VersusModePatch
             updateInterval.Reset();
             IArena.GetCurrentArena()?.InitializeArena(__instance);
             IVersusGamemode.GetCurrentGamemode().OnGameplayStart(__instance);
-            VersusGameplayManager.OnStart();
+            VersusGameplayManager.OnStart(__instance);
         }
 
         __state = __instance.m_versusTime;
@@ -41,6 +41,7 @@ internal static class VersusModePatch
 
         if (updateInterval.Execute())
         {
+            VersusGameplayManager.Update(__instance);
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode().UpdateGameplay(__instance);
         }
