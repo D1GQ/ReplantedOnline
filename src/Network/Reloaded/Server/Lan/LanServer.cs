@@ -406,9 +406,9 @@ internal sealed class LanServer : IDisposable
         if (iPEndPoint == null) return;
 
         var writer = PacketWriter.Get();
-        writer.AddTag(PacketType.Server);
-        writer.WriteEnum(serverPacket);
+        writer.StartSubpacket((byte)serverPacket);
         writer.WritePacketToBuffer(packetWriter);
+        writer.EndSubpacket();
         var buffer = writer.GetByteBuffer();
         writer.Recycle();
 
@@ -530,24 +530,30 @@ internal sealed class LanServer : IDisposable
         var packetReader = PacketReader.Get(buffer);
         var senderId = new ID(remoteEndPoint, IdType.IPEndPoint);
 
-        if (packetReader.GetTag() != PacketType.Server) return;
-
-        var serverPacket = packetReader.ReadEnum<ServerPacket>();
-
-        switch (serverPacket)
+        try
         {
-            case ServerPacket.HandshakeRequest: ProcessHandshakeRequest(senderId, remoteEndPoint, packetReader); break;
-            case ServerPacket.HandshakeAccept: ProcessHandshakeAccept(senderId, packetReader); break;
-            case ServerPacket.HandshakeReject: ProcessHandshakeReject(senderId, packetReader); break;
-            case ServerPacket.HandshakeLeave: ProcessHandshakeLeave(senderId); break;
-            case ServerPacket.SyncMembers: ProcessSyncMembers(senderId, packetReader); break;
-            case ServerPacket.Rpc: ProcessRPC(senderId, packetReader); break;
-            case ServerPacket.LobbyData: ProcessLobbyData(senderId, packetReader); break;
-            case ServerPacket.LobbyDataUpdate: ProcessLobbyDataUpdate(senderId, packetReader); break;
-            case ServerPacket.MemberData: ProcessMemberData(senderId, packetReader); break;
-        }
+            while (packetReader.NextSubpacket())
+            {
+                var serverPacket = (ServerPacket)packetReader.SubpacketTag;
 
-        packetReader.Recycle();
+                switch (serverPacket)
+                {
+                    case ServerPacket.HandshakeRequest: ProcessHandshakeRequest(senderId, remoteEndPoint, packetReader); break;
+                    case ServerPacket.HandshakeAccept: ProcessHandshakeAccept(senderId, packetReader); break;
+                    case ServerPacket.HandshakeReject: ProcessHandshakeReject(senderId, packetReader); break;
+                    case ServerPacket.HandshakeLeave: ProcessHandshakeLeave(senderId); break;
+                    case ServerPacket.SyncMembers: ProcessSyncMembers(senderId, packetReader); break;
+                    case ServerPacket.Rpc: ProcessRPC(senderId, packetReader); break;
+                    case ServerPacket.LobbyData: ProcessLobbyData(senderId, packetReader); break;
+                    case ServerPacket.LobbyDataUpdate: ProcessLobbyDataUpdate(senderId, packetReader); break;
+                    case ServerPacket.MemberData: ProcessMemberData(senderId, packetReader); break;
+                }
+            }
+        }
+        finally
+        {
+            packetReader.Recycle();
+        }
     }
 
     /// <summary>

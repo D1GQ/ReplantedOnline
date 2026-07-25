@@ -1,5 +1,4 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -21,12 +20,15 @@ internal sealed class PacketReader : IPacket
 {
     private byte[] _data = [];
     private int _position = 0;
+    private int _subpacketEnd = 0;
     private static readonly PoolableObjects<PacketReader> _pool = new(10);
 
     /// <summary>
     /// Gets the number of bytes remaining to be read in the packet.
     /// </summary>
     internal int Remaining => _data.Length - _position;
+
+    internal byte SubpacketTag { get; private set; }
 
     /// <summary>
     /// Retrieves a PacketReader instance from the pool or creates a new one, initialized with the provided data.
@@ -42,12 +44,30 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Reads the packet tag from the current position.
+    /// Moves to the next sub-packet in the current packet stream.
     /// </summary>
-    /// <returns>The PacketTag identifying the packet type.</returns>
-    internal PacketType GetTag()
+    /// <returns>True if a sub-packet was found and the reader is positioned at its start; otherwise, false.</returns>
+    internal bool NextSubpacket()
     {
-        return (PacketType)ReadByte();
+        _position = _subpacketEnd;
+
+        if (Remaining < 3)
+            return false;
+
+        byte headerByte1 = _data[_position++];
+        byte headerByte2 = _data[_position++];
+        byte headerByte3 = _data[_position++];
+        ushort length = (ushort)(headerByte1 | headerByte2 << 8);
+        SubpacketTag = headerByte3;
+
+        if (Remaining < length)
+        {
+            throw new InvalidDataException($"Subpacket at position {_position - 3} extends beyond the available data. Expected {length} payload bytes, but only {Remaining} remain.");
+        }
+
+        _subpacketEnd = _position + length;
+
+        return true;
     }
 
     /// <summary>
@@ -399,6 +419,7 @@ internal sealed class PacketReader : IPacket
     {
         _data = [];
         _position = 0;
+        _subpacketEnd = 0;
         _pool.Release(this);
     }
 
@@ -409,6 +430,7 @@ internal sealed class PacketReader : IPacket
     {
         _data = [];
         _position = 0;
+        _subpacketEnd = 0;
     }
 
     /// <inheritdoc/>
@@ -421,26 +443,5 @@ internal sealed class PacketReader : IPacket
     public void SetByteBuffer(byte[] buffer)
     {
         _data = buffer;
-    }
-
-    /// <summary>
-    /// Decrypts buffer data.
-    /// </summary>
-    /// <returns>The hash signature for decrypting.</returns>
-    internal uint UnencryptBuffer()
-    {
-        Span<byte> span = _data.AsSpan(_position);
-        ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(span);
-
-        if (_position + 4 > _data.Length)
-        {
-            ReplantedOnlineMod.Logger.Error(typeof(PacketReader), "Not enough data to read signature hash");
-            return 0;
-        }
-
-        uint signatureHash = BitConverter.ToUInt32(_data, _position);
-        _position += 4;
-
-        return signatureHash;
     }
 }

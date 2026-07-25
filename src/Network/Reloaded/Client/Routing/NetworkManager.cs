@@ -58,18 +58,26 @@ internal static partial class NetworkManager
         }
 
         PacketWriter packetWriter = PacketWriter.Get();
-        Message<PacketHeaderMessage>.Singleton.Serialize(packetWriter, tag, payload);
+        packetWriter.StartSubpacket((byte)tag);
+        if (payload != null)
+        {
+            packetWriter.WritePacketToBuffer(payload);
+        }
+        packetWriter.EndSubpacket();
 
         if (client.AmLocal == true)
         {
             var rePacket = PacketReader.Get(packetWriter.GetByteBuffer());
+            packetWriter.Recycle();
             try
             {
-                Streamline(ReloadedClientData.LocalClient!, rePacket, true);
+                while (rePacket.NextSubpacket())
+                {
+                    Streamline(ReloadedClientData.LocalClient!, rePacket, true);
+                }
             }
             finally
             {
-                packetWriter.Recycle();
                 rePacket.Recycle();
             }
             return;
@@ -204,7 +212,10 @@ internal static partial class NetworkManager
                     var packetReader = PacketReader.Get(buffer.Data);
                     try
                     {
-                        Streamline(sender, packetReader, false);
+                        while (packetReader.NextSubpacket())
+                        {
+                            Streamline(sender, packetReader, false);
+                        }
                     }
                     finally
                     {
@@ -235,25 +246,15 @@ internal static partial class NetworkManager
     /// <param name="local">Whether if this packet is from the local client.</param>
     internal static void Streamline(ReloadedClientData? sender, PacketReader packetReader, bool local)
     {
-        var message = Message<PacketHeaderMessage>.Singleton.Deserialize(packetReader);
+        PacketType packetType = (PacketType)packetReader.SubpacketTag;
 
         if (sender == null)
         {
-            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {message.PacketType} packet, sender client is null...");
+            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {packetType} packet, sender client is null...");
             return;
         }
 
-        if (message.SignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
-        {
-            if (!local)
-            {
-                ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Can not processing {message.PacketType} packet from {sender.Name}, SignatureHash does not match ({ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash} != {message.SignatureHash})");
-            }
-
-            return;
-        }
-
-        var packetMessage = RegisterPacket.GetInstanceFromLookup(message.PacketType);
+        var packetMessage = RegisterPacket.GetInstanceFromLookup(packetType);
         if (packetMessage != null)
         {
             if (RegisterPacket.TryGetAttributeFromLookup(packetMessage, out var attr))
@@ -262,7 +263,7 @@ internal static partial class NetworkManager
                 {
                     if (!local)
                     {
-                        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {message.PacketType} packet from {sender.Name}");
+                        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Processing {packetType} packet from {sender.Name}");
                     }
                 }
             }
@@ -271,7 +272,7 @@ internal static partial class NetworkManager
         }
         else
         {
-            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {message.PacketType}");
+            ReplantedOnlineMod.Logger.Warning(typeof(NetworkManager), $"Unknown packet tag: {packetType}");
         }
     }
 }

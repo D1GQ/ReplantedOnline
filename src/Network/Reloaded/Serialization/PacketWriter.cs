@@ -1,11 +1,9 @@
 ﻿using Il2CppSteamworks;
-using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Structs.Network;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 
@@ -19,6 +17,7 @@ internal sealed class PacketWriter : IPacket
 {
     private List<byte> _data = [];
     private static readonly PoolableObjects<PacketWriter> _pool = new(10);
+    private readonly Stack<int> _messageStarts = new();
 
     /// <summary>
     /// Gets the current length of the packet data in bytes.
@@ -44,6 +43,40 @@ internal sealed class PacketWriter : IPacket
         var writer = _pool.Get();
         writer._data = [.. data];
         return writer;
+    }
+
+    /// <summary>
+    /// Starts a sub-packet with the specified tag flag.
+    /// </summary>
+    /// <param name="tag">The tag flag for the sub-packet.</param>
+    internal void StartSubpacket(byte tag)
+    {
+        var messageStart = _data.Count;
+        _messageStarts.Push(messageStart);
+
+        _data.Add(0);
+        _data.Add(0);
+        _data.Add(tag);
+    }
+
+    /// <summary>
+    /// Ends the current sub-packet, updating its length.
+    /// </summary>
+    internal void EndSubpacket()
+    {
+        var lastMessageStart = _messageStarts.Pop();
+        ushort length = (ushort)(_data.Count - lastMessageStart - 3);
+        _data[lastMessageStart] = (byte)length;
+        _data[lastMessageStart + 1] = (byte)(length >> 8);
+    }
+
+    /// <summary>
+    /// Cancels the current sub-packet, removing it from the buffer.
+    /// </summary>
+    internal void CancelSubpacket()
+    {
+        var messageStart = _messageStarts.Pop();
+        _data.RemoveRange(messageStart, _data.Count - messageStart);
     }
 
     /// <summary>
@@ -142,15 +175,6 @@ internal sealed class PacketWriter : IPacket
         byte[] bytes = Encoding.UTF8.GetBytes(value);
         WriteInt(bytes.Length);
         _data.AddRange(bytes);
-    }
-
-    /// <summary>
-    /// Adds a packet tag to identify the packet type.
-    /// </summary>
-    /// <param name="tag">The packet tag to write.</param>
-    internal void AddTag(PacketType tag)
-    {
-        WriteByte((byte)tag);
     }
 
     /// <summary>
@@ -300,6 +324,7 @@ internal sealed class PacketWriter : IPacket
     internal void Recycle()
     {
         _data.Clear();
+        _messageStarts.Clear();
         _pool.Release(this);
     }
 
@@ -309,6 +334,7 @@ internal sealed class PacketWriter : IPacket
     internal void Clear()
     {
         _data.Clear();
+        _messageStarts.Clear();
     }
 
     /// <inheritdoc/>
@@ -321,14 +347,5 @@ internal sealed class PacketWriter : IPacket
     public void SetByteBuffer(byte[] buffer)
     {
         _data = [.. buffer];
-    }
-
-    /// <summary>
-    /// Encrypts buffer data.
-    /// </summary>
-    internal void EncryptBuffer()
-    {
-        _data.InsertRange(0, BitConverter.GetBytes(ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash));
-        ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(CollectionsMarshal.AsSpan(_data));
     }
 }
