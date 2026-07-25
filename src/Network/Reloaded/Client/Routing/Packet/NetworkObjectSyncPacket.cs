@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacket(PacketType.NetworkObjectSync)]
+[RegisterPacket(PacketType.NetworkObjectSync, false)]
 internal sealed class NetworkObjectSyncPacket : IPacketMessage
 {
     /// <inheritdoc/>

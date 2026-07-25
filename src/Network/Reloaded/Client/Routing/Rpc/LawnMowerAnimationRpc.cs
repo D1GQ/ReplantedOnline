@@ -10,15 +10,15 @@ using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
-[RegisterRpc(RpcType.StartMower)]
-internal sealed class StartMowerRpc : IRpcMessage<LawnMower>
+[RegisterRpc(RpcType.LawnMowerAnimation)]
+internal sealed class LawnMowerAnimationRpc : IRpcMessage<LawnMower>
 {
     /// <inheritdoc/>
     public void Send(LawnMower lawnMower)
     {
         var packetWriter = PacketWriter.Get();
         packetWriter.WritePackedInt(lawnMower.DataID);
-        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.StartMower, packetWriter);
+        NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.LawnMowerAnimation, packetWriter);
         packetWriter.Recycle();
     }
 
@@ -32,7 +32,6 @@ internal sealed class StartMowerRpc : IRpcMessage<LawnMower>
 
             try
             {
-                // Only want to start the mower so give a null ref
                 lawnMower?.MowZombieOriginal(null);
             }
             catch { }

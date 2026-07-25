@@ -22,9 +22,9 @@ internal enum RpcType
     ChooseSeed,
 
     /// <summary>
-    /// Sync starting a mower.
+    /// Sync lawn mower starting and slow down.
     /// </summary>
-    StartMower,
+    LawnMowerAnimation,
 
     /// <summary>
     /// Sync adding a ladder to a plant.

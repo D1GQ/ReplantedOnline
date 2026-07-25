@@ -21,11 +21,7 @@ internal static class LawnMowerSyncPatch
             if (!VersusState.AmPlantSide) return false;
             if (theZombie.mZombieType.IsGravestoneOrTarget()) return false;
 
-            // Send network message to sync starting Mower
-            if (__instance.mMowerState == LawnMowerState.Ready)
-            {
-                NetworkManager.Rpc<StartMowerRpc>.Singleton.Send(__instance);
-            }
+            NetworkManager.Rpc<LawnMowerAnimationRpc>.Singleton.Send(__instance);
 
             return true;
         }
