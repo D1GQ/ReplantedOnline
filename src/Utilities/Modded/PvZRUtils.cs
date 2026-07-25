@@ -241,24 +241,37 @@ internal static class PvZRUtils
     /// <param name="disable">True to disable the packet; false to enable it.</param>
     internal static void SetSeedPacketDisabled(this SeedBank seedBank, SeedPacket seedPacket, bool disable)
     {
-        var seedPacketGo = GetSeedPacketGameObjectInBank(seedBank, seedPacket);
+        var seedPacketGo = seedBank.GetSeedPacketGameObjectInBank(seedPacket);
         if (seedPacketGo == null)
             return;
 
-        if (disable)
+        bool isDisabled = seedPacket.mActive && seedPacket.mRefreshing;
+        if (disable && !isDisabled)
         {
+            if (seedPacket.mActive)
+            {
+                seedPacket.mRefreshCounter = -1;
+            }
             seedPacket.mActive = true;
-            seedPacket.mRefreshCounter = 0;
             seedPacket.mRefreshTime = int.MaxValue;
             seedPacket.mRefreshing = true;
             seedPacketGo.transform.Find("Cross").gameObject.SetActive(true);
         }
-        else
+        else if (isDisabled)
         {
-            seedPacket.mRefreshing = true;
-            seedPacket.mRefreshCounter = 0;
-            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
-            seedPacket.mActive = false;
+            if (seedPacket.mRefreshCounter == -1)
+            {
+                seedPacket.mRefreshing = true;
+                seedPacket.mRefreshCounter = 0;
+                seedPacket.mRefreshTime = 0;
+                seedPacket.mActive = false;
+            }
+            else
+            {
+                seedPacket.mRefreshing = true;
+                seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
+                seedPacket.mActive = false;
+            }
             seedPacketGo.transform.Find("Cross").gameObject.SetActive(false);
         }
     }

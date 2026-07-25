@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -121,6 +122,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
             IsRaining = true;
             UpdateNocturnalPlants(true);
             UpdateRefreshTimes();
+            UpdateSeedPackets(cloudyDayMode, true);
         }));
     }
 
@@ -133,6 +135,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
             IsRaining = false;
             UpdateNocturnalPlants(false);
             UpdateRefreshTimes();
+            UpdateSeedPackets(cloudyDayMode, false);
         }));
     }
 
@@ -163,6 +166,39 @@ internal sealed class CloudyDayArena : IArena, IArenaData
                 continue;
 
             seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
+        }
+    }
+
+    private static readonly SeedType[] DisabledCloudySeedPackets =
+    [
+        // Plants
+        SeedType.Cherrybomb,
+        SeedType.Iceshroom,
+        SeedType.Doomshroom,
+        SeedType.Tanglekelp,
+        SeedType.Jalapeno,
+        SeedType.Tallnut,
+        SeedType.Melonpult,
+
+        // Zombies
+        SeedType.ZombieBungee,
+        SeedType.ZombieDancer,
+        CustomSeedType.DolphinRider,
+        SeedType.ZombiePogo,
+        SeedType.ZombieFlag
+    ];
+
+    private static void UpdateSeedPackets(CloudyDayMode cloudyDayMode, bool cloudy)
+    {
+        foreach (var seedBank in cloudyDayMode.m_board.SeedBanks.m_values)
+        {
+            foreach (var seedPacket in seedBank.mSeedPackets)
+            {
+                if (!DisabledCloudySeedPackets.Contains(seedPacket.mPacketType))
+                    continue;
+
+                seedBank.SetSeedPacketDisabled(seedPacket, cloudy);
+            }
         }
     }
 
