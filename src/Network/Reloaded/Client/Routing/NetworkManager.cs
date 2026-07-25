@@ -67,19 +67,7 @@ internal static partial class NetworkManager
 
         if (client.AmLocal == true)
         {
-            var rePacket = PacketReader.Get(packetWriter.GetByteBuffer());
-            packetWriter.Recycle();
-            try
-            {
-                while (rePacket.NextSubpacket())
-                {
-                    Streamline(ReloadedClientData.LocalClient!, rePacket, true);
-                }
-            }
-            finally
-            {
-                rePacket.Recycle();
-            }
+            ProcessPacketData(ReloadedClientData.LocalClient, packetWriter.GetByteBuffer());
             return;
         }
 
@@ -190,8 +178,9 @@ internal static partial class NetworkManager
 
     /// <summary>
     /// Reads and processes a single P2P packet from the specified network channel.
-    /// Handles packet reception, buffer management, and routing to the appropriate packet handler.
     /// </summary>
+    /// <param name="messageSize">The size of the incoming message in bytes.</param>
+    /// <param name="channel">The network channel from which the packet was received.</param>
     private static void ReadPacket(uint messageSize, PacketChannel channel)
     {
         var buffer = PacketBuffer.Get(messageSize);
@@ -209,18 +198,7 @@ internal static partial class NetworkManager
                         return;
                     }
 
-                    var packetReader = PacketReader.Get(buffer.Data);
-                    try
-                    {
-                        while (packetReader.NextSubpacket())
-                        {
-                            Streamline(sender, packetReader, false);
-                        }
-                    }
-                    finally
-                    {
-                        packetReader.Recycle();
-                    }
+                    ProcessPacketData(sender, buffer.Data);
                 }
                 else
                 {
@@ -235,6 +213,27 @@ internal static partial class NetworkManager
         finally
         {
             buffer.Recycle();
+        }
+    }
+
+    /// <summary>
+    /// Processes raw packet data by parsing it into subpackets and dispatching them through the streamline system.
+    /// </summary>
+    /// <param name="sender">The client data representing the sender of the packet.</param>
+    /// <param name="data">The raw byte array containing the packet data to process.</param>
+    internal static void ProcessPacketData(ReloadedClientData? sender, byte[] data)
+    {
+        var packetReader = PacketReader.Get(data);
+        try
+        {
+            while (packetReader.NextSubpacket())
+            {
+                Streamline(sender, packetReader, false);
+            }
+        }
+        finally
+        {
+            packetReader.Recycle();
         }
     }
 
