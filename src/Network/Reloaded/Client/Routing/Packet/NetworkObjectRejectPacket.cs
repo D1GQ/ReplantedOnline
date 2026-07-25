@@ -18,12 +18,10 @@ internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifi
         if (owner.GetClientData()?.AmLocal == true)
             return;
 
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectReject);
         Message<NetworkObjectRejectMessage>.Singleton.Serialize(packetWriter, networkId);
-
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Reject Network Object with ID: {networkId}, Owner: {owner}");
-        NetworkManager.SendPacketTo(owner, packetWriter, PacketType.NetworkObjectReject, PacketChannel.Main, true);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSendTo(owner, packetWriter, PacketChannel.Main, true);
     }
 
     /// <inheritdoc/>
@@ -31,7 +29,7 @@ internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifi
     {
         if (!sender.AmHost) return;
 
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectRejectMessage>.Singleton.Deserialize(packet);
 
         try

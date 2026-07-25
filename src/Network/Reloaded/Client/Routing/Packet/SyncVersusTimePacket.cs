@@ -12,10 +12,9 @@ internal sealed class SyncVersusTimePacket : IPacketMessage<float>
     /// <inheritdoc/>
     public void Send(float time)
     {
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.SyncVersusTime);
         packetWriter.WriteFloat(time);
-        NetworkManager.SendPacket(packetWriter, PacketType.SyncVersusTime, PacketChannel.Buffered, false, false);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Buffered, false, false);
     }
 
     /// <inheritdoc/>

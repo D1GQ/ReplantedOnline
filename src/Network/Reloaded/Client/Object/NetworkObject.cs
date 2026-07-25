@@ -150,6 +150,11 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     internal void UnsetDirtyBit(int idx)
     {
         DirtyBits &= ~(1U << idx);
+
+        if (!IsDirty)
+        {
+            ReloadedLobby.LobbyData?.DirtyNetworkObjects.Remove(this);
+        }
     }
 
     /// <summary>
@@ -166,6 +171,11 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
         }
 
         DirtyBits |= 1U << idx;
+
+        if (IsDirty)
+        {
+            ReloadedLobby.LobbyData?.DirtyNetworkObjects.Add(this);
+        }
     }
 
     /// <summary>

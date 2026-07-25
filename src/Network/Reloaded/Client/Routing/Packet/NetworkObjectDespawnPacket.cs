@@ -16,12 +16,10 @@ internal sealed class NetworkObjectDespawnPacket : IPacketMessage<NetworkObject,
     /// <inheritdoc/>
     public void Send(NetworkObject networkObj, bool waitToBeReady)
     {
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectDespawn);
         Message<NetworkObjectDespawnMessage>.Singleton.Serialize(packetWriter, networkObj, waitToBeReady);
-
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Despawn Network Object with ID: {networkObj.NetworkId}");
-        NetworkManager.SendPacket(packetWriter, PacketType.NetworkObjectDespawn, PacketChannel.Main, true, false);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Main, true, false);
 
         ReloadedLobby.LobbyData!.OnNetworkObjectDespawn(networkObj);
     }
@@ -34,7 +32,7 @@ internal sealed class NetworkObjectDespawnPacket : IPacketMessage<NetworkObject,
 
     private static IEnumerator CoWaitForNetworkDespawn(ReloadedClientData sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectDespawnMessage>.Singleton.Deserialize(packet);
 
         try

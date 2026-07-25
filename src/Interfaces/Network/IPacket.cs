@@ -6,16 +6,18 @@
 internal interface IPacket
 {
     /// <summary>
-    /// Gets the byte buffer representation of the packet.
+    /// Gets the current packet remaining bytes.
     /// </summary>
     /// <returns>
-    /// A byte array containing the packet data.
+    /// A new byte array containing the packet remaining byte.
     /// </returns>
-    byte[] GetByteBuffer();
+    byte[] GetBytes();
 
     /// <summary>
-    /// Sets the byte buffer representation of the packet.
+    /// Gets the current sub-packet remaining bytes.
     /// </summary>
-    /// <param name="buffer">The buffer to set from.</param>
-    void SetByteBuffer(byte[] buffer);
+    /// <returns>
+    /// A new byte array containing the sub-packet remaining byte.
+    /// </returns>
+    byte[] GetSubpacketBytes();
 }

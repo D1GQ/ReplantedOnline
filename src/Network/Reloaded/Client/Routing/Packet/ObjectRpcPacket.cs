@@ -17,16 +17,14 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
     /// <inheritdoc/>
     public void Send(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
     {
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.ObjectRpc);
         Message<ObjectRpcMessage>.Singleton.Serialize(packetWriter, networkIdentifier, rpcId);
         if (payload != null)
         {
-            packetWriter.WritePacketToBuffer(payload);
+            packetWriter.AddBytesToBuffer(payload.GetBytes());
         }
-
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
-        NetworkManager.SendPacket(packetWriter, PacketType.ObjectRpc, PacketChannel.Rpc, true, receiveLocally);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Rpc, true, receiveLocally);
     }
 
     /// <inheritdoc/>
@@ -37,7 +35,7 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
 
     private static IEnumerator CoWaitForNetworkObject(ReloadedClientData sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<ObjectRpcMessage>.Singleton.Deserialize(packet);
         float timeOut = 0f;
 

@@ -62,7 +62,12 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Gets or sets the dictionary of all network objects spawned.
     /// </summary>
-    internal Dictionary<NetworkIdentifier, NetworkObject> NetworkObjectsSpawned = [];
+    internal readonly Dictionary<NetworkIdentifier, NetworkObject> NetworkObjectsSpawned = [];
+
+    /// <summary>
+    /// Gets or sets the list of all dirty network objects.
+    /// </summary>
+    internal readonly List<NetworkObject> DirtyNetworkObjects = [];
 
     /// <summary>
     /// Network class Id pool.
@@ -186,6 +191,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         }
 
         NetworkObjectsSpawned.Remove(networkObj.NetworkId);
+        DirtyNetworkObjects.Remove(networkObj);
         networkObj.IsOnNetwork = false;
         networkObj.OnDespawn();
         networkObj.OwnerId = ID.Null;

@@ -150,7 +150,7 @@ internal static class LanServerProtocol
     internal static void SerializeRPC(PacketWriter packetWriter, PacketChannel channel, byte[] data)
     {
         packetWriter.WriteEnum(channel);
-        packetWriter.WriteBytesToBuffer(data);
+        packetWriter.AddBytesToBuffer(data);
     }
 
     /// <summary>
@@ -161,7 +161,7 @@ internal static class LanServerProtocol
     internal static (PacketChannel channel, byte[] data) DeserializeRPC(PacketReader packetReader)
     {
         var channel = packetReader.ReadEnum<PacketChannel>();
-        var data = packetReader.GetByteBuffer();
+        var data = packetReader.GetBytes();
         return (channel, data);
     }
 

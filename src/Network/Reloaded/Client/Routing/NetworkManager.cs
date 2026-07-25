@@ -2,7 +2,6 @@
 using MelonLoader;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Network;
-using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Serialization.Messages;
@@ -20,15 +19,74 @@ namespace ReplantedOnline.Network.Reloaded.Client.Routing;
 internal static partial class NetworkManager
 {
     /// <summary>
-    /// Sends a packet to all connected clients in the lobby.
+    /// Creates and initializes a new packet writer for the specified packet type.
     /// </summary>
-    /// <param name="payload">The packet containing the data to send.</param>
-    /// <param name="tag">The packet tag identifying the packet type.</param>
+    /// <param name="packetType">The type of packet to create.</param>
+    /// <returns>A new PacketWriter instance with the subpacket started.</returns>
+    internal static PacketWriter StartPacket(PacketType packetType)
+    {
+        PacketWriter packetWriter = PacketWriter.Get();
+        packetWriter.StartSubpacket((byte)packetType);
+        return packetWriter;
+    }
+
+    /// <summary>
+    /// Starts a subpacket in an existing packet writer.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer to add the subpacket to.</param>
+    /// <param name="packetType">The type of packet to start.</param>
+    internal static void StartPacket(PacketWriter packetWriter, PacketType packetType)
+    {
+        packetWriter.StartSubpacket((byte)packetType);
+    }
+
+    /// <summary>
+    /// Ends the current subpacket in the packet writer.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer containing the subpacket to end.</param>
+    internal static void EndPacket(PacketWriter packetWriter)
+    {
+        packetWriter.EndSubpacket();
+    }
+
+    /// <summary>
+    /// Ends the current subpacket and sends the packet to all clients except those specified.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    /// <param name="log">If sending should be logged.</param>
-    /// <param name="receiveLocally">Whether the local client should also process this packet.</param>
-    /// <param name="ignoredClientIds">Optional array of client IDs that should not receive this packet.</param>
-    internal static void SendPacket(IPacket? payload, PacketType tag, PacketChannel packetChannel, bool log, bool receiveLocally, params ID[] ignoredClientIds)
+    /// <param name="log">Whether to log the send operation.</param>
+    /// <param name="receiveLocally">Whether the local client should receive the packet.</param>
+    /// <param name="ignoredClientIds">Client IDs to exclude from receiving the packet.</param>
+    internal static void EndPacketAndSend(PacketWriter packetWriter, PacketChannel packetChannel, bool log, bool receiveLocally, params ID[] ignoredClientIds)
+    {
+        packetWriter.EndSubpacket();
+        Send(packetWriter, packetChannel, log, receiveLocally, ignoredClientIds);
+        packetWriter.Recycle();
+    }
+
+    /// <summary>
+    /// Ends the current subpacket and sends the packet to a specific client.
+    /// </summary>
+    /// <param name="targetId">The ID of the target client.</param>
+    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
+    /// <param name="packetChannel">The channel to send the packet on.</param>
+    /// <param name="log">Whether to log the send operation.</param>
+    internal static void EndPacketAndSendTo(ID targetId, PacketWriter packetWriter, PacketChannel packetChannel, bool log)
+    {
+        packetWriter.EndSubpacket();
+        SendTo(targetId, packetWriter, packetChannel, log);
+        packetWriter.Recycle();
+    }
+
+    /// <summary>
+    /// Sends a packet to all clients in the lobby except those specified.
+    /// </summary>
+    /// <param name="packetWriter">The packet writer containing the packet to send.</param>
+    /// <param name="packetChannel">The channel to send the packet on.</param>
+    /// <param name="log">Whether to log the send operation.</param>
+    /// <param name="receiveLocally">Whether the local client should receive the packet.</param>
+    /// <param name="ignoredClientIds">Client IDs to exclude from receiving the packet.</param>
+    internal static void Send(PacketWriter packetWriter, PacketChannel packetChannel, bool log, bool receiveLocally, params ID[] ignoredClientIds)
     {
         foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
         {
@@ -37,52 +95,41 @@ internal static partial class NetworkManager
 
             if (ReloadedLobby.IsPlayerInOurLobby(client.ClientId))
             {
-                SendPacketTo(client.ClientId, payload, tag, packetChannel, log);
+                SendTo(client.ClientId, packetWriter, packetChannel, log);
             }
         }
     }
 
     /// <summary>
-    /// Sends a packet to a specific client in the lobby by their ID.
+    /// Sends a packet to a specific client.
     /// </summary>
-    /// <param name="targetId">The ID of the target client to receive the packet.</param>
-    /// <param name="payload">The packet writer containing the data to send.</param>
-    /// <param name="tag">The packet tag identifying the packet type.</param>
+    /// <param name="targetId">The ID of the target client.</param>
+    /// <param name="packetWriter">The packet writer containing the packet to send.</param>
     /// <param name="packetChannel">The channel to send the packet on.</param>
-    /// <param name="log">If sending should be logged.</param>
-    internal static void SendPacketTo(ID targetId, IPacket? payload, PacketType tag, PacketChannel packetChannel, bool log)
+    /// <param name="log">Whether to log the send operation.</param>
+    internal static void SendTo(ID targetId, PacketWriter packetWriter, PacketChannel packetChannel, bool log)
     {
         if (!targetId.TryGetClientData(out var client))
         {
             return;
         }
 
-        PacketWriter packetWriter = PacketWriter.Get();
-        packetWriter.StartSubpacket((byte)tag);
-        if (payload != null)
-        {
-            packetWriter.WritePacketToBuffer(payload);
-        }
-        packetWriter.EndSubpacket();
-
         if (client.AmLocal == true)
         {
-            ProcessPacketData(ReloadedClientData.LocalClient, packetWriter.GetByteBuffer());
+            ProcessPacketData(ReloadedClientData.LocalClient, packetWriter.GetBytes());
             return;
         }
 
         if (ReloadedLobby.IsPlayerInOurLobby(targetId))
         {
             var sendType = packetChannel is PacketChannel.Buffered ? P2PSend.ReliableWithBuffering : P2PSend.Reliable;
-            ReloadedLobby.NetworkTransport!.SendP2PPacket(targetId, packetWriter.GetByteBuffer(), packetChannel, sendType);
+            ReloadedLobby.NetworkTransport!.SendP2PPacket(targetId, packetWriter.GetBytes(), packetChannel, sendType);
         }
 
         if (log)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {tag} packet to {client.Name} -> Size: {packetWriter.Length} bytes");
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent to {client.Name} -> Size: {packetWriter.Length} bytes");
         }
-
-        packetWriter.Recycle();
     }
 
     private static object? ListeningToken;
@@ -119,15 +166,29 @@ internal static partial class NetworkManager
                 ReloadedLobby.NetworkTransport!.Tick(Time.deltaTime);
                 NetworkHeartbeat.Tick();
 
-                if (ReloadedLobby.LobbyData != null)
+                if (ReloadedLobby.LobbyData != null && ReloadedLobby.LobbyData.DirtyNetworkObjects.Count > 0)
                 {
-                    foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
+                    PacketWriter dirtyPacket = PacketWriter.Get();
+                    try
                     {
-                        if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty) continue;
-                        var packet = PacketWriter.Get();
-                        Message<NetworkObjectSyncMessage>.Singleton.Serialize(packet, networkObj, false);
-                        SendPacket(packet, PacketType.NetworkObjectSync, PacketChannel.Buffered, true, false);
-                        packet.Recycle();
+                        foreach (var networkObj in ReloadedLobby.LobbyData.DirtyNetworkObjects)
+                        {
+                            if (networkObj == null)
+                                continue;
+
+                            if (!networkObj.AmOwner || !networkObj.IsOnNetwork || !networkObj.IsDirty)
+                                continue;
+
+                            StartPacket(dirtyPacket, PacketType.NetworkObjectSync);
+                            Message<NetworkObjectSyncMessage>.Singleton.Serialize(dirtyPacket, networkObj, false);
+                            EndPacket(dirtyPacket);
+                        }
+                        Send(dirtyPacket, PacketChannel.Buffered, false, false);
+                        ReloadedLobby.LobbyData.DirtyNetworkObjects.Clear();
+                    }
+                    finally
+                    {
+                        dirtyPacket.Recycle();
                     }
                 }
 
@@ -226,9 +287,17 @@ internal static partial class NetworkManager
         var packetReader = PacketReader.Get(data);
         try
         {
-            while (packetReader.NextSubpacket())
+            PacketReader? subReader;
+            while ((subReader = packetReader.NextSubpacket()) != null)
             {
-                Streamline(sender, packetReader, false);
+                try
+                {
+                    Streamline(sender, subReader, false);
+                }
+                finally
+                {
+                    subReader.Recycle();
+                }
             }
         }
         finally

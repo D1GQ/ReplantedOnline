@@ -64,8 +64,20 @@ internal sealed class PacketWriter : IPacket
     /// </summary>
     internal void EndSubpacket()
     {
+        if (_messageStarts.Count == 0)
+            throw new InvalidOperationException("No subpacket to end");
+
         var lastMessageStart = _messageStarts.Pop();
-        ushort length = (ushort)(_data.Count - lastMessageStart - 3);
+        int payloadEnd = _data.Count;
+        int payloadLength = payloadEnd - lastMessageStart - 3;
+
+        if (payloadLength < 0)
+            throw new InvalidOperationException("Subpacket payload length cannot be negative");
+
+        if (payloadLength > ushort.MaxValue)
+            throw new InvalidOperationException($"Subpacket payload length exceeds maximum: {payloadLength} > {ushort.MaxValue}");
+
+        ushort length = (ushort)payloadLength;
         _data[lastMessageStart] = (byte)length;
         _data[lastMessageStart + 1] = (byte)(length >> 8);
     }
@@ -75,6 +87,9 @@ internal sealed class PacketWriter : IPacket
     /// </summary>
     internal void CancelSubpacket()
     {
+        if (_messageStarts.Count == 0)
+            throw new InvalidOperationException("No subpacket to cancel");
+
         var messageStart = _messageStarts.Pop();
         _data.RemoveRange(messageStart, _data.Count - messageStart);
     }
@@ -135,15 +150,6 @@ internal sealed class PacketWriter : IPacket
         {
             WriteUInt(NetworkObject.NULL);
         }
-    }
-
-    /// <summary>
-    /// Writes another packet's contents into this packet writer.
-    /// </summary>
-    /// <param name="packet">The packet whose contents will be written.</param>
-    internal void WritePacketToBuffer(IPacket packet)
-    {
-        _data.AddRange(packet.GetByteBuffer());
     }
 
     /// <summary>
@@ -264,15 +270,6 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
-    /// Adds a byte array to the packet buffer.
-    /// </summary>
-    /// <param name="bytes">The byte array to add.</param>
-    internal void WriteBytesToBuffer(byte[] bytes)
-    {
-        _data.AddRange(bytes);
-    }
-
-    /// <summary>
     /// Writes a 2-byte signed integer (short) to the packet.
     /// </summary>
     /// <param name="value">The short value to write.</param>
@@ -318,6 +315,15 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Adds a byte array to the packet buffer.
+    /// </summary>
+    /// <param name="bytes">The byte array to add.</param>
+    internal void AddBytesToBuffer(byte[] bytes)
+    {
+        _data.AddRange(bytes);
+    }
+
+    /// <summary>
     /// Recycles this PacketWriter instance back to the pool for reuse.
     /// Clears the current data and adds the instance to the pool if under maximum size.
     /// </summary>
@@ -338,14 +344,28 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <inheritdoc/>
-    public byte[] GetByteBuffer()
+    public byte[] GetBytes()
     {
         return [.. _data];
     }
 
     /// <inheritdoc/>
-    public void SetByteBuffer(byte[] buffer)
+    public byte[] GetSubpacketBytes()
     {
-        _data = [.. buffer];
+        if (_messageStarts.Count == 0)
+            return [];
+
+        int start = _messageStarts.Peek() + 3;
+        int length = _data.Count - start;
+
+        if (length <= 0)
+            return [];
+
+        byte[] result = new byte[length];
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = _data[start + i];
+        }
+        return result;
     }
 }

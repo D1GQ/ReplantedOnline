@@ -194,11 +194,11 @@ internal sealed class LanServerBroadcast : IDisposable
         {
             try
             {
-                byte[] buffer;
                 var packetWriter = PacketWriter.Get();
                 _server.ServerData.SerializeBroadcast(packetWriter);
-                buffer = packetWriter.GetByteBuffer();
+                byte[] buffer = packetWriter.GetBytes();
                 packetWriter.Recycle();
+
                 await BroadcastClient.SendAsync(buffer, buffer.Length, broadcastEndpoint);
                 await Task.Delay(BROADCAST_INTERVAL_MS, BroadcastCTS.Token);
             }
@@ -340,7 +340,6 @@ internal sealed class LanServerBroadcast : IDisposable
 
                     foreach (var serverId in expiredServers)
                     {
-                        var server = DiscoveredServers[serverId];
                         DiscoveredServers.Remove(serverId);
                     }
                 }

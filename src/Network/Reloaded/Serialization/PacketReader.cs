@@ -26,7 +26,14 @@ internal sealed class PacketReader : IPacket
     /// <summary>
     /// Gets the number of bytes remaining to be read in the packet.
     /// </summary>
-    internal int Remaining => _data.Length - _position;
+    internal int Remaining
+    {
+        get
+        {
+            int remaining = _data.Length - _position;
+            return remaining > 0 ? remaining : 0;
+        }
+    }
 
     internal byte SubpacketTag { get; private set; }
 
@@ -44,30 +51,45 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Moves to the next sub-packet in the current packet stream.
+    /// Moves to the next sub-packet in the current packet stream and returns a new PacketReader for its payload.
     /// </summary>
-    /// <returns>True if a sub-packet was found and the reader is positioned at its start; otherwise, false.</returns>
-    internal bool NextSubpacket()
+    /// <returns>A new PacketReader positioned at the sub-packet payload, or null if no more sub-packets are available.</returns>
+    internal PacketReader? NextSubpacket()
     {
         _position = _subpacketEnd;
 
         if (Remaining < 3)
-            return false;
+            return null;
+
+        int headerStart = _position;
 
         byte headerByte1 = _data[_position++];
         byte headerByte2 = _data[_position++];
         byte headerByte3 = _data[_position++];
-        ushort length = (ushort)(headerByte1 | headerByte2 << 8);
-        SubpacketTag = headerByte3;
+        ushort length = (ushort)(headerByte1 | (headerByte2 << 8));
+        byte tag = headerByte3;
 
-        if (Remaining < length)
+        int payloadStart = _position;
+        int payloadEnd = payloadStart + length;
+
+        if (payloadEnd > _data.Length)
         {
-            throw new InvalidDataException($"Subpacket at position {_position - 3} extends beyond the available data. Expected {length} payload bytes, but only {Remaining} remain.");
+            throw new InvalidDataException($"Subpacket at position {headerStart} extends beyond the available data. Expected {length} payload bytes, but only {_data.Length - payloadStart} remain.");
         }
 
-        _subpacketEnd = _position + length;
+        _subpacketEnd = payloadEnd;
 
-        return true;
+        var subReader = _pool.Get();
+
+        byte[] payloadData = new byte[length];
+        Array.Copy(_data, payloadStart, payloadData, 0, length);
+
+        subReader._data = payloadData;
+        subReader._position = 0;
+        subReader._subpacketEnd = length;
+        subReader.SubpacketTag = tag;
+
+        return subReader;
     }
 
     /// <summary>
@@ -434,14 +456,20 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <inheritdoc/>
-    public byte[] GetByteBuffer()
+    public byte[] GetBytes()
     {
         return _data[_position..];
     }
 
     /// <inheritdoc/>
-    public void SetByteBuffer(byte[] buffer)
+    public byte[] GetSubpacketBytes()
     {
-        _data = buffer;
+        if (_subpacketEnd <= _position)
+            return [];
+
+        int length = _subpacketEnd - _position;
+        byte[] result = new byte[length];
+        Array.Copy(_data, _position, result, 0, length);
+        return result;
     }
 }

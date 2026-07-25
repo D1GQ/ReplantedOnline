@@ -25,7 +25,7 @@ internal sealed class NetworkObjectSyncPacket : IPacketMessage
 
     private static IEnumerator CoWaitForNetworkObjectSync(ReloadedClientData sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectSyncMessage>.Singleton.Deserialize(packet);
 
         try
@@ -42,7 +42,6 @@ internal sealed class NetworkObjectSyncPacket : IPacketMessage
 
                     networkObj.SyncedBits.DirtyBits = message.DirtyBits;
                     networkObj.Deserialize(packet, message.Init);
-                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSyncPacket), $"Synced NetworkObject from {sender.Name}: {message.NetworkId}");
                     break;
                 }
 

@@ -253,8 +253,10 @@ internal sealed class LanServer : IDisposable
 
         var hostEndpoint = new IPEndPoint(serverData.HostAddress, serverData.GamePort);
         var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.HandshakeRequest);
         LanServerProtocol.SerializeHandshakeRequest(writer, LocalPlayerName, LocalMemberId);
-        SendServerPacketTo(hostEndpoint, writer, ServerPacket.HandshakeRequest);
+        writer.EndSubpacket();
+        SendRawPacketTo(hostEndpoint, writer);
         writer.Recycle();
     }
 
@@ -279,12 +281,22 @@ internal sealed class LanServer : IDisposable
 
         if (Server.IsHost)
         {
+            var writer = PacketWriter.Get();
+
+            // Handshake leave notification
+            writer.StartSubpacket((byte)ServerPacket.HandshakeLeave);
+            writer.EndSubpacket();
+
+            // Empty member sync to signal lobby is closed
+            writer.StartSubpacket((byte)ServerPacket.SyncMembers);
+            writer.WritePackedInt(0);
+            writer.EndSubpacket();
+
             foreach (var member in Server.GetOtherMembers())
             {
-                var writer = PacketWriter.Get();
-                Server.SendServerPacketTo(member.MemberId.AsIPEndPoint(), writer, ServerPacket.HandshakeLeave);
-                writer.Recycle();
+                Server.SendRawPacketTo(member.MemberId.AsIPEndPoint(), writer);
             }
+            writer.Recycle();
         }
         else
         {
@@ -299,7 +311,9 @@ internal sealed class LanServer : IDisposable
             if (hostId != ID.Null && isConnected)
             {
                 var writer = PacketWriter.Get();
-                Server.SendServerPacketTo(hostId.AsIPEndPoint(), writer, ServerPacket.HandshakeLeave);
+                writer.StartSubpacket((byte)ServerPacket.HandshakeLeave);
+                writer.EndSubpacket();
+                Server.SendRawPacketTo(hostId.AsIPEndPoint(), writer);
                 writer.Recycle();
             }
         }
@@ -326,7 +340,7 @@ internal sealed class LanServer : IDisposable
             try
             {
                 var result = await P2PClient!.ReceiveAsync();
-                ProcessServerPacket(result.Buffer, result.RemoteEndPoint);
+                ProcessPacketData(result.Buffer, result.RemoteEndPoint);
             }
             catch (OperationCanceledException) { break; }
             catch (SocketException ex) when (
@@ -364,6 +378,7 @@ internal sealed class LanServer : IDisposable
 
     /// <summary>
     /// Removes a member from the connected members dictionary and updates lobby state.
+    /// Packs leave notification and updated member sync into a single packet.
     /// </summary>
     /// <param name="member">The member data to remove.</param>
     internal void RemoveMember(LanMemberData member)
@@ -378,39 +393,48 @@ internal sealed class LanServer : IDisposable
         if (IsHost)
         {
             lock (_membersLock) ServerData.SetPlayerCount(Members.Count);
-            BroadcastSyncMembers();
+
+            var writer = PacketWriter.Get();
+
+            // Handshake leave notification for the removed member
+            writer.StartSubpacket((byte)ServerPacket.HandshakeLeave);
+            writer.EndSubpacket();
+
+            // Updated member sync
+            writer.StartSubpacket((byte)ServerPacket.SyncMembers);
+            lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members);
+            writer.EndSubpacket();
+
+            foreach (var otherMember in GetOtherMembers())
+            {
+                SendRawPacketTo(otherMember.MemberId.AsIPEndPoint(), writer);
+            }
+            writer.Recycle();
         }
     }
 
     /// <summary>
     /// Sends a packet to all connected members except the local member.
     /// </summary>
-    /// <param name="packetWriter">The packet writer containing the packet data.</param>
-    /// <param name="serverPacket">The type of server packet being sent.</param>
-    internal void SendServerPacket(PacketWriter packetWriter, ServerPacket serverPacket)
+    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
+    internal void SendServerPacket(PacketWriter packetWriter)
     {
         foreach (var member in GetOtherMembers())
         {
-            SendServerPacketTo(member.MemberId.AsIPEndPoint(), packetWriter, serverPacket);
+            SendRawPacketTo(member.MemberId.AsIPEndPoint(), packetWriter);
         }
     }
 
     /// <summary>
-    /// Sends a packet to a specific network endpoint.
+    /// Sends a raw packet to a specific network endpoint.
     /// </summary>
     /// <param name="iPEndPoint">The destination endpoint.</param>
-    /// <param name="packetWriter">The packet writer containing the packet data.</param>
-    /// <param name="serverPacket">The type of server packet being sent.</param>
-    internal void SendServerPacketTo(IPEndPoint iPEndPoint, PacketWriter packetWriter, ServerPacket serverPacket)
+    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
+    internal void SendRawPacketTo(IPEndPoint iPEndPoint, PacketWriter packetWriter)
     {
         if (iPEndPoint == null) return;
 
-        var writer = PacketWriter.Get();
-        writer.StartSubpacket((byte)serverPacket);
-        writer.WritePacketToBuffer(packetWriter);
-        writer.EndSubpacket();
-        var buffer = writer.GetByteBuffer();
-        writer.Recycle();
+        var buffer = packetWriter.GetBytes();
 
         try
         {
@@ -420,21 +444,6 @@ internal sealed class LanServer : IDisposable
         {
             ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"Failed to send packet to {iPEndPoint}: {ex}");
         }
-    }
-
-    /// <summary>
-    /// Broadcasts the current member list to all connected members.
-    /// </summary>
-    internal void BroadcastSyncMembers()
-    {
-        var writer = PacketWriter.Get();
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members);
-
-        foreach (var member in GetOtherMembers())
-        {
-            SendServerPacketTo(member.MemberId.AsIPEndPoint(), writer, ServerPacket.SyncMembers);
-        }
-        writer.Recycle();
     }
 
     /// <summary>
@@ -470,8 +479,10 @@ internal sealed class LanServer : IDisposable
         if (endpoint == null) return false;
 
         var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.Rpc);
         LanServerProtocol.SerializeRPC(writer, channel, data);
-        SendServerPacketTo(endpoint, writer, ServerPacket.Rpc);
+        writer.EndSubpacket();
+        SendRawPacketTo(endpoint, writer);
         writer.Recycle();
         return true;
     }
@@ -496,8 +507,10 @@ internal sealed class LanServer : IDisposable
         });
 
         var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.LobbyDataUpdate);
         LanServerProtocol.SerializeSetLobbyData(writer, key, value, remove);
-        SendServerPacket(writer, ServerPacket.LobbyDataUpdate);
+        writer.EndSubpacket();
+        SendServerPacket(writer);
         writer.Recycle();
     }
 
@@ -515,38 +528,36 @@ internal sealed class LanServer : IDisposable
         }
 
         var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.MemberData);
         LanServerProtocol.SerializeMemberData(writer, key, value);
-        SendServerPacket(writer, ServerPacket.MemberData);
+        writer.EndSubpacket();
+        SendServerPacket(writer);
         writer.Recycle();
     }
 
     /// <summary>
-    /// Processes an incoming server packet based on its type.
+    /// Processes raw packet data by parsing it into subpackets and routing them appropriately.
     /// </summary>
     /// <param name="buffer">The raw packet data.</param>
     /// <param name="remoteEndPoint">The endpoint the packet came from.</param>
-    private void ProcessServerPacket(byte[] buffer, IPEndPoint remoteEndPoint)
+    internal void ProcessPacketData(byte[] buffer, IPEndPoint remoteEndPoint)
     {
         var packetReader = PacketReader.Get(buffer);
         var senderId = new ID(remoteEndPoint, IdType.IPEndPoint);
 
         try
         {
-            while (packetReader.NextSubpacket())
+            PacketReader? subReader;
+            while ((subReader = packetReader.NextSubpacket()) != null)
             {
-                var serverPacket = (ServerPacket)packetReader.SubpacketTag;
-
-                switch (serverPacket)
+                try
                 {
-                    case ServerPacket.HandshakeRequest: ProcessHandshakeRequest(senderId, remoteEndPoint, packetReader); break;
-                    case ServerPacket.HandshakeAccept: ProcessHandshakeAccept(senderId, packetReader); break;
-                    case ServerPacket.HandshakeReject: ProcessHandshakeReject(senderId, packetReader); break;
-                    case ServerPacket.HandshakeLeave: ProcessHandshakeLeave(senderId); break;
-                    case ServerPacket.SyncMembers: ProcessSyncMembers(senderId, packetReader); break;
-                    case ServerPacket.Rpc: ProcessRPC(senderId, packetReader); break;
-                    case ServerPacket.LobbyData: ProcessLobbyData(senderId, packetReader); break;
-                    case ServerPacket.LobbyDataUpdate: ProcessLobbyDataUpdate(senderId, packetReader); break;
-                    case ServerPacket.MemberData: ProcessMemberData(senderId, packetReader); break;
+                    var serverPacket = (ServerPacket)subReader.SubpacketTag;
+                    ProcessServerPacket(senderId, remoteEndPoint, serverPacket, subReader);
+                }
+                finally
+                {
+                    subReader.Recycle();
                 }
             }
         }
@@ -557,7 +568,31 @@ internal sealed class LanServer : IDisposable
     }
 
     /// <summary>
+    /// Routes a parsed sub-packet to the appropriate handler based on its type.
+    /// </summary>
+    /// <param name="senderId">The ID of the sender.</param>
+    /// <param name="remoteEndPoint">The network endpoint of the sender.</param>
+    /// <param name="serverPacket">The type of server packet.</param>
+    /// <param name="reader">The packet reader positioned at the sub-packet payload.</param>
+    private void ProcessServerPacket(ID senderId, IPEndPoint remoteEndPoint, ServerPacket serverPacket, PacketReader reader)
+    {
+        switch (serverPacket)
+        {
+            case ServerPacket.HandshakeRequest: ProcessHandshakeRequest(senderId, remoteEndPoint, reader); break;
+            case ServerPacket.HandshakeAccept: ProcessHandshakeAccept(senderId, reader); break;
+            case ServerPacket.HandshakeReject: ProcessHandshakeReject(senderId, reader); break;
+            case ServerPacket.HandshakeLeave: ProcessHandshakeLeave(senderId); break;
+            case ServerPacket.SyncMembers: ProcessSyncMembers(senderId, reader); break;
+            case ServerPacket.Rpc: ProcessRPC(senderId, reader); break;
+            case ServerPacket.LobbyData: ProcessLobbyData(senderId, reader); break;
+            case ServerPacket.LobbyDataUpdate: ProcessLobbyDataUpdate(senderId, reader); break;
+            case ServerPacket.MemberData: ProcessMemberData(senderId, reader); break;
+        }
+    }
+
+    /// <summary>
     /// Processes a handshake request from a potential member.
+    /// Packs all response messages (accept, lobby data, member sync) into a single packet.
     /// </summary>
     /// <param name="senderId">The ID of the requesting member.</param>
     /// <param name="endpoint">The network endpoint of the member.</param>
@@ -592,21 +627,27 @@ internal sealed class LanServer : IDisposable
                 OnLobbyMemberJoined?.Invoke(ServerData.ToServerLobby(), memberData.MemberId);
         });
 
-        var acceptWriter = PacketWriter.Get();
-        LanServerProtocol.SerializeHandshakeAccept(acceptWriter, ServerData.LobbyId);
-        SendServerPacketTo(endpoint, acceptWriter, ServerPacket.HandshakeAccept);
-        acceptWriter.Recycle();
+        var responseWriter = PacketWriter.Get();
 
-        var lobbyWriter = PacketWriter.Get();
-        LanServerProtocol.SerializeLobbyData(lobbyWriter, ServerData);
-        SendServerPacketTo(endpoint, lobbyWriter, ServerPacket.LobbyData);
-        lobbyWriter.Recycle();
+        // Handshake accept
+        responseWriter.StartSubpacket((byte)ServerPacket.HandshakeAccept);
+        LanServerProtocol.SerializeHandshakeAccept(responseWriter, ServerData.LobbyId);
+        responseWriter.EndSubpacket();
 
-        var syncWriter = PacketWriter.Get();
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(syncWriter, Members);
-        SendServerPacketTo(endpoint, syncWriter, ServerPacket.SyncMembers);
-        syncWriter.Recycle();
+        // Lobby data
+        responseWriter.StartSubpacket((byte)ServerPacket.LobbyData);
+        LanServerProtocol.SerializeLobbyData(responseWriter, ServerData);
+        responseWriter.EndSubpacket();
 
+        // Member sync
+        responseWriter.StartSubpacket((byte)ServerPacket.SyncMembers);
+        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(responseWriter, Members);
+        responseWriter.EndSubpacket();
+
+        SendRawPacketTo(endpoint, responseWriter);
+        responseWriter.Recycle();
+
+        // Broadcast updated member list to all other members
         BroadcastSyncMembers();
     }
 
@@ -826,8 +867,27 @@ internal sealed class LanServer : IDisposable
     private void SendRejection(IPEndPoint endpoint, string reason)
     {
         var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.HandshakeReject);
         LanServerProtocol.SerializeHandshakeReject(writer, reason);
-        SendServerPacketTo(endpoint, writer, ServerPacket.HandshakeReject);
+        writer.EndSubpacket();
+        SendRawPacketTo(endpoint, writer);
+        writer.Recycle();
+    }
+
+    /// <summary>
+    /// Broadcasts the current member list to all connected members.
+    /// </summary>
+    internal void BroadcastSyncMembers()
+    {
+        var writer = PacketWriter.Get();
+        writer.StartSubpacket((byte)ServerPacket.SyncMembers);
+        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members);
+        writer.EndSubpacket();
+
+        foreach (var member in GetOtherMembers())
+        {
+            SendRawPacketTo(member.MemberId.AsIPEndPoint(), writer);
+        }
         writer.Recycle();
     }
 
@@ -847,7 +907,6 @@ internal sealed class LanServer : IDisposable
     /// Gets the local network IP address.
     /// </summary>
     /// <returns>The local IPv4 address.</returns>
-    /// <exception cref="Exception">Thrown when no suitable network IP is found.</exception>
     private static IPAddress GetLocalNetworkIP()
     {
         try

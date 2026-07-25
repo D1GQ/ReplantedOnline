@@ -12,10 +12,9 @@ internal sealed class HeartbeatPacket : IPacketMessage<ID, uint>
     /// <inheritdoc/>
     public void Send(ID targetId, uint timeStamp)
     {
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.Heartbeat);
         packetWriter.WriteUInt(timeStamp);
-        NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.Heartbeat, PacketChannel.Buffered, false);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSendTo(targetId, packetWriter, PacketChannel.Buffered, false);
     }
 
     /// <inheritdoc/>

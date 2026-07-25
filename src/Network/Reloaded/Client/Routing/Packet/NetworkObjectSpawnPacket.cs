@@ -27,12 +27,10 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
             return;
         }
 
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectSpawn);
         Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
-
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object with ID: {networkObj.NetworkId}, Owner: {owner}");
-        NetworkManager.SendPacket(packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, false);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Main, true, false);
     }
 
     /// <summary>
@@ -46,17 +44,24 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
 
         if (ReloadedLobby.LobbyData!.NetworkObjectsSpawned.Count > 0)
         {
-            foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
+            PacketWriter packetWriter = PacketWriter.Get();
+            try
             {
-                if (networkObj.IsOnNetwork && !networkObj.AmChild)
+                foreach (var networkObj in ReloadedLobby.LobbyData.NetworkObjectsSpawned.Values)
                 {
-                    PacketWriter packetWriter = PacketWriter.Get();
-                    Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
-
-                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Network Objects to {targetId}");
-                    NetworkManager.SendPacketTo(targetId, packetWriter, PacketType.NetworkObjectSpawn, PacketChannel.Buffered, true);
-                    packetWriter.Recycle();
+                    if (networkObj.IsOnNetwork && !networkObj.AmChild)
+                    {
+                        NetworkManager.StartPacket(packetWriter, PacketType.NetworkObjectSpawn);
+                        Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
+                        NetworkManager.EndPacket(packetWriter);
+                    }
                 }
+                ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Network Objects to {targetId}");
+                NetworkManager.SendTo(targetId, packetWriter, PacketChannel.Buffered, true);
+            }
+            finally
+            {
+                packetWriter.Recycle();
             }
         }
     }
@@ -71,7 +76,7 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
 
     private static IEnumerator CoWaitForNetworkSpawn(ReloadedClientData sender, PacketReader packetReader)
     {
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectSpawnMessage>.Singleton.Deserialize(packet);
 
         try

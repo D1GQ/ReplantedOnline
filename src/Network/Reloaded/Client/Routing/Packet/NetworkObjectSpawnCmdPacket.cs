@@ -19,12 +19,10 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
     {
         if (ReloadedLobby.AmLobbyHost()) return;
 
-        PacketWriter packetWriter = PacketWriter.Get();
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectSpawnCmd);
         Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
-
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Spawn Network Object Request with ID: {networkObj.NetworkId} to host");
-        NetworkManager.SendPacketTo(ReloadedLobby.LobbyData!.HostId, packetWriter, PacketType.NetworkObjectSpawnCmd, PacketChannel.Main, true);
-        packetWriter.Recycle();
+        NetworkManager.EndPacketAndSendTo(ReloadedLobby.LobbyData!.HostId, packetWriter, PacketChannel.Main, true);
     }
 
     /// <inheritdoc/>
@@ -32,15 +30,17 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
     {
         if (!ReloadedLobby.AmLobbyHost()) return;
 
-        var packet = PacketReader.Get(packetReader.GetByteBuffer());
+        var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectSpawnMessage>.Singleton.Deserialize(packet);
 
         try
         {
             if (Validate(sender, message, packet))
             {
-                NetworkManager.SendPacket(packetReader, PacketType.NetworkObjectSpawn, PacketChannel.Main, true, true, sender.ClientId);
+                PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectSpawn);
+                packetWriter.AddBytesToBuffer(packetReader.GetSubpacketBytes());
                 ReplantedOnlineMod.Logger.Msg(typeof(NetworkObjectSpawnCmdPacket), $"{sender.Name}: Is requesting to spawn network object {message.NetworkId}, Prefab: {message.PrefabId}");
+                NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Main, true, true, sender.ClientId);
             }
             else
             {

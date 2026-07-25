@@ -11,7 +11,8 @@ internal sealed class ResetLobbyPacket : IPacketMessage
     /// <inheritdoc/>
     public void Send()
     {
-        NetworkManager.SendPacket(null, PacketType.ResetLobby, PacketChannel.Main, true, false);
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.ResetLobby);
+        NetworkManager.Send(packetWriter, PacketChannel.Main, true, false);
     }
 
     /// <inheritdoc/>
