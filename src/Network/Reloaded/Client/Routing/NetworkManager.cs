@@ -14,7 +14,7 @@ using UnityEngine;
 namespace ReplantedOnline.Network.Reloaded.Client.Routing;
 
 /// <summary>
-/// Manages network communication, packet routing, and synchronization of network objects in the Reloaded client.
+/// Manages network communication, packet routing, and synchronization of network objects.
 /// </summary>
 internal static partial class NetworkManager
 {

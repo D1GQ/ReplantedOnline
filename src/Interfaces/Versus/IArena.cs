@@ -134,16 +134,6 @@ internal interface IArena
         return CustomRecommentedFlags.Recommended;
     }
 
-    private static IArena? currentArenaCached;
-
-    /// <summary>
-    /// Captures the current arena instance from the registered arena lookup.
-    /// </summary>
-    internal static void CatchCurrentArena()
-    {
-        currentArenaCached = RegisterArena.GetInstanceFromLookup(VersusState.ArenaSynced)!;
-    }
-
     /// <summary>
     /// Retrieves the current active arena instance.
     /// </summary>
@@ -151,6 +141,6 @@ internal interface IArena
     /// <exception cref="InvalidOperationException">Thrown when no arena instance is cached.</exception>
     internal static IArena GetCurrentArena()
     {
-        return currentArenaCached!;
+        return RegisterArena.GetInstanceFromLookup(VersusState.ArenaSynced)!;
     }
 }
