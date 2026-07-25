@@ -1,6 +1,5 @@
 ﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.FastResolvers;

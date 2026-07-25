@@ -2,7 +2,6 @@
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
-using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.FastResolvers;

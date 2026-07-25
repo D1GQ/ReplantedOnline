@@ -2,7 +2,6 @@
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
