@@ -48,6 +48,11 @@ internal class ZombieNetworkComponent : NetworkComponent
         {
             var distance = PositionDistanceQueue.Dequeue();
             UpdatePosition(distance);
+
+            if (PositionDistanceQueue.Count > 100)
+            {
+                PositionDistanceQueue.Clear();
+            }
         }
     }
 
