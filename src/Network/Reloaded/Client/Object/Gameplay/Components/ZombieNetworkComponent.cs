@@ -32,6 +32,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         ZombieType.Yeti
     ];
 
+    internal readonly Queue<float> PositionDistanceQueue = [];
     internal sealed override void Update()
     {
         if (Net.Zombie == null)
@@ -43,6 +44,11 @@ internal class ZombieNetworkComponent : NetworkComponent
         }
 
         OnUpdate();
+        if (PositionDistanceQueue.Count > 0)
+        {
+            var distance = PositionDistanceQueue.Dequeue();
+            UpdatePosition(distance);
+        }
     }
 
     internal virtual void OnUpdate() { }
@@ -57,7 +63,7 @@ internal class ZombieNetworkComponent : NetworkComponent
     /// </summary>
     /// <param name="distance">The base distance to move per update</param>
     /// <param name="useNonNetworkLogic">Use the base update position logic</param>
-    internal virtual void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected virtual void UpdatePosition(float distance, bool useNonNetworkLogic = false)
     {
         if (Net.Zombie == null)
             return;

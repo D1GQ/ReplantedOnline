@@ -41,7 +41,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
     {
         if (Net.Zombie == null)
             return;

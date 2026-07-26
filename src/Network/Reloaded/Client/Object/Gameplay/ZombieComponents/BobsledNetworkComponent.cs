@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Bobsled)]
 internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
 {
-    internal override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
     {
         if (Net.Zombie == null)
             return;

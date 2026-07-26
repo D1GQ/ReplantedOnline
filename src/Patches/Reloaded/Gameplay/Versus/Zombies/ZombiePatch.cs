@@ -51,11 +51,14 @@ internal static class ZombiePatch
     {
         if (ReloadedLobby.AmInLobby())
         {
+            if (__instance.mPosX == __state)
+                return;
+
             float distance = Math.Abs(__instance.mPosX - __state);
             __instance.mPosX = __state;
             if (__instance.TryGetNetworked<ZombieNetworked>(out var zombieNetworked))
             {
-                zombieNetworked.LogicComponent.UpdatePosition(distance);
+                zombieNetworked.LogicComponent.PositionDistanceQueue.Enqueue(distance);
             }
         }
     }
