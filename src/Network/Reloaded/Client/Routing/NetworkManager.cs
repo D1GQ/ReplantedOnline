@@ -314,7 +314,7 @@ internal static partial class NetworkManager
     /// <param name="local">Whether if this packet is from the local client.</param>
     internal static void Streamline(ReloadedClientData? sender, PacketReader packetReader, bool local)
     {
-        PacketType packetType = (PacketType)packetReader.SubpacketTag;
+        PacketType packetType = (PacketType)packetReader.SubTag;
 
         if (sender == null)
         {

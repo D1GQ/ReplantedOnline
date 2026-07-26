@@ -5,7 +5,6 @@ using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
-using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -33,8 +32,17 @@ internal class ZombieNetworkComponent : NetworkComponent
         ZombieType.Yeti
     ];
 
-    internal readonly ConcurrentQueue<float> PositionDistanceQueue = [];
-    private static int PositionDistanceProcessed;
+    private float _accumulatedDistance = 0f;
+    private readonly object _distanceLock = new();
+
+    internal void AddDistance(float distance)
+    {
+        lock (_distanceLock)
+        {
+            _accumulatedDistance += distance;
+        }
+    }
+
     internal sealed override void Update()
     {
         if (Net.Zombie == null)
@@ -46,12 +54,14 @@ internal class ZombieNetworkComponent : NetworkComponent
         }
 
         OnUpdate();
-        PositionDistanceProcessed = 0;
-        while (PositionDistanceQueue.TryDequeue(out var distance) && PositionDistanceProcessed < 10)
+
+        float distance;
+        lock (_distanceLock)
         {
-            UpdatePosition(distance);
-            PositionDistanceProcessed++;
+            distance = _accumulatedDistance;
+            _accumulatedDistance = 0f;
         }
+        UpdatePosition(distance);
     }
 
     internal virtual void OnUpdate() { }

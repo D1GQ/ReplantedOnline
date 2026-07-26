@@ -20,22 +20,18 @@ internal sealed class PacketReader : IPacket
 {
     private byte[] _data = [];
     private int _position = 0;
-    private int _subpacketEnd = 0;
+    private int _end = 0;
     private static readonly PoolableObjects<PacketReader> _pool = new(10);
 
     /// <summary>
     /// Gets the number of bytes remaining to be read in the packet.
     /// </summary>
-    internal int Remaining
-    {
-        get
-        {
-            int remaining = _data.Length - _position;
-            return remaining > 0 ? remaining : 0;
-        }
-    }
+    internal int Remaining => _end - _position;
 
-    internal byte SubpacketTag { get; private set; }
+    /// <summary>
+    /// Gets the tag identifier for the current subpacket.
+    /// </summary>
+    internal byte SubTag { get; private set; }
 
     /// <summary>
     /// Retrieves a PacketReader instance from the pool or creates a new one, initialized with the provided data.
@@ -47,6 +43,8 @@ internal sealed class PacketReader : IPacket
         var reader = _pool.Get();
         reader._data = data;
         reader._position = 0;
+        reader._end = data.Length;
+        reader.SubTag = 0;
         return reader;
     }
 
@@ -56,40 +54,27 @@ internal sealed class PacketReader : IPacket
     /// <returns>A new PacketReader positioned at the sub-packet payload, or null if no more sub-packets are available.</returns>
     internal PacketReader? NextSubpacket()
     {
-        _position = _subpacketEnd;
-
         if (Remaining < 3)
             return null;
 
-        int headerStart = _position;
+        ushort length = (ushort)(_data[_position] | (_data[_position + 1] << 8));
+        byte tag = _data[_position + 2];
 
-        byte headerByte1 = _data[_position++];
-        byte headerByte2 = _data[_position++];
-        byte headerByte3 = _data[_position++];
-        ushort length = (ushort)(headerByte1 | (headerByte2 << 8));
-        byte tag = headerByte3;
-
-        int payloadStart = _position;
+        int payloadStart = _position + 3;
         int payloadEnd = payloadStart + length;
 
-        if (payloadEnd > _data.Length)
-        {
-            throw new InvalidDataException($"Subpacket at position {headerStart} extends beyond the available data. Expected {length} payload bytes, but only {_data.Length - payloadStart} remain.");
-        }
+        if (payloadEnd > _end)
+            throw new InvalidDataException("Subpacket extends beyond parent.");
 
-        _subpacketEnd = payloadEnd;
+        var child = _pool.Get();
+        child._data = _data;
+        child._position = payloadStart;
+        child._end = payloadEnd;
+        child.SubTag = tag;
 
-        var subReader = _pool.Get();
+        _position = payloadEnd;
 
-        byte[] payloadData = new byte[length];
-        Array.Copy(_data, payloadStart, payloadData, 0, length);
-
-        subReader._data = payloadData;
-        subReader._position = 0;
-        subReader._subpacketEnd = length;
-        subReader.SubpacketTag = tag;
-
-        return subReader;
+        return child;
     }
 
     /// <summary>
@@ -441,7 +426,8 @@ internal sealed class PacketReader : IPacket
     {
         _data = [];
         _position = 0;
-        _subpacketEnd = 0;
+        _end = 0;
+        SubTag = 0;
         _pool.Release(this);
     }
 
@@ -452,7 +438,8 @@ internal sealed class PacketReader : IPacket
     {
         _data = [];
         _position = 0;
-        _subpacketEnd = 0;
+        _end = 0;
+        SubTag = 0;
     }
 
     /// <inheritdoc/>
@@ -464,10 +451,10 @@ internal sealed class PacketReader : IPacket
     /// <inheritdoc/>
     public byte[] GetSubpacketBytes()
     {
-        if (_subpacketEnd <= _position)
+        if (_end <= _position)
             return [];
 
-        int length = _subpacketEnd - _position;
+        int length = _end - _position;
         byte[] result = new byte[length];
         Array.Copy(_data, _position, result, 0, length);
         return result;

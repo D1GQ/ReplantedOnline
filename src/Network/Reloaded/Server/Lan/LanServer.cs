@@ -552,7 +552,7 @@ internal sealed class LanServer : IDisposable
             {
                 try
                 {
-                    var serverPacket = (ServerPacket)subReader.SubpacketTag;
+                    var serverPacket = (ServerPacket)subReader.SubTag;
                     ProcessServerPacket(senderId, remoteEndPoint, serverPacket, subReader);
                 }
                 finally

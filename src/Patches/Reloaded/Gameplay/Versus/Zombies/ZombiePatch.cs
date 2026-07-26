@@ -58,7 +58,7 @@ internal static class ZombiePatch
             __instance.mPosX = __state;
             if (__instance.TryGetNetworked<ZombieNetworked>(out var zombieNetworked))
             {
-                zombieNetworked.LogicComponent.PositionDistanceQueue.Enqueue(distance);
+                zombieNetworked.LogicComponent.AddDistance(distance);
             }
         }
     }
@@ -122,7 +122,6 @@ internal static class ZombiePatch
             {
                 if (__result != null)
                 {
-                    // Push back until plant side starts eating plant
                     if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         __result = null;
