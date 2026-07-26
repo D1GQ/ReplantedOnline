@@ -6,7 +6,7 @@ namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 /// <summary>
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on a global handler.
 /// </summary>
-internal readonly struct RpcMessage : IMessage<RpcMessage, RpcType>
+internal readonly struct RpcMessage : IMessage<RpcMessage, RpcType, IPacket?>
 {
     /// <summary>
     /// Gets the delivery type for the RPC invocation.
@@ -18,9 +18,14 @@ internal readonly struct RpcMessage : IMessage<RpcMessage, RpcType>
     /// </summary>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     /// <param name="rpcType">The RPC type configuration to serialize.</param>
-    public void Serialize(PacketWriter packetWriter, RpcType rpcType)
+    /// <param name="payload">The packet payload.</param>
+    public void Serialize(PacketWriter packetWriter, RpcType rpcType, IPacket? payload)
     {
         packetWriter.WriteEnum(rpcType);
+        if (payload != null)
+        {
+            packetWriter.AddBytesToBuffer(payload.GetBytes());
+        }
     }
 
     /// <summary>

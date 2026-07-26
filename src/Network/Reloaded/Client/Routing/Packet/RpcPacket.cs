@@ -14,11 +14,7 @@ internal sealed class RpcPacket : IPacketMessage<RpcType, IPacket?, bool>
     public void Send(RpcType rpc, IPacket? payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.Rpc);
-        Message<RpcMessage>.Singleton.Serialize(packetWriter, rpc);
-        if (payload != null)
-        {
-            packetWriter.AddBytesToBuffer(payload.GetBytes());
-        }
+        Message<RpcMessage>.Singleton.Serialize(packetWriter, rpc, payload);
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent RPC: {Enum.GetName(rpc)}");
         NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Rpc, true, receiveLocally);
     }

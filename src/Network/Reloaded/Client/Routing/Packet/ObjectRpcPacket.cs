@@ -18,11 +18,7 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
     public void Send(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
     {
         PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.ObjectRpc);
-        Message<ObjectRpcMessage>.Singleton.Serialize(packetWriter, networkIdentifier, rpcId);
-        if (payload != null)
-        {
-            packetWriter.AddBytesToBuffer(payload.GetBytes());
-        }
+        Message<ObjectRpcMessage>.Singleton.Serialize(packetWriter, networkIdentifier, rpcId, payload);
         ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
         NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Rpc, true, receiveLocally);
     }

@@ -7,7 +7,7 @@ namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 /// <summary>
 /// Represents a network message for invoking Remote Procedure Calls (RPCs) on IRpcReceivers.
 /// </summary>
-internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, INetworkIdentifier, byte>
+internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, INetworkIdentifier, byte, IPacket?>
 {
     /// <summary>
     /// Gets the unique network identifier of the target network object.
@@ -36,7 +36,8 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, INetworkI
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     /// <param name="networkIdentifier">The target INetworkIdentifier instance to serialize.</param>
     /// <param name="rpcId">The identifier of the RPC method to invoke.</param>
-    public void Serialize(PacketWriter packetWriter, INetworkIdentifier networkIdentifier, byte rpcId)
+    /// <param name="payload">The packet payload.</param>
+    public void Serialize(PacketWriter packetWriter, INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload)
     {
         packetWriter.WriteNetworkId(networkIdentifier.NetworkId);
         packetWriter.WriteByte(rpcId);
@@ -48,6 +49,11 @@ internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, INetworkI
         else
         {
             packetWriter.WriteBool(false);
+        }
+
+        if (payload != null)
+        {
+            packetWriter.AddBytesToBuffer(payload.GetBytes());
         }
     }
 
