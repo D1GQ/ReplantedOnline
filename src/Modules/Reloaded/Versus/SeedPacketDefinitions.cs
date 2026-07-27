@@ -122,6 +122,9 @@ internal static class SeedPacketDefinitions
         SetVersusDefinitionFromBase(SeedType.Plantern);
         SetVersusDefinitionFromBase(SeedType.Blover);
 
+        var backupDancerDefinition = Instances.IDataService.GetZombieDefinition(ZombieType.BackupDancer);
+        backupDancerDefinition.m_easterEggChance100 = 0f;
+
         var balloonDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieBalloon);
         balloonDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
         balloonDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
@@ -491,6 +494,11 @@ internal static class SeedPacketDefinitions
     /// </returns>
     internal static SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
     {
+        if (zombieType is ZombieType.BackupDancer)
+        {
+            gridX = PvZRUtils.ReloadedObjectXToGridX(gridX);
+        }
+
         if (zombieType is ZombieType.Target or ZombieType.Bungee)
         {
             return SpawnType.None;
@@ -510,7 +518,7 @@ internal static class SeedPacketDefinitions
         var isForceXPos = ZombieSpawnsInBack(zombieType);
         if (isDefault && !isForceXPos)
         {
-            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
+            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && gridX < 9)
             {
                 if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
                 {

@@ -27,6 +27,7 @@ internal sealed class DebugArena : IArena, IArenaData
         Polevaulter,
         Ladder,
         Bungee,
+        Dancers,
         Flag,
         Garlic,
         Test
@@ -189,6 +190,9 @@ internal sealed class DebugArena : IArena, IArenaData
             case DebugModes.Bungee:
                 SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, true);
                 SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, 4, 2, true);
+                break;
+            case DebugModes.Dancers:
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Dancer, 9, 2, true);
                 break;
             case DebugModes.Flag:
                 SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 0, true);
