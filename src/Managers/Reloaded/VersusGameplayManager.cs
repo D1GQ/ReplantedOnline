@@ -15,10 +15,12 @@ namespace ReplantedOnline.Managers.Reloaded;
 /// <summary>
 /// Static manager class responsible for handling versus mode in lonny
 /// </summary>
-internal class VersusGameplayManager
+internal static class VersusGameplayManager
 {
+    internal static int FrameCountStart;
     internal static void OnStart(VersusMode versusMode)
     {
+        FrameCountStart = Time.frameCount;
         isInSuddenDeath = false;
         List<SeedPacket> allSeedPackets =
         [

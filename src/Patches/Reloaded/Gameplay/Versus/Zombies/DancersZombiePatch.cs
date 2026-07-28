@@ -1,17 +1,52 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
+using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
 [HarmonyPatch]
 internal static class DancersZombiePatch
 {
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetDancerFrame))]
+    [HarmonyPrefix]
+    private static bool Zombie_GetDancerFrame_Prefix(Zombie __instance, ref int __result)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            if (__instance.mIceTrapCounter < 1 && __instance.mButteredCounter < 1)
+            {
+                bool isDisco = __instance.mZombiePhase == ZombiePhase.DancerDancingIn;
+
+                int framesPerPhase = isDisco ? 10 : 20;
+                int phaseCount = isDisco ? 11 : 23;
+
+                int currentGameFrame = Time.frameCount - VersusGameplayManager.FrameCountStart;
+                int totalCycleFrames = phaseCount * framesPerPhase;
+
+                if (currentGameFrame < 0)
+                    currentGameFrame = 0;
+
+                int currentPosition = currentGameFrame % totalCycleFrames;
+                __result = currentPosition / framesPerPhase;
+            }
+            else
+            {
+                __result = 0;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     [HarmonyPatch(typeof(Board), nameof(Board.RowCanHaveZombieType))]
     [HarmonyPostfix]
     private static void Board_RowCanHaveZombieType_Postfix(Board __instance, int theRow, ZombieType theZombieType, ref bool __result)
