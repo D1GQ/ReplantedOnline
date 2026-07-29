@@ -103,11 +103,11 @@ internal static class LobbyCodePanel
                             CustomPopupPanel.Show("Error", $"Lobby code must contain {ReloadedMatchmaking.CODE_LENGTH} characters!");
                         }
                     }
-                    else if (ReloadedLobby.NetworkTransport is LanTransport lanTransport)
+                    else if (ReloadedLobby.NetworkTransport is DirectIPTransport ipTransport)
                     {
                         Panel?.gameObject.SetActive(false);
                         string ip = InputField.m_Text.ToUpper();
-                        await lanTransport.JoinByIPString(ip);
+                        await ipTransport.JoinByIPString(ip);
                     }
                 }
             });
@@ -156,9 +156,13 @@ internal static class LobbyCodePanel
                 {
                     cleanValue = new([.. currentText.Where(c => ReloadedMatchmaking.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
                 }
+                else if (ReloadedLobby.TransportMode == TransportMode.DirectIP)
+                {
+                    cleanValue = new([.. currentText.Where(c => DirectIPTransport.IP_CHARS.Contains(c))]);
+                }
                 else
                 {
-                    cleanValue = new([.. currentText.Where(c => LanTransport.IP_CHARS.Contains(c))]);
+                    cleanValue = string.Empty;
                 }
 
                 InputField?.SetText(cleanValue, false);

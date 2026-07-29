@@ -62,7 +62,7 @@ internal static class ReloadedLobby
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to LAN");
                 break;
             case TransportMode.DirectIP:
-                NetworkTransport = new LanTransport();
+                NetworkTransport = new DirectIPTransport();
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to DirectIP");
                 break;
             default:
