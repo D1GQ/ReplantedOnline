@@ -2,10 +2,12 @@
 
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
+using ReplantedOnline.Network.Reloaded.Server.Lan;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -31,8 +33,28 @@ internal static class VersusLobbyManager
     private static TextMeshProUGUI? PickSides;
 
     private static EventTrigger? LobbyCodeHeaderTrigger;
-    private static string DefaultHeaderText => ReloadedLobby.NetworkTransport is LanTransport ?
-        "LAN Mode" : $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
+    private static string HeaderText
+    {
+        get
+        {
+            switch (ReloadedLobby.TransportMode)
+            {
+                case TransportMode.Lan:
+                    return "LAN Lobby";
+                case TransportMode.DirectIP:
+                    {
+                        if (!ReloadedLobby.AmLobbyHost())
+                        {
+                            return "Lobby IP";
+                        }
+
+                        return "Lobby IP...";
+                    }
+            }
+
+            return $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
+        }
+    }
     private static bool CopyingLobbyCode = false;
 
     /// <summary>
@@ -199,7 +221,7 @@ internal static class VersusLobbyManager
     private static void ResetAllText()
     {
         // Shows the lobby code in the header and resets the header UI events
-        PickSides?.SetText(DefaultHeaderText);
+        PickSides?.SetText(HeaderText);
         UpdateHeaderEvents();
 
         // Clear all text content
@@ -230,7 +252,9 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void UpdateHeaderEvents()
     {
-        if (ReloadedLobby.NetworkTransport is LanTransport) return;
+        if (ReloadedLobby.TransportMode == TransportMode.Lan ||
+            (ReloadedLobby.TransportMode == TransportMode.DirectIP && !ReloadedLobby.AmLobbyHost())) return;
+
         if (LobbyCodeHeaderTrigger == null) return;
 
         EventTrigger trigger = LobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
@@ -254,7 +278,7 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerExit = new() { eventID = EventTriggerType.PointerExit };
             pointerExit.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!CopyingLobbyCode) PickSides?.SetText(DefaultHeaderText);
+                if (!CopyingLobbyCode) PickSides?.SetText(HeaderText);
             }));
             trigger.triggers.Add(pointerExit);
 
@@ -276,13 +300,26 @@ internal static class VersusLobbyManager
         }
 
         CopyingLobbyCode = true;
-        GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
+        if (ReloadedLobby.TransportMode == TransportMode.Steam)
+        {
+            GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
+        }
+        else
+        {
+            CustomPopupPanel.Show(
+                "Warning",
+                "Sharing your IP address can be dangerous.\n" +
+                "Only share with people you trust.\n" +
+                "Or use a VPN for safe connections"
+            );
+            GUIUtility.systemCopyBuffer = $"{LanServer.GetLocalNetworkIP()}:{LanServer.GetPort()}";
+        }
         Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
         PickSides?.SetText($"Copied to Clipboard!");
 
         yield return new WaitForSeconds(1f);
 
-        PickSides?.SetText(DefaultHeaderText);
+        PickSides?.SetText(HeaderText);
         CopyingLobbyCode = false;
     }
 }

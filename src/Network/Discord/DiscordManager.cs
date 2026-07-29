@@ -332,7 +332,8 @@ internal static class DiscordManager
     /// </summary>
     internal static void OnLobbyRestart()
     {
-        if (ReloadedLobby.TransportMode == TransportMode.Lan) return;
+        if (ReloadedLobby.TransportMode != TransportMode.Steam)
+            return;
 
         Presence.Party.ID = Secrets.CreateFriendlySecret(new());
         Dirty = true;
@@ -343,7 +344,8 @@ internal static class DiscordManager
     /// </summary>
     internal static void OnJoinLobby()
     {
-        if (ReloadedLobby.TransportMode == TransportMode.Lan) return;
+        if (ReloadedLobby.TransportMode != TransportMode.Steam)
+            return;
 
         Presence.Party.ID = Secrets.CreateFriendlySecret(new());
 

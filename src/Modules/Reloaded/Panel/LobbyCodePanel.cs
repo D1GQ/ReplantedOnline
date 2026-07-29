@@ -3,8 +3,10 @@ using Il2CppReloaded.Input;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
@@ -15,6 +17,7 @@ namespace ReplantedOnline.Modules.Reloaded.Panel;
 /// </summary>
 internal static class LobbyCodePanel
 {
+    private static event Action? OnShow;
     private static PanelView? Panel;
     private static ReloadedInputField? InputField;
     private static string LastText = string.Empty;
@@ -39,18 +42,35 @@ internal static class LobbyCodePanel
 
         // Get reference to the input field and set up validation
         InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true)!;
-        if (InputField != null)
-        {
-            InputField.characterLimit = ReloadedMatchmaking.CODE_LENGTH;
-            InputField.onValueChanged = null;
-        }
+        InputField?.onValueChanged = null;
 
         // Update all text elements in the panel
         var headerText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/HeaderText")?.GetComponentInChildren<TextMeshProUGUI>(true);
         headerText?.SetText("Join Lobby");
 
         var subheadingText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/SubheadingText")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        subheadingText?.SetText("Please enter lobby code:");
+        OnShow += () =>
+        {
+            if (ReloadedLobby.TransportMode == TransportMode.Steam)
+            {
+                InputField?.characterLimit = ReloadedMatchmaking.CODE_LENGTH;
+                subheadingText?.SetText("Please enter lobby code:");
+            }
+            else
+            {
+                InputField?.characterLimit = 25;
+                subheadingText?.SetText("Please enter IP:");
+                if (ReloadedLobby.TransportMode == TransportMode.DirectIP)
+                {
+                    CustomPopupPanel.Show(
+                        "Warning",
+                        "Joining a lobby through IP exposes your local IP.\n" +
+                        "Only join people that you trust.\n" +
+                        "Or use a VPN"
+                    );
+                }
+            }
+        };
 
         var placeholderText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField/Text Area/Placeholder")?.GetComponentInChildren<TextMeshProUGUI>(true);
         placeholderText?.SetText("Enter code...");
@@ -66,18 +86,29 @@ internal static class LobbyCodePanel
             }
 
             okButton.onClick = new();
-            okButton.onClick.AddListener(() =>
+            okButton.onClick.AddListener(async () =>
             {
-                if (InputField != null && InputField.m_Text.Length == ReloadedMatchmaking.CODE_LENGTH)
+                if (InputField != null)
                 {
-                    Panel?.gameObject.SetActive(false);
-                    string gameCode = InputField.m_Text.ToUpper();
-
-                    ReloadedMatchmaking.JoinSteamLobbyByGameCode(gameCode);
-                }
-                else
-                {
-                    CustomPopupPanel.Show("Error", $"Lobby code must contain {ReloadedMatchmaking.CODE_LENGTH} characters!");
+                    if (ReloadedLobby.TransportMode == TransportMode.Steam)
+                    {
+                        if (InputField.m_Text.Length == ReloadedMatchmaking.CODE_LENGTH)
+                        {
+                            Panel?.gameObject.SetActive(false);
+                            string gameCode = InputField.m_Text.ToUpper();
+                            ReloadedMatchmaking.JoinSteamLobbyByGameCode(gameCode);
+                        }
+                        else
+                        {
+                            CustomPopupPanel.Show("Error", $"Lobby code must contain {ReloadedMatchmaking.CODE_LENGTH} characters!");
+                        }
+                    }
+                    else if (ReloadedLobby.NetworkTransport is LanTransport lanTransport)
+                    {
+                        Panel?.gameObject.SetActive(false);
+                        string ip = InputField.m_Text.ToUpper();
+                        await lanTransport.JoinByIPString(ip);
+                    }
                 }
             });
         }
@@ -105,6 +136,7 @@ internal static class LobbyCodePanel
     /// </summary>
     internal static void Show()
     {
+        OnShow?.Invoke();
         Panel?.gameObject.SetActive(true);
         InputField?.SetText(string.Empty, false);
     }
@@ -119,7 +151,15 @@ internal static class LobbyCodePanel
             if (InputField.text != LastText)
             {
                 string currentText = InputField.text;
-                string cleanValue = new([.. currentText.Where(c => ReloadedMatchmaking.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
+                string cleanValue;
+                if (ReloadedLobby.TransportMode == TransportMode.Steam)
+                {
+                    cleanValue = new([.. currentText.Where(c => ReloadedMatchmaking.CODE_CHARS.Contains(char.ToUpper(c))).Select(char.ToUpper)]);
+                }
+                else
+                {
+                    cleanValue = new([.. currentText.Where(c => LanTransport.IP_CHARS.Contains(c))]);
+                }
 
                 InputField?.SetText(cleanValue, false);
                 InputField?.ForceLabelUpdate();

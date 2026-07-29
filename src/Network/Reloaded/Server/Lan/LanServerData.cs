@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Network.Reloaded.Serialization;
+﻿using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using System.Net;
 
@@ -16,6 +17,28 @@ internal sealed class LanServerData : IDisposable
     internal const string IS_JOINABLE_KEY = "is_joinable";
     internal const string MOD_VERSION_KEY = "mod_version";
     internal const string GAME_CODE_KEY = "game_code";
+
+    /// <summary>
+    /// Creates server data.
+    /// </summary>
+    internal LanServerData()
+    {
+    }
+
+    /// <summary>
+    /// Creates server data for a direct IP connection.
+    /// </summary>
+    /// <param name="ipAddress">The host IP address</param>
+    /// <param name="port">The host port</param>
+    /// <param name="hostId">Optional host ID (will be created from endpoint if not provided)</param>
+    internal LanServerData(IPAddress ipAddress, int port, ID? hostId = null)
+    {
+        HostAddress = ipAddress;
+        GamePort = port;
+        HostId = hostId ?? new ID(new IPEndPoint(ipAddress, port), IdType.IPEndPoint);
+        LobbyId = ID.CreateRandomULong();
+        Data = [];
+    }
 
     /// <summary>
     /// Gets or sets the ID of the host member.

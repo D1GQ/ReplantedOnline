@@ -236,7 +236,8 @@ internal sealed class LanServer : IDisposable
     /// Sends a join request to a discovered server.
     /// </summary>
     /// <param name="serverData">The server data of the lobby to join.</param>
-    internal void JoinServer(LanServerData serverData)
+    /// <returns>Task that completes with true if handshake succeeded, false if rejected.</returns>
+    internal async Task<bool> JoinServer(LanServerData serverData)
     {
         lock (_stateLock)
         {
@@ -248,7 +249,7 @@ internal sealed class LanServer : IDisposable
         if (serverData.HostAddress == null)
         {
             ReplantedOnlineMod.Logger.Error(typeof(LanServer), "No host address in server data");
-            return;
+            return false;
         }
 
         var hostEndpoint = new IPEndPoint(serverData.HostAddress, serverData.GamePort);
@@ -258,6 +259,25 @@ internal sealed class LanServer : IDisposable
         writer.EndSubpacket();
         SendRawPacketTo(hostEndpoint, writer);
         writer.Recycle();
+
+        try
+        {
+            var timeout = Task.Delay(5000);
+            var completed = await Task.WhenAny(HandshakeCompletionSource.Task, timeout);
+
+            if (completed == timeout)
+            {
+                ReplantedOnlineMod.Logger.Error(typeof(LanServer), "Handshake timed out");
+                return false;
+            }
+
+            return await HandshakeCompletionSource.Task;
+        }
+        catch (Exception ex)
+        {
+            ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"Handshake error: {ex}");
+            return false;
+        }
     }
 
     /// <summary>
@@ -907,7 +927,7 @@ internal sealed class LanServer : IDisposable
     /// Gets the local network IP address.
     /// </summary>
     /// <returns>The local IPv4 address.</returns>
-    private static IPAddress GetLocalNetworkIP()
+    internal static IPAddress GetLocalNetworkIP()
     {
         try
         {
@@ -920,6 +940,16 @@ internal sealed class LanServer : IDisposable
         {
             return LOCALHOST_IP;
         }
+    }
+
+    /// <summary>
+    /// Gets the port the server is listening on.
+    /// </summary>
+    /// <returns>The port number, or 0 if not hosting.</returns>
+    internal static int GetPort()
+    {
+        if (Server == null || !Server._isRunning || !Server.IsHost) return 0;
+        return Server.ServerData.GamePort;
     }
 
     /// <summary>

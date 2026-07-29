@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppSource.Binders;
 using Il2CppTMPro;
-using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
@@ -82,9 +82,9 @@ internal static class StartMultiplayerButtonPatch
         else
         {
             // Join button clicked - show the lobby code input panel
-            if (ReloadedLobby.NetworkTransport is LanTransport lanTransport)
+            if (ReloadedLobby.NetworkTransport is LanTransport lanTransport &&
+                ReloadedLobby.TransportMode == TransportMode.Lan)
             {
-                Transitions.SetLoading();
                 _ = lanTransport.JoinFirstLanLobby();
             }
             else
