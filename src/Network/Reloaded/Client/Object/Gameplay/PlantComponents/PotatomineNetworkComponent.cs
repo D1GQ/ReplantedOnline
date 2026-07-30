@@ -23,7 +23,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
             UpdateSleeping(plant);
         }
 
-        UpdateHealthSync();
+        UpdateHealthSync(plant);
     }
 
     private void UpdateSleeping(Plant plant)

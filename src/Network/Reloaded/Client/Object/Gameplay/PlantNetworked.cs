@@ -90,10 +90,11 @@ internal sealed class PlantNetworked : NetworkObject
     {
         LogicComponent = (PlantNetworkComponent)RegisterNetworkComponent.TryCreateInstance(SeedType, typeof(PlantNetworkComponent))!;
         AddNetworkComponent(LogicComponent);
-        if (Plant != null)
+        var plant = Plant;
+        if (plant != null)
         {
-            Plant.AddNetworkedLookup(this);
-            Plant.mLaunchRate += ReplantedOnlineMod.Constants.Reloaded.PLANT_LAUNCHRATE_MULTIPLIER;
+            plant.AddNetworkedLookup(this);
+            plant.mLaunchRate += ReplantedOnlineMod.Constants.Reloaded.PLANT_LAUNCHRATE_MULTIPLIER;
         }
 
         if (SpawnType == SpawnType.ChinaJalapeno)
@@ -117,12 +118,13 @@ internal sealed class PlantNetworked : NetworkObject
 
     public sealed override void OnRejected()
     {
-        if (Plant == null)
+        var plant = Plant;
+        if (plant == null)
             return;
 
-        if (!Plant.mDead)
+        if (!plant.mDead)
         {
-            Plant?.DieOriginal();
+            plant.DieOriginal();
         }
     }
 
@@ -130,18 +132,19 @@ internal sealed class PlantNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (Plant != null && !Dying)
+        var plant = Plant;
+        if (plant == null)
+            return;
+
+        if (!Dying)
         {
-            Plant.DieOriginal();
+            plant.DieOriginal();
         }
     }
 
     private void Update()
     {
         if (!IsOnNetwork)
-            return;
-
-        if (Plant == null)
             return;
 
         LogicComponent.Update();
@@ -291,12 +294,12 @@ internal sealed class PlantNetworked : NetworkObject
             packetWriter.WriteInt(GridY);
 
             LogicComponent.Serialize(packetWriter, init);
+            ClearDirtyBits();
 
             return;
         }
 
         LogicComponent.Serialize(packetWriter, init);
-
         ClearDirtyBits();
     }
 

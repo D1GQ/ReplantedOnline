@@ -41,7 +41,7 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
             }
         }
 
-        UpdateHealthSync();
+        UpdateHealthSync(plant);
     }
 
     private void SendLookRpc()

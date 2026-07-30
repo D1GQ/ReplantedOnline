@@ -49,7 +49,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
             }
         }
 
-        UpdateHealthSync();
+        UpdateHealthSync(plant);
     }
 
     private void SendHighRpc()

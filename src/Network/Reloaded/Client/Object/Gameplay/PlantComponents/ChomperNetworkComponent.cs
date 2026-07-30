@@ -64,7 +64,7 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
             }
         }
 
-        UpdateHealthSync();
+        UpdateHealthSync(plant);
     }
 
     private void SendChomperStateRpc(PlantState plantState, bool hasTarget)

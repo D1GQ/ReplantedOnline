@@ -25,22 +25,16 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Enraged
     }
 
-    internal override void OnInit()
+    internal override void OnInit(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return;
-
-        Net.Zombie.mPhaseCounter = int.MaxValue;
-        Net.Zombie.mBodyMaxHealth = 100000;
-        Net.Zombie.mBodyHealth = 100000;
+        zombie.mPhaseCounter = int.MaxValue;
+        zombie.mBodyMaxHealth = 100000;
+        zombie.mBodyHealth = 100000;
     }
 
     internal YetiState CurrentState = YetiState.Curious;
     internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return;
-
         switch (CurrentState)
         {
             case YetiState.Curious:

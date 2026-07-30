@@ -132,12 +132,13 @@ internal sealed class ZombieNetworked : NetworkObject
 
     public sealed override void OnRejected()
     {
-        if (Zombie == null)
+        var zombie = Zombie;
+        if (zombie == null)
             return;
 
-        if (!Zombie.mDead)
+        if (!zombie.mDead)
         {
-            Zombie.DieNoLootOriginal();
+            zombie.DieNoLootOriginal();
         }
     }
 
@@ -145,18 +146,19 @@ internal sealed class ZombieNetworked : NetworkObject
     {
         this.RemoveNetworkedLookup();
 
-        if (Zombie != null && !Dying)
+        var zombie = Zombie;
+        if (zombie == null)
+            return;
+
+        if (!Dying)
         {
-            Zombie.DieNoLootOriginal();
+            zombie.DieNoLootOriginal();
         }
     }
 
     private void Update()
     {
         if (!IsOnNetwork)
-            return;
-
-        if (Zombie == null)
             return;
 
         PoolComponent.Update();

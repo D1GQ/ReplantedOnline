@@ -23,10 +23,9 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
     internal WhiteWaterEffect? WhiteWaterEffect { get; private set; } = null;
 
-    internal sealed override void OnInit()
+    internal sealed override void OnInit(Zombie zombie)
     {
-        var zombie = Net.Zombie;
-        if (!CanGoInWater() || zombie == null)
+        if (!CanGoInWater())
         {
             return;
         }

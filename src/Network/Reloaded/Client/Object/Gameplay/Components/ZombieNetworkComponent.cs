@@ -20,10 +20,14 @@ internal class ZombieNetworkComponent : NetworkComponent
     internal sealed override void Init()
     {
         Net = (NetObj as ZombieNetworked)!;
-        OnInit();
+        var zombie = Net.Zombie;
+        if (zombie != null)
+        {
+            OnInit(zombie);
+        }
     }
 
-    internal virtual void OnInit() { }
+    internal virtual void OnInit(Zombie zombie) { }
 
     private static readonly ZombieType[] NonGroaningZombies =
     [

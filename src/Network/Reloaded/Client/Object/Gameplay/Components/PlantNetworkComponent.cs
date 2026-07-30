@@ -17,10 +17,14 @@ internal class PlantNetworkComponent : NetworkComponent
     internal sealed override void Init()
     {
         Net = (NetObj as PlantNetworked)!;
-        OnInit();
+        var plant = Net.Plant;
+        if (plant != null)
+        {
+            OnInit(plant);
+        }
     }
 
-    internal virtual void OnInit() { }
+    internal virtual void OnInit(Plant plant) { }
 
     internal virtual void OnDeath(Plant? plant, DeathReason deathReason) { }
 
@@ -35,40 +39,37 @@ internal class PlantNetworkComponent : NetworkComponent
 
     internal virtual void OnUpdate(Plant plant)
     {
-        UpdateHealthSync();
+        UpdateHealthSync(plant);
     }
 
     internal int? lastSyncPlantHealth;
     private readonly UnityTimer _dirtyHpTimer = new();
-    protected void UpdateHealthSync()
+    protected void UpdateHealthSync(Plant plant)
     {
-        if (Net.Plant == null)
-            return;
-
         if (Net.AmOwner)
         {
-            if (!Net.Dying && !Net.Plant.mDead)
+            if (!Net.Dying && !plant.mDead)
             {
-                if (_dirtyHpTimer.AccumulatedTime > 1f && lastSyncPlantHealth != Net.Plant.mPlantHealth)
+                if (_dirtyHpTimer.AccumulatedTime > 1f && lastSyncPlantHealth != plant.mPlantHealth)
                 {
                     _dirtyHpTimer.Reset();
                     Net.MarkDirty();
-                    lastSyncPlantHealth = Net.Plant.mPlantHealth;
+                    lastSyncPlantHealth = plant.mPlantHealth;
                 }
             }
         }
         else
         {
-            if (!Net.Dying && !Net.Plant.mDead)
+            if (!Net.Dying && !plant.mDead)
             {
                 if (lastSyncPlantHealth != null)
                 {
-                    Net.Plant.mPlantHealth = lastSyncPlantHealth.Value;
+                    plant.mPlantHealth = lastSyncPlantHealth.Value;
                 }
 
-                if (Net.Plant.mPlantHealth < 25)
+                if (plant.mPlantHealth < 25)
                 {
-                    Net.Plant.mPlantHealth = 25;
+                    plant.mPlantHealth = 25;
                 }
             }
         }
@@ -77,9 +78,10 @@ internal class PlantNetworkComponent : NetworkComponent
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
         packetWriter.WriteBool(Net.Plant == null);
-        if (Net.Plant != null)
+        var plant = Net.Plant;
+        if (plant != null)
         {
-            packetWriter.WritePackedInt(Net.Plant.mPlantHealth);
+            packetWriter.WritePackedInt(plant.mPlantHealth);
         }
     }
 

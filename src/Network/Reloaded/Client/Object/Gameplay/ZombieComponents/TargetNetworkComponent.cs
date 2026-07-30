@@ -21,7 +21,7 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
         _lastPos = zombie.mController.transform.position;
     }
 
-    internal sealed override void OnDeath(Zombie zombie, DeathReason deathReason)
+    internal sealed override void OnDeath(Zombie? zombie, DeathReason deathReason)
     {
         if (zombie == null)
             return;

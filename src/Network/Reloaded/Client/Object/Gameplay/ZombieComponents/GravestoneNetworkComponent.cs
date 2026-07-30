@@ -19,12 +19,12 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
     private Texture _poolTexture = default!;
     private WhiteWaterEffect? _whiteWaterEffect = null;
 
-    internal sealed override void OnInit()
+    internal sealed override void OnInit(Zombie zombie)
     {
-        if (Net.Zombie?.mController == null)
+        if (zombie.mController == null)
             return;
 
-        _originalTexture = Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture;
+        _originalTexture = zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture;
         _dirtlessTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestoneDirtless.texture;
         _poolTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestonePool.texture;
     }
