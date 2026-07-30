@@ -9,13 +9,13 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Magnetshroom)]
 internal sealed class MagnetShroomNetworkComponent : PlantNetworkComponent
 {
-    internal sealed override void Update()
+    internal sealed override void OnUpdate(Plant plant)
     {
         if (!Net.AmOwner)
         {
             if (Net.Target != null)
             {
-                Net.Plant?.MagnetShroomAttactItemOriginal(Net.Target);
+                plant.MagnetShroomAttactItemOriginal(Net.Target);
                 Net.Target = null;
             }
         }

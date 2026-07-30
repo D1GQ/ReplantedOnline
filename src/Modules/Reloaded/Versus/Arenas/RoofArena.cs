@@ -157,7 +157,8 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 680);
 
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         if (_pushBackEventTimer.HasElapsed(1, 30f))
         {

@@ -25,7 +25,9 @@ internal class DirectIPTransport : LanTransport
     /// <param name="port">The port the host is listening on</param>
     public async Task JoinByIP(string ipAddress, int port)
     {
-        if (_isJoining || _hasJoined) return;
+        if (_isJoining || _hasJoined)
+            return;
+
         Transitions.SetLoading();
 
         try

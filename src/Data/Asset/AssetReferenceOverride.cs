@@ -47,7 +47,8 @@ internal sealed class AssetReferenceOverride<T> : IAssetReferenceOverride where 
     /// </summary>
     public void UpdateOverride()
     {
-        if (_assetReference == null) return;
+        if (_assetReference == null)
+            return;
 
         // If in a lobby override assets
         if (_shouldApply == null || _shouldApply.Invoke())

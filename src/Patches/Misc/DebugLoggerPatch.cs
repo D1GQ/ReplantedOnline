@@ -25,7 +25,8 @@ internal static class DebugLoggerPatch
 
     private static void LogInfo(string className, string methodName, object[] args, ParameterInfo[] parameters)
     {
-        if (!InfoDisplay.DebugLoggerEnabled) return;
+        if (!InfoDisplay.DebugLoggerEnabled)
+            return;
 
         var sb = new StringBuilder();
         sb.Append($"{className}.{methodName}: ");

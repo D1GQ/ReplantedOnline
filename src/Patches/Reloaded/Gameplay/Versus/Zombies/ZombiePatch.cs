@@ -87,17 +87,22 @@ internal static class ZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
-        if (theAttackType != ZombieAttackType.Chew) return;
-        if (__instance.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar) return;
+        if (theAttackType != ZombieAttackType.Chew)
+            return;
+
+        if (__instance.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)
+            return;
 
         // Allow ladder climbing
         var gridX = __instance.mBoard.PixelToGridXKeepOnBoard(__instance.mPosX, __instance.mPosY);
-        if (__instance.mBoard.GetLadderAt(gridX, __instance.mRow) != null) return;
+        if (__instance.mBoard.GetLadderAt(gridX, __instance.mRow) != null)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {
             var zombieNetworked = __instance.GetNetworked();
-            if (zombieNetworked == null) return;
+            if (zombieNetworked == null)
+                return;
 
             if (VersusState.AmPlantSide)
             {

@@ -30,8 +30,12 @@ internal sealed class SpriteRendererMask : MonoBehaviour
 
     private void Update()
     {
-        if (_spriteRenderer == null) return;
-        if (_spriteRendererMask == null) return;
+        if (_spriteRenderer == null)
+            return;
+
+        if (_spriteRendererMask == null)
+            return;
+
         if (_spriteMask == null)
         {
             Destroy(this);

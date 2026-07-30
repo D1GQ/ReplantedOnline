@@ -21,23 +21,21 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
 
     private bool _looking;
     private bool _jump;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate(Plant plant)
     {
-        if (Net.Plant == null) return;
-
         if (Net.AmOwner)
         {
-            if (Net.Plant.mState == PlantState.SquashLook && !_looking)
+            if (plant.mState == PlantState.SquashLook && !_looking)
             {
                 _looking = true;
-                Zombie target = Net.Plant.mBoard.ZombieGet(Net.Plant.mTargetZombieID);
+                Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
                 Net.SendSetZombieTargetRpc(target);
                 SendLookRpc();
             }
-            else if (Net.Plant.mState == PlantState.SquashPreLaunch && !_jump)
+            else if (plant.mState == PlantState.SquashPreLaunch && !_jump)
             {
                 _jump = true;
-                Zombie target = Net.Plant.mBoard.ZombieGet(Net.Plant.mTargetZombieID);
+                Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
                 Net.SendSetZombieTargetRpc(target);
                 SendJumpRpc();
             }
@@ -54,25 +52,32 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     [RpcHandler(SquashRpcs.Look)]
     private void HandleLookRpc()
     {
-        if (Net.Plant! == null) return;
-        if (_looking) return;
+        var plant = Net.Plant;
+        if (plant == null)
+            return;
+
+        if (_looking)
+            return;
+
         _looking = true;
 
         var target = Net.Target;
-        if (target == null) return;
-        Net.Plant.mTargetZombieID = target.DataID;
+        if (target == null)
+            return;
 
-        Net.Plant.mState = PlantState.SquashLook;
-        Net.Plant.mStateCountdown = int.MaxValue;
+        plant.mTargetZombieID = target.DataID;
+
+        plant.mState = PlantState.SquashLook;
+        plant.mStateCountdown = int.MaxValue;
 
         Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_SQUASH_HMM);
-        if (target.mX > Net.Plant.mX)
+        if (target.mX > plant.mX)
         {
-            Net.Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKRIGHT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
+            plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKRIGHT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
         }
         else
         {
-            Net.Plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKLEFT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
+            plant.mController.PlayAnimationOnTrack(Animations.SQUASH_LOOKLEFT.Anim, CharacterAnimationTrack.Body, Animations.SQUASH_LOOKLEFT.Fps, ReanimLoopType.PlayOnceFullLastFrameAndHold);
         }
     }
 
@@ -84,17 +89,24 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
     [RpcHandler(SquashRpcs.Jump)]
     private void HandleJumpRpc()
     {
-        if (Net.Plant! == null) return;
-        if (_jump) return;
+        var plant = Net.Plant;
+        if (plant == null)
+            return;
+
+        if (_jump)
+            return;
+
         _jump = true;
 
         var target = Net.Target;
-        if (target == null) return;
-        Net.Plant.mTargetZombieID = target.DataID;
+        if (target == null)
+            return;
 
-        Net.Plant.mTargetX = Mathf.FloorToInt(target.mPosX);
-        Net.Plant.mTargetY = Mathf.FloorToInt(target.mPosY);
-        Net.Plant.mState = PlantState.SquashLook;
-        Net.Plant.mStateCountdown = 0;
+        plant.mTargetZombieID = target.DataID;
+
+        plant.mTargetX = Mathf.FloorToInt(target.mPosX);
+        plant.mTargetY = Mathf.FloorToInt(target.mPosY);
+        plant.mState = PlantState.SquashLook;
+        plant.mStateCountdown = 0;
     }
 }

@@ -132,7 +132,8 @@ internal sealed class ZombieNetworked : NetworkObject
 
     public sealed override void OnRejected()
     {
-        if (Zombie == null) return;
+        if (Zombie == null)
+            return;
 
         if (!Zombie.mDead)
         {
@@ -152,9 +153,11 @@ internal sealed class ZombieNetworked : NetworkObject
 
     private void Update()
     {
-        if (!IsOnNetwork) return;
+        if (!IsOnNetwork)
+            return;
 
-        if (Zombie == null) return;
+        if (Zombie == null)
+            return;
 
         PoolComponent.Update();
         LogicComponent.Update();
@@ -173,7 +176,8 @@ internal sealed class ZombieNetworked : NetworkObject
     [RpcHandler(ZombieRpcs.TakeDamage)]
     internal void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
     {
-        if (Zombie == null) return;
+        if (Zombie == null)
+            return;
 
         int minimumHealth = 5;
         int relevantHealth;
@@ -209,7 +213,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
         }
 
@@ -222,7 +226,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             Zombie?.PlayDeathAnimOriginal(damageFlags);
         }
 
@@ -234,7 +238,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
         }
 
@@ -247,7 +251,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             if (withLoot)
             {
                 Zombie?.DieWithLootOriginal();
@@ -277,7 +281,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             SendNetworkObjectRpc(ZombieRpcs.MowDown);
         }
 
@@ -290,7 +294,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (!Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Normal);
+            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
             Zombie?.MowDownOriginal();
         }
 
@@ -396,7 +400,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (reallyDead && !Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Burned);
+            LogicComponent.OnDeath(Zombie, DeathReason.Burned);
             DespawnAndDestroy(true);
         }
     }
@@ -413,7 +417,7 @@ internal sealed class ZombieNetworked : NetworkObject
         if (reallyDead && !Dying)
         {
             Dying = true;
-            LogicComponent.OnDeath(DeathReason.Burned);
+            LogicComponent.OnDeath(Zombie, DeathReason.Burned);
             Zombie?.ApplyBurnOriginal();
             IsReadyToDespawn = true;
         }

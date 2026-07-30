@@ -69,7 +69,8 @@ internal sealed class NetworkObjectSpawnPacket : IPacketMessage<NetworkObject, I
     /// <inheritdoc/>
     public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        if (!sender.AmHost) return;
+        if (!sender.AmHost)
+            return;
 
         MelonCoroutines.Start(CoWaitForNetworkSpawn(sender, packetReader));
     }

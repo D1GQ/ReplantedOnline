@@ -30,7 +30,9 @@ internal sealed class SyncSeedPacketRpc : IRpcMessage<SeedType>
         // Read the seed type from the packet
         var seedType = packetReader.ReadEnum<SeedType>();
         var seedIndex = packetReader.ReadPackedInt();
-        if (Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count < seedIndex) return;
+        if (Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets.Count < seedIndex)
+            return;
+
         var seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[seedIndex];
 
         if (seedPacket != null)

@@ -189,7 +189,8 @@ internal static class ReloadedMatchmaking
     /// <param name="override">Optional override value for the joinable state. If not provided, the joinable state is automatically determined based on whether the game has started.</param>
     internal static void UpdateLobbyJoinable(bool? @override = null)
     {
-        if (!ReloadedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby())
+            return;
 
         if (@override != null)
         {

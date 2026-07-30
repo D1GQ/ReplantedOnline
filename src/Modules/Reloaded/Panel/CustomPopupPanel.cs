@@ -23,7 +23,9 @@ internal static class CustomPopupPanel
     /// <param name="globalPanels">The PanelViewContainer that contains the base panel template to clone from.</param>
     internal static void Init(PanelViewContainer globalPanels)
     {
-        if (HasInit) return;
+        if (HasInit)
+            return;
+
         HasInit = true;
 
         Panel = UnityEngine.Object.Instantiate(globalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true), globalPanels.transform);
@@ -63,7 +65,8 @@ internal static class CustomPopupPanel
     /// <param name="label">The text to display on the button. If empty, defaults to "Ok" when shown.</param>
     internal static void SetButtonLabel(string label)
     {
-        if (!HasInit) return;
+        if (!HasInit)
+            return;
 
         LabelText?.SetText(label);
     }
@@ -75,7 +78,8 @@ internal static class CustomPopupPanel
     /// <param name="text">The body/subtext content of the popup message.</param>
     internal static void Show(string header, string text)
     {
-        if (!HasInit) return;
+        if (!HasInit)
+            return;
 
         if (LabelText?.text == string.Empty)
         {
@@ -91,7 +95,8 @@ internal static class CustomPopupPanel
     /// </summary>
     internal static void Hide()
     {
-        if (!HasInit) return;
+        if (!HasInit)
+            return;
 
         Panel?.gameObject.SetActive(false);
         HeaderText?.SetText(string.Empty);

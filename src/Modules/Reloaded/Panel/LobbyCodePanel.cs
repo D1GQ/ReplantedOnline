@@ -29,7 +29,9 @@ internal static class LobbyCodePanel
     /// <param name="usersRenamePanel">The template panel view to clone for creating the lobby code panel.</param>
     internal static void Init(PanelView usersRenamePanel)
     {
-        if (HasInit) return;
+        if (HasInit)
+            return;
+
         HasInit = true;
 
         Panel = UnityEngine.Object.Instantiate(usersRenamePanel, Instances.GlobalPanels.transform);

@@ -10,21 +10,18 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Bobsled)]
 internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
 {
-    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(Zombie zombie, float distance, bool useNonNetworkLogic = false)
     {
-        if (Net.Zombie == null)
-            return;
-
         // Lock passengers positions to leader when in sled
-        var leader = Net.Zombie.mBoard.ZombieGet(Net.Zombie.mRelatedZombieID);
+        var leader = zombie.mBoard.ZombieGet(zombie.mRelatedZombieID);
         if (leader != null && leader.mZombiePhase != ZombiePhase.ZombieNormal)
         {
-            Net.Zombie.mPosX = leader.mPosX + 50 * Net.Zombie.GetBobsledPosition();
+            zombie.mPosX = leader.mPosX + 50 * zombie.GetBobsledPosition();
             SyncedPosX = null;
             return;
         }
 
-        base.UpdatePosition(distance, useNonNetworkLogic);
+        base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
     public sealed override void Serialize(PacketWriter packetWriter, bool init)

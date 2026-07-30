@@ -36,7 +36,8 @@ internal static class SteamClientPatch
     /// <param name="appId">The temporary App ID to set.</param>
     internal static void TrySetTempApp(AppIds appId)
     {
-        if (_hasTempAppId) return;
+        if (_hasTempAppId)
+            return;
 
         if (appId == AppIds.Spacewar)
         {
@@ -57,7 +58,8 @@ internal static class SteamClientPatch
     /// </summary>
     internal static void TryClearTempApp()
     {
-        if (!_hasTempAppId) return;
+        if (!_hasTempAppId)
+            return;
 
         _hasTempAppId = false;
         SetApp(BloomEngineManager.BloomConfigs.AppServerConfig.Value);
@@ -71,7 +73,8 @@ internal static class SteamClientPatch
     /// <param name="attempt">Current retry attempt number, recursive up to 100 times.</param>
     private static void SetApp(AppIds appId, bool bypassTemp, int attempt)
     {
-        if (_hasTempAppId && !bypassTemp) return;
+        if (_hasTempAppId && !bypassTemp)
+            return;
 
         if (attempt >= 100)
         {

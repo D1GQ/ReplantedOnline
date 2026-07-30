@@ -63,9 +63,15 @@ internal static class SeedBankPatch
                 seedBankEntry.m_activateButtonModel.m_activated = trigger;
                 trigger.Subscribe((Action<ButtonModel>)(buttom =>
                 {
-                    if (__instance.SeedBankPlayerIndex != ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX) return;
-                    if (!seedBankEntry.CanAfford()) return;
-                    if (!seedBankEntry.m_seedPacket.CanPickUp()) return;
+                    if (__instance.SeedBankPlayerIndex != ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX)
+                        return;
+
+                    if (!seedBankEntry.CanAfford())
+                        return;
+
+                    if (!seedBankEntry.m_seedPacket.CanPickUp())
+                        return;
+
                     seedBankEntry.m_seedPacket.mBoard.RefreshSeedPacketFromCursor(__instance.SeedBankPlayerIndex);
                     seedBankEntry.m_seedPacket.mBoard.ClearCursor(false, __instance.SeedBankPlayerIndex);
                     seedBankEntry.m_seedPacket.Activated(__instance.SeedBankPlayerIndex, false);

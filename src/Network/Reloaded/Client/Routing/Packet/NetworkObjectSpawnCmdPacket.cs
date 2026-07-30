@@ -17,7 +17,8 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
     /// <inheritdoc/>
     public void Send(NetworkObject networkObj)
     {
-        if (ReloadedLobby.AmLobbyHost()) return;
+        if (ReloadedLobby.AmLobbyHost())
+            return;
 
         PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectSpawnCmd);
         Message<NetworkObjectSpawnMessage>.Singleton.Serialize(packetWriter, networkObj);
@@ -28,7 +29,8 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
     /// <inheritdoc/>
     public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectSpawnMessage>.Singleton.Deserialize(packet);

@@ -18,15 +18,13 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 
     private bool _isDiving;
     private bool _isTakingPlant;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
-        SeedPacketDefinitions.SetBungeeRenderOrder(Net.Zombie);
+        SeedPacketDefinitions.SetBungeeRenderOrder(zombie);
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
+            if (zombie.mZombiePhase == ZombiePhase.BungeeDivingScreaming)
             {
                 if (!_isDiving)
                 {
@@ -34,9 +32,9 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                     SendDiveRpc();
                 }
             }
-            else if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
-                if (Net.Zombie.mPhaseCounter < 10 && !_isTakingPlant)
+                if (zombie.mPhaseCounter < 10 && !_isTakingPlant)
                 {
                     _isTakingPlant = true;
                     SendTakePlantRpc();
@@ -46,21 +44,21 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeDiving)
+            if (zombie.mZombiePhase == ZombiePhase.BungeeDiving)
             {
                 if (!_isDiving)
                 {
-                    Net.Zombie.mPhaseCounter = int.MaxValue;
+                    zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (Net.Zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
+            else if (zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
             {
                 if (!_isTakingPlant)
                 {
-                    Net.Zombie.mPhaseCounter = int.MaxValue;
+                    zombie.mPhaseCounter = int.MaxValue;
                 }
             }
-            else if (Net.Zombie.mAltitude > 500 && !Net.IsReadyToDespawn)
+            else if (zombie.mAltitude > 500 && !Net.IsReadyToDespawn)
             {
                 Net.IsReadyToDespawn = true;
             }

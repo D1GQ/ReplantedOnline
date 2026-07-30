@@ -145,7 +145,8 @@ internal static class PoolArenaPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!__instance.Board.StageHasPool()) return;
+            if (!__instance.Board.StageHasPool())
+                return;
 
             if (PvZRUtils.ReloadedObjectYToGridY(theY) is 2 or 3)
             {

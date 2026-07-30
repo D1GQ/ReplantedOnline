@@ -98,7 +98,8 @@ internal static class MatchmakingPatch
     [HarmonyPrefix]
     private static void ISteamMatchmaking_SetLobbyMemberLimit_Prefix(SteamId steamIDLobby, ref int cMaxMembers)
     {
-        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData!.LobbyId != steamIDLobby) return;
+        if (!ReloadedLobby.AmInLobby() || ReloadedLobby.LobbyData!.LobbyId != steamIDLobby)
+            return;
 
         int realTotalMembers = SteamMatchmaking.Internal.GetNumLobbyMembersOriginal(steamIDLobby);
         int visibleMembers = GetFilteredMembers(steamIDLobby).Count;

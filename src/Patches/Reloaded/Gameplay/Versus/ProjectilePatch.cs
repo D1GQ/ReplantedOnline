@@ -165,7 +165,8 @@ internal static class ProjectilePatch
     private static void Projectile_FindCollisionTarget_Catapult_Postfix(Projectile __instance, ref Zombie? __result)
     {
         if (__instance.mProjectileType is not (ProjectileType.Cabbage or ProjectileType.Kernel or ProjectileType.Butter
-            or ProjectileType.Melon or ProjectileType.Wintermelon)) return;
+            or ProjectileType.Melon or ProjectileType.Wintermelon))
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {

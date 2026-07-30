@@ -36,13 +36,15 @@ internal static class PotatominePlantPatch
     [HarmonyPostfix]
     private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie? __result)
     {
-        if (__instance.mSeedType != SeedType.Potatomine) return;
+        if (__instance.mSeedType != SeedType.Potatomine)
+            return;
 
         // Check if we're in an online multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
             var plantNetworked = __instance.GetNetworked();
-            if (plantNetworked == null) return;
+            if (plantNetworked == null)
+                return;
 
             if (VersusState.AmPlantSide)
             {

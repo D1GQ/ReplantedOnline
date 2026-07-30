@@ -17,7 +17,9 @@ internal sealed class PushBackZombieRpc : IRpcMessage<Zombie>
     public void Send(Zombie zombie)
     {
         var zombieNetworked = zombie.GetNetworked();
-        if (zombieNetworked == null) return;
+        if (zombieNetworked == null)
+            return;
+
         var packetWriter = PacketWriter.Get();
         packetWriter.WriteNetworkObject(zombieNetworked);
         NetworkManager.Packet<RpcPacket>.Singleton.Send(RpcType.PushBackZombie, packetWriter);

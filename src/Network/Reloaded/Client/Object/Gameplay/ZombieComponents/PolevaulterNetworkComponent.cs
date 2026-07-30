@@ -16,15 +16,14 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _hasVaulted;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
-        if (Net.Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+        if (zombie.mZombiePhase == ZombiePhase.RisingFromGrave)
+            return;
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && !_hasVaulted)
+            if (zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && !_hasVaulted)
             {
                 _hasVaulted = true;
                 SendVaultRpc();
@@ -32,24 +31,21 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
+            if (zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
             {
                 SyncedPosX = null;
             }
         }
     }
 
-    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(Zombie zombie, float distance, bool useNonNetworkLogic = false)
     {
-        if (Net.Zombie == null)
-            return;
-
-        if (Net.Zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
+        if (zombie.mZombiePhase == ZombiePhase.PolevaulterInVault)
         {
             return;
         }
 
-        base.UpdatePosition(distance, useNonNetworkLogic);
+        base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
     private void SendVaultRpc()

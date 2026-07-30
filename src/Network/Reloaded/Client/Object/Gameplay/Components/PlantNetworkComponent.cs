@@ -1,8 +1,8 @@
-﻿using ReplantedOnline.Enums.Versus;
+﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -22,9 +22,18 @@ internal class PlantNetworkComponent : NetworkComponent
 
     internal virtual void OnInit() { }
 
-    internal virtual void OnDeath(DeathReason deathReason) { }
+    internal virtual void OnDeath(Plant? plant, DeathReason deathReason) { }
 
-    internal override void Update()
+    internal sealed override void Update()
+    {
+        var plant = Net.Plant;
+        if (plant == null)
+            return;
+
+        OnUpdate(plant);
+    }
+
+    internal virtual void OnUpdate(Plant plant)
     {
         UpdateHealthSync();
     }
@@ -33,7 +42,8 @@ internal class PlantNetworkComponent : NetworkComponent
     private readonly UnityTimer _dirtyHpTimer = new();
     protected void UpdateHealthSync()
     {
-        if (Net.Plant == null) return;
+        if (Net.Plant == null)
+            return;
 
         if (Net.AmOwner)
         {
@@ -66,11 +76,19 @@ internal class PlantNetworkComponent : NetworkComponent
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WritePackedInt(Mathf.Max(Net.Plant?.mPlantHealth ?? 25, 0));
+        packetWriter.WriteBool(Net.Plant == null);
+        if (Net.Plant != null)
+        {
+            packetWriter.WritePackedInt(Net.Plant.mPlantHealth);
+        }
     }
 
     public override void Deserialize(PacketReader packetReader, bool init)
     {
-        lastSyncPlantHealth = Math.Max(packetReader.ReadPackedInt(), 25);
+        bool isPlantNull = packetReader.ReadBool();
+        if (!isPlantNull && Net.Plant != null)
+        {
+            lastSyncPlantHealth = Math.Max(packetReader.ReadPackedInt(), 25);
+        }
     }
 }

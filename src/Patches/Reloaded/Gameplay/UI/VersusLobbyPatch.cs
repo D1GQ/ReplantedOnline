@@ -33,10 +33,12 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
-        if (!ReloadedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby())
+            return;
 
         VsSideChooser = __instance.m_panels.FirstOrDefault(pan => pan.gameObject.name == "P_VsSideChooser");
-        if (VsSideChooser == null) return;
+        if (VsSideChooser == null)
+            return;
 
         VsSideChooser.gameObject.DestroyAllTextLocalizers();
 
@@ -84,15 +86,18 @@ internal static class VersusLobbyPatch
     private static void FixNavigation(PanelView panelView)
     {
         var selectionSets = panelView.transform.Find("Canvas/Layout/Center/Panel/SelectionSets");
-        if (selectionSets == null) return;
+        if (selectionSets == null)
+            return;
 
         Button[] buttons = selectionSets.GetComponentsInChildren<Button>();
-        if (buttons.Length < 3) return;
+        if (buttons.Length < 3)
+            return;
 
         Button? quickPlay = buttons.FirstOrDefault(b => b.name.Contains("QuickPlay"));
         Button? customAll = buttons.FirstOrDefault(b => b.name.Contains("CustomAll"));
 
-        if (quickPlay == null || customAll == null) return;
+        if (quickPlay == null || customAll == null)
+            return;
 
         var quickNav = quickPlay.navigation;
         quickNav.mode = Navigation.Mode.Explicit;
@@ -109,7 +114,8 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void BackgroundController_Awake_Postfix(BackgroundController __instance)
     {
-        if (!ReloadedLobby.AmInLobby() || VsSideChooser == null) return;
+        if (!ReloadedLobby.AmInLobby() || VsSideChooser == null)
+            return;
 
         if (LobbyBackground == null)
         {
@@ -140,7 +146,8 @@ internal static class VersusLobbyPatch
 
     internal static void SetButtonsInteractable(bool interactable)
     {
-        if (InteractableBlocker == null || InteractableGamePad == null) return;
+        if (InteractableBlocker == null || InteractableGamePad == null)
+            return;
 
         InteractableBlocker.SetActive(!interactable);
         InteractableGamePad.SetActive(interactable);
@@ -195,7 +202,8 @@ internal static class VersusLobbyPatch
     private static bool Confirm_Prefix(VersusPlayerModel __instance, ref bool __state)
     {
         __state = false;
-        if (!ReloadedLobby.AmLobbyHost()) return false;
+        if (!ReloadedLobby.AmLobbyHost())
+            return false;
 
         if (!ReplantedOnlineMod.ModInfo.DEBUG)
         {
@@ -213,8 +221,10 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void Confirm_Postfix(bool __state)
     {
-        if (!__state) return;
-        if (ReloadedLobby.LobbyData == null) return;
+        if (!__state)
+            return;
+        if (ReloadedLobby.LobbyData == null)
+            return;
 
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == 0)
         {
@@ -241,7 +251,8 @@ internal static class VersusLobbyPatch
     [HarmonyPostfix]
     private static void Cancel_Postfix(VersusPlayerModel __instance, bool __state)
     {
-        if (!__state || ReloadedLobby.LobbyData == null) return;
+        if (!__state || ReloadedLobby.LobbyData == null)
+            return;
 
         ReloadedLobby.LobbyData.HostTeam.Value = PlayerTeam.None;
     }

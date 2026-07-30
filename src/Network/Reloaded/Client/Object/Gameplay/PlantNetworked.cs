@@ -117,7 +117,8 @@ internal sealed class PlantNetworked : NetworkObject
 
     public sealed override void OnRejected()
     {
-        if (Plant == null) return;
+        if (Plant == null)
+            return;
 
         if (!Plant.mDead)
         {
@@ -137,9 +138,11 @@ internal sealed class PlantNetworked : NetworkObject
 
     private void Update()
     {
-        if (!IsOnNetwork) return;
+        if (!IsOnNetwork)
+            return;
 
-        if (Plant == null) return;
+        if (Plant == null)
+            return;
 
         LogicComponent.Update();
     }

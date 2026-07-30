@@ -25,21 +25,22 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
     internal sealed override void OnInit()
     {
-        if (!CanGoInWater() || Net.Zombie == null)
+        var zombie = Net.Zombie;
+        if (!CanGoInWater() || zombie == null)
         {
             return;
         }
 
-        var groundType = Net.Zombie.mBoard.mPlantRow[Net.Zombie.mRow];
+        var groundType = zombie.mBoard.mPlantRow[zombie.mRow];
         if (groundType == PlantRowType.Pool)
         {
-            Net.Zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
+            zombie.mController.AssignRenderGroupToTrack("Zombie_duckytube", 1);
 
             // remove arms overlay to appear over the water
-            Net.Zombie.mController.SetImageOverride(Animations.WHITEWATER_OBJECT.Slot, Animations.WHITEWATER_OBJECT.Image);
+            zombie.mController.SetImageOverride(Animations.WHITEWATER_OBJECT.Slot, Animations.WHITEWATER_OBJECT.Image);
         }
 
-        WhiteWaterEffect ??= WhiteWaterEffect.Create(Net.Zombie.mController, false);
+        WhiteWaterEffect ??= WhiteWaterEffect.Create(zombie.mController, false);
     }
 
     internal sealed override void OnDestroyed()
@@ -50,17 +51,21 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         }
     }
 
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
         if (!CanGoInWater())
         {
             return;
         }
 
-        var zombie = Net.Zombie;
-        if (zombie == null) return;
-        if (zombie.mBoard == null) return;
-        if (zombie.mController == null) return;
+        if (zombie == null)
+            return;
+
+        if (zombie.mBoard == null)
+            return;
+
+        if (zombie.mController == null)
+            return;
 
         var groundType = zombie.mBoard.mPlantRow[zombie.mRow];
         if (groundType != PlantRowType.Pool)
@@ -100,7 +105,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             zombie.mController.m_shadowController.m_spriteRenderer.color = Color.white;
         }
 
-        UpdateWhiteWaterEffect(onPool);
+        UpdateWhiteWaterEffect(zombie, onPool);
 
         if (InPool)
         {
@@ -117,12 +122,11 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         }
     }
 
-    private void UpdateWhiteWaterEffect(bool onPool)
+    private void UpdateWhiteWaterEffect(Zombie zombie, bool onPool)
     {
-        if (WhiteWaterEffect == null) return;
+        if (WhiteWaterEffect == null)
+            return;
 
-        var zombie = Net.Zombie;
-        if (zombie == null) return;
         var active = InPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
         WhiteWaterEffect.gameObject.SetActive(active);
 
@@ -178,10 +182,14 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
     private bool CanGoInWater()
     {
-        bool typeCheck = Net.ZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
-        bool phaseCheck = Net.Zombie?.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
+        var zombie = Net.Zombie;
+        if (zombie == null)
+            return false;
+
+        bool typeCheck = zombie.mZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
+        bool phaseCheck = zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
-        return typeCheck && phaseCheck && Net.Zombie?.mController?.gameObject.active == true;
+        return typeCheck && phaseCheck && zombie.mController?.gameObject.active == true;
     }
 
     private void SendDrownRpc()
@@ -201,19 +209,21 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
 
     private IEnumerator CoDrown()
     {
-        if (Net.Zombie == null) yield break;
+        var zombie = Net.Zombie;
+        if (zombie == null)
+            yield break;
 
-        float target = Net.Zombie.mAltitude - 150;
-        while (Net.Zombie.mAltitude > target)
+        float target = zombie.mAltitude - 150;
+        while (zombie.mAltitude > target)
         {
-            Net.Zombie.mAltitude -= 25f;
-            Net.Zombie.mVelX = 0;
-            Net.Zombie.UpdateAnimSpeed();
-            Net.Zombie.PoolSplash(true);
-            Net.Zombie.mController.ClipRect(new(-500, -500, 1000, 615));
+            zombie.mAltitude -= 25f;
+            zombie.mVelX = 0;
+            zombie.UpdateAnimSpeed();
+            zombie.PoolSplash(true);
+            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
             yield return null;
         }
-        Net.Zombie.DieNoLootOriginal();
+        zombie.DieNoLootOriginal();
         Net.Dying = true;
         Net.IsReadyToDespawn = true;
     }

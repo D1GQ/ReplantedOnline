@@ -18,13 +18,12 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
     }
 
     private bool _isDoingSpecial;
-    internal override void Update()
+    internal override void OnUpdate(Plant plant)
     {
-        if (Net.Plant == null) return;
         if (Net.AmOwner)
         {
-            if (!Net.Plant.mIsAsleep &&
-                Net.Plant.mDoSpecialCountdown < 5)
+            if (!plant.mIsAsleep &&
+                plant.mDoSpecialCountdown < 5)
             {
                 if (!_isDoingSpecial)
                 {
@@ -35,7 +34,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         }
         else
         {
-            Net.Plant.mDoSpecialCountdown = int.MaxValue;
+            plant.mDoSpecialCountdown = int.MaxValue;
         }
     }
 

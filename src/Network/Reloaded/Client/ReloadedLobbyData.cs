@@ -320,7 +320,8 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal void UpdateLobbyStates()
     {
-        if (HasStarted.Value || LobbyRestarting.Value) return;
+        if (HasStarted.Value || LobbyRestarting.Value)
+            return;
 
         var hostTeam = HostTeam.Value;
         if (hostTeam is PlayerTeam.None)

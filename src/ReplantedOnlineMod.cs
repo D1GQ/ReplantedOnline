@@ -58,7 +58,8 @@ internal partial class ReplantedOnlineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        if (LoadFailed == true) return;
+        if (LoadFailed == true)
+            return;
 
         try
         {
@@ -87,7 +88,8 @@ internal partial class ReplantedOnlineMod : MelonMod
 
     public override void OnLateInitializeMelon()
     {
-        if (LoadFailed == true) return;
+        if (LoadFailed == true)
+            return;
 
         if (!PatchManager.PatchAllLate())
         {
@@ -97,7 +99,8 @@ internal partial class ReplantedOnlineMod : MelonMod
 
     private static void OnInitializeMainMenu()
     {
-        if (LoadFailed == true) return;
+        if (LoadFailed == true)
+            return;
 
         try
         {
@@ -117,8 +120,11 @@ internal partial class ReplantedOnlineMod : MelonMod
 
     public override void OnUpdate()
     {
-        if (LoadFailed == true) return;
-        if (!loaded) return;
+        if (LoadFailed == true)
+            return;
+
+        if (!loaded)
+            return;
 
         InputManager.Update();
         PatchManager.UpdatePatchs();
@@ -149,7 +155,9 @@ internal partial class ReplantedOnlineMod : MelonMod
                 ReloadedLobby.LeaveLobby();
             }
 
-            if (loaded) return;
+            if (loaded)
+                return;
+
             loaded = true;
             OnInitializeMainMenu();
         }

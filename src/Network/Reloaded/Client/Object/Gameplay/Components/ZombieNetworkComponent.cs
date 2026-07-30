@@ -45,15 +45,16 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     internal sealed override void Update()
     {
-        if (Net.Zombie == null)
+        var zombie = Net.Zombie;
+        if (zombie == null)
             return;
 
-        if (NonGroaningZombies.Contains(Net.Zombie.mZombieType))
+        if (NonGroaningZombies.Contains(zombie.mZombieType))
         {
-            Net.Zombie.mGroanCounter = int.MaxValue;
+            zombie.mGroanCounter = int.MaxValue;
         }
 
-        OnUpdate();
+        OnUpdate(zombie);
 
         float distance;
         lock (_distanceLock)
@@ -61,26 +62,18 @@ internal class ZombieNetworkComponent : NetworkComponent
             distance = _accumulatedDistance;
             _accumulatedDistance = 0f;
         }
-        UpdatePosition(distance);
+        UpdatePosition(zombie, distance);
     }
 
-    internal virtual void OnUpdate() { }
+    internal virtual void OnUpdate(Zombie zombie) { }
 
-    internal virtual void OnDeath(DeathReason deathReason) { }
+    internal virtual void OnDeath(Zombie? zombie, DeathReason deathReason) { }
 
     private readonly UnityTimer dirtyPosTimer = new();
     internal float? SyncedPosX;
 
-    /// <summary>
-    /// Updates the zombie's position.
-    /// </summary>
-    /// <param name="distance">The base distance to move per update</param>
-    /// <param name="useNonNetworkLogic">Use the base update position logic</param>
-    protected virtual void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected virtual void UpdatePosition(Zombie zombie, float distance, bool useNonNetworkLogic = false)
     {
-        if (Net.Zombie == null)
-            return;
-
         // Don't allow position updates during PushBack event
         if (Net.Event == EventState.PushBack)
         {
@@ -88,7 +81,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         }
 
         // Movement debuffs
-        if (Net.Zombie.mZombieType is not (ZombieType.DolphinRider or ZombieType.Snorkel))
+        if (zombie.mZombieType is not (ZombieType.DolphinRider or ZombieType.Snorkel))
         {
             if (Net.PoolComponent.InPool)
             {
@@ -98,9 +91,9 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         if (VersusState.ArenaSynced == ArenaType.PoolNight)
         {
-            var gridX = PvZRUtils.ReloadedObjectXToGridX(Net.Zombie.mX);
-            if (gridX >= Net.Zombie.mBoard.LeftFogColumn() &&
-                FogUtils.GetFogAt(Net.Zombie.mBoard, gridX, Net.Zombie.mRow + 1) > 100)
+            var gridX = PvZRUtils.ReloadedObjectXToGridX(zombie.mX);
+            if (gridX >= zombie.mBoard.LeftFogColumn() &&
+                FogUtils.GetFogAt(zombie.mBoard, gridX, zombie.mRow + 1) > 100)
             {
                 distance *= 0.9f;
             }
@@ -109,13 +102,13 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (useNonNetworkLogic)
         {
             // Move the zombie based on walking direction
-            if (!Net.Zombie.IsWalkingBackwards())
+            if (!zombie.IsWalkingBackwards())
             {
-                Net.Zombie.mPosX -= distance;
+                zombie.mPosX -= distance;
             }
             else
             {
-                Net.Zombie.mPosX += distance;
+                zombie.mPosX += distance;
             }
 
             return;
@@ -123,13 +116,13 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         if (Net.AmOwner)
         {
-            UpdatePosition(distance, true);
+            UpdatePosition(zombie, distance, true);
 
             // Sync position to network every 0.25 seconds, but only if position changed
             if (dirtyPosTimer.AccumulatedTime > 0.25f &&
-                SyncedPosX != Net.Zombie.mPosX)
+                SyncedPosX != zombie.mPosX)
             {
-                SyncedPosX = Net.Zombie.mPosX;
+                SyncedPosX = zombie.mPosX;
                 dirtyPosTimer.Reset();
                 Net.MarkDirty();
             }
@@ -141,12 +134,12 @@ internal class ZombieNetworkComponent : NetworkComponent
 
             // Calculate the difference between current and target positions
             float targetPos = SyncedPosX.Value;
-            float currentPos = Net.Zombie.mPosX;
+            float currentPos = zombie.mPosX;
             float diff = targetPos - currentPos;
 
             if (Mathf.Abs(diff) < 0.001f)
             {
-                Net.Zombie.mPosX = targetPos;
+                zombie.mPosX = targetPos;
                 SyncedPosX = null;
                 return;
             }
@@ -167,7 +160,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             float moveDirection = Mathf.Sign(diff);
 
             // Apply the movement
-            Net.Zombie.mPosX += moveAmount * moveDirection;
+            zombie.mPosX += moveAmount * moveDirection;
         }
     }
 
@@ -176,52 +169,45 @@ internal class ZombieNetworkComponent : NetworkComponent
     /// </summary>
     internal void InterpolatePosition()
     {
-        if (Net.Zombie == null)
-            return;
-
         if (Net.AmOwner)
             return;
 
         if (SyncedPosX == null)
             return;
 
-        UpdatePosition(1f);
+        var zombie = Net.Zombie;
+        if (zombie == null)
+            return;
+
+        UpdatePosition(zombie, 1f);
     }
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        if (init) return;
+        if (init)
+            return;
 
         packetWriter.WriteBool(Net.Zombie == null);
         if (Net.Zombie != null)
         {
-            packetWriter.WriteFloat(Net.Zombie.mVelX);
-            short packedPos = (short)(Net.Zombie.mPosX * 25f);
-            packetWriter.WriteShort(packedPos);
+            packetWriter.WritePackedFloat(Net.Zombie.mVelX, 500f);
+            packetWriter.WritePackedFloat(Net.Zombie.mPosX, 25f);
         }
     }
 
     public override void Deserialize(PacketReader packetReader, bool init)
     {
-        if (init) return;
+        if (init)
+            return;
 
         if (!Net.AmOwner)
         {
             bool isZombieNull = packetReader.ReadBool();
             if (!isZombieNull && Net.Zombie != null)
             {
-                Net.Zombie.mVelX = packetReader.ReadFloat();
+                Net.Zombie.mVelX = packetReader.ReadPackedFloat(500f);
                 Net.Zombie.UpdateAnimSpeed();
-                short packedPos = packetReader.ReadShort();
-
-                if (packedPos == short.MaxValue || packedPos == short.MinValue)
-                {
-                    SyncedPosX = packedPos > 0 ? 1310.68f : -1310.72f;
-                }
-                else
-                {
-                    SyncedPosX = packedPos / 25f;
-                }
+                SyncedPosX = packetReader.ReadPackedFloat(25f);
             }
         }
     }

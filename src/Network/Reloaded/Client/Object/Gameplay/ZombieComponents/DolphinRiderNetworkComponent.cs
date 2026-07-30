@@ -18,15 +18,11 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _hasJumped;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
-        if (Net.Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
-
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump && !_hasJumped)
+            if (zombie.mZombiePhase == ZombiePhase.DolphinInJump && !_hasJumped)
             {
                 _hasJumped = true;
                 SendJumpRpc();
@@ -34,28 +30,25 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump)
+            if (zombie.mZombiePhase == ZombiePhase.DolphinInJump)
             {
                 SyncedPosX = null;
             }
         }
     }
 
-    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(Zombie zombie, float distance, bool useNonNetworkLogic = false)
     {
-        if (Net.Zombie == null)
-            return;
-
         if (!Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.DolphinInJump)
+            if (zombie.mZombiePhase == ZombiePhase.DolphinInJump)
             {
-                base.UpdatePosition(distance, true);
+                base.UpdatePosition(zombie, distance, true);
                 return;
             }
         }
 
-        base.UpdatePosition(distance, useNonNetworkLogic);
+        base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
     private void SendJumpRpc()

@@ -67,38 +67,35 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie?.mController == null)
-            return;
-
-        if (Net.Zombie.mBoard.StageHasNoGrass())
+        if (zombie.mBoard.StageHasNoGrass())
         {
-            Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;
+            zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;
         }
 
-        if (Net.Zombie.mBoard.IsPoolSquare(Net.GridX, Net.GridY))
+        if (zombie.mBoard.IsPoolSquare(Net.GridX, Net.GridY))
         {
-            Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _poolTexture;
-            Net.Zombie.mController.m_shadowController.gameObject.SetActive(false);
-            Net.Zombie.mController.ClipRect(new(-500, -500, 1000, 615));
-            Net.Zombie.mAltitude = -2;
+            zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _poolTexture;
+            zombie.mController.m_shadowController.gameObject.SetActive(false);
+            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
+            zombie.mAltitude = -2;
         }
 
-        Net.Zombie.mController.m_scale = new(1.15f, 1.15f);
-        Net.Zombie.mController.m_visualOffset = new(125f, -335, 0f);
-        Net.Zombie.mController.m_shadowController.m_shadowImageOffset = new(-175f, -50.5f, 0f);
-        Net.Zombie.mController.m_shadowController.transform.localScale = new(1.15f, 1f, 1f);
+        zombie.mController.m_scale = new(1.15f, 1.15f);
+        zombie.mController.m_visualOffset = new(125f, -335, 0f);
+        zombie.mController.m_shadowController.m_shadowImageOffset = new(-175f, -50.5f, 0f);
+        zombie.mController.m_shadowController.transform.localScale = new(1.15f, 1f, 1f);
     }
 
-    internal sealed override void OnDeath(DeathReason deathReason)
+    internal sealed override void OnDeath(Zombie? zombie, DeathReason deathReason)
     {
-        if (Net.Zombie?.mController == null)
+        if (zombie == null)
             return;
 
-        Net.Zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _originalTexture;
+        zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _originalTexture;
         Instances.GameplayActivity.Board.m_vsGravestones.Remove(Net.Zombie);
-        Net.Zombie.mGraveX = 0;
-        Net.Zombie.mGraveY = 0;
+        zombie.mGraveX = 0;
+        zombie.mGraveY = 0;
     }
 }

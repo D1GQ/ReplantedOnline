@@ -31,7 +31,8 @@ internal static class ArenaSelectorPanel
     /// <param name="VsSideChooser">The PanelView component from the VS side chooser UI, used as a parent container.</param>
     internal static void Create(PanelView VsSideChooser)
     {
-        if (Panel != null) return;
+        if (Panel != null)
+            return;
 
         // Find the center panel within the VsSideChooser to use as a parent for the arena selector panel
         var VsPanels = VsSideChooser.transform.Find("Canvas/Layout/Center").gameObject;
@@ -40,7 +41,10 @@ internal static class ArenaSelectorPanel
         // Clone the existing plant panel from the almanac and use it as the base for the arena selector panel
         GameObject? plantPanel = Instances.GlobalPanels.GetPanel("almanac")?.transform.Find("Canvas/Layout/Center/Panel/PlantPanel").gameObject;
         Panel = UnityEngine.Object.Instantiate(plantPanel, VsPanels.transform);
-        if (Panel == null) return;
+
+        if (Panel == null)
+            return;
+
         Panel.name = "ArenaPanel";
         var viewPlantsButton = Panel.transform.Find("ViewPlantsButton")?.gameObject;
         if (viewPlantsButton != null)
@@ -67,7 +71,9 @@ internal static class ArenaSelectorPanel
 
             var forward = CreateButton(VsSideChooser, "-->", () =>
             {
-                if (ReloadedLobby.LobbyData == null) return;
+                if (ReloadedLobby.LobbyData == null)
+                    return;
+
                 ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Next(DisabledArenas);
             });
             forward.transform.localPosition = new Vector3(110f, -390f, 0f);
@@ -75,7 +81,9 @@ internal static class ArenaSelectorPanel
 
             var back = CreateButton(VsSideChooser, "<--", () =>
             {
-                if (ReloadedLobby.LobbyData == null) return;
+                if (ReloadedLobby.LobbyData == null)
+                    return;
+
                 ReloadedLobby.LobbyData.Arena.Value = ReloadedLobby.LobbyData.Arena.Value.Previous(DisabledArenas);
             });
             back.transform.localPosition = new Vector3(-640f, -390f, 0f);
@@ -124,7 +132,8 @@ internal static class ArenaSelectorPanel
     {
         Button[] others = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets").GetComponentsInChildren<Button>();
 
-        if (others.Length < 4) return;
+        if (others.Length < 4)
+            return;
 
         Navigation forwardNav = forward.navigation;
         forwardNav.selectOnLeft = back;
@@ -162,7 +171,8 @@ internal static class ArenaSelectorPanel
     /// <param name="arenaType">The arena type (Day or Night) to display a preview for.</param>
     internal static void SetPreview(ArenaType arenaType)
     {
-        if (Panel == null || Preview == null) return;
+        if (Panel == null || Preview == null)
+            return;
 
         var arena = RegisterArena.GetInstanceFromLookup(arenaType);
         if (arena != null && arena is IArenaData data)

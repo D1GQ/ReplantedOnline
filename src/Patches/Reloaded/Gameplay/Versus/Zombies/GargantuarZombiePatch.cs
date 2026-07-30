@@ -23,7 +23,8 @@ internal static class GargantuarZombiePatch
     [HarmonyPostfix]
     private static void Zombie_ZombieInitialize_Postfix(Zombie __instance, ZombieType theType)
     {
-        if (theType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
+        if (theType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar))
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {
@@ -39,7 +40,8 @@ internal static class GargantuarZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref Plant? __result)
     {
-        if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)) return;
+        if (__instance.mZombieType is not (ZombieType.Gargantuar or ZombieType.RedeyeGargantuar))
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {
@@ -292,7 +294,8 @@ internal static class GargantuarZombiePatch
 
     internal static void ImpDeserialize(ZombieNetworked impNetworked, PacketReader packetReader)
     {
-        if (impNetworked.Zombie == null) return;
+        if (impNetworked.Zombie == null)
+            return;
 
         Zombie? gargantuar = packetReader.ReadNetworkObject<ZombieNetworked>()?.Zombie;
 

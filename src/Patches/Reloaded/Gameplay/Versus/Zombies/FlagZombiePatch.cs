@@ -19,7 +19,8 @@ internal static class FlagZombiePatch
     [HarmonyPrefix]
     private static void Zombie_ZombieInitialize_Prefix(ZombieType theType)
     {
-        if (theType != ZombieType.Flag) return;
+        if (theType != ZombieType.Flag)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {

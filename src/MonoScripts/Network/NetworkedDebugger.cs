@@ -104,9 +104,14 @@ internal sealed class NetworkedDebugger : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!InfoDisplay.DebugEnabled) return;
-        if (_instance == null) return;
-        if (!_instance.IsOnNetwork) return;
+        if (!InfoDisplay.DebugEnabled)
+            return;
+
+        if (_instance == null)
+            return;
+
+        if (!_instance.IsOnNetwork)
+            return;
 
         if (_instance is ZombieNetworked zombieNetworked)
         {
@@ -184,7 +189,8 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DrawDebugInfo(Vector3 worldPos, Rect hitboxRect, string objectName, string info)
     {
         Vector3 screenPos = WorldToScreen(worldPos);
-        if (screenPos.z < 0) return;
+        if (screenPos.z < 0)
+            return;
 
         Vector2 hitboxScreenSize = WorldSizeToScreen(hitboxRect.width, hitboxRect.height, worldPos);
 
@@ -253,7 +259,8 @@ internal sealed class NetworkedDebugger : MonoBehaviour
     private void DrawErrorObjectDebug(Vector3 cachedScreenPos, string objectName, Color color)
     {
         Vector3 screenPos = cachedScreenPos;
-        if (screenPos.z < 0) return;
+        if (screenPos.z < 0)
+            return;
 
         Vector2 boxSize = new(100f, 100f);
         Vector2 hitboxScreenSize = WorldSizeToScreen(boxSize.x, boxSize.y, Vector3.zero);

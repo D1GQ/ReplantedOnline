@@ -28,7 +28,8 @@ internal sealed class KernelpultNetworkComponent : PlantNetworkComponent
 
     internal void SetVisuals(PlantWeapon plantWeapon)
     {
-        if (Net.Plant == null) return;
+        if (Net.Plant == null)
+            return;
 
         if (plantWeapon == PlantWeapon.Primary)
         {

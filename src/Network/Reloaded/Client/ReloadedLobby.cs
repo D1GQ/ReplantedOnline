@@ -46,7 +46,8 @@ internal static class ReloadedLobby
     /// <param name="mode">The transport mode to set.</param>
     internal static void SetTransportMode(TransportMode mode)
     {
-        if (TransportMode == mode) return;
+        if (TransportMode == mode)
+            return;
 
         NetworkTransport?.Dispose();
         NetworkTransport = null;
@@ -273,7 +274,8 @@ internal static class ReloadedLobby
 
     internal static void OnLobbyDataChanged(ServerLobby lobby)
     {
-        if (!AmInLobby()) return;
+        if (!AmInLobby())
+            return;
 
         LobbyData!.UpdateLobbyStates();
     }
@@ -327,7 +329,8 @@ internal static class ReloadedLobby
 
     internal static void OnP2PSessionRequest(ID clientId)
     {
-        if (clientId.IsBanned()) return;
+        if (clientId.IsBanned())
+            return;
 
         if (IsPlayerInOurLobby(clientId))
         {

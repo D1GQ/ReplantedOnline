@@ -122,7 +122,8 @@ internal sealed class DebugArena : IArena, IArenaData
 
     private void SetMode()
     {
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         foreach (var networkobject in ReloadedLobby.LobbyData!.NetworkObjectsSpawned.Values)
         {

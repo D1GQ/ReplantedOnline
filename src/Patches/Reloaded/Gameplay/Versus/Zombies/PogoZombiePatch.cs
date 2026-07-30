@@ -15,8 +15,11 @@ internal static class PogoZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
-        if (__instance.mZombieType != ZombieType.Pogo) return;
-        if (theAttackType != ZombieAttackType.Vault) return;
+        if (__instance.mZombieType != ZombieType.Pogo)
+            return;
+
+        if (theAttackType != ZombieAttackType.Vault)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {

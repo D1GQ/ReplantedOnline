@@ -286,6 +286,16 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
+    /// Reads a float value that was packed into a short.
+    /// </summary>
+    /// <returns>The unpacked float value.</returns>
+    internal float ReadPackedFloat(float scale)
+    {
+        short packedValue = ReadShort();
+        return packedValue / (float)scale;
+    }
+
+    /// <summary>
     /// Reads a 4-byte floating-point value from the packet.
     /// </summary>
     /// <returns>The float value.</returns>

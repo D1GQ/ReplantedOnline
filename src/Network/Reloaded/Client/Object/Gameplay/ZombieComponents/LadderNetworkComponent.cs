@@ -15,21 +15,20 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _donePlacingLadder;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
-        if (Net.Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+        if (zombie.mZombiePhase == ZombiePhase.RisingFromGrave)
+            return;
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.LadderPlacing && Net.Target == null)
+            if (zombie.mZombiePhase == ZombiePhase.LadderPlacing && Net.Target == null)
             {
                 // Send target to place ladder on
-                Plant target = Net.Zombie.FindPlantTarget(ZombieAttackType.Ladder);
+                Plant target = zombie.FindPlantTarget(ZombieAttackType.Ladder);
                 Net.SendSetPlantTargetRpc(target);
             }
-            else if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
+            else if (zombie.mZombiePhase == ZombiePhase.ZombieNormal)
             {
                 // Send the zombie is done placing down ladder
                 if (!_donePlacingLadder)
@@ -41,12 +40,12 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.LadderPlacing && Net.Zombie.mPhaseCounter == 0)
+            if (zombie.mZombiePhase == ZombiePhase.LadderPlacing && zombie.mPhaseCounter == 0)
             {
                 if (_donePlacingLadder)
                 {
-                    Net.Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
-                    Net.Zombie.DetachShield();
+                    zombie.mZombiePhase = ZombiePhase.ZombieNormal;
+                    zombie.DetachShield();
                     _donePlacingLadder = false;
                 }
             }
@@ -54,7 +53,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
             // Rest of non owner logic is handled in LadderZombiePatch.cs
         }
 
-        if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal)
+        if (zombie.mZombiePhase == ZombiePhase.ZombieNormal)
         {
             Net.Target = null;
         }

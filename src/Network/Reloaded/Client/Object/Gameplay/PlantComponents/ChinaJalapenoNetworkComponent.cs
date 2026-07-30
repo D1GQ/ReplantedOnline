@@ -40,9 +40,9 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     }
 
     private bool _activated;
-    internal sealed override void Update()
+    internal sealed override void OnUpdate(Plant plant)
     {
-        if (Net.Plant?.mController == null)
+        if (plant.mController == null)
             return;
 
         UpdateHighContrast(Instances.GameplayActivity.SettingsService.HighContrast);
@@ -55,12 +55,12 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
                 if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                 if (zombie.IsDeadOrDying()) continue;
 
-                if (Net.Plant.mX + 100 >= zombie.mX)
+                if (plant.mX + 100 >= zombie.mX)
                 {
                     if (!_activated)
                     {
-                        Net.Plant.mSeedType = SeedType.Jalapeno;
-                        Net.Plant.SetSleeping(false);
+                        plant.mSeedType = SeedType.Jalapeno;
+                        plant.SetSleeping(false);
                         SendActivateRpc();
                     }
 
@@ -75,20 +75,22 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
         if (_activated)
         {
-            Net.Plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
-            base.Update();
+            plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
+            base.OnUpdate(plant);
         }
         else
         {
-            Net.Plant.mBlinkCountdown = 100;
-            Net.Plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
+            plant.mBlinkCountdown = 100;
+            plant.mController.m_meshRenderer.material.mainTexture = _sleepingTexture;
         }
     }
 
     private bool _lastHighContrast;
     private void UpdateHighContrast(bool useHighContrast)
     {
-        if (useHighContrast == _lastHighContrast) return;
+        if (useHighContrast == _lastHighContrast)
+            return;
+
         _lastHighContrast = useHighContrast;
 
         if (useHighContrast)
@@ -101,12 +103,9 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         }
     }
 
-    internal override void OnDeath(DeathReason deathReason)
+    internal override void OnDeath(Plant plant, DeathReason deathReason)
     {
-        if (Net.Plant == null)
-            return;
-
-        Net.Plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
+        plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
     }
 
     internal void SendActivateRpc()

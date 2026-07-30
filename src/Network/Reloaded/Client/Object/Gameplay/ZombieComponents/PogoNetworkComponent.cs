@@ -18,15 +18,14 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
 
     private bool _inJump;
 
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
-        if (Net.Zombie.mZombiePhase == ZombiePhase.RisingFromGrave) return;
+        if (zombie.mZombiePhase == ZombiePhase.RisingFromGrave)
+            return;
 
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2 && !_inJump)
+            if (zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2 && !_inJump)
             {
                 _inJump = true;
                 SendJumpOverRpc();
@@ -34,33 +33,30 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2)
+            if (zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2)
             {
                 SyncedPosX = null;
             }
         }
 
-        if (Net.Zombie.mZombiePhase != ZombiePhase.PogoForwardBounce2)
+        if (zombie.mZombiePhase != ZombiePhase.PogoForwardBounce2)
         {
             _inJump = false;
         }
     }
 
-    protected override void UpdatePosition(float distance, bool useNonNetworkLogic = false)
+    protected override void UpdatePosition(Zombie zombie, float distance, bool useNonNetworkLogic = false)
     {
-        if (Net.Zombie == null)
-            return;
-
         if (!Net.AmOwner)
         {
             if (_inJump)
             {
-                base.UpdatePosition(distance, true);
+                base.UpdatePosition(zombie, distance, true);
                 return;
             }
         }
 
-        base.UpdatePosition(distance, useNonNetworkLogic);
+        base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
     private void SendJumpOverRpc()

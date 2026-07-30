@@ -19,26 +19,24 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
     private bool _driving;
     internal bool ReadyToFire;
     private int _lastSummonCounter;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal && !_driving)
+            if (zombie.mZombiePhase == ZombiePhase.ZombieNormal && !_driving)
             {
                 _driving = true;
                 Net.Target = null;
                 SendDriveRpc();
             }
-            else if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching && !ReadyToFire)
+            else if (zombie.mZombiePhase == ZombiePhase.CatapultLaunching && !ReadyToFire)
             {
                 _driving = false;
                 ReadyToFire = true;
-                Plant plant = Net.Zombie.FindCatapultTarget();
-                SendReadyToFireRpc(plant, Net.Zombie.mSummonCounter);
+                Plant plant = zombie.FindCatapultTarget();
+                SendReadyToFireRpc(plant, zombie.mSummonCounter);
             }
-            else if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultReloading)
+            else if (zombie.mZombiePhase == ZombiePhase.CatapultReloading)
             {
                 ReadyToFire = false;
             }
@@ -48,34 +46,34 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
             if (_driving)
             {
                 _driving = false;
-                Net.Zombie.mZombiePhase = ZombiePhase.ZombieNormal;
-                Net.Zombie.mPhaseCounter = 0;
-                Net.Zombie.mTargetPlantID = PlantID.Null;
-                Net.Zombie.PlayZombieReanim(Animations.CATAPULT_WALK.Anim, ReanimLoopType.Loop, Animations.CATAPULT_WALK.Blend, Animations.CATAPULT_WALK.Fps);
+                zombie.mZombiePhase = ZombiePhase.ZombieNormal;
+                zombie.mPhaseCounter = 0;
+                zombie.mTargetPlantID = PlantID.Null;
+                zombie.PlayZombieReanim(Animations.CATAPULT_WALK.Anim, ReanimLoopType.Loop, Animations.CATAPULT_WALK.Blend, Animations.CATAPULT_WALK.Fps);
             }
             else if (ReadyToFire)
             {
                 ReadyToFire = false;
-                Net.Zombie.mPhaseCounter = 300;
-                Net.Zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
-                Net.Zombie.PlayZombieReanim(Animations.CATAPULT_SHOOT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.CATAPULT_SHOOT.Blend, Animations.CATAPULT_SHOOT.Fps);
+                zombie.mPhaseCounter = 300;
+                zombie.mZombiePhase = ZombiePhase.CatapultLaunching;
+                zombie.PlayZombieReanim(Animations.CATAPULT_SHOOT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.CATAPULT_SHOOT.Blend, Animations.CATAPULT_SHOOT.Fps);
             }
 
-            if (Net.Zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
+            if (zombie.mZombiePhase == ZombiePhase.CatapultLaunching)
             {
-                if (Net.Zombie.mPhaseCounter <= 165f)
+                if (zombie.mPhaseCounter <= 165f)
                 {
-                    Net.Zombie.mZombiePhase = ZombiePhase.CatapultReloading;
-                    Net.Zombie.mPhaseCounter = int.MaxValue;
+                    zombie.mZombiePhase = ZombiePhase.CatapultReloading;
+                    zombie.mPhaseCounter = int.MaxValue;
                     Net.Target = null;
-                    Net.Zombie.PlayZombieReanim(Animations.CATAPULT_IDLE.Anim, ReanimLoopType.Loop, Animations.CATAPULT_IDLE.Blend, Animations.CATAPULT_IDLE.Fps);
+                    zombie.PlayZombieReanim(Animations.CATAPULT_IDLE.Anim, ReanimLoopType.Loop, Animations.CATAPULT_IDLE.Blend, Animations.CATAPULT_IDLE.Fps);
                 }
             }
 
 
-            if (Net.Zombie.mZombiePhase == ZombiePhase.ZombieNormal && Net.Zombie.mSummonCounter <= 1)
+            if (zombie.mZombiePhase == ZombiePhase.ZombieNormal && zombie.mSummonCounter <= 1)
             {
-                Net.Zombie.mController.SetImageOverride(Animations.CATAPULT_POLE_OBJECT.Slot, Animations.CATAPULT_POLE_OBJECT.Image);
+                zombie.mController.SetImageOverride(Animations.CATAPULT_POLE_OBJECT.Slot, Animations.CATAPULT_POLE_OBJECT.Image);
             }
         }
     }

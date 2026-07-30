@@ -36,7 +36,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     }
 
     internal YetiState CurrentState = YetiState.Curious;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
         if (Net.Zombie == null)
             return;
@@ -44,34 +44,31 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         switch (CurrentState)
         {
             case YetiState.Curious:
-                UpdateCurious();
+                UpdateCurious(zombie);
                 break;
             case YetiState.Runningback:
-                UpdateRunningback();
+                UpdateRunningback(zombie);
                 break;
             case YetiState.Enraged:
-                UpdateEnraged();
+                UpdateEnraged(zombie);
                 break;
         }
     }
 
-    private void UpdateCurious()
+    private void UpdateCurious(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return;
-
-        float t = Mathf.InverseLerp(750f, 350f, Net.Zombie.mPosX);
-        Net.Zombie.mVelX = Mathf.Lerp(1f, 0.1f, t);
-        Net.Zombie.UpdateAnimSpeed();
+        float t = Mathf.InverseLerp(750f, 350f, zombie.mPosX);
+        zombie.mVelX = Mathf.Lerp(1f, 0.1f, t);
+        zombie.UpdateAnimSpeed();
 
         if (Net.AmOwner)
         {
-            if (TryGoIntoEnragedState())
+            if (TryGoIntoEnragedState(zombie))
             {
                 return;
             }
 
-            if (Net.Zombie.mPosX < 350 && CurrentState != YetiState.Runningback)
+            if (zombie.mPosX < 350 && CurrentState != YetiState.Runningback)
             {
                 CurrentState = YetiState.Runningback;
                 SendRunBackRpc();
@@ -79,30 +76,24 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void UpdateRunningback()
+    private void UpdateRunningback(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return;
-
         if (Net.AmOwner)
         {
-            if (TryGoIntoEnragedState())
+            if (TryGoIntoEnragedState(zombie))
             {
                 return;
             }
         }
 
-        float t = Mathf.InverseLerp(400f, 350f, Net.Zombie.mPosX);
-        Net.Zombie.mVelX = Mathf.Lerp(0.8f, 0.2f, t);
-        Net.Zombie.UpdateAnimSpeed();
+        float t = Mathf.InverseLerp(400f, 350f, zombie.mPosX);
+        zombie.mVelX = Mathf.Lerp(0.8f, 0.2f, t);
+        zombie.UpdateAnimSpeed();
     }
 
-    private bool TryGoIntoEnragedState()
+    private bool TryGoIntoEnragedState(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return false;
-
-        if (Net.Zombie.mBodyHealth <= (100000 - 1500))
+        if (zombie.mBodyHealth <= (100000 - 1500))
         {
             CurrentState = YetiState.Enraged;
             SendEnragedRpc();
@@ -112,15 +103,11 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         return false;
     }
 
-    private void UpdateEnraged()
+    private void UpdateEnraged(Zombie zombie)
     {
-        if (Net.Zombie == null)
-            return;
-
-        float t = Mathf.InverseLerp(500, 0, Net.Zombie.mBodyHealth);
-        Net.Zombie.mVelX = Mathf.Lerp(0.8f, 1.4f, t);
-        Net.Zombie.UpdateAnimSpeed();
-
+        float t = Mathf.InverseLerp(500, 0, zombie.mBodyHealth);
+        zombie.mVelX = Mathf.Lerp(0.8f, 1.4f, t);
+        zombie.UpdateAnimSpeed();
     }
 
     private void SendRunBackRpc()

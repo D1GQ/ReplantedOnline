@@ -68,7 +68,8 @@ internal static class ArenaEvents
     /// </summary>
     internal static void PushBackEvent()
     {
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         DisplayEventTitle(EventTitle.PushBack);
         NetworkManager.Rpc<DisplayEventTitleRpc>.Singleton.Send(EventTitle.PushBack);

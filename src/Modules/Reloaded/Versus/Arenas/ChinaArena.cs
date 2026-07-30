@@ -131,7 +131,8 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 682);
 
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         if (_pushBackEventTimer.HasElapsed(2, 00f))
         {

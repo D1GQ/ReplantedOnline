@@ -17,7 +17,8 @@ internal static class SunAndBrainProductionPatch
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!__instance.MakesSun()) return;
+            if (!__instance.MakesSun())
+                return;
 
             __instance.mLaunchCounter = VersusGameplayManager.GetInitPlantOrGraveRate();
         }
@@ -31,7 +32,8 @@ internal static class SunAndBrainProductionPatch
 
         if (ReloadedLobby.AmInLobby())
         {
-            if (!__instance.MakesSun()) return;
+            if (!__instance.MakesSun())
+                return;
 
             if (VersusState.AmPlantSide)
             {

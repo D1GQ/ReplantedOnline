@@ -53,7 +53,8 @@ internal class PoolableObjects<T>(int maxPoolSize = 100) where T : new()
     /// <param name="item">The object to return to the pool.</param>
     internal void Release(T item)
     {
-        if (item == null) return;
+        if (item == null)
+            return;
 
         lock (_lock)
         {

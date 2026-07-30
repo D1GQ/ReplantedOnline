@@ -48,7 +48,8 @@ internal sealed class WhiteWaterEffect : MonoBehaviour
 
     private void Update()
     {
-        if (_sprites == null || _sprites.Length == 0) return;
+        if (_sprites == null || _sprites.Length == 0)
+            return;
 
         _frameTimer += Time.deltaTime;
         float frameTime = 1f / _fps;

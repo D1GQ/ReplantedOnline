@@ -27,7 +27,8 @@ internal sealed class NetworkObjectRejectPacket : IPacketMessage<NetworkIdentifi
     /// <inheritdoc/>
     public void Receive(ReloadedClientData sender, PacketReader packetReader, bool local)
     {
-        if (!sender.AmHost) return;
+        if (!sender.AmHost)
+            return;
 
         var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
         var message = Message<NetworkObjectRejectMessage>.Singleton.Deserialize(packet);

@@ -13,8 +13,11 @@ internal static class PolevaulterZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
-        if (__instance.mZombieType != ZombieType.Polevaulter) return;
-        if (theAttackType != ZombieAttackType.Vault) return;
+        if (__instance.mZombieType != ZombieType.Polevaulter)
+            return;
+
+        if (theAttackType != ZombieAttackType.Vault)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {

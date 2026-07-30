@@ -607,7 +607,8 @@ internal static class SeedPacketDefinitions
     /// <param name="bungee">The Bungee zombie.</param>
     internal static void SetBungeeRenderOrder(Zombie bungee)
     {
-        if (bungee.mZombieType != ZombieType.Bungee) return;
+        if (bungee.mZombieType != ZombieType.Bungee)
+            return;
 
         bungee.mBungeeTargetRenderOrder = bungee.RenderOrder;
 
@@ -625,7 +626,8 @@ internal static class SeedPacketDefinitions
     /// <param name="active">If it should be visible.</param>
     internal static void SetBungeeTarget(Zombie bungee, bool active)
     {
-        if (bungee.mZombieType != ZombieType.Bungee) return;
+        if (bungee.mZombieType != ZombieType.Bungee)
+            return;
 
         bungee.mController.Cast<ZombieBungeeController>().m_bungeeTargetSpriteRenderer.color = active ? Color.white : Color.white * 0f;
     }

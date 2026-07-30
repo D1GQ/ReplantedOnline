@@ -156,7 +156,9 @@ internal sealed class LanServer : IDisposable
     {
         lock (Server._stateLock)
         {
-            if (Server._isRunning) return;
+            if (Server._isRunning)
+                return;
+
             Server._isRunning = true;
             Server.LocalPlayerName = playerName;
             Server.IsHost = true;
@@ -195,7 +197,9 @@ internal sealed class LanServer : IDisposable
 
         MainThreadDispatcher.Execute(() =>
         {
-            if (Server == null || !Server._isRunning) return;
+            if (Server == null || !Server._isRunning)
+                return;
+
             OnLobbyCreatedCompleted?.Invoke(Result.OK, Server.ServerData.ToServerLobby());
             OnLobbyEnteredCompleted?.Invoke(Server.ServerData.ToServerLobby());
         });
@@ -209,7 +213,9 @@ internal sealed class LanServer : IDisposable
     {
         lock (Server._stateLock)
         {
-            if (Server._isRunning) return;
+            if (Server._isRunning)
+                return;
+
             Server._isRunning = true;
             Server.LocalPlayerName = playerName;
             Server.IsHost = false;
@@ -285,7 +291,8 @@ internal sealed class LanServer : IDisposable
     /// </summary>
     internal static void Leave()
     {
-        if (Server == null) return;
+        if (Server == null)
+            return;
 
         bool shouldRun;
         lock (Server._stateLock)
@@ -294,7 +301,8 @@ internal sealed class LanServer : IDisposable
             Server._isRunning = false;
         }
 
-        if (!shouldRun) return;
+        if (!shouldRun)
+            return;
 
         Server.ServerBroadcast?.StopBroadcasting();
         Server.P2PCTS?.Cancel();
@@ -452,7 +460,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="packetWriter">The packet writer containing the completed packet.</param>
     internal void SendRawPacketTo(IPEndPoint iPEndPoint, PacketWriter packetWriter)
     {
-        if (iPEndPoint == null) return;
+        if (iPEndPoint == null)
+            return;
 
         var buffer = packetWriter.GetBytes();
 
@@ -515,7 +524,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="remove">If true, removes the key instead of setting it.</param>
     internal void SetLobbyData(string key, string value, bool remove = false)
     {
-        if (!IsHost) return;
+        if (!IsHost)
+            return;
 
         if (remove) ServerData.Data.Remove(key);
         else ServerData.Data[key] = value;
@@ -619,7 +629,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="reader">The packet reader containing the request data.</param>
     private void ProcessHandshakeRequest(ID senderId, IPEndPoint endpoint, PacketReader reader)
     {
-        if (!IsHost) return;
+        if (!IsHost)
+            return;
 
         var (memberName, memberId) = LanServerProtocol.DeserializeHandshakeRequest(reader);
 
@@ -678,7 +689,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="reader">The packet reader containing the acceptance data.</param>
     private void ProcessHandshakeAccept(ID senderId, PacketReader reader)
     {
-        if (IsHost) return;
+        if (IsHost)
+            return;
 
         var lobbyId = LanServerProtocol.DeserializeHandshakeAccept(reader);
         lock (_stateLock)
@@ -737,7 +749,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="reader">The packet reader containing the member list.</param>
     private void ProcessSyncMembers(ID senderId, PacketReader reader)
     {
-        if (IsHost) return;
+        if (IsHost)
+            return;
 
         var syncedMembers = LanServerProtocol.DeserializeSyncMembers(reader);
 
@@ -757,7 +770,8 @@ internal sealed class LanServer : IDisposable
 
         MainThreadDispatcher.Execute(() =>
         {
-            if (Server == null || !Server._isRunning) return;
+            if (Server == null || !Server._isRunning)
+                return;
 
             var lobbyData = ServerData.ToServerLobby();
             foreach (var newMember in newMembers) OnLobbyMemberJoined?.Invoke(lobbyData, newMember.MemberId);
@@ -801,7 +815,8 @@ internal sealed class LanServer : IDisposable
     /// <param name="reader">The packet reader containing the updated lobby data.</param>
     private void ProcessLobbyDataUpdate(ID senderId, PacketReader reader)
     {
-        if (IsHost) return;
+        if (IsHost)
+            return;
 
         var (key, value, remove) = LanServerProtocol.DeserializeSetLobbyData(reader);
         if (remove) ServerData.Data.Remove(key);

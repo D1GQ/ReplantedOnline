@@ -13,7 +13,8 @@ internal static class TanglekelpPlantPatch
     [HarmonyPostfix]
     private static void Plant_FindTargetZombie_Postfix(Plant __instance, ref Zombie? __result)
     {
-        if (__instance.mSeedType != SeedType.Tanglekelp) return;
+        if (__instance.mSeedType != SeedType.Tanglekelp)
+            return;
 
         // Check if we're in an online multiplayer lobby
         if (ReloadedLobby.AmInLobby())

@@ -76,7 +76,8 @@ internal static class DiscordManager
     /// </summary>
     internal static void Initialize()
     {
-        if (Initialized) return;
+        if (Initialized)
+            return;
 
         Client = new DiscordRpcClient(DiscordAppId);
 
@@ -129,7 +130,8 @@ internal static class DiscordManager
     /// </summary>
     internal static void Update()
     {
-        if (!Initialized) return;
+        if (!Initialized)
+            return;
 
         UpdatePartySize();
         UpdateActivity();
@@ -146,11 +148,15 @@ internal static class DiscordManager
     /// </summary>
     private static void UpdatePartySize()
     {
-        if (!ReloadedLobby.AmInLobby()) return;
-        if (!Presence.HasParty()) return;
+        if (!ReloadedLobby.AmInLobby())
+            return;
+
+        if (!Presence.HasParty())
+            return;
 
         int size = ReloadedLobby.GetLobbyClientCount();
-        if (size == LastPartySize) return;
+        if (size == LastPartySize)
+            return;
 
         LastPartySize = size;
         Presence.Party.Size = size;
@@ -261,7 +267,8 @@ internal static class DiscordManager
     {
         bool menuState = details is "Loading Screen" or "Main Menu";
 
-        if (MenuTimestamp == menuState) return;
+        if (MenuTimestamp == menuState)
+            return;
 
         MenuTimestamp = menuState;
 
@@ -318,7 +325,8 @@ internal static class DiscordManager
     /// <param name="args">The join request message containing user information.</param>
     private static void OnJoinRequested(object sender, JoinRequestMessage args)
     {
-        if (ReloadedLobby.LobbyData == null) return;
+        if (ReloadedLobby.LobbyData == null)
+            return;
         bool accept = ReloadedLobby.LobbyData.LobbyJoinable.Value;
         Client.Respond(args, accept);
         if (accept)
@@ -387,7 +395,8 @@ internal static class DiscordManager
     /// </summary>
     internal static void Dispose()
     {
-        if (!Initialized) return;
+        if (!Initialized)
+            return;
 
         Client.OnJoin -= OnJoin;
         Client.OnJoinRequested -= OnJoinRequested;

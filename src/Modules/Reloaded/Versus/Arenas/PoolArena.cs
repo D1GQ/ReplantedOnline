@@ -154,7 +154,8 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     {
         versusMode.m_board.mApp.BackgroundController.EnableBowlingLine(true, 515);
 
-        if (!ReloadedLobby.AmLobbyHost()) return;
+        if (!ReloadedLobby.AmLobbyHost())
+            return;
 
         if (_pushBackEventTimer.HasElapsed(2, 00f))
         {

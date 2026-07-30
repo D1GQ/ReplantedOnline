@@ -16,8 +16,11 @@ internal static class YetiZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ZombieAttackType theAttackType, ref Plant? __result)
     {
-        if (__instance.mZombieType != ZombieType.Yeti) return;
-        if (theAttackType != ZombieAttackType.Chew) return;
+        if (__instance.mZombieType != ZombieType.Yeti)
+            return;
+
+        if (theAttackType != ZombieAttackType.Chew)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {
@@ -40,7 +43,8 @@ internal static class YetiZombiePatch
     [HarmonyPostfix]
     private static void Zombie_FindPlantTarget_Postfix(Zombie __instance, ref bool __result)
     {
-        if (__instance.mZombieType != ZombieType.Yeti) return;
+        if (__instance.mZombieType != ZombieType.Yeti)
+            return;
 
         if (ReloadedLobby.AmInLobby())
         {

@@ -74,7 +74,8 @@ internal static class VersusLobbyManager
     /// <param name="vsPanelView">The root panel view containing the versus mode UI elements</param>
     internal static void SetTextComps(PanelView vsPanelView)
     {
-        if (IsUIReady()) return;
+        if (IsUIReady())
+            return;
 
         // Find and cache the zombie team player name text components
         // Using GetComponentInChildren with includeInactive = true to find components even if parent objects are disabled
@@ -144,7 +145,8 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void SetNamesFromTeams()
     {
-        if (ReloadedLobby.LobbyData == null) return;
+        if (ReloadedLobby.LobbyData == null)
+            return;
 
         foreach (var client in ReloadedLobby.LobbyData.AllClients.Values)
         {
@@ -175,7 +177,8 @@ internal static class VersusLobbyManager
         // Player list
         PlayerList?.SetText(string.Empty);
         var notPlaying = ReloadedLobby.LobbyData.AllClients.Values.Where(client => client.Team is PlayerTeam.None or PlayerTeam.Spectators);
-        if (!notPlaying.Any()) return;
+        if (!notPlaying.Any())
+            return;
 
         const int MAX_NAME_LENGTH = 10;
         const string ELLIPSIS = "...";
@@ -253,9 +256,11 @@ internal static class VersusLobbyManager
     private static void UpdateHeaderEvents()
     {
         if (ReloadedLobby.TransportMode == TransportMode.Lan ||
-            (ReloadedLobby.TransportMode == TransportMode.DirectIP && !ReloadedLobby.AmLobbyHost())) return;
+            (ReloadedLobby.TransportMode == TransportMode.DirectIP && !ReloadedLobby.AmLobbyHost()))
+            return;
 
-        if (LobbyCodeHeaderTrigger == null) return;
+        if (LobbyCodeHeaderTrigger == null)
+            return;
 
         EventTrigger trigger = LobbyCodeHeaderTrigger.GetComponent<EventTrigger>();
         if (trigger != null)

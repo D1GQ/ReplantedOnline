@@ -30,7 +30,8 @@ internal class LanTransport : INetworkTransport
 
     public async Task JoinFirstLanLobby()
     {
-        if (_isJoining || _hasJoined) return;
+        if (_isJoining || _hasJoined)
+            return;
 
         Transitions.SetLoading();
 

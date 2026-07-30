@@ -38,8 +38,11 @@ internal static class VersusHudPatch
 
     internal static void SetHuds()
     {
-        if (plantHud == null) return;
-        if (zombieHud == null) return;
+        if (plantHud == null)
+            return;
+
+        if (zombieHud == null)
+            return;
 
         // Set opponent money
         Instances.GameplayActivity.Board.mSunMoney.OpponentItem().Amount = 9999;

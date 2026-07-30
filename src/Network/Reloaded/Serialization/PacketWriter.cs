@@ -233,6 +233,20 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
+    /// Writes a float value packed into a short.
+    /// </summary>
+    /// <param name="value">The float value to write.</param>
+    /// <param name="scale">The scale factor to multiply the value by.</param>
+    internal void WritePackedFloat(float value, float scale)
+    {
+        if (scale == 0)
+            throw new ArgumentException("Scale cannot be zero", nameof(scale));
+
+        short packedValue = (short)Mathf.Clamp(Mathf.RoundToInt(value * scale), short.MinValue, short.MaxValue);
+        WriteShort(packedValue);
+    }
+
+    /// <summary>
     /// Writes a 4-byte floating-point value to the packet.
     /// </summary>
     /// <param name="value">The float value to write.</param>

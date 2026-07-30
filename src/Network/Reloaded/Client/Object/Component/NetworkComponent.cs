@@ -24,7 +24,9 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
         }
         set
         {
-            if (field != null) return;
+            if (field != null)
+                return;
+
             field = value;
         }
     }

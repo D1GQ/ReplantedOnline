@@ -285,7 +285,8 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     [HideFromIl2Cpp]
     internal void AddChild(NetworkObject child)
     {
-        if (IsOnNetwork) return;
+        if (IsOnNetwork)
+            return;
 
         child.AmChild = true;
         child.ParentNetworkObject = this;
@@ -389,7 +390,8 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
     public void DespawnAndDestroy(bool waitToBeReady = false)
     {
-        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild) return;
+        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild)
+            return;
 
         Despawn(waitToBeReady);
         Destroy(gameObject);
@@ -402,7 +404,8 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// <param name="waitToBeReady">Indicate whether the network object should wait until locally want to despawn on the other side .</param>
     public void Despawn(bool waitToBeReady = false)
     {
-        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild) return;
+        if (!AmOwner && !ReloadedLobby.AmLobbyHost() || AmChild)
+            return;
 
         if (IsOnNetwork)
         {

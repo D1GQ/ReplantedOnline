@@ -18,24 +18,22 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     }
 
     private bool _isExploding;
-    internal sealed override void OnUpdate()
+    internal sealed override void OnUpdate(Zombie zombie)
     {
-        if (Net.Zombie == null) return;
-
         if (Net.AmOwner)
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
+            if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
                 SendExplodeRpc();
             }
         }
         else
         {
-            if (Net.Zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
+            if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
             {
                 if (!_isExploding)
                 {
-                    Net.Zombie.mPhaseCounter = int.MaxValue;
+                    zombie.mPhaseCounter = int.MaxValue;
                 }
             }
         }

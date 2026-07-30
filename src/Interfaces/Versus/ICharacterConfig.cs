@@ -20,7 +20,8 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnPlantPlanted(Plant plant, int gridX, int gridY)
     {
-        if (!ReloadedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby())
+            return;
 
         if (RegisterPlantConfig.TryGetInstanceFromLookup(plant.mSeedType, out var config))
         {
@@ -36,7 +37,8 @@ internal interface ICharacterConfig
     /// <param name="gridY">The Y grid coordinate (row).</param>
     internal static void OnZombiePlanted(Zombie zombie, int gridX, int gridY)
     {
-        if (!ReloadedLobby.AmInLobby()) return;
+        if (!ReloadedLobby.AmInLobby())
+            return;
 
         if (RegisterZombieConfig.TryGetInstanceFromLookup(zombie.mZombieType, out var config))
         {

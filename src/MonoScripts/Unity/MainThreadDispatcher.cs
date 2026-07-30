@@ -49,7 +49,8 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// <param name="action">The action to execute on the main thread.</param>
     internal static void Execute(Action action)
     {
-        if (action == null) return;
+        if (action == null)
+            return;
 
         MonoSingleton<MainThreadDispatcher>.Instance._executionQueue.Enqueue(action);
     }
