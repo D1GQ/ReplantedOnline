@@ -13,10 +13,5 @@ internal enum TransportMode
     /// <summary>
     /// Uses a local area network (LAN) for communication.
     /// </summary>
-    Lan,
-
-    /// <summary>
-    /// Uses a local IP for communication.
-    /// </summary>
-    DirectIP
+    Lan
 }

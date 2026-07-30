@@ -14,15 +14,15 @@ namespace ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 /// <summary>
 /// Provides LAN-based network transport functionality
 /// </summary>
-internal class LanTransport : INetworkTransport
+internal sealed class LanTransport : INetworkTransport
 {
     internal LanTransport()
     {
         LanServer.Server = new();
     }
 
-    protected bool _isJoining;
-    protected bool _hasJoined;
+    private bool _isJoining;
+    private bool _hasJoined;
 
     public ID LocalClientId => LanServer.Server.LocalMemberId;
 
@@ -63,7 +63,7 @@ internal class LanTransport : INetworkTransport
         }
     }
 
-    protected static void ShowDisconnectPopup(string message)
+    private static void ShowDisconnectPopup(string message)
     {
         MainThreadDispatcher.Execute(() =>
         {

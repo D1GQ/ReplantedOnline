@@ -39,20 +39,15 @@ internal static class VersusLobbyManager
         {
             switch (ReloadedLobby.TransportMode)
             {
+                case TransportMode.Steam:
+                    return $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
                 case TransportMode.Lan:
                     return "LAN Lobby";
-                case TransportMode.DirectIP:
-                    {
-                        if (!ReloadedLobby.AmLobbyHost())
-                        {
-                            return "Lobby IP";
-                        }
-
-                        return "Lobby IP...";
-                    }
+                default:
+                    break;
             }
 
-            return $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
+            return string.Empty;
         }
     }
     private static bool CopyingLobbyCode = false;
@@ -255,8 +250,7 @@ internal static class VersusLobbyManager
     /// </summary>
     private static void UpdateHeaderEvents()
     {
-        if (ReloadedLobby.TransportMode == TransportMode.Lan ||
-            (ReloadedLobby.TransportMode == TransportMode.DirectIP && !ReloadedLobby.AmLobbyHost()))
+        if (ReloadedLobby.TransportMode == TransportMode.Lan)
             return;
 
         if (LobbyCodeHeaderTrigger == null)

@@ -62,10 +62,6 @@ internal static class ReloadedLobby
                 NetworkTransport = new LanTransport();
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to LAN");
                 break;
-            case TransportMode.DirectIP:
-                NetworkTransport = new DirectIPTransport();
-                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to DirectIP");
-                break;
             default:
                 ReplantedOnlineMod.Logger.Warning(typeof(ReloadedLobby), $"Invalid transport mode: {mode}, defaulting to Steam");
                 NetworkTransport = new SteamTransport();
