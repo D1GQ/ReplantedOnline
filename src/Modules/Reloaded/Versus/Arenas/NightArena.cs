@@ -11,7 +11,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 internal sealed class NightArena : DayArena
 {
     /// <inheritdoc/>
-    public override MusicTune Music => MusicTune.PuzzleCerebrawl;
+    public override MusicTune Music => MusicTune.NightMoongrains;
 
     /// <inheritdoc/>
     public override LevelEntryData GetLevelEntryData()

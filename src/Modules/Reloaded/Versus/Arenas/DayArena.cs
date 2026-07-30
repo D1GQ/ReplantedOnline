@@ -12,7 +12,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 internal class DayArena : IArena, IArenaData
 {
     /// <inheritdoc/>
-    public virtual MusicTune Music => MusicTune.MinigameLoonboon;
+    public virtual MusicTune Music => MusicTune.DayGrasswalk;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;

@@ -6,7 +6,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
-using static ReplantedOnline.Managers.Modded.BloomEngineManager;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
@@ -29,7 +28,7 @@ internal static class MusicActivityPatch
         if (__instance.name == "StartMatch")
         {
             // Check if in multiplayer lobby and music modification is enabled
-            if (ReloadedLobby.AmInLobby() && BloomConfigs.ModifyMusicConfig.Value)
+            if (ReloadedLobby.AmInLobby())
             {
                 // Save original music tune to state
                 __state = __instance.m_musicTune;

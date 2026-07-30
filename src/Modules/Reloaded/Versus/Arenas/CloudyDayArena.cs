@@ -18,7 +18,7 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 internal sealed class CloudyDayArena : IArena, IArenaData
 {
     /// <inheritdoc/>
-    public MusicTune Music => MusicTune.MinigameLoonboon;
+    public MusicTune Music => MusicTune.DayGrasswalk;
 
     /// <inheritdoc/>
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;

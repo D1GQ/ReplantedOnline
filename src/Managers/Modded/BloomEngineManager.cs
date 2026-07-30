@@ -35,9 +35,9 @@ internal static class BloomEngineManager
     /// </summary>
     internal static class BloomConfigs
     {
-        internal static BoolConfigInput ModifyMusicConfig = default!;
         internal static EnumConfigInput<TransportMode> TransportModeConfig = default!;
         internal static EnumConfigInput<AppIds> AppServerConfig = default!;
+        internal static BoolConfigInput ModifyMusicConfig = default!;
 
         /// <summary>
         /// Initializes BloomEngine config fields and related event handlers.
