@@ -139,11 +139,21 @@ internal static class FlagZombiePatch
     {
         if (type != ZombieType.Bungee)
         {
-            var zombie = SeedPacketDefinitions.SpawnZombie(type, 9, y, SpawnType.BackgroundAndShakeBushes, false).Zombie;
-            zombie.mPosX += Common.RandRangeInt(20, 70);
+            var spawnType = SpawnType.BackgroundAndShakeBushes;
+            int gridX = 9;
+            TryPickSpecialSpawn(Instances.GameplayActivity.Board, ref spawnType, ref gridX, y);
 
-            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, SpawnType.BackgroundAndShakeBushes);
-            zombieNetworked.SendSnapToPosRpc();
+            var zombie = SeedPacketDefinitions.SpawnZombie(type, gridX, y, spawnType, false).Zombie;
+            if (gridX == 9)
+            {
+                zombie.mPosX += Common.RandRangeInt(20, 70);
+            }
+
+            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, spawnType);
+            if (gridX == 9)
+            {
+                zombieNetworked.SendSnapToPosRpc();
+            }
         }
         else
         {
@@ -168,6 +178,63 @@ internal static class FlagZombiePatch
                 // Drop random zombie from wave
                 var zombieToDrop = PickZombieType(specialSpawns, true);
                 SeedPacketDefinitions.SpawnZombie(zombieToDrop, row, y, SpawnType.BungeeDropZombie, true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Attempts to select a special spawn type and column.
+    /// </summary>
+    /// <param name="board">The current game board instance.</param>
+    /// <param name="spawnType">The ref to the current spawn type.</param>
+    /// <param name="gridX">The ref to the current grid X coordinate.</param>
+    /// <param name="gridY">The current grid y coordinate.</param>
+    private static void TryPickSpecialSpawn(Board board, ref SpawnType spawnType, ref int gridX, int gridY)
+    {
+        if (!board.StageIsNight() && !board.StageHasPool())
+            return;
+
+        if (Common.RandRangeInt(0, 100) <= 25)
+        {
+            if (board.StageIsNight())
+            {
+                for (int column = 0; column < 8; column++)
+                {
+                    for (int row = 0; row < board.GetNumRows(); row++)
+                    {
+                        var grave = board.GetGraveStoneAt(column, row);
+                        if (grave != null)
+                        {
+                            if (row != gridY)
+                                continue;
+
+                            spawnType = SpawnType.RiseFromGround;
+                            gridX = column;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (board.StageHasPool())
+            {
+                for (int column = 4; column < 7; column++)
+                {
+                    for (int row = 0; row < board.GetNumRows(); row++)
+                    {
+                        if (row != gridY)
+                            continue;
+
+                        if (board.mPlantRow[row] != PlantRowType.Pool)
+                            continue;
+
+                        if (Common.RandRangeInt(0, 100) <= 25)
+                        {
+                            spawnType = SpawnType.RiseFromPool;
+                            gridX = column;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
