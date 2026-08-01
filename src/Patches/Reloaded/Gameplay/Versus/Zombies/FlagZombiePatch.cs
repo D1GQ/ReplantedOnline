@@ -100,7 +100,7 @@ internal static class FlagZombiePatch
         if (index < rows)
             return y;
 
-        if (Common.RandRangeInt(0, 100) >= 15)
+        if (RollChance(85))
             return y;
 
         int direction = Common.RandRangeInt(0, 1) == 0 ? -1 : 1;
@@ -158,7 +158,7 @@ internal static class FlagZombiePatch
         else
         {
             // Pick a target column for the Bungee Zombie
-            bool spawningZombie = Common.RandRangeInt(0, 100) > 15;
+            bool spawningZombie = RollChance(85);
             int row = PickBungeeColumn(Instances.GameplayActivity.Board, y, spawningZombie);
             if (row == -1)
             {
@@ -194,7 +194,7 @@ internal static class FlagZombiePatch
         if (!board.StageIsNight() && !board.StageHasPool())
             return;
 
-        if (Common.RandRangeInt(0, 100) <= 25)
+        if (RollChance(25))
         {
             if (board.StageIsNight())
             {
@@ -227,7 +227,7 @@ internal static class FlagZombiePatch
                         if (board.mPlantRow[row] != PlantRowType.Pool)
                             continue;
 
-                        if (Common.RandRangeInt(0, 100) <= 25)
+                        if (RollChance(25))
                         {
                             spawnType = SpawnType.RiseFromPool;
                             gridX = column;
@@ -336,5 +336,23 @@ internal static class FlagZombiePatch
         }
 
         return targets[0].gridX;
+    }
+
+    /// <summary>
+    /// Rolls for a percentage-based chance of success.
+    /// </summary>
+    /// <param name="chance">The percentage chance of success, between 0 and 100 inclusive.</param>
+    /// <returns>
+    /// <c>true</c> if the roll succeeds; otherwise, <c>false</c>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="chance"/> is less than 0 or greater than 100.
+    /// </exception>
+    private static bool RollChance(int chance)
+    {
+        if (chance < 0 || chance > 100)
+            throw new ArgumentOutOfRangeException(nameof(chance), "Chance must be between 0 and 100");
+
+        return Common.RandRangeInt(0, 100) < chance;
     }
 }
