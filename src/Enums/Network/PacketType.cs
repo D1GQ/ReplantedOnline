@@ -61,6 +61,11 @@ internal enum PacketType
     SyncVersusTime,
 
     /// <summary>
+    /// Syncs the current Dancer frame.
+    /// </summary>
+    SyncDancerFrame,
+
+    /// <summary>
     /// Packet used to request a heartbeat response from a client.
     /// </summary>
     HeartbeatRequest,

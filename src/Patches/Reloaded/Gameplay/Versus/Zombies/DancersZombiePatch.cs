@@ -7,7 +7,6 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
-using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
@@ -18,27 +17,18 @@ internal static class DancersZombiePatch
     [HarmonyPrefix]
     private static bool Zombie_GetDancerFrame_Prefix(Zombie __instance, ref int __result)
     {
-        if (ReloadedLobby.AmInLobby())
+        if (ReloadedLobby.AmInLobby() && !ReloadedLobby.AmLobbyHost())
         {
-            if (__instance.mIceTrapCounter < 1 && __instance.mButteredCounter < 1)
+            if (__instance.mZombiePhase == ZombiePhase.DancerDancingIn)
+                return true;
+
+            if (VersusGameplayManager.IsDancingThisFrameSynced)
             {
-                bool isDisco = __instance.mZombiePhase == ZombiePhase.DancerDancingIn;
-
-                int framesPerPhase = isDisco ? 10 : 20;
-                int phaseCount = isDisco ? 11 : 23;
-
-                int currentGameFrame = Time.frameCount - VersusGameplayManager.FrameCountStart;
-                int totalCycleFrames = phaseCount * framesPerPhase;
-
-                if (currentGameFrame < 0)
-                    currentGameFrame = 0;
-
-                int currentPosition = currentGameFrame % totalCycleFrames;
-                __result = currentPosition / framesPerPhase;
+                __result = ReplantedOnlineMod.Constants.Reloaded.DANCER_DANCING_FRAME;
             }
             else
             {
-                __result = 0;
+                __result = ReplantedOnlineMod.Constants.Reloaded.DANCER_NON_DANCING_FRAME;
             }
 
             return false;
@@ -83,14 +73,15 @@ internal static class DancersZombiePatch
                 return false;
             }
 
-            if (!SummonBackupDancerInterval.Execute())
-                return false;
+            if (SummonBackupDancerInterval.Execute())
+            {
+                var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false).Zombie;
+                backupDancer.mRelatedZombieID = __instance.DataID;
+                backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
+                SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, thePosX, theRow);
+                __result = backupDancer.DataID;
+            }
 
-            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false).Zombie;
-            backupDancer.mRelatedZombieID = __instance.DataID;
-            backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
-            SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, thePosX, theRow);
-            __result = backupDancer.DataID;
             return false;
         }
 

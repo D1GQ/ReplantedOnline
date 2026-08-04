@@ -377,6 +377,26 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Calculates the current dancer animation frame based on the game's frame count.
+    /// </summary>
+    /// <param name="isDancingIn">True for dance in.</param>
+    /// <returns>An integer representing the current dancer phase/frame.</returns>
+    internal static int GetDancerFrame(bool isDancingIn)
+    {
+        int framesPerPhase = isDancingIn ? 10 : 20;
+        int phaseCount = isDancingIn ? 11 : 23;
+
+        int currentGameFrame = Time.frameCount;
+        int totalCycleFrames = phaseCount * framesPerPhase;
+
+        if (currentGameFrame < 0)
+            currentGameFrame = 0;
+
+        int currentPosition = currentGameFrame % totalCycleFrames;
+        return currentPosition / framesPerPhase;
+    }
+
+    /// <summary>
     /// Initializes a lawn mower instance with the appropriate settings based on the game state and arena type.
     /// </summary>
     /// <param name="lawnMower">The lawn mower instance to initialize.</param>

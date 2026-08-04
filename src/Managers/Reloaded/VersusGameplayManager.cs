@@ -5,6 +5,8 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -17,10 +19,10 @@ namespace ReplantedOnline.Managers.Reloaded;
 /// </summary>
 internal static class VersusGameplayManager
 {
-    internal static int FrameCountStart;
+    internal static bool IsDancingThisFrameSynced;
     internal static void OnStart(VersusMode versusMode)
     {
-        FrameCountStart = Time.frameCount;
+        IsDancingThisFrameSynced = false;
         isInSuddenDeath = false;
         List<SeedPacket> allSeedPackets =
         [
@@ -67,6 +69,38 @@ internal static class VersusGameplayManager
                         seedBank.SetSeedPacketDisabled(seedPacket, true);
                     }
                 }
+            }
+        }
+    }
+
+    internal static void SyncVersusStates(VersusMode versusMode, float previousVersusTime, float currentVersusTime)
+    {
+        if (!ReloadedLobby.AmLobbyHost())
+        {
+            versusMode.m_versusTime = previousVersusTime;
+            return;
+        }
+
+        if ((int)(currentVersusTime * 2f) != (int)(previousVersusTime * 2f))
+        {
+            NetworkManager.Packet<SyncVersusTimePacket>.Singleton.Send(versusMode.m_versusTime);
+        }
+
+        int dancerFrame = PvZRUtils.GetDancerFrame(false);
+        if (!IsDancingThisFrameSynced)
+        {
+            if (dancerFrame > ReplantedOnlineMod.Constants.Reloaded.DANCER_NON_DANCING_FRAME)
+            {
+                IsDancingThisFrameSynced = true;
+                NetworkManager.Packet<SyncDancerFramePacket>.Singleton.Send(true);
+            }
+        }
+        else
+        {
+            if (dancerFrame < ReplantedOnlineMod.Constants.Reloaded.DANCER_DANCING_FRAME)
+            {
+                IsDancingThisFrameSynced = false;
+                NetworkManager.Packet<SyncDancerFramePacket>.Singleton.Send(false);
             }
         }
     }

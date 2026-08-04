@@ -4,8 +4,6 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Network.Reloaded.Client.Routing;
-using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
@@ -42,21 +40,10 @@ internal static class VersusModePatch
 
         if (updateInterval.Execute())
         {
+            VersusGameplayManager.SyncVersusStates(__instance, __state, __instance.m_versusTime);
             VersusGameplayManager.Update(__instance);
             IArena.GetCurrentArena()?.UpdateArena(__instance);
             IVersusGamemode.GetCurrentGamemode().UpdateGameplay(__instance);
-        }
-
-        if (ReloadedLobby.AmLobbyHost())
-        {
-            if ((int)(__instance.m_versusTime * 2f) != (int)(__state * 2f))
-            {
-                NetworkManager.Packet<SyncVersusTimePacket>.Singleton.Send(__instance.m_versusTime);
-            }
-        }
-        else
-        {
-            __instance.m_versusTime = __state;
         }
     }
 

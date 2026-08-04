@@ -164,6 +164,7 @@ internal static class ReloadedLobby
         LobbyData.LocalDespawnAll();
         LobbyData.InitializeData();
         Transitions.SetLoading();
+        NetworkManager.Heartbeat.Start();
         Transitions.ToVersus(() =>
         {
             Transitions.ToGameplay(() =>

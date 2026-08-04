@@ -49,6 +49,8 @@ internal partial class ReplantedOnlineMod
             internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f;
             internal const int PLANT_LAUNCHRATE_MULTIPLIER = 25;
             internal const float VERSUS_PRECOUNTDOWN_TIME = 4f;
+            internal const int DANCER_NON_DANCING_FRAME = 11;
+            internal const int DANCER_DANCING_FRAME = 12;
 
             internal static class Production
             {
