@@ -16,7 +16,7 @@ internal sealed class BobsledNetworkComponent : ZombieNetworkComponent
         var leader = zombie.mBoard.ZombieGet(zombie.mRelatedZombieID);
         if (leader != null && leader.mZombiePhase != ZombiePhase.ZombieNormal)
         {
-            zombie.mPosX = leader.mPosX + 50 * zombie.GetBobsledPosition();
+            zombie.mPosX = leader.mPosX + (50 * zombie.GetBobsledPosition());
             SyncedPosX = null;
             return;
         }

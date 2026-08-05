@@ -29,6 +29,12 @@ internal static class DancersZombiePatch
             else
             {
                 __result = ReplantedOnlineMod.Constants.Reloaded.DANCER_NON_DANCING_FRAME;
+
+                // Force out of the DancerSnappingFingersHold phase
+                if (__instance.mZombiePhase == ZombiePhase.DancerSnappingFingersHold)
+                {
+                    __instance.mPhaseCounter = 0;
+                }
             }
 
             return false;
