@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using UnityEngine;
 
@@ -19,7 +18,6 @@ internal static class VersusModePatch
         {
             __instance.m_gameplayInitialized = true;
             __instance.m_versusTime = -ReplantedOnlineMod.Constants.Reloaded.VERSUS_PRECOUNTDOWN_TIME;
-            updateInterval.Reset();
             IArena.GetCurrentArena()?.InitializeArena(__instance);
             IVersusGamemode.GetCurrentGamemode().OnGameplayStart(__instance);
             VersusGameplayManager.OnStart(__instance);
@@ -28,7 +26,6 @@ internal static class VersusModePatch
         __state = __instance.m_versusTime;
     }
 
-    private readonly static ExecuteInterval updateInterval = new();
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateGameplay))]
     [HarmonyPostfix]
     private static void VersusMode_UpdateGameplay_Postfix(VersusMode __instance, float __state)
@@ -38,13 +35,10 @@ internal static class VersusModePatch
 
         __instance.ZombieLife = ReloadedLobby.LobbyData!.ZombieLife;
 
-        if (updateInterval.Execute())
-        {
-            VersusGameplayManager.SyncVersusStates(__instance, __state, __instance.m_versusTime);
-            VersusGameplayManager.Update(__instance);
-            IArena.GetCurrentArena()?.UpdateArena(__instance);
-            IVersusGamemode.GetCurrentGamemode().UpdateGameplay(__instance);
-        }
+        VersusGameplayManager.SyncVersusStates(__instance, __state, __instance.m_versusTime);
+        VersusGameplayManager.Update(__instance);
+        IArena.GetCurrentArena()?.UpdateArena(__instance);
+        IVersusGamemode.GetCurrentGamemode().UpdateGameplay(__instance);
     }
 
     [HarmonyPatch(typeof(VersusMode), nameof(VersusMode.UpdateWin))]

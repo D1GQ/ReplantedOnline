@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
@@ -10,7 +9,6 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 [HarmonyPatch]
 internal static class PlantSyncPatch
 {
-    private readonly static ExecuteInterval findTargetAndFireInterval = new();
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetAndFire))]
     [HarmonyPrefix]
     private static bool Plant_FindTargetAndFire_Prefix(Plant __instance, int theRow, ref PlantWeapon thePlantWeapon)
@@ -20,13 +18,10 @@ internal static class PlantSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                if (findTargetAndFireInterval.Execute())
+                var plantNetworked = __instance.GetNetworked();
+                if (plantNetworked != null)
                 {
-                    var plantNetworked = __instance.GetNetworked();
-                    if (plantNetworked != null)
-                    {
-                        plantNetworked.SendReadyToFireRpc(theRow, ref thePlantWeapon);
-                    }
+                    plantNetworked.SendReadyToFireRpc(theRow, ref thePlantWeapon);
                 }
             }
             else
@@ -45,7 +40,6 @@ internal static class PlantSyncPatch
         throw new NotImplementedException("Reverse Patch Stub");
     }
 
-    private readonly static ExecuteInterval fireInterval = new();
     [HarmonyPatch(typeof(Plant), nameof(Plant.Fire))]
     [HarmonyPrefix]
     private static bool Plant_Fire_Prefix(Plant __instance, Zombie theTargetZombie, int theRow, ref PlantWeapon thePlantWeapon)
@@ -55,13 +49,10 @@ internal static class PlantSyncPatch
         {
             if (VersusState.AmPlantSide)
             {
-                if (fireInterval.Execute())
+                var plantNetworked = __instance.GetNetworked();
+                if (plantNetworked != null)
                 {
-                    var plantNetworked = __instance.GetNetworked();
-                    if (plantNetworked != null)
-                    {
-                        plantNetworked.SendFireRpc(theTargetZombie, theRow, ref thePlantWeapon);
-                    }
+                    plantNetworked.SendFireRpc(theTargetZombie, theRow, ref thePlantWeapon);
                 }
             }
             else

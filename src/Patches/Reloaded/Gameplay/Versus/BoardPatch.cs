@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
@@ -11,36 +10,32 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 [HarmonyPatch]
 internal static class BoardPatch
 {
-    private static readonly ExecuteInterval _initLawnMowersInterval = new();
     [HarmonyPatch(typeof(Board), nameof(Board.InitLawnMowers))]
     [HarmonyPrefix]
     private static bool Board_InitLawnMowers_Prefix(Board __instance)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (_initLawnMowersInterval.Execute())
+            if (VersusState.ArenaSynced == ArenaType.China)
             {
-                if (VersusState.ArenaSynced == ArenaType.China)
-                {
-                    if (ReloadedLobby.AmLobbyHost())
-                    {
-                        for (int row = 0; row < __instance.GetNumRows(); row++)
-                        {
-                            SeedPacketDefinitions.SpawnPlant(SeedType.Jalapeno, -1, row, SpawnType.ChinaJalapeno, true);
-                        }
-                    }
-
-                    return false;
-                }
-
-                // Always initialize lawn mowers.
-                if (__instance.m_lawnMowers.Count == 0)
+                if (ReloadedLobby.AmLobbyHost())
                 {
                     for (int row = 0; row < __instance.GetNumRows(); row++)
                     {
-                        var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
-                        PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
+                        SeedPacketDefinitions.SpawnPlant(SeedType.Jalapeno, -1, row, SpawnType.ChinaJalapeno, true);
                     }
+                }
+
+                return false;
+            }
+
+            // Always initialize lawn mowers.
+            if (__instance.m_lawnMowers.Count == 0)
+            {
+                for (int row = 0; row < __instance.GetNumRows(); row++)
+                {
+                    var lawMower = __instance.m_lawnMowers.DataArrayAlloc();
+                    PvZRUtils.LawnMowerInitialize(lawMower, row, __instance.mApp);
                 }
             }
 

@@ -2,7 +2,6 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -14,7 +13,6 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 [HarmonyPatch]
 internal static class FlagZombiePatch
 {
-    private readonly static ExecuteInterval spawnInterval = new();
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.ZombieInitialize))]
     [HarmonyPrefix]
     private static void Zombie_ZombieInitialize_Prefix(ZombieType theType)
@@ -26,10 +24,7 @@ internal static class FlagZombiePatch
         {
             if (VersusState.AmZombieSide)
             {
-                if (spawnInterval.Execute())
-                {
-                    SpawnZombieWave();
-                }
+                SpawnZombieWave();
             }
 
             Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_HUGE_WAVE);

@@ -5,7 +5,6 @@ using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Exceptions;
 using ReplantedOnline.Managers.Reloaded;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
@@ -20,15 +19,12 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 internal static class CursorSyncPatch
 {
     // This also works with gamepad
-    private static readonly ExecuteInterval downInterval = new();
     [HarmonyPatch(typeof(Board), nameof(Board.MouseDownWithTool))]
     [HarmonyPrefix]
     private static bool Board_MouseDownWithTool_Prefix(Board __instance, int x, int y, CursorType theCursorType, int playerIndex)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!downInterval.Execute()) return false;
-
             if (playerIndex != ReplantedOnlineMod.Constants.Reloaded.LOCAL_PLAYER_INDEX) return false;
             if (!VersusState.AmPlantSide) return false;
 

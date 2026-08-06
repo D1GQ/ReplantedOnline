@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Managers.Reloaded;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
@@ -68,7 +67,6 @@ internal static class DancersZombiePatch
         }
     }
 
-    private static readonly ExecuteInterval SummonBackupDancerInterval = new();
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.SummonBackupDancer))]
     [HarmonyPrefix]
     private static bool Zombie_SummonBackupDancer_Prefix(Zombie __instance, int theRow, int thePosX, ref ZombieID __result)
@@ -81,14 +79,11 @@ internal static class DancersZombiePatch
                 return false;
             }
 
-            if (SummonBackupDancerInterval.Execute())
-            {
-                var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false).Zombie;
-                backupDancer.mRelatedZombieID = __instance.DataID;
-                backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
-                SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, thePosX, theRow);
-                __result = backupDancer.DataID;
-            }
+            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false).Zombie;
+            backupDancer.mRelatedZombieID = __instance.DataID;
+            backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
+            SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, thePosX, theRow);
+            __result = backupDancer.DataID;
 
             return false;
         }

@@ -119,7 +119,7 @@ internal sealed class DetourHookAttribute : Attribute
         // Validate return type compatibility for generic methods
         ValidateReturnType(target, hookMethod);
 
-        new MonoMod.RuntimeDetour.Hook(target, hookMethod);
+        _ = new MonoMod.RuntimeDetour.Hook(target, hookMethod);
     }
 
     /// <summary>

@@ -165,14 +165,9 @@ internal sealed class ZombieNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    // For some reason TakeDamage gets triggered twice naturally, so we must not send the rpc on the second time using damageInterval.
-    private readonly ExecuteInterval damageInterval = new();
     internal void SendTakeDamageRpc(int theDamage, DamageFlags theDamageFlags)
     {
-        if (damageInterval.Execute())
-        {
-            SendNetworkObjectRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
-        }
+        SendNetworkObjectRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
     }
 
     [RpcHandler(ZombieRpcs.TakeDamage)]

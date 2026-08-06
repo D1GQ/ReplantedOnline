@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
@@ -11,7 +10,6 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 [HarmonyPatch]
 internal static class BoardSyncPatch
 {
-    private static readonly ExecuteInterval AddALadderInterval = new();
     [HarmonyPatch(typeof(Board), nameof(Board.AddALadder))]
     [HarmonyPrefix]
     private static bool Board_AddALadder_Prefix(int theGridX, int theGridY)
@@ -21,11 +19,7 @@ internal static class BoardSyncPatch
         {
             if (!VersusState.AmPlantSide) return false;
 
-            // Send network message to sync this action with other players
-            if (AddALadderInterval.Execute())
-            {
-                NetworkManager.Rpc<AddLadderRpc>.Singleton.Send(theGridX, theGridY);
-            }
+            NetworkManager.Rpc<AddLadderRpc>.Singleton.Send(theGridX, theGridY);
         }
 
         return true;
