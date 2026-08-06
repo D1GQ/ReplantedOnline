@@ -63,113 +63,147 @@
 		<!-- Melon Loader -->
 		<Reference Include="MelonLoader">
 			<HintPath>References\MelonLoader\MelonLoader.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 
 		<!-- Dependencies -->
 		<Reference Include="BloomEngine">
 			<HintPath>References\Dependencies\BloomEngine.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="DiscordRPC">
 			<HintPath>References\Dependencies\Discord\DiscordRPC.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 
 		<!-- Unity Engine -->
 		<Reference Include="UnityEngine">
 			<HintPath>References\UnityEngine\UnityEngine.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>References\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.TextMeshPro">
 			<HintPath>References\UnityEngine\Unity.TextMeshPro.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
 			<HintPath>References\UnityEngine\UnityEngine.UI.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.Mathematics">
 			<HintPath>References\UnityEngine\Unity.Mathematics.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.IMGUIModule">
 			<HintPath>References\UnityEngine\UnityEngine.IMGUIModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.ImageConversionModule">
 			<HintPath>References\UnityEngine\UnityEngine.ImageConversionModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.Addressables">
 			<HintPath>References\UnityEngine\Unity.Addressables.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.InputSystem">
 			<HintPath>References\UnityEngine\Unity.InputSystem.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.TextRenderingModule">
 			<HintPath>References\UnityEngine\UnityEngine.TextRenderingModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.AudioModule">
 			<HintPath>References\UnityEngine\UnityEngine.AudioModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.AnimationModule">
 			<HintPath>References\UnityEngine\UnityEngine.AnimationModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.ResourceManager">
 			<HintPath>References\UnityEngine\Unity.ResourceManager.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UnityWebRequestModule">
 			<HintPath>References\UnityEngine\UnityEngine.UnityWebRequestModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2Cppspine-unity">
 			<HintPath>References\UnityEngine\Il2Cppspine-unity.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.SpriteMaskModule">
 			<HintPath>References\UnityEngine\UnityEngine.SpriteMaskModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 
 		<!-- Replanted -->
 		<Reference Include="Assembly-CSharp">
 			<HintPath>References\Replanted\Assembly-CSharp.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppFacepunch.Steamworks.Win64">
 			<HintPath>References\Replanted\Il2CppFacepunch.Steamworks.Win64.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppReloaded.Input.Components">
 			<HintPath>References\Replanted\Il2CppReloaded.Input.Components.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.Common.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.Common.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.Content.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.Content.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.DataModels.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.DataModels.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.Extensions.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.Extensions.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.Injectors.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.Injectors.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.Localizations.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.Localizations.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.PanelViews.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.PanelViews.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppTekly.TreeState.Runtime">
 			<HintPath>References\Replanted\Il2CppTekly.TreeState.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 
 		<!-- Il2Cpp -->
 		<Reference Include="Il2Cppmscorlib">
 			<HintPath>References\Il2Cpp\Il2Cppmscorlib.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppInterop.Runtime">
 			<HintPath>References\Il2Cpp\Il2CppInterop.Runtime.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppInterop.Common">
 			<HintPath>References\Il2Cpp\Il2CppInterop.Common.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="Il2CppSystem.Core">
 			<HintPath>References\Il2Cpp\Il2CppSystem.Core.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
 </Project>
