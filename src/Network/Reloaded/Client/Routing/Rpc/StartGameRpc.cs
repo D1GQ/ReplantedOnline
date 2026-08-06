@@ -94,6 +94,8 @@ internal sealed class StartGameRpc : IRpcMessage<VersusGamemodeType>
             {
                 break;
             }
+
+            yield return null;
         }
 
         ReloadedLobby.LobbyData?.Gamemode = gamemode;
