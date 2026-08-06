@@ -139,6 +139,7 @@ internal static class LevelEntries
             level.m_gameArea = GameArea.Day;
             level.m_backgroundPrefab = GetLevel("Level-AdventureArea1Level1")!.BackgroundPrefab;
         }
+
         if (Instances.GameplayActivity?.SeedChooserScreen?.m_seedBankInfos != null)
         {
             foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)

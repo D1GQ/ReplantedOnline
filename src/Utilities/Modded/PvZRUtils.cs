@@ -330,7 +330,11 @@ internal static class PvZRUtils
         for (int i = 0; i < seedBankInfo.mSeedsInBank; i++)
         {
             var packet = seedBankInfo.mSeedBank.SeedPackets[i];
-            seedBankInfo.mSeedBank.RemoveSeed(i);
+            try
+            {
+                seedBankInfo.mSeedBank.RemoveSeed(i);
+            }
+            catch { }
             removed.Add(packet.mPacketType);
         }
         seedBankInfo.mSeedsInBank = 0;
