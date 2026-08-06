@@ -7,6 +7,8 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
+using ReplantedOnline.Utilities.Unity;
+using System.Collections;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
@@ -116,6 +118,16 @@ internal static class DancersZombiePatch
 
     private static void SetFollowerByIndex(Zombie dancer, Zombie backupDancer, int index)
     {
+        dancer.mController.StartCoroutine(CoSetFollowerByIndex(dancer, backupDancer, index));
+    }
+
+    private static IEnumerator CoSetFollowerByIndex(Zombie dancer, Zombie backupDancer, int index)
+    {
+        while (dancer.mZombiePhase != ZombiePhase.DancerSnappingFingersHold)
+        {
+            yield return null;
+        }
+
         ZombieID[] array = [.. dancer.mFollowerZombieID];
         array[index] = backupDancer.DataID;
         dancer.mFollowerZombieID = array;
