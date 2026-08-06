@@ -90,7 +90,7 @@ internal sealed class RpcHandlerAttribute : Attribute
         /// <summary>
         /// Gets or sets the client data of the client that sent this RPC.
         /// </summary>
-        internal ReloadedClientData? Sender { get; set; }
+        internal ReloadedClientData Sender { get; set; } = null!;
     }
 
     /// <summary>

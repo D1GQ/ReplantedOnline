@@ -144,7 +144,7 @@ internal static class FlagZombiePatch
                 zombie.mPosX += Common.RandRangeInt(20, 70);
             }
 
-            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, 9, y, spawnType);
+            var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, gridX, y, spawnType);
             if (gridX == 9)
             {
                 zombieNetworked.SendSnapToPosRpc();
@@ -205,7 +205,7 @@ internal static class FlagZombiePatch
 
                             spawnType = SpawnType.RiseFromGround;
                             gridX = column;
-                            break;
+                            return;
                         }
                     }
                 }
@@ -226,7 +226,7 @@ internal static class FlagZombiePatch
                         {
                             spawnType = SpawnType.RiseFromPool;
                             gridX = column;
-                            break;
+                            return;
                         }
                     }
                 }

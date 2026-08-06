@@ -16,6 +16,7 @@ using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
+using static ReplantedOnline.Attributes.Network.RpcHandlerAttribute;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
@@ -425,9 +426,13 @@ internal sealed class ZombieNetworked : NetworkObject
         SendNetworkObjectRpc(ZombieRpcs.SnapToPos, Zombie?.mPosX ?? 0);
     }
 
-    [RpcHandler(ZombieRpcs.SnapToPos)]
-    private void HandleSnapToPosRpc(float posX)
+    [RpcHandler(ZombieRpcs.SnapToPos, false)]
+    [HideFromIl2Cpp]
+    private void HandleSnapToPosRpc(float posX, RpcInfo rpcInfo)
     {
+        if (rpcInfo.Sender.Team != PlayerTeam.Zombies)
+            return;
+
         Zombie?.mPosX = posX;
     }
 
