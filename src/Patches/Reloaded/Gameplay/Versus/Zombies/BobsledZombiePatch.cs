@@ -2,13 +2,12 @@
 using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Exceptions;
-using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
@@ -138,7 +137,7 @@ internal static class BobsledZombiePatch
         {
             // Setup Bobsled leader
             leader = bobsled;
-            Instances.GameplayActivity.StartCoroutine(CoSpawnPassengers(leader));
+            CoroutineManager.Instance.StartCoroutine(CoSpawnPassengers(leader));
 
             // The leader does not have related zombie
             packetWriter.WriteNetworkObject(null);

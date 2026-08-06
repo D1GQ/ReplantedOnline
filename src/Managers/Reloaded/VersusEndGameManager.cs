@@ -3,9 +3,9 @@ using Il2CppTMPro;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 using static Il2CppReloaded.Constants;
@@ -52,7 +52,7 @@ internal static class VersusEndGameManager
             }
         }
 
-        Instances.GameplayActivity.StartCoroutine(CoEndGame(winningTeam));
+        CoroutineManager.Instance.StartCoroutine(CoEndGame(winningTeam));
     }
 
     /// <summary>
@@ -62,11 +62,6 @@ internal static class VersusEndGameManager
     private static IEnumerator CoEndGame(PlayerTeam winningTeam)
     {
         yield return new WaitForSeconds(3f);
-
-        if (!ReloadedLobby.AmInLobby())
-        {
-            yield break;
-        }
 
         Instances.GameplayActivity.VersusMode.m_focusCircleController.gameObject.SetActive(false);
         Transitions.ToGameEnd(() =>
@@ -107,7 +102,7 @@ internal static class VersusEndGameManager
             }
         }
 
-        Instances.GameplayActivity.StartCoroutine(CoWinScreen());
+        CoroutineManager.Instance.StartCoroutine(CoWinScreen());
     }
 
     /// <summary>
@@ -117,11 +112,6 @@ internal static class VersusEndGameManager
     private static IEnumerator CoWinScreen()
     {
         yield return new WaitForSeconds(5f);
-
-        if (!ReloadedLobby.AmInLobby())
-        {
-            yield break;
-        }
 
         if (ReloadedLobby.AmLobbyHost())
         {

@@ -6,6 +6,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Server.Lan;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
@@ -206,7 +207,7 @@ internal static class VersusLobbyManager
             return;
         }
 
-        bool shouldEnableButtons = !ReloadedLobby.LobbyData.PickingSides.Value
+        bool shouldEnableButtons = !ReloadedLobby.LobbyData!.PickingSides.Value
             && ReloadedLobby.GetLobbyClientCount() > 1
             && ReloadedLobby.LobbyData.AllClientsReady();
 
@@ -285,7 +286,7 @@ internal static class VersusLobbyManager
             EventTrigger.Entry pointerClick = new() { eventID = EventTriggerType.PointerClick };
             pointerClick.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             {
-                if (!CopyingLobbyCode) Instances.GameplayActivity.StartCoroutine(CoCopyLobbyCode());
+                if (!CopyingLobbyCode) CoroutineManager.Instance.StartCoroutine(CoCopyLobbyCode());
             }));
             trigger.triggers.Add(pointerClick);
         }

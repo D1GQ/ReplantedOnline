@@ -8,9 +8,9 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
@@ -27,7 +27,7 @@ internal sealed class CustomGamemode : IVersusGamemode
         ReloadedClientData.LocalClient?.Ready.Value = false;
         versusMode.Phase = VersusPhase.ChooseZombiePacket;
         Transitions.ToChooseSeeds();
-        Instances.GameplayActivity.StartCoroutine(CoWaitSeedChooserVSSwap());
+        CoroutineManager.Instance.StartCoroutine(CoWaitSeedChooserVSSwap());
     }
 
     /// <inheritdoc/>

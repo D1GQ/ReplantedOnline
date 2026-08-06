@@ -4,6 +4,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
@@ -43,7 +44,7 @@ internal static class VersusGameplayManager
         // Disable inputs for starting countdown 
         InputManager.SetDeviceActive(false);
 
-        Instances.GameplayActivity.StartCoroutine(CoroutineUtils.WaitForCondition(() => VersusState.IsInGameplay, () =>
+        CoroutineManager.Instance.StartCoroutine(CoroutineUtils.WaitForCondition(() => VersusState.IsInGameplay, () =>
         {
             InputManager.SetDeviceActive(true);
         }));

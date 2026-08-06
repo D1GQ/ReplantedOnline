@@ -8,10 +8,12 @@ using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.MelonLoader;
+using System.Collections;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 
@@ -71,16 +73,33 @@ internal sealed class StartGameRpc : IRpcMessage<VersusGamemodeType>
 
             ReplantedOnlineMod.Logger.Msg(typeof(StartGameRpc), "Game Starting...");
 
-            // Configure the game with the host's selected game mode
-            ReloadedLobby.LobbyData?.Gamemode = gamemode;
-            LevelEntries.SetupVersusArenaForGameplay(gamemode);
-            IVersusGamemode.GetCurrentGamemode().OnGameModeStart(Instances.GameplayActivity.VersusMode);
-            VersusLobbyPatch.HideLobbyBackground();
-            InputManager.SetListeningForNewDevice(false);
+            CoroutineManager.Instance.StartCoroutine(CoStartGame(gamemode));
         }
         else
         {
             ReplantedOnlineMod.Logger.Warning(typeof(StartGameRpc), $"Rejected StartGame RPC from non-host: {sender.Name}");
         }
+    }
+
+    private static IEnumerator CoStartGame(VersusGamemodeType gamemode)
+    {
+        while (true)
+        {
+            if (ReloadedLobby.LobbyData == null)
+            {
+                yield break;
+            }
+
+            if (ReloadedLobby.LobbyData.HostTeam.Value != PlayerTeam.None)
+            {
+                break;
+            }
+        }
+
+        ReloadedLobby.LobbyData?.Gamemode = gamemode;
+        LevelEntries.SetupVersusArenaForGameplay(gamemode);
+        IVersusGamemode.GetCurrentGamemode().OnGameModeStart(Instances.GameplayActivity.VersusMode);
+        VersusLobbyPatch.HideLobbyBackground();
+        InputManager.SetListeningForNewDevice(false);
     }
 }

@@ -209,7 +209,7 @@ internal static class GargantuarZombiePatch
         // Hide the real imp visually until the throw animation reaches the right point
         imp.mController.gameObject.SetActive(false);
 
-        Instances.GameplayActivity?.StartCoroutine(CoWaitForGargantuarToFinish(gargantuar, imp, () =>
+        gargantuar.mController.StartCoroutine(CoWaitForGargantuarToFinish(gargantuar, imp, () =>
         {
             // Hide the imp visually on gargantuar
             gargantuar.mController.AssignRenderGroupToPrefix("Zombie_imp", -1);

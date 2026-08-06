@@ -7,6 +7,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
@@ -73,12 +74,12 @@ internal static class LevelEntries
         if (gamemode != VersusGamemodeType.Custom)
         {
             Transitions.SetFade();
-            Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.5f, Transitions.FadeIn));
+            CoroutineManager.Instance.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.5f, Transitions.FadeIn));
         }
         else
         {
             Transitions.SetFade();
-            Instances.GameplayActivity.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.2f, Transitions.FadeIn));
+            CoroutineManager.Instance.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(0.2f, Transitions.FadeIn));
         }
 
         // Set new board to new arena

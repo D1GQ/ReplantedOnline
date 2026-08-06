@@ -6,6 +6,7 @@ using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
@@ -163,8 +164,8 @@ internal static class ReloadedLobby
         LobbyData!.UnsetAllTeams();
         LobbyData.LocalDespawnAll();
         LobbyData.InitializeData();
+        CoroutineManager.Instance.StopAllCoroutines();
         Transitions.SetLoading();
-        NetworkManager.Heartbeat.Start();
         Transitions.ToVersus(() =>
         {
             Transitions.ToGameplay(() =>
@@ -173,6 +174,7 @@ internal static class ReloadedLobby
                 ReloadedClientData.LocalClient?.Ready.Value = true;
             });
         });
+        NetworkManager.Heartbeat.Start();
     }
 
     /// <summary>
@@ -208,6 +210,7 @@ internal static class ReloadedLobby
         ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Leaving lobby {LobbyData.LobbyId}");
         var lobbyId = LobbyData.LobbyId;
         LobbyData.Dispose();
+        CoroutineManager.Instance.StopAllCoroutines();
         Transitions.SetLoading();
         Transitions.ToMainMenu(() =>
         {
