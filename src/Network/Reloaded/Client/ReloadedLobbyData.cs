@@ -245,7 +245,7 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// <summary>
     /// Indicates whether the host is currently selecting their sides/teams.
     /// </summary>
-    internal LobbyVar<bool> PickingSides { get; } = new(nameof(PickingSides), false);
+    internal LobbyVar<bool> PickingSides { get; } = new(nameof(PickingSides), true);
 
     /// <summary>
     /// Indicates whether the game has started.
@@ -286,7 +286,7 @@ internal sealed class ReloadedLobbyData : IDisposable
         NetworkIdPool = new();
         LobbyJoinable.Value = true;
         LobbyRestarting.Value = false;
-        PickingSides.Value = false;
+        PickingSides.Value = true;
         HasStarted.Value = false;
         HostTeam.Value = PlayerTeam.None;
         Arena.Value = ArenaType.Day;

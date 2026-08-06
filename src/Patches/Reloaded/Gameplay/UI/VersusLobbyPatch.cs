@@ -199,7 +199,7 @@ internal static class VersusLobbyPatch
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Confirm))]
     [HarmonyPrefix]
-    private static bool Confirm_Prefix(VersusPlayerModel __instance, ref bool __state)
+    private static bool Confirm_Prefix(ref bool __state)
     {
         __state = false;
         if (!ReloadedLobby.AmLobbyHost())
@@ -234,6 +234,11 @@ internal static class VersusLobbyPatch
         {
             ReloadedLobby.LobbyData.HostTeam.Value = PlayerTeam.Zombies;
         }
+
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            ReloadedLobby.LobbyData!.PickingSides.Value = false;
+        }
     }
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Cancel))]
@@ -249,11 +254,15 @@ internal static class VersusLobbyPatch
 
     [HarmonyPatch(typeof(VersusPlayerModel), nameof(VersusPlayerModel.Cancel))]
     [HarmonyPostfix]
-    private static void Cancel_Postfix(VersusPlayerModel __instance, bool __state)
+    private static void Cancel_Postfix(bool __state)
     {
         if (!__state || ReloadedLobby.LobbyData == null)
             return;
 
         ReloadedLobby.LobbyData.HostTeam.Value = PlayerTeam.None;
+        if (ReloadedLobby.AmLobbyHost())
+        {
+            ReloadedLobby.LobbyData!.PickingSides.Value = true;
+        }
     }
 }

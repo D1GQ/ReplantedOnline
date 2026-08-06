@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using Il2CppInterop.Runtime.Attributes;
+using MelonLoader;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
@@ -34,6 +35,7 @@ internal sealed class CoroutineManager : MonoBehaviour
     /// </summary>
     /// <param name="enumerator">The IEnumerator that defines the coroutine's execution logic.</param>
     /// <returns>A Coroutine reference that can be used to control the coroutine's execution.</returns>
+    [HideFromIl2Cpp]
     internal Coroutine StartCoroutine(IEnumerator enumerator)
     {
         return CoroutineUtils.StartCoroutine(this, enumerator);
