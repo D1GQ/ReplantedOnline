@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Data.Json.Config.Reloaded.Arenas;
 using ReplantedOnline.Data.Json.Converters;
+using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs;
 using System.Text.Json.Serialization;
 
@@ -9,64 +10,64 @@ namespace ReplantedOnline.Data.Json.Config.Reloaded;
 /// <summary>
 /// Represents the root configuration object for versus mode, containing all seed packet and zombie configurations.
 /// </summary>
-internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>
+internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkConfigSerializable
 {
     /// <summary>
     /// Gets the initial sky production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime InitialSkyProductionRate { get; init; }
+    public IntTime InitialSkyProductionRate { get; set; }
 
     /// <summary>
     /// Gets the maximum plant and zombie initial production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime InitialProductionRateMax { get; init; }
+    public IntTime InitialProductionRateMax { get; set; }
 
     /// <summary>
     /// Gets the minimum plant and zombie initial production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime InitialProductionRateMin { get; init; }
+    public IntTime InitialProductionRateMin { get; set; }
 
     /// <summary>
     /// Gets the sky brain and sun production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime SkyProductionRate { get; init; }
+    public IntTime SkyProductionRate { get; set; }
 
     /// <summary>
     /// Gets the plant sun production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime PlantProductionRate { get; init; }
+    public IntTime PlantProductionRate { get; set; }
 
     /// <summary>
     /// Gets the zombie brain production rate.
     /// </summary>
     [JsonConverter(typeof(IntTimeConverter))]
-    public IntTime ZombieProductionRate { get; init; }
+    public IntTime ZombieProductionRate { get; set; }
 
     /// <summary>
     /// Gets the list of seed packets that are disabled in sudden death.
     /// </summary>
     [JsonConverter(typeof(JsonSeedTypeListConverter))]
-    public List<SeedType> DisabledSeedPacketsInSuddenDeath { get; init; } = [];
+    public List<SeedType> DisabledSeedPacketsInSuddenDeath { get; set; } = [];
 
     /// <summary>
     /// Gets the configurations for CloudyDayArena.
     /// </summary>
-    public CloudyDayArenaConfig CloudyDayArenaConfig { get; init; } = null!;
+    public CloudyDayArenaConfig CloudyDayArenaConfig { get; set; } = null!;
 
     /// <summary>
     /// Gets the collection of seed packet configurations for plants and zombies available in versus mode.
     /// </summary>
-    public List<SeedPacketConfig> SeedPacketConfigs { get; init; } = [];
+    public List<SeedPacketConfig> SeedPacketConfigs { get; set; } = [];
 
     /// <summary>
     /// Gets the collection of zombie configurations defining health values for each zombie type.
     /// </summary>
-    public List<ZombieConfig> ZombieConfigs { get; init; } = [];
+    public List<ZombieConfig> ZombieConfigs { get; set; } = [];
 
     private readonly Dictionary<SeedType, SeedPacketConfig> _seedPacketConfigLookup = [];
     private readonly Dictionary<ZombieType, ZombieConfig> _zombieConfigLookup = [];
@@ -138,5 +139,76 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>
     internal bool TryGetZombieConfig(ZombieType zombieType, out ZombieConfig config)
     {
         return _zombieConfigLookup.TryGetValue(zombieType, out config!);
+    }
+
+    /// <inheritdoc/>
+    public void Serialize(PacketWriter packetWriter)
+    {
+        packetWriter.WriteInt(InitialSkyProductionRate);
+        packetWriter.WriteInt(InitialProductionRateMax);
+        packetWriter.WriteInt(InitialProductionRateMin);
+        packetWriter.WriteInt(SkyProductionRate);
+        packetWriter.WriteInt(PlantProductionRate);
+        packetWriter.WriteInt(ZombieProductionRate);
+
+        packetWriter.WriteInt(DisabledSeedPacketsInSuddenDeath.Count);
+        foreach (var seedType in DisabledSeedPacketsInSuddenDeath)
+        {
+            packetWriter.WriteEnum(seedType);
+        }
+
+        CloudyDayArenaConfig.Serialize(packetWriter);
+
+        packetWriter.WriteInt(SeedPacketConfigs.Count);
+        foreach (var config in SeedPacketConfigs)
+        {
+            config.Serialize(packetWriter);
+        }
+
+        packetWriter.WriteInt(ZombieConfigs.Count);
+        foreach (var config in ZombieConfigs)
+        {
+            config.Serialize(packetWriter);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Deserialize(PacketReader packetReader)
+    {
+        InitialSkyProductionRate = new IntTime(packetReader.ReadInt());
+        InitialProductionRateMax = new IntTime(packetReader.ReadInt());
+        InitialProductionRateMin = new IntTime(packetReader.ReadInt());
+        SkyProductionRate = new IntTime(packetReader.ReadInt());
+        PlantProductionRate = new IntTime(packetReader.ReadInt());
+        ZombieProductionRate = new IntTime(packetReader.ReadInt());
+
+        int disabledCount = packetReader.ReadInt();
+        DisabledSeedPacketsInSuddenDeath.Clear();
+        for (int i = 0; i < disabledCount; i++)
+        {
+            DisabledSeedPacketsInSuddenDeath.Add(packetReader.ReadEnum<SeedType>());
+        }
+
+        CloudyDayArenaConfig.Deserialize(packetReader);
+
+        int seedPacketCount = packetReader.ReadInt();
+        SeedPacketConfigs.Clear();
+        for (int i = 0; i < seedPacketCount; i++)
+        {
+            var config = new SeedPacketConfig();
+            config.Deserialize(packetReader);
+            SeedPacketConfigs.Add(config);
+        }
+
+        int zombieCount = packetReader.ReadInt();
+        ZombieConfigs.Clear();
+        for (int i = 0; i < zombieCount; i++)
+        {
+            var config = new ZombieConfig();
+            config.Deserialize(packetReader);
+            ZombieConfigs.Add(config);
+        }
+
+        OnDeserialize();
     }
 }
