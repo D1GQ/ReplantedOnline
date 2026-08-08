@@ -7,13 +7,13 @@ using ReplantedOnline.Network.Reloaded.Client;
 namespace ReplantedOnline.Interfaces.Versus;
 
 /// <summary>
-/// Base marker interface for all character configuration types.
-/// Provides a non-generic foundation for the character configuration.
+/// Base marker interface for all character logic types.
+/// Provides a non-generic foundation for the character logic.
 /// </summary>
-internal interface ICharacterConfig
+internal interface ICharacterLogic
 {
     /// <summary>
-    /// Called when a plant is placed on the board. Routes the event to the appropriate plant configuration.
+    /// Called when a plant is placed on the board. Routes the event to the appropriate plant logic.
     /// </summary>
     /// <param name="plant">The plant instance that was planted</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -23,14 +23,14 @@ internal interface ICharacterConfig
         if (!ReloadedLobby.AmInLobby())
             return;
 
-        if (RegisterPlantConfig.TryGetInstanceFromLookup(plant.mSeedType, out var config))
+        if (RegisterPlantLogic.TryGetInstanceFromLookup(plant.mSeedType, out var config))
         {
             config.OnPlanted(plant, gridX, gridY);
         }
     }
 
     /// <summary>
-    /// Called when a zombie is placed on the board. Routes the event to the appropriate zombie configuration.
+    /// Called when a zombie is placed on the board. Routes the event to the appropriate zombie logic.
     /// </summary>
     /// <param name="zombie">The zombie instance that was planted</param>
     /// <param name="gridX">The X grid coordinate (column).</param>
@@ -40,7 +40,7 @@ internal interface ICharacterConfig
         if (!ReloadedLobby.AmInLobby())
             return;
 
-        if (RegisterZombieConfig.TryGetInstanceFromLookup(zombie.mZombieType, out var config))
+        if (RegisterZombieLogic.TryGetInstanceFromLookup(zombie.mZombieType, out var config))
         {
             config.OnPlanted(zombie, gridX, gridY);
         }
@@ -48,18 +48,18 @@ internal interface ICharacterConfig
 
     /// <summary>
     /// Determines whether a seed type can be placed at the given grid coordinates in the specified arena.
-    /// Checks both zombie and plant configurations based on the seed type.
+    /// Checks both zombie and plant logic types based on the seed type.
     /// </summary>
     /// <param name="seedType">The seed type to check placement for</param>
     /// <param name="arena">The arena type where placement is being attempted</param>
     /// <param name="gridX">The X grid coordinate (column)</param>
     /// <param name="gridY">The Y grid coordinate (row)</param>
-    /// <returns>True if the seed can be placed at the specified location; false if any matching configuration disallows placement</returns>
+    /// <returns>True if the seed can be placed at the specified location; false if any matching logic disallows placement</returns>
     internal static bool CanBePlacedAt(SeedType seedType, ArenaType arena, int gridX, int gridY)
     {
         if (!Challenge.IsZombieSeedType(seedType))
         {
-            if (RegisterPlantConfig.TryGetInstanceFromLookup(seedType, out var config))
+            if (RegisterPlantLogic.TryGetInstanceFromLookup(seedType, out var config))
             {
                 if (!config.CanBePlacedAt(arena, gridX, gridY))
                 {
@@ -70,7 +70,7 @@ internal interface ICharacterConfig
         else
         {
             var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
-            if (RegisterZombieConfig.TryGetInstanceFromLookup(zombieType, out var config))
+            if (RegisterZombieLogic.TryGetInstanceFromLookup(zombieType, out var config))
             {
                 if (!config.CanBePlacedAt(arena, gridX, gridY))
                 {
@@ -84,11 +84,11 @@ internal interface ICharacterConfig
 }
 
 /// <summary>
-/// Defines the configuration interface for character types in the game.
+/// Defines the logic interface for character types in the game.
 /// </summary>
 /// <typeparam name="DefinitionType">The definition type containing character data (e.g., ZombieDefinition, PlantDefinition)</typeparam>
 /// <typeparam name="CharacterType">The runtime character type (e.g., Zombie, Plant)</typeparam>
-internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterConfig
+internal interface ICharacterLogic<DefinitionType, CharacterType> : ICharacterLogic
 {
     /// <summary>
     /// Determines whether the character can be placed at the specified grid coordinates in the given arena.
@@ -109,13 +109,13 @@ internal interface ICharacterConfig<DefinitionType, CharacterType> : ICharacterC
 }
 
 /// <summary>
-/// Configuration interface specifically for zombies.
-/// Implements the generic character configuration with zombie-specific types.
+/// Logic interface specifically for zombies.
+/// Implements the generic character logic with zombie-specific types.
 /// </summary>
-internal interface IZombieConfig : ICharacterConfig<ZombieDefinition, Zombie>;
+internal interface IZombieLogic : ICharacterLogic<ZombieDefinition, Zombie>;
 
 /// <summary>
-/// Configuration interface specifically for plants.
-/// Implements the generic character configuration with plant-specific types.
+/// Logic interface specifically for plants.
+/// Implements the generic character logic with plant-specific types.
 /// </summary>
-internal interface IPlantConfig : ICharacterConfig<PlantDefinition, Plant>;
+internal interface IPlantLogic : ICharacterLogic<PlantDefinition, Plant>;

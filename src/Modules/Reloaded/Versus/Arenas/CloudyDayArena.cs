@@ -183,7 +183,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
         // Zombies
         SeedType.ZombieBungee,
         SeedType.ZombieDancer,
-        CustomSeedType.DolphinRider,
+        CustomSeedType.ZombieDolphinRider,
         SeedType.ZombiePogo,
         SeedType.ZombieFlag
     ];

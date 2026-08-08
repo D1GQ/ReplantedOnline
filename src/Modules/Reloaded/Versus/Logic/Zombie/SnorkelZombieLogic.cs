@@ -3,10 +3,10 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 
-namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
+namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 
-[RegisterZombieConfig(ZombieType.DolphinRider)]
-internal sealed class DolphinRiderZombieConfig : IZombieConfig
+[RegisterZombieLogic(ZombieType.Snorkel)]
+internal sealed class SnorkelZombieLogic : IZombieLogic
 {
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY)

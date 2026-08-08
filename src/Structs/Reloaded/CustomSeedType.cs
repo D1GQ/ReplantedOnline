@@ -50,17 +50,17 @@ internal readonly struct CustomSeedType
     /// <summary>
     /// Custom seed type for the Dolphin Rider zombie.
     /// </summary>
-    internal static CustomSeedType DolphinRider { get; } = new(ReloadedSeedTypes.DolphinRiderSeedType, ZombieType.DolphinRider, ReanimationType.ZombieDolphinrider);
+    internal static CustomSeedType ZombieDolphinRider { get; } = new(ReloadedSeedTypes.DolphinRiderSeedType, ZombieType.DolphinRider, ReanimationType.ZombieDolphinrider);
 
     /// <summary>
     /// Custom seed type for the Snorkel zombie.
     /// </summary>
-    internal static CustomSeedType Snorkel { get; } = new(ReloadedSeedTypes.SnorkelSeedType, ZombieType.Snorkel, ReanimationType.Snorkel);
+    internal static CustomSeedType ZombieSnorkel { get; } = new(ReloadedSeedTypes.SnorkelSeedType, ZombieType.Snorkel, ReanimationType.Snorkel);
 
     /// <summary>
     /// Custom seed type for the Yeti zombie.
     /// </summary>
-    internal static CustomSeedType Yeti { get; } = new(ReloadedSeedTypes.YetiSeedType, ZombieType.Yeti, ReanimationType.Yeti);
+    internal static CustomSeedType ZombieYeti { get; } = new(ReloadedSeedTypes.YetiSeedType, ZombieType.Yeti, ReanimationType.Yeti);
 
     /// <summary>
     /// Checks if a <see cref="SeedType"/> is a CustomSeedType.

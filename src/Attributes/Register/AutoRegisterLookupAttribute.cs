@@ -171,16 +171,16 @@ internal sealed class RegisterPacket(PacketType packetHandlerType, bool logOnRec
 }
 
 /// <summary>
-/// Registers classes that implement IPlantConfig.
+/// Registers classes that implement IPlantLogic.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterPlantConfig(SeedType seedType) : AutoRegisterLookupAttribute<RegisterPlantConfig, IPlantConfig, SeedType>(seedType);
+internal sealed class RegisterPlantLogic(SeedType seedType) : AutoRegisterLookupAttribute<RegisterPlantLogic, IPlantLogic, SeedType>(seedType);
 
 /// <summary>
-/// Registers classes that implement IZombieConfig.
+/// Registers classes that implement IZombieLogic.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class RegisterZombieConfig(ZombieType zombieType) : AutoRegisterLookupAttribute<RegisterZombieConfig, IZombieConfig, ZombieType>(zombieType);
+internal sealed class RegisterZombieLogic(ZombieType zombieType) : AutoRegisterLookupAttribute<RegisterZombieLogic, IZombieLogic, ZombieType>(zombieType);
 
 /// <summary>
 /// Registers classes that implement IArena.

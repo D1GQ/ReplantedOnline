@@ -136,7 +136,7 @@ internal static class SeedPacketDefinitions
         impDefinition.m_versusCost = 25;
 
         var snorkelDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.Snorkel, "SNORKEL_ZOMBIE",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel, "SNORKEL_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
         if (snorkelDefinition != null)
         {
@@ -146,7 +146,7 @@ internal static class SeedPacketDefinitions
         }
 
         var dolphinRiderDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.DolphinRider, "DOLPHIN_RIDER_ZOMBIE",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider, "DOLPHIN_RIDER_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
         if (dolphinRiderDefinition != null)
         {
@@ -156,7 +156,7 @@ internal static class SeedPacketDefinitions
         }
 
         var yetiDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.Yeti, "ZOMBIE_YETI",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon,
             "A curious creature that can be enraged!");
         if (yetiDefinition != null)
@@ -257,7 +257,7 @@ internal static class SeedPacketDefinitions
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
 
-        ICharacterConfig.OnPlantPlanted(plant, gridX, gridY);
+        ICharacterLogic.OnPlantPlanted(plant, gridX, gridY);
 
         return (plant, plantNetworked);
     }
@@ -442,7 +442,7 @@ internal static class SeedPacketDefinitions
 
         Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
 
-        ICharacterConfig.OnZombiePlanted(zombie, gridX, gridY);
+        ICharacterLogic.OnZombiePlanted(zombie, gridX, gridY);
 
         return (zombie, zombieNetworked);
     }
@@ -548,7 +548,7 @@ internal static class SeedPacketDefinitions
             return false;
         }
 
-        if (!ICharacterConfig.CanBePlacedAt(seedType, VersusState.ArenaSynced, gridX, gridY))
+        if (!ICharacterLogic.CanBePlacedAt(seedType, VersusState.ArenaSynced, gridX, gridY))
         {
             return false;
         }

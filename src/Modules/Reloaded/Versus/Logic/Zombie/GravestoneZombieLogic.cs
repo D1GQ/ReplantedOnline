@@ -3,10 +3,10 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 
-namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
+namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 
-[RegisterZombieConfig(ZombieType.Target)]
-internal sealed class TargetZombieConfig : IZombieConfig
+[RegisterZombieLogic(ZombieType.Gravestone)]
+internal sealed class GravestoneZombieLogic : IZombieLogic
 {
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY) => true;
@@ -15,6 +15,7 @@ internal sealed class TargetZombieConfig : IZombieConfig
     public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY)
     {
         // Fix rendering order
-        zombie.RenderOrder -= 200 + 10 * (gridY + 1);
+        zombie.RenderOrder -= 100 + 5 * (gridY + 1);
+        zombie.mZombieRect = new(50f, 50f, zombie.mZombieRect.width, zombie.mZombieRect.height);
     }
 }

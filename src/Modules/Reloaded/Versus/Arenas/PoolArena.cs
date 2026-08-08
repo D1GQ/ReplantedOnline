@@ -49,7 +49,7 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
         {
             field ??=
                 [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrashCan,
-                SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, CustomSeedType.DolphinRider,
+                SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, CustomSeedType.ZombieDolphinRider,
                 SeedType.ZombieFlag];
             return field;
         }

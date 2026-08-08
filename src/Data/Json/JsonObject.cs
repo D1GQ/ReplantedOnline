@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using ReplantedOnline.Utilities.MelonLoader;
+using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -80,8 +81,9 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
         {
             return JsonSerializer.Deserialize<T>(json, SerializerOptions);
         }
-        catch
+        catch (Exception ex)
         {
+            ReplantedOnlineMod.Logger.Error(typeof(JsonObject), ex.ToString());
             return null;
         }
     }

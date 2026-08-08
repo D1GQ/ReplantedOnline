@@ -39,7 +39,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         { [SeedType.ZombieCatapult], [SeedType.Spikeweed, SeedType.Squash, SeedType.Umbrella] },
         { [SeedType.ZombieBalloon], [SeedType.Cactus, SeedType.Blover] },
         { [SeedType.ZombieDigger], [SeedType.Splitpea, SeedType.Starfruit] },
-        { [CustomSeedType.Snorkel, CustomSeedType.DolphinRider], [SeedType.Tanglekelp] }
+        { [CustomSeedType.ZombieSnorkel, CustomSeedType.ZombieDolphinRider], [SeedType.Tanglekelp] }
     };
 
     /// <summary>

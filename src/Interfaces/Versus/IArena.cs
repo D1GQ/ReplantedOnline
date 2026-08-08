@@ -104,7 +104,7 @@ internal interface IArena
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        if ((Plant.IsAquatic(seedType) || seedType == CustomSeedType.DolphinRider || seedType == CustomSeedType.Snorkel) && !isPool)
+        if ((Plant.IsAquatic(seedType) || seedType == CustomSeedType.ZombieDolphinRider || seedType == CustomSeedType.ZombieSnorkel) && !isPool)
         {
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }

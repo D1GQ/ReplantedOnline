@@ -3,10 +3,10 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 
-namespace ReplantedOnline.Modules.Reloaded.Versus.Configs.Zombie;
+namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 
-[RegisterZombieConfig(ZombieType.Bungee)]
-internal sealed class BungeeZombieConfig : IZombieConfig
+[RegisterZombieLogic(ZombieType.Target)]
+internal sealed class TargetZombieLogic : IZombieLogic
 {
     /// <inheritdoc/>
     public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY) => true;
@@ -14,6 +14,7 @@ internal sealed class BungeeZombieConfig : IZombieConfig
     /// <inheritdoc/>
     public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY)
     {
-        zombie.mRenderOrder -= 400;
+        // Fix rendering order
+        zombie.RenderOrder -= 200 + 10 * (gridY + 1);
     }
 }
