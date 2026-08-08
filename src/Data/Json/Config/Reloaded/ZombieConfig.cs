@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using System.Text.Json.Serialization;
 
-namespace ReplantedOnline.Data.Json.Config;
+namespace ReplantedOnline.Data.Json.Config.Reloaded;
 
 /// <summary>
 /// Configuration data for a specific zombie type in the versus mode.

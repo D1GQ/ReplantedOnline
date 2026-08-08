@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Data;
+using ReplantedOnline.Data.Json.Config.Reloaded;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
@@ -10,7 +11,6 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
-using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -22,6 +22,11 @@ namespace ReplantedOnline.Managers.Reloaded;
 /// </summary>
 internal static class VersusGameplayManager
 {
+    internal static VersusModeConfig GetVersusModeConfig()
+    {
+        return DataManager.VersusModeConfig;
+    }
+
     internal static bool IsDancingThisFrameSynced;
     internal static void OnStart(VersusMode versusMode)
     {
@@ -66,7 +71,7 @@ internal static class VersusGameplayManager
                 {
                     foreach (var seedPacket in seedBank.mSeedPackets)
                     {
-                        if (!SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedPacket.PacketType))
+                        if (!GetVersusModeConfig().DisabledSeedPacketsInSuddenDeath.Contains(seedPacket.PacketType))
                             continue;
 
                         seedBank.SetSeedPacketDisabled(seedPacket, true);
@@ -133,27 +138,27 @@ internal static class VersusGameplayManager
 
     internal static int GetSkyRate()
     {
-        return ReplantedOnlineMod.Constants.Reloaded.Production.SKY_RATE;
+        return GetVersusModeConfig().SkyProductionRate;
     }
 
     internal static int GetInitSkyRate()
     {
-        return ReplantedOnlineMod.Constants.Reloaded.Production.INITIAL_SKY_RATE;
+        return GetVersusModeConfig().InitialSkyProductionRate;
     }
 
     internal static int GetInitPlantOrGraveRate()
     {
-        return Common.RandRangeInt(ReplantedOnlineMod.Constants.Reloaded.Production.INITIAL_PLANT_OR_GRAVE_RATE_RANGE.MIN, ReplantedOnlineMod.Constants.Reloaded.Production.INITIAL_PLANT_OR_GRAVE_RATE_RANGE.MAX);
+        return Common.RandRangeInt(GetVersusModeConfig().InitialProductionRateMin, VersusGameplayManager.GetVersusModeConfig().InitialProductionRateMax);
     }
 
     internal static int GetPlantRate()
     {
-        return ReplantedOnlineMod.Constants.Reloaded.Production.PLANT_RATE;
+        return GetVersusModeConfig().PlantProductionRate;
     }
 
     internal static int GetGraveRate()
     {
-        return ReplantedOnlineMod.Constants.Reloaded.Production.GRAVE_RATE;
+        return GetVersusModeConfig().ZombieProductionRate;
     }
 
     /// <summary>
@@ -211,11 +216,11 @@ internal static class VersusGameplayManager
         int refreshTime;
         if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
         {
-            refreshTime = IntTime.From(DataManager.VersusModeConfig.GetSeedPacketConfig(seedType).RefreshTime);
+            refreshTime = GetVersusModeConfig().GetSeedPacketConfig(seedType).RefreshTime;
         }
         else
         {
-            refreshTime = IntTime.From(DataManager.VersusModeConfig.GetSeedPacketConfig(seedType).SuddenDeathRefresh);
+            refreshTime = GetVersusModeConfig().GetSeedPacketConfig(seedType).SuddenDeathRefresh;
         }
 
         CloudyDayArena.ApplyRefreshTimeReduction(seedType, ref refreshTime);

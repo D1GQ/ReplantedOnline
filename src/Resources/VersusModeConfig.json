@@ -1,4 +1,38 @@
 {
+  "initialSkyProductionRate": 12,
+  "initialProductionRateMin": 8,
+  "initialProductionRateMax": 12,
+  "skyProductionRate": 22,
+  "plantProductionRate": 14,
+  "zombieProductionRate": 34,
+  "disabledSeedPacketsInSuddenDeath": [
+    "Sunflower",
+    "Sunshroom",
+    "ZombieGravestone"
+  ],
+  "cloudyDayArenaConfig": {
+    "sunnyPhaseTime": 60,
+    "rainPhaseTime": 30,
+    "costReductionMultiplier": 0.5,
+    "costReductionRoundStep": 5,
+    "refreshTimeMaxValue": 100,
+    "refreshTimePower": 0.7,
+    "refreshTimeMultiplier": 1.5,
+    "disabledSeedPacketsInRain": [
+      "Cherrybomb",
+      "Iceshroom",
+      "Doomshroom",
+      "Tanglekelp",
+      "Jalapeno",
+      "Tallnut",
+      "Melonpult",
+      "ZombieBungee",
+      "ZombieDancer",
+      "ZombieDolphinRider",
+      "ZombiePogo",
+      "ZombieFlag"
+    ]
+  },
   "seedPacketConfigs": [
     {
       "type": "Peashooter",

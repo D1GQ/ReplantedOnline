@@ -2,8 +2,8 @@
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
-using ReplantedOnline.Data;
-using ReplantedOnline.Data.Json.Config;
+using ReplantedOnline.Data.Json.Config.Reloaded;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using UnityEngine;
@@ -27,7 +27,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Enraged
     }
 
-    private ZombieConfig _yetiConfig = DataManager.VersusModeConfig.GetZombieConfig(ZombieType.Yeti);
+    private ZombieConfig _yetiConfig = VersusGameplayManager.GetVersusModeConfig().GetZombieConfig(ZombieType.Yeti);
 
     internal override void OnInit(Zombie zombie)
     {

@@ -1,4 +1,4 @@
-﻿using ReplantedOnline.Data.Json.Config;
+﻿using ReplantedOnline.Data.Json.Config.Reloaded;
 
 namespace ReplantedOnline.Data;
 

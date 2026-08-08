@@ -1,16 +1,15 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Data;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
-using ReplantedOnline.Structs;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Il2Cpp;
 using ReplantedOnline.Utilities.Modded;
@@ -143,21 +142,21 @@ internal static class SeedPacketDefinitions
     {
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
-            if (DataManager.VersusModeConfig.TryGetSeedPacketConfig(seedDefinition.SeedType, out var config))
+            if (VersusGameplayManager.GetVersusModeConfig().TryGetSeedPacketConfig(seedDefinition.SeedType, out var config))
             {
                 seedDefinition.m_versusCost = config.Cost;
                 if (arenaType.IsArenaAtNight() && Plant.IsNocturnal(seedDefinition.SeedType))
                 {
                     seedDefinition.m_versusCost += config.NocturnalCostSurplus;
                 }
-                seedDefinition.m_versusBaseRefreshTime = IntTime.From(config.RefreshTime);
-                seedDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(config.RefreshTime);
+                seedDefinition.m_versusBaseRefreshTime = config.RefreshTime;
+                seedDefinition.m_versusSuddenDeathRefreshTime = config.SuddenDeathRefresh;
             }
         }
 
         foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
         {
-            if (DataManager.VersusModeConfig.TryGetZombieConfig(zombieDefinition.ZombieType, out var config))
+            if (VersusGameplayManager.GetVersusModeConfig().TryGetZombieConfig(zombieDefinition.ZombieType, out var config))
             {
                 zombieDefinition.m_versusBodyHealth = config.BodyHealth;
                 zombieDefinition.m_versusArmorHealth = config.ArmorHealth;

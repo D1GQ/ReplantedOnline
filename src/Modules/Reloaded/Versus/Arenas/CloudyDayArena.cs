@@ -6,8 +6,8 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -51,7 +51,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     public void InitializeArena(VersusMode versusMode)
     {
         IsRaining = false;
-        nextWeatherChangeTime = 60f;
+        nextWeatherChangeTime = VersusGameplayManager.GetVersusModeConfig().CloudyDayArenaConfig.SunnyPhaseTime;
 
         if (ReloadedLobby.AmLobbyHost())
         {
@@ -102,12 +102,12 @@ internal sealed class CloudyDayArena : IArena, IArenaData
             if (!IsRaining)
             {
                 SetCloudy(cloudyDayMode);
-                nextWeatherChangeTime += 30f;
+                nextWeatherChangeTime += VersusGameplayManager.GetVersusModeConfig().CloudyDayArenaConfig.RainPhaseTime;
             }
             else
             {
                 SetSunny(cloudyDayMode);
-                nextWeatherChangeTime += 60f;
+                nextWeatherChangeTime += VersusGameplayManager.GetVersusModeConfig().CloudyDayArenaConfig.SunnyPhaseTime;
             }
             cloudyDayMode.m_wasMessageDisplayed = false;
         }
@@ -117,11 +117,11 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     {
         cloudyDayMode.m_currentWeatherChange = 1;
         cloudyDayMode.m_nextWeatherChangeWave = 0;
-        cloudyDayMode.m_app.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(3f, () =>
+        CoroutineManager.Instance.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(3f, () =>
         {
             IsRaining = true;
             UpdateNocturnalPlants(true);
-            UpdateRefreshTimes();
+            UpdateRefreshTimes(cloudyDayMode);
             UpdateSeedPackets(cloudyDayMode, true);
         }));
     }
@@ -130,11 +130,11 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     {
         cloudyDayMode.m_currentWeatherChange = 0;
         cloudyDayMode.m_nextWeatherChangeWave = -1;
-        cloudyDayMode.m_app.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(3f, () =>
+        CoroutineManager.Instance.StartCoroutine(CoroutineUtils.ExecuteAfterDelay(3f, () =>
         {
             IsRaining = false;
             UpdateNocturnalPlants(false);
-            UpdateRefreshTimes();
+            UpdateRefreshTimes(cloudyDayMode);
             UpdateSeedPackets(cloudyDayMode, false);
         }));
     }
@@ -150,43 +150,23 @@ internal sealed class CloudyDayArena : IArena, IArenaData
         }
     }
 
-    private static void UpdateRefreshTimes()
+    private static void UpdateRefreshTimes(CloudyDayMode cloudyDayMode)
     {
-        foreach (var seedPacket in PvZRUtils.GetPlantSeedBankInfo().mSeedBank.SeedPackets)
+        foreach (var seedBank in cloudyDayMode.m_board.SeedBanks.m_values)
         {
-            if (!seedPacket.mRefreshing)
-                continue;
+            foreach (var seedPacket in seedBank.SeedPackets)
+            {
+                if (seedPacket.mPacketType == SeedType.None)
+                    continue;
 
-            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
-        }
+                if (!seedPacket.mRefreshing)
+                    continue;
 
-        foreach (var seedPacket in PvZRUtils.GetZombieSeedBankInfo().mSeedBank.SeedPackets)
-        {
-            if (!seedPacket.mRefreshing)
-                continue;
+                seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
+            }
 
-            seedPacket.mRefreshTime = VersusGameplayManager.GetSeedPacketRefreshTime(seedPacket.mPacketType);
         }
     }
-
-    private static readonly SeedType[] DisabledCloudySeedPackets =
-    [
-        // Plants
-        SeedType.Cherrybomb,
-        SeedType.Iceshroom,
-        SeedType.Doomshroom,
-        SeedType.Tanglekelp,
-        SeedType.Jalapeno,
-        SeedType.Tallnut,
-        SeedType.Melonpult,
-
-        // Zombies
-        SeedType.ZombieBungee,
-        SeedType.ZombieDancer,
-        CustomSeedType.ZombieDolphinRider,
-        SeedType.ZombiePogo,
-        SeedType.ZombieFlag
-    ];
 
     private static void UpdateSeedPackets(CloudyDayMode cloudyDayMode, bool cloudy)
     {
@@ -194,7 +174,13 @@ internal sealed class CloudyDayArena : IArena, IArenaData
         {
             foreach (var seedPacket in seedBank.mSeedPackets)
             {
-                if (!DisabledCloudySeedPackets.Contains(seedPacket.mPacketType))
+                if (VersusGameplayManager.GetVersusModeConfig()
+                    .DisabledSeedPacketsInSuddenDeath.Contains(seedPacket.PacketType)
+                    && VersusState.VersusPhase == VersusPhase.SuddenDeath)
+                    continue;
+
+                if (!VersusGameplayManager.GetVersusModeConfig()
+                    .CloudyDayArenaConfig.DisabledSeedPacketsInRain.Contains(seedPacket.PacketType))
                     continue;
 
                 seedBank.SetSeedPacketDisabled(seedPacket, cloudy);
@@ -204,9 +190,18 @@ internal sealed class CloudyDayArena : IArena, IArenaData
 
     internal static int GetCostReduction(SeedType seedType, int cost)
     {
+        var config = VersusGameplayManager.GetVersusModeConfig().CloudyDayArenaConfig;
+
         if (VersusState.VersusTimeSynced > 30f && IsRaining)
         {
-            return (int)(Math.Round(cost * 0.5f / 5, MidpointRounding.AwayFromZero) * 5);
+            float reducedCost = cost * config.CostReductionMultiplier;
+
+            if (config.CostReductionRoundStep > 0)
+            {
+                return (int)(Math.Round(reducedCost / config.CostReductionRoundStep, MidpointRounding.AwayFromZero) * config.CostReductionRoundStep);
+            }
+
+            return (int)Math.Round(reducedCost, MidpointRounding.AwayFromZero);
         }
         else
         {
@@ -225,7 +220,9 @@ internal sealed class CloudyDayArena : IArena, IArenaData
         if (!IsRaining)
             return;
 
-        refreshTime = Mathf.Min(100, (int)(Math.Pow(refreshTime, 0.7f) * 1.5f));
+        var config = VersusGameplayManager.GetVersusModeConfig().CloudyDayArenaConfig;
+
+        refreshTime = Mathf.Min(config.RefreshTimeMaxValue, (int)(Math.Pow(refreshTime, config.RefreshTimePower) * config.RefreshTimeMultiplier));
     }
 
     /// <inheritdoc/>

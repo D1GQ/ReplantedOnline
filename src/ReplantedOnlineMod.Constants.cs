@@ -1,6 +1,4 @@
-﻿using ReplantedOnline.Structs;
-
-namespace ReplantedOnline;
+﻿namespace ReplantedOnline;
 
 /// <inheritdoc/>
 internal partial class ReplantedOnlineMod
@@ -51,15 +49,6 @@ internal partial class ReplantedOnlineMod
             internal const float VERSUS_PRECOUNTDOWN_TIME = 4f;
             internal const int DANCER_NON_DANCING_FRAME = 11;
             internal const int DANCER_DANCING_FRAME = 12;
-
-            internal static class Production
-            {
-                internal static readonly IntTime INITIAL_SKY_RATE = 12f;
-                internal static readonly (IntTime MIN, IntTime MAX) INITIAL_PLANT_OR_GRAVE_RATE_RANGE = (8f, 12f);
-                internal static readonly IntTime SKY_RATE = 22f;
-                internal static readonly IntTime PLANT_RATE = 14f;
-                internal static readonly IntTime GRAVE_RATE = 34f;
-            }
         }
     }
 }

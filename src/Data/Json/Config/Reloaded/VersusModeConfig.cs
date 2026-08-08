@@ -1,12 +1,63 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Data.Json.Config.Reloaded.Arenas;
+using ReplantedOnline.Data.Json.Converters;
+using ReplantedOnline.Structs;
+using System.Text.Json.Serialization;
 
-namespace ReplantedOnline.Data.Json.Config;
+namespace ReplantedOnline.Data.Json.Config.Reloaded;
 
 /// <summary>
 /// Represents the root configuration object for versus mode, containing all seed packet and zombie configurations.
 /// </summary>
 internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>
 {
+    /// <summary>
+    /// Gets the initial sky production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime InitialSkyProductionRate { get; init; }
+
+    /// <summary>
+    /// Gets the maximum plant and zombie initial production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime InitialProductionRateMax { get; init; }
+
+    /// <summary>
+    /// Gets the minimum plant and zombie initial production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime InitialProductionRateMin { get; init; }
+
+    /// <summary>
+    /// Gets the sky brain and sun production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime SkyProductionRate { get; init; }
+
+    /// <summary>
+    /// Gets the plant sun production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime PlantProductionRate { get; init; }
+
+    /// <summary>
+    /// Gets the zombie brain production rate.
+    /// </summary>
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime ZombieProductionRate { get; init; }
+
+    /// <summary>
+    /// Gets the list of seed packets that are disabled in sudden death.
+    /// </summary>
+    [JsonConverter(typeof(JsonSeedTypeListConverter))]
+    public List<SeedType> DisabledSeedPacketsInSuddenDeath { get; init; } = [];
+
+    /// <summary>
+    /// Gets the configurations for CloudyDayArena.
+    /// </summary>
+    public CloudyDayArenaConfig CloudyDayArenaConfig { get; init; } = null!;
+
     /// <summary>
     /// Gets the collection of seed packet configurations for plants and zombies available in versus mode.
     /// </summary>

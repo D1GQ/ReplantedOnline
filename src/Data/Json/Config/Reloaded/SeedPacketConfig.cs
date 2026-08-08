@@ -1,8 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Data.Json.Converters;
+using ReplantedOnline.Structs;
 using System.Text.Json.Serialization;
 
-namespace ReplantedOnline.Data.Json.Config;
+namespace ReplantedOnline.Data.Json.Config.Reloaded;
 
 /// <summary>
 /// Configuration data for a specific seed packet in the versus mode.
@@ -28,10 +29,12 @@ internal sealed class SeedPacketConfig : JsonObject<SeedPacketConfig>
     /// <summary>
     /// Gets the base cooldown time in seconds before this seed packet can be used again.
     /// </summary>
-    public float RefreshTime { get; init; }
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime RefreshTime { get; init; }
 
     /// <summary>
     /// Gets the cooldown time in seconds during Sudden Death mode.
     /// </summary>
-    public float SuddenDeathRefresh { get; init; }
+    [JsonConverter(typeof(IntTimeConverter))]
+    public IntTime SuddenDeathRefresh { get; init; }
 }
