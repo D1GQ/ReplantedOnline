@@ -287,9 +287,9 @@ internal static partial class NetworkManager
         var packetReader = PacketReader.Get(data);
         try
         {
-            PacketReader? subReader;
-            while ((subReader = packetReader.NextSubpacket()) != null)
+            while (packetReader.Remaining > 0)
             {
+                var subReader = packetReader.NextSubpacket();
                 try
                 {
                     Streamline(sender, subReader, false);

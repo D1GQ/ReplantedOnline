@@ -52,10 +52,10 @@ internal sealed class PacketReader : IPacket
     /// Moves to the next sub-packet in the current packet stream and returns a new PacketReader for its payload.
     /// </summary>
     /// <returns>A new PacketReader positioned at the sub-packet payload, or null if no more sub-packets are available.</returns>
-    internal PacketReader? NextSubpacket()
+    internal PacketReader NextSubpacket()
     {
         if (Remaining < 3)
-            return null;
+            throw new InvalidDataException("Not enough bytes remaining to read Subpacket.");
 
         ushort length = (ushort)(_data[_position] | (_data[_position + 1] << 8));
         byte tag = _data[_position + 2];

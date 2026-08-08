@@ -577,9 +577,9 @@ internal sealed class LanServer : IDisposable
 
         try
         {
-            PacketReader? subReader;
-            while ((subReader = packetReader.NextSubpacket()) != null)
+            while (packetReader.Remaining > 0)
             {
+                var subReader = packetReader.NextSubpacket();
                 try
                 {
                     var serverPacket = (ServerPacket)subReader.SubTag;
