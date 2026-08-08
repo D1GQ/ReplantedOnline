@@ -51,18 +51,21 @@
     {
       "type": "Puffshroom",
       "cost": 0,
+      "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Sunshroom",
       "cost": 25,
+      "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 0
     },
     {
       "type": "Fumeshroom",
       "cost": 75,
+      "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
@@ -74,12 +77,14 @@
     },
     {
       "type": "Hypnoshroom",
+      "nocturnalCostSurplus": 25,
       "cost": 75,
       "refreshTime": 30,
       "suddenDeathRefresh": 10
     },
     {
       "type": "Scaredyshroom",
+      "nocturnalCostSurplus": 25,
       "cost": 25,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
@@ -87,12 +92,14 @@
     {
       "type": "Iceshroom",
       "cost": 75,
+      "nocturnalCostSurplus": 25,
       "refreshTime": 60,
       "suddenDeathRefresh": 20
     },
     {
       "type": "Doomshroom",
       "cost": 125,
+      "nocturnalCostSurplus": 25,
       "refreshTime": 60,
       "suddenDeathRefresh": 20
     },
@@ -143,6 +150,13 @@
       "cost": 125,
       "refreshTime": 30,
       "suddenDeathRefresh": 30
+    },
+    {
+      "type": "Seashroom",
+      "cost": 0,
+      "nocturnalCostSurplus": 25,
+      "refreshTime": 50,
+      "suddenDeathRefresh": 25
     },
     {
       "type": "Plantern",
@@ -374,6 +388,11 @@
     }
   ],
   "zombieConfigs": [
+    {
+      "type": "Target",
+      "bodyHealth": 1,
+      "armorHealth": 200
+    },
     {
       "type": "Gravestone",
       "bodyHealth": 360,

@@ -21,6 +21,11 @@ internal sealed class SeedPacketConfig : JsonObject<SeedPacketConfig>
     public int Cost { get; init; }
 
     /// <summary>
+    /// Gets the sun cost surplus for nocturnal plants during the night.
+    /// </summary>
+    public int NocturnalCostSurplus { get; init; } = 0;
+
+    /// <summary>
     /// Gets the base cooldown time in seconds before this seed packet can be used again.
     /// </summary>
     public float RefreshTime { get; init; }

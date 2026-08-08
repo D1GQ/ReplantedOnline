@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus.Gamemodes;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
@@ -98,6 +99,7 @@ internal sealed class StartGameRpc : IRpcMessage<VersusGamemodeType>
             yield return null;
         }
 
+        SeedPacketDefinitions.UpdateDefinitionsFromConfigs(VersusState.ArenaSynced);
         ReloadedLobby.LobbyData?.Gamemode = gamemode;
         LevelEntries.SetupVersusArenaForGameplay(gamemode);
         IVersusGamemode.GetCurrentGamemode().OnGameModeStart(Instances.GameplayActivity.VersusMode);

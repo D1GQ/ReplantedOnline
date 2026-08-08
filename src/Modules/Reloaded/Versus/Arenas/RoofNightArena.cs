@@ -34,16 +34,4 @@ internal sealed class RoofNightArena : RoofArena
         versusLevelData.m_gameArea = GameArea.Boss;
         versusLevelData.m_backgroundPrefab = GetLevelEntryData().m_backgroundPrefab;
     }
-
-    /// <inheritdoc/>
-    public override void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
-    {
-        seedPacketDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[seedPacketDefinition.SeedType];
-
-        if (Plant.IsNocturnal(seedPacketDefinition.SeedType))
-        {
-            // Add Cost of instant coffee to balance price
-            seedPacketDefinition.m_versusCost += 25;
-        }
-    }
 }

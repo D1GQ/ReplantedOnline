@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
+using ReplantedOnline.Data;
 using ReplantedOnline.Data.Asset;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
@@ -90,9 +91,14 @@ internal static class SeedPacketDefinitions
     internal readonly static SeedType[] SleepingPlants = [.. Enum.GetValues<SeedType>().Where(Plant.IsNocturnal)];
 
     /// <summary>
-    /// A lookup of the original seed packet cost.
+    /// A lookup of the original plant definitions containing base values for cost, refresh time, and sudden death refresh time.
     /// </summary>
-    internal static readonly Dictionary<SeedType, int> BaseSeedVersusCost = [];
+    internal static readonly Dictionary<SeedType, (int Cost, int RefreshTime, int SuddenDeathRefreshTime)> BasePlantDefinitions = [];
+
+    /// <summary>
+    /// A lookup of the original zombie definitions containing base values for body health, armor health, and easter egg chance.
+    /// </summary>
+    internal static readonly Dictionary<ZombieType, (int BodyHealth, int ArmorHealth, float EasterEggChance100)> BaseZombieDefinitions = [];
 
     /// <summary>
     /// Initializes plant definitions and applies custom modifications.
@@ -105,70 +111,84 @@ internal static class SeedPacketDefinitions
         IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
         slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
 
-        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
-        {
-            // From Versus Mode Console:
-            // Buff versus body health
-            if (zombieDefinition.m_versusBodyHealth == 200)
-            {
-                zombieDefinition.m_versusBodyHealth = 270;
-            }
-        }
-
-        SetVersusDefinitionFromBase(SeedType.Flowerpot, 0.5f);
-        SetVersusDefinitionFromBase(SeedType.Lilypad, 0.5f);
-        SetVersusDefinitionFromBase(SeedType.Tanglekelp);
-        SetVersusDefinitionFromBase(SeedType.Seashroom);
-        SetVersusDefinitionFromBase(SeedType.Plantern);
-        SetVersusDefinitionFromBase(SeedType.Blover);
-
-        var backupDancerDefinition = Instances.IDataService.GetZombieDefinition(ZombieType.BackupDancer);
-        backupDancerDefinition.m_easterEggChance100 = 0f;
-
-        var balloonDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieBalloon);
-        balloonDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
-        balloonDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
-        balloonDefinition.m_versusCost = 125;
-
-        var impDefinition = Instances.IDataService.GetPlantDefinition(SeedType.ZombieImp);
-        impDefinition.m_versusBaseRefreshTime = IntTime.From(15f);
-        impDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(10f);
-        impDefinition.m_versusCost = 25;
-
-        var snorkelDefinition = CustomPlantDefinition
+        CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel, "SNORKEL_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
-        if (snorkelDefinition != null)
-        {
-            snorkelDefinition.m_versusBaseRefreshTime = IntTime.From(25f);
-            snorkelDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(12f);
-            snorkelDefinition.m_versusCost = 100;
-        }
 
-        var dolphinRiderDefinition = CustomPlantDefinition
+        CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider, "DOLPHIN_RIDER_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
-        if (dolphinRiderDefinition != null)
-        {
-            dolphinRiderDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
-            dolphinRiderDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
-            dolphinRiderDefinition.m_versusCost = 150;
-        }
 
-        var yetiDefinition = CustomPlantDefinition
+        CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon,
             "A curious creature that can be enraged!");
-        if (yetiDefinition != null)
-        {
-            yetiDefinition.m_versusBaseRefreshTime = IntTime.From(30f);
-            yetiDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(15f);
-            yetiDefinition.m_versusCost = 200;
-        }
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {
-            BaseSeedVersusCost[seedDefinition.SeedType] = seedDefinition.VersusCost;
+            BasePlantDefinitions[seedDefinition.SeedType] = (seedDefinition.VersusCost, seedDefinition.VersusBaseRefreshTime, seedDefinition.VersusSuddenDeathRefreshTime);
+        }
+
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            BaseZombieDefinitions[zombieDefinition.ZombieType] = (zombieDefinition.VersusBodyHealth, zombieDefinition.VersusBodyHealth, zombieDefinition.EasterEggChance);
+        }
+    }
+
+    /// <summary>
+    /// Updates plant and zombie definitions from the loaded configuration data.
+    /// </summary>
+    /// <param name="arenaType">The current arena type used to determine if nocturnal cost surplus should be applied.</param>
+    internal static void UpdateDefinitionsFromConfigs(ArenaType arenaType = ArenaType.Day)
+    {
+        foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            if (DataManager.VersusModeConfig.TryGetSeedPacketConfig(seedDefinition.SeedType, out var config))
+            {
+                seedDefinition.m_versusCost = config.Cost;
+                if (arenaType.IsArenaAtNight() && Plant.IsNocturnal(seedDefinition.SeedType))
+                {
+                    seedDefinition.m_versusCost += config.NocturnalCostSurplus;
+                }
+                seedDefinition.m_versusBaseRefreshTime = IntTime.From(config.RefreshTime);
+                seedDefinition.m_versusSuddenDeathRefreshTime = IntTime.From(config.RefreshTime);
+            }
+        }
+
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            if (DataManager.VersusModeConfig.TryGetZombieConfig(zombieDefinition.ZombieType, out var config))
+            {
+                zombieDefinition.m_versusBodyHealth = config.BodyHealth;
+                zombieDefinition.m_versusArmorHealth = config.ArmorHealth;
+                zombieDefinition.m_easterEggChance100 = 0;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resets all plant and zombie definitions back to their base values.
+    /// </summary>
+    internal static void ResetDefinitions()
+    {
+        foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            if (BasePlantDefinitions.TryGetValue(seedDefinition.SeedType, out var basePlantDef))
+            {
+                seedDefinition.m_versusCost = basePlantDef.Cost;
+                seedDefinition.m_versusBaseRefreshTime = basePlantDef.RefreshTime;
+                seedDefinition.m_versusSuddenDeathRefreshTime = basePlantDef.SuddenDeathRefreshTime;
+            }
+        }
+
+        foreach (var zombieDefinition in Instances.IDataService.ZombieDefinitions.EnumerateIl2CppReadonlyList())
+        {
+            if (BaseZombieDefinitions.TryGetValue(zombieDefinition.ZombieType, out var baseZombieDef))
+            {
+                zombieDefinition.m_versusBodyHealth = baseZombieDef.BodyHealth;
+                zombieDefinition.m_versusArmorHealth = baseZombieDef.ArmorHealth;
+                zombieDefinition.m_easterEggChance100 = baseZombieDef.EasterEggChance100;
+            }
         }
     }
 

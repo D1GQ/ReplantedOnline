@@ -3,6 +3,7 @@
 using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Data;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded;
@@ -69,6 +70,7 @@ internal partial class ReplantedOnlineMod : MelonMod
                 return;
             }
 
+            DataManager.Initialize();
             AutoRegisterAttribute.RegisterAll();
             NetworkObject.InitializePrefabs();
             RpcHandlerAttribute.Initialize();

@@ -4,6 +4,7 @@ using Il2CppTekly.TreeState;
 using MelonLoader;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Panel;
+using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.MelonLoader;
 using ReplantedOnline.Utilities.Unity;
@@ -22,6 +23,7 @@ internal static class Transitions
     /// </summary>
     internal static void ToMainMenu(Action? callback = null)
     {
+        SeedPacketDefinitions.ResetDefinitions();
         StateTransitionUtils.Transition("Frontend");
         if (callback != null)
         {

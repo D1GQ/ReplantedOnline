@@ -2,6 +2,8 @@
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Data;
+using ReplantedOnline.Data.Json.Config;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using UnityEngine;
@@ -25,11 +27,15 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Enraged
     }
 
+    private ZombieConfig _yetiConfig = DataManager.VersusModeConfig.GetZombieConfig(ZombieType.Yeti);
+
     internal override void OnInit(Zombie zombie)
     {
         zombie.mPhaseCounter = int.MaxValue;
         zombie.mBodyMaxHealth = 100000;
         zombie.mBodyHealth = 100000;
+        zombie.mShieldMaxHealth = 0;
+        zombie.mShieldHealth = 0;
     }
 
     internal YetiState CurrentState = YetiState.Curious;
@@ -87,7 +93,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
 
     private bool TryGoIntoEnragedState(Zombie zombie)
     {
-        if (zombie.mBodyHealth <= (100000 - 1500))
+        if (zombie.mBodyHealth <= (100000 - _yetiConfig.ArmorHealth))
         {
             CurrentState = YetiState.Enraged;
             SendEnragedRpc();
@@ -129,8 +135,8 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         if (Net.Zombie == null)
             return;
 
-        Net.Zombie.mBodyMaxHealth = 500;
-        Net.Zombie.mBodyHealth = 500;
+        Net.Zombie.mBodyMaxHealth = _yetiConfig.BodyHealth;
+        Net.Zombie.mBodyHealth = _yetiConfig.BodyHealth;
         Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
         SendNetworkComponentRpc(YetiRpcs.Enraged);
@@ -145,8 +151,8 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         if (CurrentState != YetiState.Enraged)
         {
             CurrentState = YetiState.Enraged;
-            Net.Zombie.mBodyMaxHealth = 500;
-            Net.Zombie.mBodyHealth = 500;
+            Net.Zombie.mBodyMaxHealth = _yetiConfig.BodyHealth;
+            Net.Zombie.mBodyHealth = _yetiConfig.BodyHealth;
             Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
             Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
         }

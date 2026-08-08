@@ -38,18 +38,6 @@ internal sealed class NightArena : DayArena
     }
 
     /// <inheritdoc/>
-    public override void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition)
-    {
-        seedPacketDefinition.m_versusCost = SeedPacketDefinitions.BaseSeedVersusCost[seedPacketDefinition.SeedType];
-
-        if (Plant.IsNocturnal(seedPacketDefinition.SeedType))
-        {
-            // Add Cost of instant coffee to balance price
-            seedPacketDefinition.m_versusCost += 25;
-        }
-    }
-
-    /// <inheritdoc/>
     public override void InitializeArena(VersusMode versusMode)
     {
         base.InitializeArena(versusMode);

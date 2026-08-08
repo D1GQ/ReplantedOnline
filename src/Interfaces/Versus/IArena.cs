@@ -1,5 +1,4 @@
-﻿using Il2CppReloaded.Data;
-using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -24,12 +23,6 @@ internal interface IArena
     /// <param name="seedType">The seed type to get recommended flags for.</param>
     /// <returns>The custom recommended flags for the specified seed type.</returns>
     CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType);
-
-    /// <summary>
-    /// Sets the seed packet definition for the arena.
-    /// </summary>
-    /// <param name="seedPacketDefinition">The plant definition to be used as the seed packet.</param>
-    void SetSeedPacketDefinition(PlantDefinition seedPacketDefinition);
 
     /// <summary>
     /// Called when the versus gameplay starts.

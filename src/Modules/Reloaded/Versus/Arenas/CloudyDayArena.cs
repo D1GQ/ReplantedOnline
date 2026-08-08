@@ -204,7 +204,14 @@ internal sealed class CloudyDayArena : IArena, IArenaData
 
     internal static int GetCostReduction(SeedType seedType, int cost)
     {
-        return (int)(Math.Round(cost * 0.5f / 5, MidpointRounding.AwayFromZero) * 5);
+        if (VersusState.VersusTimeSynced > 30f && IsRaining)
+        {
+            return (int)(Math.Round(cost * 0.5f / 5, MidpointRounding.AwayFromZero) * 5);
+        }
+        else
+        {
+            return cost;
+        }
     }
 
     internal static void ApplyRefreshTimeReduction(SeedType seedType, ref int refreshTime)

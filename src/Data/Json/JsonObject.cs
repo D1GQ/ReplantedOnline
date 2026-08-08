@@ -28,6 +28,16 @@ internal abstract class JsonObject
             return field;
         }
     }
+
+    /// <summary>
+    /// Called before the object is serialized to JSON.
+    /// </summary>
+    internal virtual void OnSerialize() { }
+
+    /// <summary>
+    /// Called after the object has been deserialized from JSON.
+    /// </summary>
+    internal virtual void OnDeserialize() { }
 }
 
 /// <summary>
@@ -45,6 +55,7 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// <returns>A JSON string representation of the object.</returns>
     internal static string SerializeObject(T obj)
     {
+        obj.OnSerialize();
         return obj.Serialize();
     }
 
@@ -79,7 +90,9 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
 
         try
         {
-            return JsonSerializer.Deserialize<T>(json, SerializerOptions);
+            var obj = JsonSerializer.Deserialize<T>(json, SerializerOptions);
+            obj?.OnDeserialize();
+            return obj;
         }
         catch (Exception ex)
         {

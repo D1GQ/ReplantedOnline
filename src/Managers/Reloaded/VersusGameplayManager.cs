@@ -1,4 +1,5 @@
 ﻿using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Data;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
@@ -9,6 +10,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -200,36 +202,31 @@ internal static class VersusGameplayManager
 
     /// <summary>
     /// Gets the refresh time for a seed packet in versus mode, which scales down over time to its base cooldown.
+    /// During Sudden Death, the Sudden Death refresh time is used instead.
     /// </summary>
-    /// <param name="seedType"></param>
-    /// <returns></returns>
+    /// <param name="seedType">The type of seed to get the refresh time for.</param>
+    /// <returns>The modified refresh time in seconds after applying reductions and scaling.</returns>
     internal static int GetSeedPacketRefreshTime(SeedType seedType)
     {
-        var definition = Instances.IDataService.GetPlantDefinition(seedType);
-        if (definition != null)
+        int refreshTime;
+        if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
         {
-            int refreshTime;
-            if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
-            {
-                refreshTime = definition.m_versusBaseRefreshTime;
-            }
-            else
-            {
-                refreshTime = definition.m_versusSuddenDeathRefreshTime;
-            }
-
-            CloudyDayArena.ApplyRefreshTimeReduction(seedType, ref refreshTime);
-
-            if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
-            {
-                return refreshTime;
-            }
-
-            float normalized = Mathf.Clamp01(VersusState.VersusTimeSynced / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
-            float time = Mathf.Lerp(refreshTime * 2, refreshTime, normalized);
-            return Mathf.FloorToInt(time);
+            refreshTime = IntTime.From(DataManager.VersusModeConfig.GetSeedPacketConfig(seedType).RefreshTime);
+        }
+        else
+        {
+            refreshTime = IntTime.From(DataManager.VersusModeConfig.GetSeedPacketConfig(seedType).SuddenDeathRefresh);
         }
 
-        return 0;
+        CloudyDayArena.ApplyRefreshTimeReduction(seedType, ref refreshTime);
+
+        if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
+        {
+            return refreshTime;
+        }
+
+        float normalized = Mathf.Clamp01(VersusState.VersusTimeSynced / ReplantedOnlineMod.Constants.Reloaded.X2_SEEDPACKET_COOLDOWN_TIME_END);
+        float time = Mathf.Lerp(refreshTime * 2, refreshTime, normalized);
+        return Mathf.FloorToInt(time);
     }
 }
