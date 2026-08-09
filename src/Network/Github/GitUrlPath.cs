@@ -27,6 +27,11 @@ internal readonly struct GitUrlPath(string folder)
     /// </summary>
     internal static readonly GitUrlPath RepositoryApi = new($"{BRANCH}/api");
 
+    /// <summary>
+    /// Gets the API repository URL path pointing to the config folder under the main branch.
+    /// </summary>
+    internal static readonly GitUrlPath RepositoryConfigs = new($"{BRANCH}/api/configs");
+
     private readonly string _folder = folder;
 
     /// <summary>

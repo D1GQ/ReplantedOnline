@@ -6,6 +6,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Data;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Managers.Reloaded;
+using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -37,13 +38,7 @@ internal partial class ReplantedOnlineMod : MelonMod
         bool hasVer = false;
         foreach (var ver in ModInfo.Replanted.SUPPORTED_VERSIONS.Split(", "))
         {
-            if (Application.version == ver)
-            {
-                hasVer = true;
-                break;
-            }
-
-            if (ver.EndsWith("*") && Application.version.StartsWith(ver[..^1]))
+            if (TextHandler.CheckWildcardPrefix(Application.version, ver))
             {
                 hasVer = true;
                 break;
@@ -77,6 +72,7 @@ internal partial class ReplantedOnlineMod : MelonMod
             BloomEngineManager.InitializeBloom(this);
             MonoSingleton<InfoDisplay>.CreateInstance();
             MonoSingleton<GithubAPI>.CreateInstance();
+            MonoSingleton<GithubAPI>.Instance.Connect();
             AudioManager.Initialize();
             DiscordManager.Initialize();
             Application.runInBackground = true;

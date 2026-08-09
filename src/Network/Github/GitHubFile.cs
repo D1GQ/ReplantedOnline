@@ -15,8 +15,9 @@ internal static class GitHubFile
     /// <param name="url">The URL of the file to download.</param>
     /// <param name="localFilePath">The local file path where the downloaded file will be saved.</param>
     /// <param name="callback">Optional callback invoked after successful download, passing the local file path.</param>
+    /// <param name="progressCallback">Optional callback invoked with download progress (0.0 to 1.0).</param>
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
-    internal static IEnumerator CoDownloadFile(string url, string localFilePath, Action<string>? callback = null)
+    internal static IEnumerator CoDownloadFile(string url, string localFilePath, Action<string>? callback = null, Action<float>? progressCallback = null)
     {
         var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
         {
@@ -27,7 +28,13 @@ internal static class GitHubFile
 
         while (!operation.isDone)
         {
+            progressCallback?.Invoke(operation.progress);
             yield return null;
+        }
+
+        if (progressCallback != null && www.result == UnityWebRequest.Result.Success)
+        {
+            progressCallback.Invoke(1f);
         }
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -48,14 +55,27 @@ internal static class GitHubFile
     /// </summary>
     /// <param name="url">The URL of the manifest file to download.</param>
     /// <param name="Callback">Action invoked after successful download, passing the manifest content as a string.</param>
+    /// <param name="progressCallback">Optional callback invoked with download progress (0.0 to 1.0).</param>
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
-    internal static IEnumerator CoDownloadManifest(string url, Action<string> Callback)
+    internal static IEnumerator CoDownloadManifest(string url, Action<string> Callback, Action<float>? progressCallback = null)
     {
         var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
         {
             downloadHandler = new DownloadHandlerBuffer()
         };
-        yield return www.SendWebRequest();
+
+        var operation = www.SendWebRequest();
+
+        while (!operation.isDone)
+        {
+            progressCallback!.Invoke(operation.progress);
+            yield return null;
+        }
+
+        if (progressCallback != null && www.result == UnityWebRequest.Result.Success)
+        {
+            progressCallback.Invoke(1f);
+        }
 
         if (www.result != UnityWebRequest.Result.Success)
         {

@@ -10,7 +10,7 @@ internal static class DataManager
     /// <summary>
     /// Gets the versus mode configuration containing all seed packet and zombie data.
     /// </summary>
-    internal static VersusModeConfig VersusModeConfig { get; private set; } = null!;
+    internal static VersusModeConfig VersusModeConfig { get; set; } = null!;
 
     /// <summary>
     /// Initializes the data manager.

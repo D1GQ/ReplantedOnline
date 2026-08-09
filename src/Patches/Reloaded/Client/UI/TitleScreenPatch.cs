@@ -1,7 +1,11 @@
 ﻿using HarmonyLib;
+using Il2CppSource.DataModels;
 using Il2CppTekly.PanelViews;
+using ReplantedOnline.Modules.Unity;
+using ReplantedOnline.Network.Github;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace ReplantedOnline.Patches.Reloaded.Client.UI;
@@ -36,5 +40,33 @@ internal static class TitleScreenPatch
                 }
             }
         }
+    }
+
+    [HarmonyPatch(typeof(LoadingDataModel), nameof(LoadingDataModel.OnTick))]
+    [HarmonyPrefix]
+    private static bool LoadingDataModel_OnTick_Prefix(LoadingDataModel __instance)
+    {
+        if (SplashScreen.isFinished)
+        {
+            __instance.m_curLoadTime += Time.deltaTime;
+
+            float dataProgress = __instance.m_dataService.LoadProgress;
+            float preloadProgress = __instance.m_preloadService.Progress;
+            float githubProgress = MonoSingleton<GithubAPI>.Instance.Progress;
+
+            float totalProgress = (dataProgress + preloadProgress + githubProgress) / 3f;
+            totalProgress = Mathf.Min(totalProgress, 1f);
+
+            bool isLoadingComplete = __instance.m_dataService.IsReady &&
+                                    !__instance.m_preloadService.IsLoading &&
+                                    MonoSingleton<GithubAPI>.Instance.IsReady &&
+                                    __instance.m_curLoadTime >= __instance.m_minLoadingTime;
+
+            __instance.m_isLoading.Value = !isLoadingComplete;
+            __instance.m_loadingButton.IsInteractable = isLoadingComplete;
+            __instance.m_currentProgress.Value = Mathf.Lerp(0f, totalProgress, __instance.m_curLoadTime / __instance.m_minLoadingTime);
+        }
+
+        return false;
     }
 }
