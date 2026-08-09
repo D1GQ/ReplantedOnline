@@ -55,7 +55,7 @@ internal sealed class CloudyDayArenaConfig : JsonObject<CloudyDayArenaConfig>, I
     /// <inheritdoc/>
     public void Serialize(PacketWriter packetWriter)
     {
-        packetWriter.WriteInt(DisabledSeedPacketsInRain.Count);
+        packetWriter.WritePackedInt(DisabledSeedPacketsInRain.Count);
         foreach (var seedType in DisabledSeedPacketsInRain)
         {
             packetWriter.WriteEnum(seedType);
@@ -72,7 +72,7 @@ internal sealed class CloudyDayArenaConfig : JsonObject<CloudyDayArenaConfig>, I
     /// <inheritdoc/>
     public void Deserialize(PacketReader packetReader)
     {
-        int count = packetReader.ReadInt();
+        int count = packetReader.ReadPackedInt();
         DisabledSeedPacketsInRain.Clear();
         for (int i = 0; i < count; i++)
         {

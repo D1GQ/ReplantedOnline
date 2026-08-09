@@ -11,14 +11,19 @@ internal enum PacketType
     Server,
 
     /// <summary>
-    /// Packet used removing a client from the game.
+    /// Packet used to send the current lobby state to new clients.
     /// </summary>
-    RemoveClient,
+    SyncLobby,
 
     /// <summary>
     /// Packet used resetting lobby
     /// </summary>
     ResetLobby,
+
+    /// <summary>
+    /// Packet used removing a client from the game.
+    /// </summary>
+    RemoveClient,
 
     /// <summary>
     /// Remote Procedure Call packet for executing methods on remote clients.

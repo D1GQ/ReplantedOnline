@@ -1,5 +1,4 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Data;
 using ReplantedOnline.Data.Json.Config.Reloaded;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
@@ -22,12 +21,24 @@ namespace ReplantedOnline.Managers.Reloaded;
 /// </summary>
 internal static class VersusGameplayManager
 {
+    /// <summary>
+    /// Gets the versus mode configuration.
+    /// </summary>
+    /// <returns>The current <see cref="VersusModeConfig"/> instance containing all versus mode settings.</returns>
     internal static VersusModeConfig GetVersusModeConfig()
     {
-        return DataManager.VersusModeConfig;
+        return ReloadedLobby.LobbyData!.VersusModeConfig;
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the dancer frame state has been synchronized for the current frame.
+    /// </summary>
     internal static bool IsDancingThisFrameSynced;
+
+    /// <summary>
+    /// Called when the versus mode starts.
+    /// </summary>
+    /// <param name="versusMode">The versus mode instance.</param>
     internal static void OnStart(VersusMode versusMode)
     {
         IsDancingThisFrameSynced = false;
@@ -56,10 +67,15 @@ internal static class VersusGameplayManager
             InputManager.SetDeviceActive(true);
         }));
 
-        ReloadedLobby.LobbyData?.ReadyForNetworkObjects = true;
+        ReloadedLobby.LobbyData!.ReadyForNetworkObjects = true;
     }
 
     private static bool isInSuddenDeath;
+
+    /// <summary>
+    /// Called every frame to update the versus mode state.
+    /// </summary>
+    /// <param name="versusMode">The versus mode instance.</param>
     internal static void Update(VersusMode versusMode)
     {
         if (!isInSuddenDeath)
@@ -81,6 +97,12 @@ internal static class VersusGameplayManager
         }
     }
 
+    /// <summary>
+    /// Synchronizes versus mode states between clients.
+    /// </summary>
+    /// <param name="versusMode">The versus mode instance.</param>
+    /// <param name="previousVersusTime">The versus time from the previous update.</param>
+    /// <param name="currentVersusTime">The versus time from the current update.</param>
     internal static void SyncVersusStates(VersusMode versusMode, float previousVersusTime, float currentVersusTime)
     {
         if (!ReloadedLobby.AmLobbyHost())
@@ -113,6 +135,11 @@ internal static class VersusGameplayManager
         }
     }
 
+    /// <summary>
+    /// Ends the versus game with the specified winning team.
+    /// </summary>
+    /// <param name="focusPos">The position to focus the camera on during the end game sequence.</param>
+    /// <param name="winningTeam">The team that won the match.</param>
     internal static void EndGame(Vector3 focusPos, PlayerTeam winningTeam)
     {
         IVersusGamemode.GetCurrentGamemode().OnGameplayEnd(Instances.GameplayActivity.VersusMode, winningTeam);
@@ -136,27 +163,47 @@ internal static class VersusGameplayManager
         VersusEndGameManager.EndGame(winningTeam);
     }
 
-    internal static int GetSkyRate()
-    {
-        return GetVersusModeConfig().SkyProductionRate;
-    }
-
+    /// <summary>
+    /// Gets the initial sky production rate from the versus mode configuration.
+    /// </summary>
+    /// <returns>The initial sky production rate value.</returns>
     internal static int GetInitSkyRate()
     {
         return GetVersusModeConfig().InitialSkyProductionRate;
     }
 
+    /// <summary>
+    /// Gets the current sky production rate from the versus mode configuration.
+    /// </summary>
+    /// <returns>The sky production rate value.</returns>
+    internal static int GetSkyRate()
+    {
+        return GetVersusModeConfig().SkyProductionRate;
+    }
+
+    /// <summary>
+    /// Gets a random initial production rate between the minimum and maximum configured values.
+    /// </summary>
+    /// <returns>A random integer between <see cref="VersusModeConfig.InitialProductionRateMin"/> and <see cref="VersusModeConfig.InitialProductionRateMax"/>.</returns>
     internal static int GetInitPlantOrGraveRate()
     {
         return Common.RandRangeInt(GetVersusModeConfig().InitialProductionRateMin, VersusGameplayManager.GetVersusModeConfig().InitialProductionRateMax);
     }
 
+    /// <summary>
+    /// Gets the current plant production rate from the versus mode configuration.
+    /// </summary>
+    /// <returns>The plant production rate value.</returns>
     internal static int GetPlantRate()
     {
         return GetVersusModeConfig().PlantProductionRate;
     }
 
-    internal static int GetGraveRate()
+    /// <summary>
+    /// Gets the current zombie production rate from the versus mode configuration.
+    /// </summary>
+    /// <returns>The zombie production rate value.</returns>
+    internal static int GetZombieRate()
     {
         return GetVersusModeConfig().ZombieProductionRate;
     }
@@ -164,9 +211,7 @@ internal static class VersusGameplayManager
     /// <summary>
     /// Gets the list of special zombie spawn rules used during flag zombies.
     /// </summary>
-    /// <returns>
-    /// A list of <see cref="FlagZombieSpecialSpawn"/> defining possible special zombie spawns.
-    /// </returns>
+    /// <returns>A list of <see cref="FlagZombieSpecialSpawn"/> defining possible special zombie spawns.</returns>
     internal static List<FlagZombieSpecialSpawn> GetFlagZombieSpawns()
     {
         List<FlagZombieSpecialSpawn> zombies = [];

@@ -55,7 +55,7 @@ internal sealed class SeedPacketConfig : JsonObject<SeedPacketConfig>, INetworkC
         Type = packetReader.ReadEnum<SeedType>();
         Cost = packetReader.ReadInt();
         NocturnalCostSurplus = packetReader.ReadInt();
-        RefreshTime = packetReader.ReadInt();
-        SuddenDeathRefresh = packetReader.ReadInt();
+        RefreshTime = IntTime.FromGameValue(packetReader.ReadInt());
+        SuddenDeathRefresh = IntTime.FromGameValue(packetReader.ReadInt());
     }
 }

@@ -57,7 +57,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     /// <summary>
     /// Gets the configurations for CloudyDayArena.
     /// </summary>
-    public CloudyDayArenaConfig CloudyDayArenaConfig { get; set; } = null!;
+    public CloudyDayArenaConfig CloudyDayArenaConfig { get; set; } = new();
 
     /// <summary>
     /// Gets the collection of seed packet configurations for plants and zombies available in versus mode.
@@ -151,7 +151,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         packetWriter.WriteInt(PlantProductionRate);
         packetWriter.WriteInt(ZombieProductionRate);
 
-        packetWriter.WriteInt(DisabledSeedPacketsInSuddenDeath.Count);
+        packetWriter.WritePackedInt(DisabledSeedPacketsInSuddenDeath.Count);
         foreach (var seedType in DisabledSeedPacketsInSuddenDeath)
         {
             packetWriter.WriteEnum(seedType);
@@ -159,13 +159,13 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
 
         CloudyDayArenaConfig.Serialize(packetWriter);
 
-        packetWriter.WriteInt(SeedPacketConfigs.Count);
+        packetWriter.WritePackedInt(SeedPacketConfigs.Count);
         foreach (var config in SeedPacketConfigs)
         {
             config.Serialize(packetWriter);
         }
 
-        packetWriter.WriteInt(ZombieConfigs.Count);
+        packetWriter.WritePackedInt(ZombieConfigs.Count);
         foreach (var config in ZombieConfigs)
         {
             config.Serialize(packetWriter);
@@ -175,14 +175,14 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     /// <inheritdoc/>
     public void Deserialize(PacketReader packetReader)
     {
-        InitialSkyProductionRate = new IntTime(packetReader.ReadInt());
-        InitialProductionRateMax = new IntTime(packetReader.ReadInt());
-        InitialProductionRateMin = new IntTime(packetReader.ReadInt());
-        SkyProductionRate = new IntTime(packetReader.ReadInt());
-        PlantProductionRate = new IntTime(packetReader.ReadInt());
-        ZombieProductionRate = new IntTime(packetReader.ReadInt());
+        InitialSkyProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
+        InitialProductionRateMax = IntTime.FromGameValue(packetReader.ReadInt());
+        InitialProductionRateMin = IntTime.FromGameValue(packetReader.ReadInt());
+        SkyProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
+        PlantProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
+        ZombieProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
 
-        int disabledCount = packetReader.ReadInt();
+        int disabledCount = packetReader.ReadPackedInt();
         DisabledSeedPacketsInSuddenDeath.Clear();
         for (int i = 0; i < disabledCount; i++)
         {
@@ -191,7 +191,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
 
         CloudyDayArenaConfig.Deserialize(packetReader);
 
-        int seedPacketCount = packetReader.ReadInt();
+        int seedPacketCount = packetReader.ReadPackedInt();
         SeedPacketConfigs.Clear();
         for (int i = 0; i < seedPacketCount; i++)
         {
@@ -200,7 +200,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
             SeedPacketConfigs.Add(config);
         }
 
-        int zombieCount = packetReader.ReadInt();
+        int zombieCount = packetReader.ReadPackedInt();
         ZombieConfigs.Clear();
         for (int i = 0; i < zombieCount; i++)
         {

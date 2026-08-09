@@ -105,7 +105,7 @@ internal static class SunAndBrainProductionPatch
         {
             if (__state)
             {
-                __instance.mPhaseCounter = VersusGameplayManager.GetGraveRate();
+                __instance.mPhaseCounter = VersusGameplayManager.GetZombieRate();
             }
         }
     }

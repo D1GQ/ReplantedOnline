@@ -242,33 +242,37 @@ internal static class ReloadedLobby
 
     internal static void OnLobbyEnteredCompleted(ServerLobby lobby)
     {
-        LobbyData?.Dispose();
-        LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
-        LobbyData.LobbyCode = NetworkTransport!.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+        if (LobbyData?.ServerLobby.Id != lobby.Id)
+        {
+            LobbyData?.Dispose();
+            LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
+            LobbyData.InitializeData();
+            LobbyData.LobbyCode = NetworkTransport!.GetLobbyData(LobbyData.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+        }
 
         int memberCount = GetLobbyMemberCount();
         for (int i = 0; i < memberCount; i++)
         {
             var member = GetLobbyMemberByIndex(i);
-            LobbyData.OnClientJoined(member);
+            LobbyData!.OnClientJoined(member);
 
         }
 
         Transitions.ToVersus(() =>
         {
             NetworkManager.StartListening();
-            LobbyData.UpdateLobbyStates();
+            LobbyData!.UpdateLobbyStates();
             ReloadedClientData.LocalClient?.Ready.Value = true;
         });
         DiscordManager.OnJoinLobby();
 
         if (memberCount > 1)
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joined lobby {LobbyData.LobbyId} with {memberCount} players");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joined lobby {LobbyData!.LobbyId} with {memberCount} players");
         }
         else
         {
-            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joined lobby {LobbyData.LobbyId} with {memberCount} player");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joined lobby {LobbyData!.LobbyId} with {memberCount} player");
         }
     }
 

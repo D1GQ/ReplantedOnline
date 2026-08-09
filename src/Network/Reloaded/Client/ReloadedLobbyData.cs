@@ -1,4 +1,6 @@
-﻿using ReplantedOnline.Data.Network;
+﻿using ReplantedOnline.Data;
+using ReplantedOnline.Data.Json.Config.Reloaded;
+using ReplantedOnline.Data.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
@@ -60,6 +62,11 @@ internal sealed class ReloadedLobbyData : IDisposable
     internal Dictionary<ID, ReloadedClientData> AllClients = [];
 
     /// <summary>
+    /// Gets or sets the current versus mode config.
+    /// </summary>
+    internal VersusModeConfig VersusModeConfig = new();
+
+    /// <summary>
     /// Gets or sets the dictionary of all network objects spawned.
     /// </summary>
     internal readonly Dictionary<NetworkIdentifier, NetworkObject> NetworkObjectsSpawned = [];
@@ -95,6 +102,11 @@ internal sealed class ReloadedLobbyData : IDisposable
         if (ReloadedLobby.AmLobbyHost())
         {
             ReloadedMatchmaking.UpdateLobbyJoinable();
+
+            if (ReloadedClientData.LocalClient!.ClientId != clientId)
+            {
+                NetworkManager.Packet<SyncLobbyPacket>.Singleton.Send(clientId);
+            }
         }
     }
 
@@ -296,7 +308,12 @@ internal sealed class ReloadedLobbyData : IDisposable
 
         if (ReloadedLobby.AmLobbyHost())
         {
+            VersusModeConfig = DataManager.VersusModeConfig;
             ReloadedMatchmaking.UpdateLobbyJoinable();
+        }
+        else
+        {
+            VersusModeConfig = new();
         }
     }
 
