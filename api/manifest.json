@@ -1,0 +1,8 @@
+{
+  "versusModeConfigOverrides": [
+    {
+      "fileName": "VersusModeConfig.json",
+      "version":  "*"
+    }
+  ]
+}
