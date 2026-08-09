@@ -2,7 +2,7 @@
   "versusModeConfigOverrides": [
     {
       "fileName": "VersusModeConfig.json",
-      "version":  "*"
+      "version":  "Template!"
     }
   ]
 }
