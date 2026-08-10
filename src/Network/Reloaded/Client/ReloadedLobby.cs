@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using Il2CppSteamworks.Data;
+using ReplantedOnline.Data;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers.Modded;
@@ -230,6 +231,7 @@ internal static class ReloadedLobby
             LobbyData?.Dispose();
             LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
             LobbyData.InitializeData();
+            LobbyData.VersusModeConfig = DataManager.VersusModeConfig;
             ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Lobby created successfully: {LobbyData.LobbyId}");
             ReloadedMatchmaking.SetLobbyData(LobbyData);
         }

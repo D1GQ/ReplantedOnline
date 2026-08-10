@@ -24,5 +24,6 @@ internal sealed class SyncLobbyPacket : IPacketMessage<ID>
             return;
 
         ReloadedLobby.LobbyData!.VersusModeConfig.Deserialize(packetReader);
+        ReloadedClientData.LocalClient?.ReceivedConfig.Value = true;
     }
 }

@@ -1,5 +1,4 @@
-﻿using ReplantedOnline.Data;
-using ReplantedOnline.Data.Json.Config.Reloaded;
+﻿using ReplantedOnline.Data.Json.Config.Reloaded;
 using ReplantedOnline.Data.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
@@ -168,7 +167,7 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// Determines whether all connected clients are currently marked as ready.
     /// </summary>
     /// <returns>true if every client is ready; otherwise, false.</returns>
-    internal bool AllClientsReady() => AllClients.Values.All(c => c.Ready.Value);
+    internal bool AllClientsReady() => AllClients.Values.All(c => c.Ready.Value && c.ReceivedConfig.Value);
 
     /// <summary>
     /// Sets all clients team to None.
@@ -308,12 +307,7 @@ internal sealed class ReloadedLobbyData : IDisposable
 
         if (ReloadedLobby.AmLobbyHost())
         {
-            VersusModeConfig = DataManager.VersusModeConfig;
             ReloadedMatchmaking.UpdateLobbyJoinable();
-        }
-        else
-        {
-            VersusModeConfig = new();
         }
     }
 

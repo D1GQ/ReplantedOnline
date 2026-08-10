@@ -29,12 +29,21 @@ internal sealed class ReloadedClientData
         }
 
         Ready = new(id, nameof(Ready), false);
+        ReceivedConfig = new(id, nameof(ReceivedConfig), false)
+        {
+            Value = AmHost
+        };
     }
 
     /// <summary>
     /// Gets or sets a value indicating whether the player is loaded and ready.
     /// </summary>
     internal ClientVar<bool> Ready { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the player has received the host versus mode config.
+    /// </summary>
+    internal ClientVar<bool> ReceivedConfig { get; }
 
     /// <summary>
     /// Get the local ReloadedClientData
