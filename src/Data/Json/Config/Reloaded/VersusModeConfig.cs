@@ -49,6 +49,11 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     public IntTime ZombieProductionRate { get; set; }
 
     /// <summary>
+    /// Gets the plant shooter launch rate global surplus.
+    /// </summary>
+    public int PlantShooterLaunchRateSurplus { get; set; }
+
+    /// <summary>
     /// Gets the list of seed packets that are disabled in sudden death.
     /// </summary>
     [JsonConverter(typeof(JsonSeedTypeListConverter))]
@@ -150,6 +155,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         packetWriter.WriteInt(SkyProductionRate);
         packetWriter.WriteInt(PlantProductionRate);
         packetWriter.WriteInt(ZombieProductionRate);
+        packetWriter.WriteInt(PlantShooterLaunchRateSurplus);
 
         packetWriter.WritePackedInt(DisabledSeedPacketsInSuddenDeath.Count);
         foreach (var seedType in DisabledSeedPacketsInSuddenDeath)
@@ -181,6 +187,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         SkyProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
         PlantProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
         ZombieProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
+        PlantShooterLaunchRateSurplus = packetReader.ReadInt();
 
         int disabledCount = packetReader.ReadPackedInt();
         DisabledSeedPacketsInSuddenDeath.Clear();

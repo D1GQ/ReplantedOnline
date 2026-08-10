@@ -4,6 +4,7 @@ using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded.Versus;
@@ -94,7 +95,11 @@ internal sealed class PlantNetworked : NetworkObject
         if (plant != null)
         {
             plant.AddNetworkedLookup(this);
-            plant.mLaunchRate += ReplantedOnlineMod.Constants.Reloaded.PLANT_LAUNCHRATE_MULTIPLIER;
+
+            if (plant.mSubclass == PlantSubClass.Shooter)
+            {
+                plant.mLaunchRate += VersusGameplayManager.GetVersusModeConfig().PlantShooterLaunchRateSurplus;
+            }
         }
 
         if (SpawnType == SpawnType.ChinaJalapeno)

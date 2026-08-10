@@ -5,6 +5,7 @@
   "skyProductionRate": 22,
   "plantProductionRate": 14,
   "zombieProductionRate": 34,
+  "plantShooterLaunchRateSurplus": 25,
   "disabledSeedPacketsInSuddenDeath": [
     "Sunflower",
     "Sunshroom",
