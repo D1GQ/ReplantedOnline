@@ -55,7 +55,6 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// <returns>A JSON string representation of the object.</returns>
     internal static string SerializeObject(T obj)
     {
-        obj.OnSerialize();
         return obj.Serialize();
     }
 
@@ -75,6 +74,7 @@ internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
     /// <returns>A JSON string representation of the current instance.</returns>
     internal virtual string Serialize()
     {
+        OnSerialize();
         return JsonSerializer.Serialize(this, GetType(), SerializerOptions);
     }
 
