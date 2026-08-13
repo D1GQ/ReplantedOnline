@@ -291,6 +291,11 @@ internal static class DiscordManager
     /// <param name="args">The join message containing the lobby secret.</param>
     private static void OnJoin(object sender, JoinMessage args)
     {
+        if (ReloadedLobby.AmInLobby())
+        {
+            return;
+        }
+
         MainThreadDispatcher.Execute(() =>
         {
             DiscordLobbySecret secret = DiscordLobbySecret.Deserialize(args.Secret);
