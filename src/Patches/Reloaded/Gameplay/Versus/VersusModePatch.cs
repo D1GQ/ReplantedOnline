@@ -33,7 +33,7 @@ internal static class VersusModePatch
         if (!ReloadedLobby.AmInLobby())
             return;
 
-        __instance.ZombieLife = ReloadedLobby.LobbyData!.ZombieLife;
+        __instance.ZombieLife = VersusGameplayManager.ZombieLife;
 
         VersusGameplayManager.SyncVersusStates(__instance, __state, __instance.m_versusTime);
         VersusGameplayManager.Update(__instance);

@@ -317,7 +317,7 @@ internal sealed class LanServer : IDisposable
 
             // Empty member sync to signal lobby is closed
             writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-            writer.WritePackedInt(0);
+            LanServerProtocol.SerializeSyncMembers(writer, [], false);
             writer.EndSubpacket();
 
             foreach (var member in Server.GetOtherMembers())
@@ -430,7 +430,7 @@ internal sealed class LanServer : IDisposable
 
             // Updated member sync
             writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-            lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members);
+            lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members, false);
             writer.EndSubpacket();
 
             foreach (var otherMember in GetOtherMembers())
@@ -660,11 +660,6 @@ internal sealed class LanServer : IDisposable
 
         var responseWriter = PacketWriter.Get();
 
-        // Handshake accept
-        responseWriter.StartSubpacket((byte)ServerPacket.HandshakeAccept);
-        LanServerProtocol.SerializeHandshakeAccept(responseWriter, ServerData.LobbyId);
-        responseWriter.EndSubpacket();
-
         // Lobby data
         responseWriter.StartSubpacket((byte)ServerPacket.LobbyData);
         LanServerProtocol.SerializeLobbyData(responseWriter, ServerData);
@@ -672,14 +667,19 @@ internal sealed class LanServer : IDisposable
 
         // Member sync
         responseWriter.StartSubpacket((byte)ServerPacket.SyncMembers);
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(responseWriter, Members);
+        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(responseWriter, Members, true);
+        responseWriter.EndSubpacket();
+
+        // Handshake accept
+        responseWriter.StartSubpacket((byte)ServerPacket.HandshakeAccept);
+        LanServerProtocol.SerializeHandshakeAccept(responseWriter, ServerData.LobbyId);
         responseWriter.EndSubpacket();
 
         SendRawPacketTo(endpoint, responseWriter);
         responseWriter.Recycle();
 
         // Broadcast updated member list to all other members
-        BroadcastSyncMembers();
+        BroadcastSyncMembers(memberId);
     }
 
     /// <summary>
@@ -752,7 +752,7 @@ internal sealed class LanServer : IDisposable
         if (IsHost)
             return;
 
-        var syncedMembers = LanServerProtocol.DeserializeSyncMembers(reader);
+        var (isHandshake, syncedMembers) = LanServerProtocol.DeserializeSyncMembers(reader);
 
         Dictionary<ID, LanMemberData> oldMembers;
         lock (_membersLock) oldMembers = new Dictionary<ID, LanMemberData>(Members);
@@ -768,15 +768,24 @@ internal sealed class LanServer : IDisposable
 
         ServerData.SetPlayerCount(Members.Count);
 
-        MainThreadDispatcher.Execute(() =>
+        if (!isHandshake)
         {
-            if (Server == null || !Server._isRunning)
-                return;
+            MainThreadDispatcher.Execute(() =>
+            {
+                if (Server == null || !Server._isRunning)
+                    return;
 
-            var lobbyData = ServerData.ToServerLobby();
-            foreach (var newMember in newMembers) OnLobbyMemberJoined?.Invoke(lobbyData, newMember.MemberId);
-            foreach (var removedMember in removedMembers) OnLobbyMemberLeave?.Invoke(lobbyData, removedMember.MemberId);
-        });
+                var lobbyData = ServerData.ToServerLobby();
+                foreach (var newMember in newMembers)
+                {
+                    OnLobbyMemberJoined?.Invoke(lobbyData, newMember.MemberId);
+                }
+                foreach (var removedMember in removedMembers)
+                {
+                    OnLobbyMemberLeave?.Invoke(lobbyData, removedMember.MemberId);
+                }
+            });
+        }
     }
 
     /// <summary>
@@ -912,15 +921,18 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Broadcasts the current member list to all connected members.
     /// </summary>
-    internal void BroadcastSyncMembers()
+    internal void BroadcastSyncMembers(ID ignoreMember)
     {
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members);
+        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members, false);
         writer.EndSubpacket();
 
         foreach (var member in GetOtherMembers())
         {
+            if (member.MemberId == ignoreMember)
+                continue;
+
             SendRawPacketTo(member.MemberId.AsIPEndPoint(), writer);
         }
         writer.Recycle();

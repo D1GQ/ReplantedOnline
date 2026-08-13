@@ -152,6 +152,25 @@ internal static class ReloadedLobby
     }
 
     /// <summary>
+    /// Creates a new lobby with a maximum of 2 players (Versus mode).
+    /// </summary>
+    internal static void CreateLobby()
+    {
+        NetworkTransport!.CreateLobby(MAX_LOBBY_SIZE);
+        Transitions.SetLoading();
+    }
+
+    /// <summary>
+    /// Joins an existing lobby.
+    /// </summary>
+    internal static void JoinLobby(ID lobbyId)
+    {
+        NetworkTransport!.JoinLobby(lobbyId);
+        Transitions.SetLoading();
+        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joining lobby: {lobbyId}");
+    }
+
+    /// <summary>
     /// Resets the lobby state and transitions back to the Versus menu.
     /// </summary>
     internal static void ResetLobby(Action? callback = null)
@@ -175,25 +194,6 @@ internal static class ReloadedLobby
             });
         });
         NetworkManager.Heartbeat.Start();
-    }
-
-    /// <summary>
-    /// Creates a new lobby with a maximum of 2 players (Versus mode).
-    /// </summary>
-    internal static void CreateLobby()
-    {
-        NetworkTransport!.CreateLobby(MAX_LOBBY_SIZE);
-        Transitions.SetLoading();
-    }
-
-    /// <summary>
-    /// Joins an existing lobby.
-    /// </summary>
-    internal static void JoinLobby(ID lobbyId)
-    {
-        NetworkTransport!.JoinLobby(lobbyId);
-        Transitions.SetLoading();
-        ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Joining lobby: {lobbyId}");
     }
 
     /// <summary>
@@ -227,10 +227,7 @@ internal static class ReloadedLobby
     {
         if (result == Result.OK)
         {
-            LobbyData?.Dispose();
-            LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
-            LobbyData.InitializeData();
-            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Lobby created successfully: {LobbyData.LobbyId}");
+            ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), $"Lobby created successfully: {lobby.Id}");
         }
         else
         {
@@ -241,12 +238,9 @@ internal static class ReloadedLobby
 
     internal static void OnLobbyEnteredCompleted(ServerLobby lobby)
     {
-        if (LobbyData?.ServerLobby.Id != lobby.Id)
-        {
-            LobbyData?.Dispose();
-            LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
-            LobbyData.InitializeData();
-        }
+        LobbyData?.Dispose();
+        LobbyData = new(lobby, lobby.Id, lobby.OwnerId);
+        LobbyData.InitializeData();
 
         int memberCount = GetLobbyMemberCount();
         for (int i = 0; i < memberCount; i++)

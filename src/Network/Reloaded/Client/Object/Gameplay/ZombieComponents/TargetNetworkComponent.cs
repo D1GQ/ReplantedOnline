@@ -37,9 +37,9 @@ internal sealed class TargetNetworkComponent : ZombieNetworkComponent
 
         _hasDead = true;
 
-        ReloadedLobby.LobbyData.ZombieLife--;
+        VersusGameplayManager.ZombieLife--;
 
-        if (ReloadedLobby.LobbyData.ZombieLife == 0)
+        if (VersusGameplayManager.ZombieLife == 0)
         {
             VersusGameplayManager.EndGame(_lastPos, PlayerTeam.Plants);
         }

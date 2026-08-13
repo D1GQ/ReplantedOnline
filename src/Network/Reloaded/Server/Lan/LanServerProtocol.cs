@@ -112,8 +112,10 @@ internal static class LanServerProtocol
     /// </summary>
     /// <param name="packetWriter">The packet writer to write to.</param>
     /// <param name="members">Dictionary of all connected members.</param>
-    internal static void SerializeSyncMembers(PacketWriter packetWriter, Dictionary<ID, LanMemberData> members)
+    /// <param name="isHandshake">If this is used for join handshake.</param>
+    internal static void SerializeSyncMembers(PacketWriter packetWriter, Dictionary<ID, LanMemberData> members, bool isHandshake)
     {
+        packetWriter.WriteBool(isHandshake);
         packetWriter.WritePackedInt(members.Count);
         foreach (var member in members.Values)
         {
@@ -125,9 +127,10 @@ internal static class LanServerProtocol
     /// Deserializes a member synchronization packet.
     /// </summary>
     /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>A dictionary of all synchronized members.</returns>
-    internal static Dictionary<ID, LanMemberData> DeserializeSyncMembers(PacketReader packetReader)
+    /// <returns>A dictionary of all synchronized members and a bool if this was send as a handshake.</returns>
+    internal static (bool IsHandshake, Dictionary<ID, LanMemberData> Members) DeserializeSyncMembers(PacketReader packetReader)
     {
+        bool isHandshake = packetReader.ReadBool();
         int memberCount = packetReader.ReadPackedInt();
         var members = new Dictionary<ID, LanMemberData>();
 
@@ -138,7 +141,7 @@ internal static class LanServerProtocol
             members[member.MemberId] = member;
         }
 
-        return members;
+        return (isHandshake, members);
     }
 
     /// <summary>

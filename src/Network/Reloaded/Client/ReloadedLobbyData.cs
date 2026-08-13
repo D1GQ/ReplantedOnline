@@ -285,11 +285,6 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal bool ReadyForNetworkObjects { get; set; } = false;
 
-    /// <summary>
-    /// Gets or sets the remaining number of lives for the zombies.
-    /// </summary>
-    internal int ZombieLife { get; set; } = 3;
-
     private bool _firstInitialize;
 
     /// <summary>
@@ -326,7 +321,6 @@ internal sealed class ReloadedLobbyData : IDisposable
         Arena.Value = ArenaType.Day;
         Gamemode = default;
         ReadyForNetworkObjects = false;
-        ZombieLife = 3;
 
         if (ReloadedLobby.AmLobbyHost())
         {

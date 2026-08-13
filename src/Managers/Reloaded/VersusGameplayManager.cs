@@ -31,6 +31,11 @@ internal static class VersusGameplayManager
     }
 
     /// <summary>
+    /// Gets or sets the remaining number of lives for the zombies.
+    /// </summary>
+    internal static int ZombieLife = 3;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the dancer frame state has been synchronized for the current frame.
     /// </summary>
     internal static bool IsDancingThisFrameSynced;
@@ -41,6 +46,7 @@ internal static class VersusGameplayManager
     /// <param name="versusMode">The versus mode instance.</param>
     internal static void OnStart(VersusMode versusMode)
     {
+        ZombieLife = 3;
         IsDancingThisFrameSynced = false;
         isInSuddenDeath = false;
         List<SeedPacket> allSeedPackets =
