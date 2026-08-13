@@ -1,4 +1,6 @@
-﻿using ReplantedOnline.Data.Json.Config.Reloaded;
+﻿using Il2CppSteamworks;
+using ReplantedOnline.Data;
+using ReplantedOnline.Data.Json.Config.Reloaded;
 using ReplantedOnline.Data.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
@@ -288,11 +290,32 @@ internal sealed class ReloadedLobbyData : IDisposable
     /// </summary>
     internal int ZombieLife { get; set; } = 3;
 
+    private bool _firstInitialize;
+
     /// <summary>
     /// Initializes lobby data to default.
     /// </summary>
     internal void InitializeData()
     {
+        if (!_firstInitialize)
+        {
+            _firstInitialize = true;
+
+            if (ReloadedLobby.AmLobbyHost())
+            {
+                VersusModeConfig = DataManager.VersusModeConfig;
+                ReloadedLobby.NetworkTransport!.SetLobbyData(LobbyId, ReplantedOnlineMod.Constants.Network.MOD_KEY, ReplantedOnlineMod.ModInfo.MOD_GUID);
+                ReloadedLobby.NetworkTransport.SetLobbyData(LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
+                LobbyCode = ReloadedMatchmaking.GenerateGameCode(LobbyId);
+                ReloadedLobby.NetworkTransport.SetLobbyData(LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, LobbyCode);
+                ReloadedLobby.NetworkTransport.SetLobbyType(LobbyId, LobbyType.Public);
+            }
+            else
+            {
+                LobbyCode = ReloadedLobby.NetworkTransport!.GetLobbyData(LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY);
+            }
+        }
+
         NetworkIdPool?.Dispose();
         NetworkIdPool = new();
         LobbyJoinable.Value = true;

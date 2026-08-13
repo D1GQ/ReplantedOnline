@@ -171,22 +171,10 @@ internal static class ReloadedMatchmaking
     }
 
     /// <summary>
-    /// Sets the lobby data.
-    /// </summary>
-    /// <param name="data">The network lobby data containing the lobby ID.</param>
-    internal static void SetLobbyData(ReloadedLobbyData data)
-    {
-        ReloadedLobby.NetworkTransport!.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_KEY, ReplantedOnlineMod.ModInfo.MOD_GUID);
-        ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.MOD_VERSION_KEY, ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED);
-        var gameCode = GenerateGameCode(data.LobbyId);
-        ReloadedLobby.NetworkTransport.SetLobbyData(data.LobbyId, ReplantedOnlineMod.Constants.Network.GAME_CODE_KEY, gameCode);
-        ReloadedLobby.NetworkTransport.SetLobbyType(data.LobbyId, LobbyType.Public);
-    }
-
-    /// <summary>
     /// Updates the joinable state of the current lobby.
     /// </summary>
     /// <param name="override">Optional override value for the joinable state. If not provided, the joinable state is automatically determined based on whether the game has started.</param>
+    /// <returns>The game code for the lobby.</returns>
     internal static void UpdateLobbyJoinable(bool? @override = null)
     {
         if (!ReloadedLobby.AmInLobby())
