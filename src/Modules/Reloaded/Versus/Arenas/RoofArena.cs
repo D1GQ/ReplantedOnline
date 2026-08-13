@@ -123,7 +123,9 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
             SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
 
-            for (int column = 0; column < 3; column++)
+            int numColumns = !Type.IsArenaAtNight() ? 3 : 4;
+
+            for (int column = 0; column < numColumns; column++)
             {
                 for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
                 {
