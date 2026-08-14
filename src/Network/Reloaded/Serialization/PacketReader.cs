@@ -167,7 +167,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a Vector2.</exception>
     internal Vector2 ReadVector2()
     {
-        if (_position + 8 > _data.Length)
+        if (Remaining < 8)
             throw new IndexOutOfRangeException("Not enough data to read Vector2");
 
         float x = BitConverter.ToSingle(_data, _position);
@@ -204,7 +204,7 @@ internal sealed class PacketReader : IPacket
     internal string ReadString()
     {
         int length = ReadInt();
-        if (_position + length > _data.Length)
+        if (Remaining < length)
             throw new IndexOutOfRangeException("Not enough data to read string");
 
         string result = Encoding.UTF8.GetString(_data, _position, length);
@@ -219,7 +219,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read an integer.</exception>
     internal int ReadInt()
     {
-        if (_position + 4 > _data.Length)
+        if (Remaining < 4)
             throw new IndexOutOfRangeException("Not enough data to read int");
 
         int result = BitConverter.ToInt32(_data, _position);
@@ -234,7 +234,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read an unsigned integer.</exception>
     internal uint ReadUInt()
     {
-        if (_position + 4 > _data.Length)
+        if (Remaining < 4)
             throw new IndexOutOfRangeException("Not enough data to read uint");
 
         uint result = BitConverter.ToUInt32(_data, _position);
@@ -302,7 +302,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a float.</exception>
     internal float ReadFloat()
     {
-        if (_position + 4 > _data.Length)
+        if (Remaining < 4)
             throw new IndexOutOfRangeException("Not enough data to read float");
 
         float result = BitConverter.ToSingle(_data, _position);
@@ -317,7 +317,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a boolean.</exception>
     internal bool ReadBool()
     {
-        if (_position >= _data.Length)
+        if (Remaining < 1)
             throw new IndexOutOfRangeException("Not enough data to read bool");
 
         return _data[_position++] == 1;
@@ -330,7 +330,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a byte.</exception>
     internal byte ReadByte()
     {
-        if (_position >= _data.Length)
+        if (Remaining < 1)
             throw new IndexOutOfRangeException("Not enough data to read byte");
 
         return _data[_position++];
@@ -344,7 +344,7 @@ internal sealed class PacketReader : IPacket
     internal byte[] ReadBytes()
     {
         int length = ReadPackedInt();
-        if (_position + length > _data.Length)
+        if (Remaining < length)
             throw new IndexOutOfRangeException("Not enough data to read bytes");
 
         byte[] result = new byte[length];
@@ -360,7 +360,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a short.</exception>
     internal short ReadShort()
     {
-        if (_position + 2 > _data.Length)
+        if (Remaining < 2)
             throw new IndexOutOfRangeException("Not enough data to read short");
 
         short result = BitConverter.ToInt16(_data, _position);
@@ -375,7 +375,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a ushort.</exception>
     internal ushort ReadUShort()
     {
-        if (_position + 2 > _data.Length)
+        if (Remaining < 2)
             throw new IndexOutOfRangeException("Not enough data to read ushort");
 
         ushort result = BitConverter.ToUInt16(_data, _position);
@@ -390,7 +390,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a long.</exception>
     internal long ReadLong()
     {
-        if (_position + 8 > _data.Length)
+        if (Remaining < 8)
             throw new IndexOutOfRangeException("Not enough data to read long");
 
         long result = BitConverter.ToInt64(_data, _position);
@@ -405,7 +405,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read an unsigned long.</exception>
     internal ulong ReadULong()
     {
-        if (_position + 8 > _data.Length)
+        if (Remaining < 8)
             throw new IndexOutOfRangeException("Not enough data to read ulong");
 
         ulong result = BitConverter.ToUInt64(_data, _position);
@@ -420,7 +420,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read a double.</exception>
     public double ReadDouble()
     {
-        if (_position + 8 > _data.Length)
+        if (Remaining < 8)
             throw new IndexOutOfRangeException("Not enough data to read double");
 
         double result = BitConverter.ToDouble(_data, _position);
