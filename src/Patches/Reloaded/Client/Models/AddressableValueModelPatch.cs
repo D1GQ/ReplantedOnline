@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.DataModels;
-using ReplantedOnline.Data.Asset;
+using ReplantedOnline.Data.Asset.Unity;
 
 namespace ReplantedOnline.Patches.Reloaded.Client.Models;
 

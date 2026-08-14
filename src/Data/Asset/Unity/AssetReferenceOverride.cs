@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Interfaces.Data;
 using UnityEngine.AddressableAssets;
 
-namespace ReplantedOnline.Data.Asset;
+namespace ReplantedOnline.Data.Asset.Unity;
 
 /// <summary>
 /// Represents an override wrapper for an <see cref="AssetReference"/> that allows injecting a custom loaded asset instance into Unity Addressables operations.

@@ -60,7 +60,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     /// <inheritdoc/>
     public Sprite GetThumbnail()
     {
-        return ReplantedOnlineMod.Assets.Sprites.Arena.ChinaThumbnail;
+        return ReplantedOnlineMod.Assets.Sprites.Arena.ChinaThumbnail.Asset;
     }
 
     /// <inheritdoc/>
@@ -118,7 +118,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
         }
 
         // Add bowling line
-        var line = PvZRUtils.CreateBowlingLine(ReplantedOnlineMod.Assets.Sprites.Arena.ChinaBowlingline);
+        var line = PvZRUtils.CreateBowlingLine(ReplantedOnlineMod.Assets.Sprites.Arena.ChinaBowlingline.Asset);
         line.color = new(0.2f, 0.9f, 0.8f, 0.5f);
         line.transform.localPosition = new Vector3(0f, -1008.732f, -1f);
         line.transform.localScale = new Vector3(100f, 100f, 1f);

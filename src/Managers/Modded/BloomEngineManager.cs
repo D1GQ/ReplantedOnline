@@ -23,7 +23,7 @@ internal static class BloomEngineManager
         BloomConfigs.Init();
 
         var mod = ModMenuService.CreateEntry(replantedOnline);
-        mod.AddIcon(ReplantedOnlineMod.Assets.Sprites.ModIcon);
+        mod.AddIcon(ReplantedOnlineMod.Assets.Sprites.ModIcon.Asset);
         mod.AddDisplayName(ReplantedOnlineMod.ModInfo.MOD_NAME);
         mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
         mod.AddConfigInputs(BloomConfigs.TransportModeConfig, BloomConfigs.AppServerConfig, BloomConfigs.ModifyMusicConfig);

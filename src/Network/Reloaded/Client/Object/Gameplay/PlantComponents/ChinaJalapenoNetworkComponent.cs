@@ -22,7 +22,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     internal sealed override void OnInit(Plant plant)
     {
         _originalTexture = plant.mController.m_meshRenderer.material.mainTexture;
-        _sleepingTexture = ReplantedOnlineMod.Assets.Sprites.Character.JalapenoSleeping.texture;
+        _sleepingTexture = ReplantedOnlineMod.Assets.Sprites.Character.JalapenoSleeping.Asset.texture;
         plant.mSeedType = SeedType.None;
         plant.SetSleeping(true);
         plant.PlayIdleAnim(0);

@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Runtime;
 using ReplantedOnline.Attributes.Hook;
-using ReplantedOnline.Data.Asset;
+using ReplantedOnline.Data.Asset.Unity;
 using ReplantedOnline.Utilities.Il2Cpp;
 using System.Runtime.InteropServices;
 using UnityEngine.AddressableAssets;

@@ -29,7 +29,7 @@ internal static class TitleScreenPatch
                     logo.gameObject.DestroyAllImageLocalizers();
                     UnityEngine.Object.Destroy(logo);
                     screen.gameObject.DestroyAllImageLocalizers();
-                    screen.sprite = ReplantedOnlineMod.Assets.Sprites.PromoCompressed;
+                    screen.sprite = ReplantedOnlineMod.Assets.Sprites.PromoCompressed.Asset;
                 }
 
                 var loadingRect = splash.Find("Canvas/LoadBar/LoadBarAnimationParent")?.GetComponentInChildren<RectTransform>(true);

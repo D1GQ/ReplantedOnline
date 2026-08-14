@@ -1,7 +1,7 @@
 ﻿using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace ReplantedOnline.Data.Asset;
+namespace ReplantedOnline.Data.Asset.Unity;
 
 /// <summary>
 /// Base class for custom asset references.

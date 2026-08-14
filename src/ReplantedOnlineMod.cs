@@ -65,6 +65,7 @@ internal partial class ReplantedOnlineMod : MelonMod
                 return;
             }
 
+            Assets.PreloadAssets();
             DataManager.Initialize();
             AutoRegisterAttribute.RegisterAll();
             NetworkObject.InitializePrefabs();
@@ -73,6 +74,7 @@ internal partial class ReplantedOnlineMod : MelonMod
             MonoSingleton<InfoDisplay>.CreateInstance();
             MonoSingleton<GithubAPI>.CreateInstance();
             MonoSingleton<GithubAPI>.Instance.Connect();
+            MonoSingleton<MainThreadDispatcher>.CreateInstance();
             AudioManager.Initialize();
             DiscordManager.Initialize();
             Application.runInBackground = true;
@@ -105,7 +107,6 @@ internal partial class ReplantedOnlineMod : MelonMod
             LevelEntries.Initialize();
             SeedPacketDefinitions.Initialize();
             ContentManager.Initialize();
-            MonoSingleton<MainThreadDispatcher>.CreateInstance();
             ReloadedLobby.Initialize();
             DiscordManager.ReadyToJoin();
         }

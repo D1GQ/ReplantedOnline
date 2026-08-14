@@ -25,8 +25,8 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
             return;
 
         _originalTexture = zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture;
-        _dirtlessTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestoneDirtless.texture;
-        _poolTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestonePool.texture;
+        _dirtlessTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestoneDirtless.Asset.texture;
+        _poolTexture = ReplantedOnlineMod.Assets.Sprites.Character.GravestonePool.Asset.texture;
     }
 
     internal override void OnEnabled()

@@ -36,7 +36,7 @@ internal sealed class WhiteWaterEffect : MonoBehaviour
 
     private void Awake()
     {
-        _sprites = ReplantedOnlineMod.Assets.Sprites.WhiteWaterSpriteSheet.Sprites;
+        _sprites = ReplantedOnlineMod.Assets.Sprites.WhiteWaterSpriteSheet.Asset;
         _spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         _spriteRenderer.sortingOrder = _sortingOrder;
 

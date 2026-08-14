@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Data.Asset;
+using ReplantedOnline.Data.Asset.Unity;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
@@ -117,25 +117,25 @@ internal static class SeedPacketDefinitions
         var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
         var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
-        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon, ReloadedLobby.AmInLobby);
+        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon.Asset, ReloadedLobby.AmInLobby);
 
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel, "SNORKEL_ZOMBIE",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon);
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon.Asset);
 
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider, "DOLPHIN_RIDER_ZOMBIE",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon.Asset);
 
         var BackupDancerDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieBackupDancer, "BACKUP_DANCER",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon,
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon.Asset,
             "A quirky backup dancer that gives a stackable speed boost to nearby zombies.");
         BackupDancerDefinition!.m_previewSpriteScale = 0.82f;
 
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon,
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon.Asset,
             "A curious creature that can be enraged!");
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())

@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Data;
 using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.Services;
-using ReplantedOnline.Data.Asset;
+using ReplantedOnline.Data.Asset.Unity;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;

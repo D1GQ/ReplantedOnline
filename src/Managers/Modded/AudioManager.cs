@@ -37,7 +37,7 @@ internal static class AudioManager
         {
             MainMenuTheme.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
         }
-        CustomMainMenuTheme = ReplantedOnlineMod.Assets.Sounds.CrazyDaveMainThemeCompressed;
+        CustomMainMenuTheme = ReplantedOnlineMod.Assets.Sounds.CrazyDaveMainThemeCompressed.Asset;
     }
 
     /// <summary>

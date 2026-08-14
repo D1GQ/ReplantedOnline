@@ -80,6 +80,7 @@ internal static class ImageUtils
                 new Vector2(0.5f, 0.5f),
                 pixelsPerUnit
             );
+
             sprite.name = texture.name + $"({targetSprite.col}, {targetSprite.row})";
             sprite.hideFlags |= HideFlags.HideAndDontSave;
 
@@ -109,7 +110,6 @@ internal static class ImageUtils
             using var ms = new MemoryStream();
             stream.CopyTo(ms);
             var texture = LoadTextureFromBytes(ms.ToArray());
-            texture?.name = Path.GetFileNameWithoutExtension(resourcePath);
             return texture;
         }
         catch (Exception ex)
@@ -131,7 +131,6 @@ internal static class ImageUtils
         {
             byte[] bytes = File.ReadAllBytes(filePath);
             var sprite = LoadSpriteFromBytes(bytes, pixelsPerUnit);
-            sprite?.name = Path.GetFileNameWithoutExtension(Path.GetFileName(filePath));
             return sprite;
         }
         catch (Exception ex)

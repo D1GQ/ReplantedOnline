@@ -43,7 +43,7 @@ internal sealed class TimerPanel : MonoBehaviour
         imageRect.anchoredPosition = Vector3.zero;
         imageRect.localScale = new(4.5f, 1.5f, 1f);
         var image = imageObj.AddComponent<Image>();
-        image.sprite = ReplantedOnlineMod.Assets.Sprites.TimerPanel;
+        image.sprite = ReplantedOnlineMod.Assets.Sprites.TimerPanel.Asset;
 
         timerPanel._text = Instantiate(textPrefab);
         timerPanel._text.name = "Text";

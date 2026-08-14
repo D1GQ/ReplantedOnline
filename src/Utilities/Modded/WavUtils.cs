@@ -30,7 +30,6 @@ internal static class WavUtils
             stream.CopyTo(ms);
             byte[] wavBytes = ms.ToArray();
             var audio = ToAudioClip(wavBytes);
-            audio.SetName(resourcePath);
             return audio;
         }
         catch (Exception ex)
