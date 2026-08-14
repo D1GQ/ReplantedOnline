@@ -109,6 +109,8 @@ internal static class SeedChooserPatch
     {
         var screen = Instances.GameplayActivity.SeedChooserScreen;
 
+        screen.mChosenZombies.RemoveAll((Func<ChosenSeed, bool>)(cz => SeedPacketDefinitions.NoneSeedTypes.Contains(cz.mSeedType)));
+
         // Sort seeds by cost
         screen.mChosenZombies.Sort((Func<ChosenSeed, ChosenSeed, int>)((cz1, cz2) =>
         {
