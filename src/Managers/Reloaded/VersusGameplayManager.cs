@@ -265,13 +265,20 @@ internal static class VersusGameplayManager
     internal static int GetSeedPacketRefreshTime(SeedType seedType)
     {
         int refreshTime;
-        if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
+        if (GetVersusModeConfig().TryGetSeedPacketConfig(seedType, out var config))
         {
-            refreshTime = GetVersusModeConfig().GetSeedPacketConfig(seedType).RefreshTime;
+            if (VersusState.VersusPhase != VersusPhase.SuddenDeath)
+            {
+                refreshTime = config.RefreshTime;
+            }
+            else
+            {
+                refreshTime = config.SuddenDeathRefresh;
+            }
         }
         else
         {
-            refreshTime = GetVersusModeConfig().GetSeedPacketConfig(seedType).SuddenDeathRefresh;
+            refreshTime = 0;
         }
 
         CloudyDayArena.ApplyRefreshTimeReduction(seedType, ref refreshTime);

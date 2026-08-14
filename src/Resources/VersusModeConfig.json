@@ -34,57 +34,66 @@
       "ZombieFlag"
     ]
   },
-  "seedPacketConfigs": [
+  "plantConfigs": [
     {
       "type": "Peashooter",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Sunflower",
+      "health": 300,
       "cost": 50,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 0
     },
     {
       "type": "Cherrybomb",
+      "health": 300,
       "cost": 150,
       "refreshTime": 60,
       "suddenDeathRefresh": 20
     },
     {
       "type": "Wallnut",
+      "health": 4000,
       "cost": 50,
       "refreshTime": 30,
       "suddenDeathRefresh": 30
     },
     {
       "type": "Potatomine",
+      "health": 300,
       "cost": 25,
       "refreshTime": 30,
       "suddenDeathRefresh": 10
     },
     {
       "type": "Snowpea",
+      "health": 300,
       "cost": 150,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Chomper",
+      "health": 300,
       "cost": 150,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 7.5
     },
     {
       "type": "Repeater",
+      "health": 300,
       "cost": 150,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Puffshroom",
+      "health": 300,
       "cost": 0,
       "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
@@ -92,6 +101,7 @@
     },
     {
       "type": "Sunshroom",
+      "health": 300,
       "cost": 25,
       "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
@@ -99,6 +109,7 @@
     },
     {
       "type": "Fumeshroom",
+      "health": 300,
       "cost": 75,
       "nocturnalCostSurplus": 25,
       "refreshTime": 7.5,
@@ -106,12 +117,14 @@
     },
     {
       "type": "Gravebuster",
+      "health": 300,
       "cost": 75,
       "refreshTime": 30,
       "suddenDeathRefresh": 50
     },
     {
       "type": "Hypnoshroom",
+      "health": 300,
       "nocturnalCostSurplus": 25,
       "cost": 75,
       "refreshTime": 30,
@@ -119,6 +132,7 @@
     },
     {
       "type": "Scaredyshroom",
+      "health": 300,
       "nocturnalCostSurplus": 25,
       "cost": 25,
       "refreshTime": 7.5,
@@ -126,6 +140,7 @@
     },
     {
       "type": "Iceshroom",
+      "health": 300,
       "cost": 75,
       "nocturnalCostSurplus": 25,
       "refreshTime": 60,
@@ -133,6 +148,7 @@
     },
     {
       "type": "Doomshroom",
+      "health": 300,
       "cost": 125,
       "nocturnalCostSurplus": 25,
       "refreshTime": 60,
@@ -140,54 +156,63 @@
     },
     {
       "type": "Lilypad",
+      "health": 300,
       "cost": 25,
       "refreshTime": 3.75,
       "suddenDeathRefresh": 1.87
     },
     {
       "type": "Squash",
+      "health": 300,
       "cost": 75,
       "refreshTime": 30,
       "suddenDeathRefresh": 10
     },
     {
       "type": "Threepeater",
+      "health": 300,
       "cost": 200,
       "refreshTime": 15,
       "suddenDeathRefresh": 5
     },
     {
       "type": "Tanglekelp",
+      "health": 300,
       "cost": 25,
       "refreshTime": 30,
       "suddenDeathRefresh": 15
     },
     {
       "type": "Jalapeno",
+      "health": 300,
       "cost": 125,
       "refreshTime": 60,
       "suddenDeathRefresh": 20
     },
     {
       "type": "Spikeweed",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Torchwood",
+      "health": 300,
       "cost": 125,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Tallnut",
+      "health": 8000,
       "cost": 125,
       "refreshTime": 30,
       "suddenDeathRefresh": 30
     },
     {
       "type": "Seashroom",
+      "health": 300,
       "cost": 0,
       "nocturnalCostSurplus": 25,
       "refreshTime": 50,
@@ -195,375 +220,318 @@
     },
     {
       "type": "Plantern",
+      "health": 300,
       "cost": 25,
       "refreshTime": 30,
       "suddenDeathRefresh": 15
     },
     {
       "type": "Cactus",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Blover",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 3.75
     },
     {
       "type": "Splitpea",
+      "health": 300,
       "cost": 125,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Starfruit",
+      "health": 300,
       "cost": 175,
       "refreshTime": 15,
       "suddenDeathRefresh": 5
     },
     {
       "type": "Pumpkinshell",
+      "health": 4000,
       "cost": 125,
       "refreshTime": 30,
       "suddenDeathRefresh": 30
     },
     {
       "type": "Magnetshroom",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Cabbagepult",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Flowerpot",
+      "health": 300,
       "cost": 25,
       "refreshTime": 3.75,
       "suddenDeathRefresh": 1.87
     },
     {
       "type": "Kernelpult",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "InstantCoffee",
+      "health": 300,
       "cost": 25,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Garlic",
+      "health": 400,
       "cost": 75,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Umbrella",
+      "health": 300,
       "cost": 100,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },
     {
       "type": "Melonpult",
+      "health": 300,
       "cost": 300,
       "refreshTime": 15,
       "suddenDeathRefresh": 5
     },
     {
       "type": "Twinsunflower",
+      "health": 300,
       "cost": 125,
       "refreshTime": 45,
       "suddenDeathRefresh": 25
-    },
-    {
-      "type": "ZombieGravestone",
-      "cost": 50,
-      "refreshTime": 7.5,
-      "suddenDeathRefresh": 0
-    },
-    {
-      "type": "ZombieNormal",
-      "cost": 25,
-      "refreshTime": 7.5,
-      "suddenDeathRefresh": 2.5
-    },
-    {
-      "type": "ZombieImp",
-      "cost": 25,
-      "refreshTime": 15,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieTrashCan",
-      "cost": 50,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 30
-    },
-    {
-      "type": "ZombieNewspaper",
-      "cost": 50,
-      "refreshTime": 15,
-      "suddenDeathRefresh": 5
-    },
-    {
-      "type": "ZombieBackupDancer",
-      "cost": 75,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "ZombieTrafficCone",
-      "cost": 75,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieSnorkel",
-      "cost": 100,
-      "refreshTime": 25,
-      "suddenDeathRefresh": 12
-    },
-    {
-      "type": "ZombieScreenDoor",
-      "cost": 100,
-      "refreshTime": 15,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "ZombiePail",
-      "cost": 100,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombiePolevaulter",
-      "cost": 100,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieJackInTheBox",
-      "cost": 100,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieBungee",
-      "cost": 125,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieBalloon",
-      "cost": 125,
-      "refreshTime": 25,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieDigger",
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieDancer",
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieDolphinRider",
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "ZombieLadder",
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "ZombieFootball",
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "Zomboni",
-      "cost": 175,
-      "refreshTime": 60,
-      "suddenDeathRefresh": 20
-    },
-    {
-      "type": "ZombieYeti",
-      "cost": 200,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "ZombieCatapult",
-      "cost": 200,
-      "refreshTime": 60,
-      "suddenDeathRefresh": 20
-    },
-    {
-      "type": "ZombiePogo",
-      "cost": 225,
-      "refreshTime": 60,
-      "suddenDeathRefresh": 20
-    },
-    {
-      "type": "ZombieGargantuar",
-      "cost": 250,
-      "refreshTime": 60,
-      "suddenDeathRefresh": 20
-    },
-    {
-      "type": "ZombieFlag",
-      "cost": 300,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
     }
   ],
   "zombieConfigs": [
     {
       "type": "Target",
       "bodyHealth": 1,
-      "armorHealth": 200
+      "armorHealth": 200,
+      "cost": 0,
+      "refreshTime": 0,
+      "suddenDeathRefresh": 0
     },
     {
       "type": "Gravestone",
       "bodyHealth": 360,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 50,
+      "refreshTime": 7.5,
+      "suddenDeathRefresh": 0
     },
     {
       "type": "Normal",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 25,
+      "refreshTime": 7.5,
+      "suddenDeathRefresh": 2.5
     },
     {
       "type": "Imp",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 25,
+      "refreshTime": 15,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "TrashCan",
       "bodyHealth": 270,
-      "armorHealth": 800
+      "armorHealth": 800,
+      "cost": 50,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 30
     },
     {
       "type": "Newspaper",
       "bodyHealth": 340,
-      "armorHealth": 180
+      "armorHealth": 180,
+      "cost": 50,
+      "refreshTime": 15,
+      "suddenDeathRefresh": 5
     },
     {
       "type": "TrafficCone",
       "bodyHealth": 270,
-      "armorHealth": 360
+      "armorHealth": 360,
+      "cost": 75,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Snorkel",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 100,
+      "refreshTime": 25,
+      "suddenDeathRefresh": 12
     },
     {
       "type": "Door",
       "bodyHealth": 270,
-      "armorHealth": 1500
+      "armorHealth": 1500,
+      "cost": 100,
+      "refreshTime": 15,
+      "suddenDeathRefresh": 15
     },
     {
       "type": "Pail",
       "bodyHealth": 270,
-      "armorHealth": 1100
+      "armorHealth": 1100,
+      "cost": 100,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Polevaulter",
       "bodyHealth": 340,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 100,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "JackInTheBox",
       "bodyHealth": 340,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 100,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Bungee",
       "bodyHealth": 420,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 125,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Balloon",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 125,
+      "refreshTime": 25,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Digger",
       "bodyHealth": 300,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Dancer",
       "bodyHealth": 340,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "BackupDancer",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 75,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 15
     },
     {
       "type": "DolphinRider",
       "bodyHealth": 500,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 15
     },
     {
       "type": "Ladder",
       "bodyHealth": 340,
-      "armorHealth": 500
+      "armorHealth": 500,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Football",
       "bodyHealth": 270,
-      "armorHealth": 1400
+      "armorHealth": 1400,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     },
     {
       "type": "Zamboni",
       "bodyHealth": 1180,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 175,
+      "refreshTime": 60,
+      "suddenDeathRefresh": 20
     },
     {
       "type": "Yeti",
       "bodyHealth": 500,
-      "armorHealth": 1500
+      "armorHealth": 1500,
+      "cost": 200,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 15
     },
     {
       "type": "Catapult",
       "bodyHealth": 720,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 200,
+      "refreshTime": 60,
+      "suddenDeathRefresh": 20
     },
     {
       "type": "Pogo",
       "bodyHealth": 340,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 225,
+      "refreshTime": 60,
+      "suddenDeathRefresh": 20
     },
     {
       "type": "Gargantuar",
       "bodyHealth": 3000,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 250,
+      "refreshTime": 60,
+      "suddenDeathRefresh": 20
     },
     {
       "type": "Flag",
       "bodyHealth": 270,
-      "armorHealth": 0
+      "armorHealth": 0,
+      "cost": 300,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
     }
   ]
 }

@@ -7,7 +7,7 @@ namespace ReplantedOnline.Data.Json.Config.Reloaded;
 /// <summary>
 /// Configuration data for a specific zombie type in the versus mode.
 /// </summary>
-internal sealed class ZombieConfig : JsonObject<ZombieConfig>, INetworkConfigSerializable
+internal sealed class ZombieConfig : SeedPacketConfig
 {
     /// <summary>
     /// Gets the type of zombie this configuration applies to.
@@ -26,18 +26,20 @@ internal sealed class ZombieConfig : JsonObject<ZombieConfig>, INetworkConfigSer
     public int ArmorHealth { get; set; }
 
     /// <inheritdoc/>
-    public void Serialize(PacketWriter packetWriter)
+    public override void Serialize(PacketWriter packetWriter)
     {
         packetWriter.WriteEnum(Type);
         packetWriter.WriteInt(BodyHealth);
         packetWriter.WriteInt(ArmorHealth);
+        base.Serialize(packetWriter);
     }
 
     /// <inheritdoc/>
-    public void Deserialize(PacketReader packetReader)
+    public override void Deserialize(PacketReader packetReader)
     {
         Type = packetReader.ReadEnum<ZombieType>();
         BodyHealth = packetReader.ReadInt();
         ArmorHealth = packetReader.ReadInt();
+        base.Deserialize(packetReader);
     }
 }

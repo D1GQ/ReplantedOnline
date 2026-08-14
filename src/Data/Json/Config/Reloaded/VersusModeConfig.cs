@@ -3,6 +3,7 @@ using ReplantedOnline.Data.Json.Config.Reloaded.Arenas;
 using ReplantedOnline.Data.Json.Converters;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs;
+using ReplantedOnline.Utilities.Modded;
 using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Data.Json.Config.Reloaded;
@@ -67,46 +68,16 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     /// <summary>
     /// Gets the collection of seed packet configurations for plants and zombies available in versus mode.
     /// </summary>
-    public List<SeedPacketConfig> SeedPacketConfigs { get; set; } = [];
+    public List<PlantConfig> PlantConfigs { get; set; } = [];
 
     /// <summary>
     /// Gets the collection of zombie configurations defining health values for each zombie type.
     /// </summary>
     public List<ZombieConfig> ZombieConfigs { get; set; } = [];
 
-    private readonly Dictionary<SeedType, SeedPacketConfig> _seedPacketConfigLookup = [];
+    private readonly Dictionary<SeedType, SeedPacketConfig> _seedPacketLookup = [];
+    private readonly Dictionary<SeedType, PlantConfig> _plantConfigLookup = [];
     private readonly Dictionary<ZombieType, ZombieConfig> _zombieConfigLookup = [];
-
-    /// <inheritdoc/>
-    internal sealed override void OnDeserialize()
-    {
-        _seedPacketConfigLookup.Clear();
-        foreach (var seedPacketConfig in SeedPacketConfigs)
-        {
-            _seedPacketConfigLookup[seedPacketConfig.Type] = seedPacketConfig;
-        }
-        _zombieConfigLookup.Clear();
-        foreach (var zombieConfig in ZombieConfigs)
-        {
-            _zombieConfigLookup[zombieConfig.Type] = zombieConfig;
-        }
-    }
-
-    /// <summary>
-    /// Retrieves the seed packet configuration for the specified seed type.
-    /// </summary>
-    /// <param name="seedType">The seed type to look up.</param>
-    /// <returns>The seed packet configuration for the specified seed type.</returns>
-    /// <exception cref="Exception">Thrown when the seed type is not found in the configuration.</exception>
-    internal SeedPacketConfig GetSeedPacketConfig(SeedType seedType)
-    {
-        if (_seedPacketConfigLookup.TryGetValue(seedType, out var config))
-        {
-            return config;
-        }
-
-        throw new Exception($"SeedPacketConfig not found by {Enum.GetName(seedType)}");
-    }
 
     /// <summary>
     /// Attempts to retrieve the seed packet configuration for the specified seed type.
@@ -116,23 +87,42 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     /// <returns>true if the seed packet configuration was found; otherwise, false.</returns>
     internal bool TryGetSeedPacketConfig(SeedType seedType, out SeedPacketConfig config)
     {
-        return _seedPacketConfigLookup.TryGetValue(seedType, out config!);
+        return _seedPacketLookup.TryGetValue(seedType, out config!);
     }
 
     /// <summary>
-    /// Retrieves the zombie configuration for the specified zombie type.
+    /// Attempts to retrieve the seed packet configuration for the specified zombie type.
     /// </summary>
     /// <param name="zombieType">The zombie type to look up.</param>
-    /// <returns>The zombie configuration for the specified zombie type.</returns>
-    /// <exception cref="Exception">Thrown when the zombie type is not found in the configuration.</exception>
-    internal ZombieConfig GetZombieConfig(ZombieType zombieType)
+    /// <param name="config">When this method returns, contains the seed packet configuration if found; otherwise, null.</param>
+    /// <returns>true if the seed packet configuration was found; otherwise, false.</returns>
+    internal bool TryGetSeedPacketConfig(ZombieType zombieType, out SeedPacketConfig config)
     {
-        if (_zombieConfigLookup.TryGetValue(zombieType, out var config))
+        var seedType = PvZRUtils.ZombieTypeToIZombieSeedType(zombieType);
+        if (seedType == SeedType.None)
         {
-            return config;
+            config = null!;
+            return false;
         }
 
-        throw new Exception($"ZombieConfig not found by {Enum.GetName(zombieType)}");
+        return _seedPacketLookup.TryGetValue(seedType, out config!);
+    }
+
+    /// <summary>
+    /// Attempts to retrieve the plant configuration for the specified seed type, excluding zombie seed types.
+    /// </summary>
+    /// <param name="seedType">The seed type to look up.</param>
+    /// <param name="config">When this method returns, contains the plant configuration if found; otherwise, null.</param>
+    /// <returns>true if the plant configuration was found and the seed type is not a zombie type; otherwise, false.</returns>
+    internal bool TryGetPlantConfig(SeedType seedType, out SeedPacketConfig config)
+    {
+        if (Challenge.IsZombieSeedType(seedType))
+        {
+            config = null!;
+            return false;
+        }
+
+        return _seedPacketLookup.TryGetValue(seedType, out config!);
     }
 
     /// <summary>
@@ -144,6 +134,94 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     internal bool TryGetZombieConfig(ZombieType zombieType, out ZombieConfig config)
     {
         return _zombieConfigLookup.TryGetValue(zombieType, out config!);
+    }
+
+    /// <summary>
+    /// Gets the seed packet configuration for the specified seed type.
+    /// </summary>
+    /// <param name="seedType">The seed type to look up.</param>
+    /// <returns>The seed packet configuration for the specified seed type.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the seed type is not found in the configuration.</exception>
+    internal SeedPacketConfig GetSeedPacketConfig(SeedType seedType)
+    {
+        if (!TryGetSeedPacketConfig(seedType, out var config))
+        {
+            throw new KeyNotFoundException($"Seed packet configuration not found for seed type: {seedType}");
+        }
+
+        return config;
+    }
+
+    /// <summary>
+    /// Gets the seed packet configuration for the specified zombie type.
+    /// </summary>
+    /// <param name="zombieType">The zombie type to look up.</param>
+    /// <returns>The seed packet configuration for the specified zombie type.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the zombie type is not found in the configuration or cannot be converted to a seed type.</exception>
+    internal SeedPacketConfig GetSeedPacketConfig(ZombieType zombieType)
+    {
+        if (!TryGetSeedPacketConfig(zombieType, out var config))
+        {
+            throw new KeyNotFoundException($"Seed packet configuration not found for zombie type: {zombieType}");
+        }
+
+        return config;
+    }
+
+    /// <summary>
+    /// Gets the plant configuration for the specified seed type, excluding zombie seed types.
+    /// </summary>
+    /// <param name="seedType">The seed type to look up.</param>
+    /// <returns>The plant configuration for the specified seed type.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the seed type is not found in the configuration or is a zombie type.</exception>
+    internal SeedPacketConfig GetPlantConfig(SeedType seedType)
+    {
+        if (!TryGetPlantConfig(seedType, out var config))
+        {
+            throw new KeyNotFoundException($"Plant configuration not found for seed type: {seedType} (may be a zombie type or not found)");
+        }
+
+        return config;
+    }
+
+    /// <summary>
+    /// Gets the zombie configuration for the specified zombie type.
+    /// </summary>
+    /// <param name="zombieType">The zombie type to look up.</param>
+    /// <returns>The zombie configuration for the specified zombie type.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the zombie type is not found in the configuration.</exception>
+    internal ZombieConfig GetZombieConfig(ZombieType zombieType)
+    {
+        if (!TryGetZombieConfig(zombieType, out var config))
+        {
+            throw new KeyNotFoundException($"Zombie configuration not found for zombie type: {zombieType}");
+        }
+
+        return config;
+    }
+
+    /// <inheritdoc/>
+    internal sealed override void OnDeserialize()
+    {
+        _seedPacketLookup.Clear();
+        _plantConfigLookup.Clear();
+        _zombieConfigLookup.Clear();
+
+        foreach (var plantConfig in PlantConfigs)
+        {
+            _plantConfigLookup[plantConfig.Type] = plantConfig;
+            _seedPacketLookup[plantConfig.Type] = plantConfig;
+        }
+
+        foreach (var zombieConfig in ZombieConfigs)
+        {
+            _zombieConfigLookup[zombieConfig.Type] = zombieConfig;
+            var seedType = PvZRUtils.ZombieTypeToIZombieSeedType(zombieConfig.Type);
+            if (seedType != SeedType.None)
+            {
+                _seedPacketLookup[seedType] = zombieConfig;
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -165,8 +243,8 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
 
         CloudyDayArenaConfig.Serialize(packetWriter);
 
-        packetWriter.WritePackedInt(SeedPacketConfigs.Count);
-        foreach (var config in SeedPacketConfigs)
+        packetWriter.WritePackedInt(PlantConfigs.Count);
+        foreach (var config in PlantConfigs)
         {
             config.Serialize(packetWriter);
         }
@@ -199,12 +277,12 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         CloudyDayArenaConfig.Deserialize(packetReader);
 
         int seedPacketCount = packetReader.ReadPackedInt();
-        SeedPacketConfigs.Clear();
+        PlantConfigs.Clear();
         for (int i = 0; i < seedPacketCount; i++)
         {
-            var config = new SeedPacketConfig();
+            var config = new PlantConfig();
             config.Deserialize(packetReader);
-            SeedPacketConfigs.Add(config);
+            PlantConfigs.Add(config);
         }
 
         int zombieCount = packetReader.ReadPackedInt();

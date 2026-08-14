@@ -27,7 +27,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Enraged
     }
 
-    private ZombieConfig _yetiConfig = VersusGameplayManager.GetVersusModeConfig().GetZombieConfig(ZombieType.Yeti);
+    private readonly ZombieConfig _yetiConfig = VersusGameplayManager.GetVersusModeConfig().GetZombieConfig(ZombieType.Yeti);
 
     internal override void OnInit(Zombie zombie)
     {

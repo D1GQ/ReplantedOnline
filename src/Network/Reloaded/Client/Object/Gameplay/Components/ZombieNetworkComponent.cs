@@ -37,7 +37,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         ZombieType.Yeti
     ];
 
-    private bool _hasPicked = false;
+    private bool _hasPickedInitSpeed = false;
     private bool _pickingSpeed;
     private float _previousVelX = -1;
     private float _velX;
@@ -131,10 +131,13 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         OnUpdate(zombie);
 
-        if (zombie.mZombiePhase != ZombiePhase.RisingFromGrave)
+        if (!_hasPickedInitSpeed)
         {
-            _hasPicked = true;
             PickRandomSpeed(zombie);
+            if (_velX > 0)
+            {
+                _hasPickedInitSpeed = true;
+            }
         }
 
         if (!_pickingSpeed)
