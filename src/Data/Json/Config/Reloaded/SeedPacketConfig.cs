@@ -8,7 +8,7 @@ namespace ReplantedOnline.Data.Json.Config.Reloaded;
 /// <summary>
 /// Configuration data for a specific seed packet in the versus mode.
 /// </summary>
-internal class SeedPacketConfig : JsonObject<SeedPacketConfig>, INetworkConfigSerializable
+internal abstract class SeedPacketConfig : JsonObject, INetworkConfigSerializable
 {
     /// <summary>
     /// Gets the sun cost required to use this seed packet.

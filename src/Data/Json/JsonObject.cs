@@ -1,12 +1,12 @@
 ﻿using ReplantedOnline.Utilities.MelonLoader;
-using System.Runtime.Serialization;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Data.Json;
 
 /// <summary>
-/// Provides a base class for JSON serializable objects with shared JSON serializer options.
+/// Provides a base class for JSON serializable objects with configurable serializer options.
 /// </summary>
 internal abstract class JsonObject
 {
@@ -32,72 +32,72 @@ internal abstract class JsonObject
     /// <summary>
     /// Called before the object is serialized to JSON.
     /// </summary>
-    internal virtual void OnSerialize() { }
+    protected virtual void OnSerialize() { }
 
     /// <summary>
     /// Called after the object has been deserialized from JSON.
     /// </summary>
-    internal virtual void OnDeserialize() { }
-}
-
-/// <summary>
-/// Provides a generic base class for JSON serializable objects with serialization and deserialization functionality.
-/// </summary>
-/// <typeparam name="T">The type of the JSON object that derives from this class.</typeparam>
-internal abstract class JsonObject<T> : JsonObject where T : JsonObject<T>
-{
-    private static readonly T UninitializedObject = (T)FormatterServices.GetUninitializedObject(typeof(T));
-
-    /// <summary>
-    /// Serializes the specified object to a JSON string using its instance Serialize method.
-    /// </summary>
-    /// <param name="obj">The object to serialize.</param>
-    /// <returns>A JSON string representation of the object.</returns>
-    internal static string SerializeObject(T obj)
-    {
-        return obj.Serialize();
-    }
-
-    /// <summary>
-    /// Deserializes the specified JSON string to an object of type <typeparamref name="T"/> 
-    /// </summary>
-    /// <param name="json">The JSON string to deserialize.</param>
-    /// <returns>A deserialized object of type <typeparamref name="T"/>, or null if deserialization fails or the input is invalid.</returns>
-    internal static T? DeserializeObject(string json)
-    {
-        return UninitializedObject.Deserialize(json);
-    }
+    protected virtual void OnDeserialize() { }
 
     /// <summary>
     /// Serializes the current instance to a JSON string.
     /// </summary>
     /// <returns>A JSON string representation of the current instance.</returns>
-    internal virtual string Serialize()
+    internal string Serialize()
     {
         OnSerialize();
         return JsonSerializer.Serialize(this, GetType(), SerializerOptions);
     }
 
     /// <summary>
-    /// Deserializes the specified JSON string to an object of type <typeparamref name="T"/>.
+    /// Deserializes the specified JSON string into the current instance.
     /// </summary>
     /// <param name="json">The JSON string to deserialize.</param>
-    /// <returns>A deserialized object of type <typeparamref name="T"/>, or null if deserialization fails or the input is invalid.</returns>
-    internal virtual T? Deserialize(string json)
+    internal void Deserialize(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
-            return null;
+            return;
 
         try
         {
-            var obj = JsonSerializer.Deserialize<T>(json, SerializerOptions);
-            obj?.OnDeserialize();
-            return obj;
+            var obj = (JsonObject?)JsonSerializer.Deserialize(json, GetType(), SerializerOptions);
+            if (obj != null)
+            {
+                if (CopyProperties(obj))
+                {
+                    OnDeserialize();
+                }
+            }
         }
         catch (Exception ex)
         {
             ReplantedOnlineMod.Logger.Error(typeof(JsonObject), ex.ToString());
-            return null;
         }
+    }
+
+    /// <summary>
+    /// Copies all public writable properties from one JsonObject to another.
+    /// </summary>
+    /// <param name="from">The source object to copy properties from.</param>
+    /// <returns>
+    /// <see langword="true"/> if the types match and properties were copied successfully;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    private bool CopyProperties(JsonObject from)
+    {
+        var type = from.GetType();
+        if (type != GetType())
+            return false;
+
+        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+        foreach (var property in properties)
+        {
+            if (!property.CanWrite)
+                continue;
+
+            property.SetValue(this, property.GetValue(from));
+        }
+
+        return true;
     }
 }

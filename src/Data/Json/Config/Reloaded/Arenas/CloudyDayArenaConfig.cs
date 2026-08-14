@@ -8,7 +8,7 @@ namespace ReplantedOnline.Data.Json.Config.Reloaded.Arenas;
 /// <summary>
 /// Configuration for the Cloudy Day arena.
 /// </summary>
-internal sealed class CloudyDayArenaConfig : JsonObject<CloudyDayArenaConfig>, INetworkConfigSerializable
+internal sealed class CloudyDayArenaConfig : JsonObject, INetworkConfigSerializable
 {
     /// <summary>
     /// Gets the list of seed types that are disabled during rainy phases of the arena.

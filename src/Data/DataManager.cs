@@ -23,7 +23,8 @@ internal static class DataManager
             using var streamReader = new StreamReader(stream);
             string json = streamReader.ReadToEnd();
 
-            var config = VersusModeConfig.DeserializeObject(json);
+            var config = new VersusModeConfig();
+            config.Deserialize(json);
             VersusModeConfig = config!;
         }
         else

@@ -11,7 +11,7 @@ namespace ReplantedOnline.Data.Json.Config.Reloaded;
 /// <summary>
 /// Represents the root configuration object for versus mode, containing all seed packet and zombie configurations.
 /// </summary>
-internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkConfigSerializable
+internal sealed class VersusModeConfig : JsonObject, INetworkConfigSerializable
 {
     /// <summary>
     /// Gets the initial sky production rate.
@@ -207,7 +207,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     }
 
     /// <inheritdoc/>
-    internal sealed override void OnDeserialize()
+    protected sealed override void OnDeserialize()
     {
         _seedPacketLookup.Clear();
         _plantConfigLookup.Clear();

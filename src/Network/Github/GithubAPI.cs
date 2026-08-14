@@ -51,7 +51,8 @@ internal sealed class GithubAPI : MonoBehaviour
             Progress = progress / 2f;
         });
 
-        Manifest? githubManifest = Manifest.DeserializeObject(manifestJson);
+        Manifest githubManifest = new();
+        githubManifest.Deserialize(manifestJson);
 
         if (githubManifest != null)
         {
@@ -87,13 +88,15 @@ internal sealed class GithubAPI : MonoBehaviour
         {
             Progress = (progress / 2f) + 0.5f;
         });
-        DataManager.VersusModeConfig = VersusModeConfig.DeserializeObject(configJson)!;
+        var config = new VersusModeConfig();
+        config.Deserialize(configJson);
+        DataManager.VersusModeConfig = config;
     }
 
     /// <summary>
     /// Represents the GitHub manifest containing version-specific configuration overrides.
     /// </summary>
-    private sealed class Manifest : JsonObject<Manifest>
+    private sealed class Manifest : JsonObject
     {
         /// <summary>
         /// Gets or sets the collection of versus mode configuration overrides.
@@ -104,7 +107,7 @@ internal sealed class GithubAPI : MonoBehaviour
     /// <summary>
     /// Represents a version-specific override for the versus mode configuration.
     /// </summary>
-    private sealed class VersusModeConfigOverride : JsonObject<Manifest>
+    private sealed class VersusModeConfigOverride : JsonObject
     {
         /// <summary>
         /// Gets or sets the filename of the configuration file to download.
