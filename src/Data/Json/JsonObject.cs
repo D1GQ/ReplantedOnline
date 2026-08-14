@@ -56,7 +56,15 @@ internal abstract class JsonObject
     internal void Deserialize(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
+        {
+            var newObj = (JsonObject?)Activator.CreateInstance(GetType())!;
+            if (CopyProperties(newObj))
+            {
+                OnDeserialize();
+            }
+
             return;
+        }
 
         try
         {
