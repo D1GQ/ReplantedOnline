@@ -7,8 +7,10 @@ using Il2CppSource.Controllers;
 using Il2CppTekly.DataModels.Models;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 
@@ -131,6 +133,26 @@ internal static class SeedBankPatch
             }
 
             __result.m_visualOffset = __instance.m_dataService.GetPlantDefinition(seedType).PreviewSpriteOffset;
+        }
+    }
+
+    [HarmonyPatch(typeof(PreviewController), nameof(PreviewController.Set), [typeof(SeedType)])]
+    [HarmonyPostfix]
+    private static void PreviewController_Set_Postfix(PreviewController __instance, SeedType seedPacket)
+    {
+        var definition = Instances.GameplayActivity.m_dataService.GetPlantDefinition(seedPacket);
+        __instance.m_scale = definition.PreviewSpriteScale;
+    }
+
+    [HarmonyPatch(typeof(PreviewController), nameof(PreviewController.Set), [typeof(ZombieType)])]
+    [HarmonyPostfix]
+    private static void PreviewController_Set_Postfix(PreviewController __instance, ZombieType zombieType)
+    {
+        var seedType = PvZRUtils.ZombieTypeToIZombieSeedType(zombieType);
+        if (seedType != SeedType.None)
+        {
+            var definition = Instances.GameplayActivity.m_dataService.GetPlantDefinition(seedType);
+            __instance.m_scale = definition.PreviewSpriteScale;
         }
     }
 }

@@ -228,6 +228,19 @@ internal partial class ReplantedOnlineMod
                     }
                 }
 
+                internal static Sprite BackupDancerSeedPacketIcon
+                {
+                    get
+                    {
+                        if (field == null)
+                        {
+                            field = ModInfo.Assembly.LoadSpriteFromResources("ReplantedOnline.Resources.Images.Icons.BackupDancer-Seedpacket.png");
+                        }
+
+                        return field!;
+                    }
+                }
+
                 internal static Sprite YetiSeedPacketIcon
                 {
                     get

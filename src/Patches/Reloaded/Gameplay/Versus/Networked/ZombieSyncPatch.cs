@@ -358,4 +358,27 @@ internal static class ZombieSyncPatch
             }
         }
     }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.PickRandomSpeed))]
+    [HarmonyPrefix]
+    private static bool Zombie_PickRandomSpeed_Prefix(Zombie __instance)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            var zombieNetworked = __instance.GetNetworked();
+            if (zombieNetworked != null && zombieNetworked.AmOwner)
+            {
+                zombieNetworked.LogicComponent.PickRandomSpeed(__instance);
+            }
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.PickRandomSpeed))]
+    internal static void PickRandomSpeedOriginal(this Zombie __instance)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

@@ -119,6 +119,12 @@ internal static class SeedPacketDefinitions
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider, "DOLPHIN_RIDER_ZOMBIE",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon);
 
+        var BackupDancerDefinition = CustomPlantDefinition
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieBackupDancer, "BACKUP_DANCER",
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon,
+            "A quirky backup dancer that gives a stackable speed boost to nearby zombies.");
+        BackupDancerDefinition!.m_previewSpriteScale = 0.82f;
+
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon,
@@ -223,7 +229,6 @@ internal static class SeedPacketDefinitions
         if (Challenge.IsZombieSeedType(seedType))
         {
             // Convert seed type to actual zombie type
-            // Example: SeedType.SEED_ZOMBIE_NORMAL -> ZombieType.ZOMBIE_NORMAL
             var type = Challenge.IZombieSeedTypeToZombieType(seedType);
 
             // Delegate to zombie spawning logic
@@ -231,6 +236,21 @@ internal static class SeedPacketDefinitions
         }
         else
         {
+            // Handle upgrading plants
+            if (Plant.IsUpgrade(seedType))
+            {
+                var plant = Instances.GameplayActivity.Board.GetTopPlantAt(boardUnitX, boardUnitY, PlantPriority.Any);
+                if (plant != null)
+                {
+                    var plantNetworked = plant.GetNetworked();
+                    if (plantNetworked != null)
+                    {
+                        plantNetworked.SendUpgradeRpc(seedType);
+                        return plantNetworked.Plant!;
+                    }
+                }
+            }
+
             // This is a regular plant seed - delegate to plant spawning logic
             return SpawnPlant(seedType, boardUnitX, boardUnitY, spawnOnNetwork).Plant;
         }
@@ -536,7 +556,7 @@ internal static class SeedPacketDefinitions
     /// <param name="gridY">The Y grid coordinate (row).</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
     /// <returns>A tuple containing the spawned <see cref="Zombie"/> and optional <see cref="ZombieNetworked"/> controller.</returns>
-    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) DebugSpawnZombie(ZombieType zombieType, int gridX, BoardUnitY gridY, bool spawnOnNetwork)
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) DebugSpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
     {
         return SpawnZombie(zombieType, gridX, gridY, GetZombieSpawnType(zombieType, gridX, gridY), spawnOnNetwork);
     }

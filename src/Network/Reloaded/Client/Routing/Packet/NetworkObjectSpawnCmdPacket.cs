@@ -64,6 +64,15 @@ internal sealed class NetworkObjectSpawnCmdPacket : IPacketMessage<NetworkObject
 
         if (NetworkObject.NetworkPrefabs.TryGetValue(message.PrefabId, out var prefab))
         {
+            if (prefab is PlantNetworked)
+            {
+                SeedType seedType = packet.ReadEnum<SeedType>();
+                if (Plant.IsUpgrade(seedType))
+                {
+                    return false;
+                }
+            }
+
             if (sender.Team == PlayerTeam.Plants)
             {
                 if (prefab is ZombieNetworked)

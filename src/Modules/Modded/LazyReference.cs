@@ -40,12 +40,6 @@ internal sealed class LazyReference<T> where T : class
     internal void SetTarget(Func<T?> getter)
     {
         ArgumentNullException.ThrowIfNull(getter);
-
-        if (_getTarget != null && Value != null)
-        {
-            return;
-        }
-
         _getTarget = getter;
     }
 }

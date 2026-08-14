@@ -33,7 +33,8 @@ internal sealed class PlantNetworked : NetworkObject
         SquishPlant,
         ReadyToFire,
         Fire,
-        SetZombieTarget
+        SetZombieTarget,
+        Upgrade
     }
 
     /// <summary>
@@ -281,6 +282,53 @@ internal sealed class PlantNetworked : NetworkObject
     private void HandleSetZombieTargetRpc(Zombie target)
     {
         Target = target;
+    }
+
+    internal void SendUpgradeRpc(SeedType upgrade)
+    {
+        if (Plant == null)
+            return;
+
+        if (!Plant.IsUpgradableTo(upgrade))
+            return;
+
+        bool wasOnNetwork = IsOnNetwork;
+        IsOnNetwork = false;
+
+        var plant = Plant;
+        plant.mController.Die();
+        SeedType = upgrade;
+        plant.PlantInitialize(BoardUnitX, BoardUnitY, upgrade, SeedType.None);
+        plant.mBoard.DoPlantingEffects(BoardUnitX, BoardUnitY, plant);
+
+        _p.SetTarget(() => plant.mController.m_plant);
+        IsOnNetwork = wasOnNetwork;
+        gameObject.name = GetObjectName();
+
+        SendNetworkObjectRpc(PlantRpcs.Upgrade, upgrade);
+    }
+
+    [RpcHandler(PlantRpcs.Upgrade)]
+    private void HandleUpgradeRpc(SeedType upgrade)
+    {
+        if (Plant == null)
+            return;
+
+        if (!Plant.IsUpgradableTo(upgrade))
+            return;
+
+        bool wasOnNetwork = IsOnNetwork;
+        IsOnNetwork = false;
+
+        var plant = Plant;
+        plant.mController.Die();
+        SeedType = upgrade;
+        plant.PlantInitialize(BoardUnitX, BoardUnitY, upgrade, SeedType.None);
+        plant.mBoard.DoPlantingEffects(BoardUnitX, BoardUnitY, plant);
+
+        _p.SetTarget(() => plant.mController.m_plant);
+        IsOnNetwork = wasOnNetwork;
+        gameObject.name = GetObjectName();
     }
 
     /// <summary>

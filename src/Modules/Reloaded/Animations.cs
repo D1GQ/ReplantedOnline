@@ -57,7 +57,7 @@ internal static class Animations
 
     private static IEnumerator CoPlayFallFromSky(Zombie zombie, int gridY)
     {
-        if (VersusState.IsInCountDown) yield break;
+        if (VersusState.IsInPreCountDown) yield break;
 
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.Swing, Mathf.Lerp(-25f, -15, Mathf.Clamp01(gridY / 5)));
         float startAltitude = zombie.mAltitude;

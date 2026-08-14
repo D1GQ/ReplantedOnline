@@ -278,6 +278,12 @@
       "suddenDeathRefresh": 5
     },
     {
+      "type": "Twinsunflower",
+      "cost": 125,
+      "refreshTime": 45,
+      "suddenDeathRefresh": 25
+    },
+    {
       "type": "ZombieGravestone",
       "cost": 50,
       "refreshTime": 7.5,
@@ -306,6 +312,12 @@
       "cost": 50,
       "refreshTime": 15,
       "suddenDeathRefresh": 5
+    },
+    {
+      "type": "ZombieBackupDancer",
+      "cost": 75,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 15
     },
     {
       "type": "ZombieTrafficCone",
@@ -501,6 +513,11 @@
     {
       "type": "Dancer",
       "bodyHealth": 340,
+      "armorHealth": 0
+    },
+    {
+      "type": "BackupDancer",
+      "bodyHealth": 270,
       "armorHealth": 0
     },
     {

@@ -126,7 +126,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         if (WhiteWaterEffect == null)
             return;
 
-        var active = InPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -35f;
+        var active = InPool && !zombie.mDead && zombie.mZombiePhase != ZombiePhase.RisingFromGrave && onPool && zombie.mAltitude < -30f;
         WhiteWaterEffect.gameObject.SetActive(active);
 
         switch (Net.ZombieType)
@@ -170,6 +170,11 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             case ZombieType.Yeti:
                 WhiteWaterEffect.transform.localPosition = new(15f, 155f, 0f);
                 WhiteWaterEffect.transform.localScale = new(1.7f, 1f, 1f);
+                return;
+            case ZombieType.Dancer:
+            case ZombieType.BackupDancer:
+                WhiteWaterEffect.transform.localPosition = new(5f, 128f, 0f);
+                WhiteWaterEffect.transform.localScale = new(0.9f, 1f, 1f);
                 return;
             default:
                 break;

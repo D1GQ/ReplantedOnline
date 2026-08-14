@@ -44,36 +44,13 @@ internal static class DancersZombiePatch
         return true;
     }
 
-    [HarmonyPatch(typeof(Board), nameof(Board.RowCanHaveZombieType))]
-    [HarmonyPostfix]
-    private static void Board_RowCanHaveZombieType_Postfix(Board __instance, int theRow, ZombieType theZombieType, ref bool __result)
-    {
-        if (ReloadedLobby.AmInLobby())
-        {
-            if (theZombieType == ZombieType.BackupDancer)
-            {
-                if (theRow < 0 || theRow > (__instance.GetNumRows() - 1))
-                {
-                    __result = false;
-                    return;
-                }
-
-                if (__instance.mPlantRow[theRow] == PlantRowType.Pool)
-                {
-                    __result = false;
-                    return;
-                }
-            }
-        }
-    }
-
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.SummonBackupDancer))]
     [HarmonyPrefix]
     private static bool Zombie_SummonBackupDancer_Prefix(Zombie __instance, int theRow, int thePosX, ref ZombieID __result)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide || !__instance.mBoard.RowCanHaveZombieType(theRow, ZombieType.BackupDancer))
+            if (!VersusState.AmPlantSide || !CanRowHaveBackupDancer(__instance, theRow))
             {
                 __result = ZombieID.Null;
                 return false;
@@ -85,6 +62,22 @@ internal static class DancersZombiePatch
             SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, (float)thePosX, theRow);
             __result = backupDancer.DataID;
 
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool CanRowHaveBackupDancer(Zombie dancer, int theRow)
+    {
+        if (theRow < 0 || theRow > (dancer.mBoard.GetNumRows() - 1))
+        {
+            return false;
+        }
+
+        var dancerRowType = dancer.mBoard.mPlantRow[dancer.mRow];
+        if (dancer.mBoard.mPlantRow[theRow] != dancerRowType)
+        {
             return false;
         }
 

@@ -9,6 +9,7 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
+using ReplantedOnline.Structs.Reloaded;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -165,6 +166,48 @@ internal static class PvZRUtils
         return zombieType is ZombieType.Target or ZombieType.Gravestone;
     }
 
+    /// <summary>
+    /// Gets a lookup dictionary that maps <see cref="ZombieType"/> values to their corresponding zombie <see cref="SeedType"/>.
+    /// </summary>
+    private static Dictionary<ZombieType, SeedType> ZombieTypeToIZombieSeedTypeLookup
+    {
+        get
+        {
+            if (field == null)
+            {
+                field = [];
+                var seedTypes = Enum.GetValues<SeedType>().Concat(CustomSeedType.CustomSeedTypes.Select(cs => (SeedType)cs));
+                foreach (var seedType in seedTypes)
+                {
+                    if (!Challenge.IsZombieSeedType(seedType))
+                        continue;
+
+                    var zombieType = Challenge.IZombieSeedTypeToZombieType(seedType);
+                    field[zombieType] = seedType;
+                }
+            }
+
+            return field;
+        }
+    }
+
+    /// <summary>
+    /// Converts a <see cref="ZombieType"/> to its corresponding zombie <see cref="SeedType"/>.
+    /// </summary>
+    /// <param name="zombieType">The zombie type to convert.</param>
+    /// <returns>
+    /// The <see cref="SeedType"/> that corresponds to the specified <paramref name="zombieType"/>,
+    /// or <see cref="SeedType.None"/> if the zombie type is not found in the lookup dictionary.
+    /// </returns>
+    internal static SeedType ZombieTypeToIZombieSeedType(ZombieType zombieType)
+    {
+        if (ZombieTypeToIZombieSeedTypeLookup.TryGetValue(zombieType, out var seedType))
+        {
+            return seedType;
+        }
+
+        return SeedType.None;
+    }
 
     /// <summary>
     /// Gets the team associated with the seed bank.

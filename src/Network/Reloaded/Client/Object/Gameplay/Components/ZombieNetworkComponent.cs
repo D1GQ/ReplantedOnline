@@ -4,6 +4,7 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -36,6 +37,76 @@ internal class ZombieNetworkComponent : NetworkComponent
         ZombieType.Yeti
     ];
 
+    private bool _hasPicked = false;
+    private bool _pickingSpeed;
+    private float _previousVelX = -1;
+    private float _velX;
+
+    internal void PickRandomSpeed(Zombie zombie)
+    {
+        _pickingSpeed = true;
+        _previousVelX = -1;
+        zombie.PickRandomSpeedOriginal();
+        _velX = zombie.mVelX;
+        _pickingSpeed = false;
+    }
+
+    internal void SetSpeed(float velX)
+    {
+        if (Net.Zombie == null)
+            return;
+
+        _pickingSpeed = true;
+        _previousVelX = -1;
+        _velX = velX;
+        _pickingSpeed = false;
+    }
+
+    internal float GetSpeedBuffMultiplier(Zombie zombie)
+    {
+        float multiplier = 1f;
+
+        if (zombie.mZombieType is not (ZombieType.Dancer or ZombieType.BackupDancer))
+        {
+            foreach (var zom in zombie.mBoard.GetZombies())
+            {
+                float distance = Vector2.Distance(new(zombie.mPosX, zombie.mPosY), new(zom.mPosX, zom.mPosY));
+
+                if (distance < 225)
+                {
+                    if (zom.mZombieType == ZombieType.Dancer)
+                    {
+                        multiplier += 0.1f * Mathf.Lerp(3.5f, 1f, distance / 255);
+                    }
+                    else if (zom.mZombieType == ZombieType.BackupDancer)
+                    {
+                        multiplier += 0.05f * Mathf.Lerp(3.5f, 1f, distance / 255);
+                    }
+                }
+            }
+        }
+
+        if (zombie.mZombieType is not (ZombieType.DolphinRider or ZombieType.Snorkel))
+        {
+            if (Net.PoolComponent.InPool)
+            {
+                multiplier *= 0.95f;
+            }
+        }
+
+        if (VersusState.ArenaSynced == ArenaType.PoolNight)
+        {
+            var gridX = PvZRUtils.ReloadedObjectXToGridX(zombie.mX);
+            if (gridX >= zombie.mBoard.LeftFogColumn() &&
+                FogUtils.GetFogAt(zombie.mBoard, gridX, zombie.mRow + 1) > 100)
+            {
+                multiplier *= 0.9f;
+            }
+        }
+
+        return multiplier;
+    }
+
     private float _accumulatedDistance = 0f;
     private readonly object _distanceLock = new();
 
@@ -60,6 +131,26 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         OnUpdate(zombie);
 
+        if (!_hasPicked && Net.AmOwner)
+        {
+            if (zombie.mZombiePhase != ZombiePhase.RisingFromGrave)
+            {
+                _hasPicked = true;
+                PickRandomSpeed(zombie);
+            }
+        }
+
+        if (!_pickingSpeed)
+        {
+            var trueVelocity = _velX * GetSpeedBuffMultiplier(zombie);
+            if (_previousVelX != trueVelocity)
+            {
+                _previousVelX = trueVelocity;
+                zombie.mVelX = trueVelocity;
+                zombie.UpdateAnimSpeed();
+            }
+        }
+
         float distance;
         lock (_distanceLock)
         {
@@ -82,25 +173,6 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (Net.Event == EventState.PushBack)
         {
             return;
-        }
-
-        // Movement debuffs
-        if (zombie.mZombieType is not (ZombieType.DolphinRider or ZombieType.Snorkel))
-        {
-            if (Net.PoolComponent.InPool)
-            {
-                distance *= 0.95f;
-            }
-        }
-
-        if (VersusState.ArenaSynced == ArenaType.PoolNight)
-        {
-            var gridX = PvZRUtils.ReloadedObjectXToGridX(zombie.mX);
-            if (gridX >= zombie.mBoard.LeftFogColumn() &&
-                FogUtils.GetFogAt(zombie.mBoard, gridX, zombie.mRow + 1) > 100)
-            {
-                distance *= 0.9f;
-            }
         }
 
         if (useNonNetworkLogic)
@@ -194,7 +266,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         packetWriter.WriteBool(Net.Zombie == null);
         if (Net.Zombie != null)
         {
-            packetWriter.WritePackedFloat(Net.Zombie.mVelX, 500f);
+            packetWriter.WritePackedFloat(_velX, 500f);
             packetWriter.WritePackedFloat(Net.Zombie.mPosX, 25f);
         }
     }
@@ -209,8 +281,7 @@ internal class ZombieNetworkComponent : NetworkComponent
             bool isZombieNull = packetReader.ReadBool();
             if (!isZombieNull && Net.Zombie != null)
             {
-                Net.Zombie.mVelX = packetReader.ReadPackedFloat(500f);
-                Net.Zombie.UpdateAnimSpeed();
+                SetSpeed(packetReader.ReadPackedFloat(500f));
                 SyncedPosX = packetReader.ReadPackedFloat(25f);
             }
         }
