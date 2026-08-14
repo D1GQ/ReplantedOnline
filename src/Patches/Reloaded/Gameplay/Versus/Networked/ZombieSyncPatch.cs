@@ -370,6 +370,8 @@ internal static class ZombieSyncPatch
             {
                 zombieNetworked.LogicComponent.PickRandomSpeed(__instance);
             }
+
+            return false;
         }
 
         return true;
