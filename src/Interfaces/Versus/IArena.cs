@@ -53,6 +53,21 @@ internal interface IArena
         bool isFog = arenaType == ArenaType.PoolNight;
         bool hasNoDirt = arenaType is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China;
 
+        if (Plant.IsUpgrade(seedType))
+        {
+            if (SeedPacketDefinitions.UpgradeToSeedTypeLookup.TryGetValue(seedType, out var requiredSeedType))
+            {
+                if (!PvZRUtils.IsSeedTypeInAnySeedBank(requiredSeedType))
+                {
+                    return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
+                }
+            }
+            else
+            {
+                return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
+            }
+        }
+
         if (SeedPacketDefinitions.CurrencyProducingSeedTypes.Contains(seedType))
         {
             if (!Plant.IsNocturnal(seedType))
@@ -106,7 +121,7 @@ internal interface IArena
         {
             if (isCloudy)
             {
-                return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
+                return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom | CustomRecommentedFlags.ExcludeFromRandomDependency;
             }
 
             if (!isNight)
@@ -115,7 +130,7 @@ internal interface IArena
             }
             else
             {
-                return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
+                return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom | CustomRecommentedFlags.ExcludeFromRandomDependency;
             }
         }
 

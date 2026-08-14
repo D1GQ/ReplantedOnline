@@ -162,8 +162,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 foreach (var (hasDeps, deps) in PlantSeedTypeDependencies)
                 {
                     if (hasDeps.Contains(seedType) && !deps.Any(s => !currentSeedTypes.Contains(s) &&
-                    arena.GetSeedTypeCustomRecommentedFlags(s) !=
-                    CustomRecommentedFlags.ExcludeFromRandomDependency))
+                    !arena.GetSeedTypeCustomRecommentedFlags(s).HasFlag(CustomRecommentedFlags.ExcludeFromRandomDependency)))
                     {
                         hasDependency = true;
                         break;

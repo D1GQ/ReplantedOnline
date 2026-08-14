@@ -28,12 +28,12 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Gets the <see cref="SeedType"/> used as a placeholder for hidden seed packets.
     /// </summary>
-    internal readonly static SeedType RandomHiddenSeed = SeedType.SlotMachineDiamond;
+    internal static readonly SeedType RandomHiddenSeed = SeedType.SlotMachineDiamond;
 
     /// <summary>
     /// Gets a collection of seed types that are not considered valid or real seeds.
     /// </summary>
-    internal readonly static SeedType[] NoneSeedTypes = [
+    internal static readonly SeedType[] NoneSeedTypes = [
         SeedType.NumSeedsInChooser,
         SeedType.NumSeedTypes,
         SeedType.LastZombieIndex,
@@ -43,7 +43,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Gets a collection of seed types that are disabled and cannot be used in gameplay.
     /// </summary>
-    internal readonly static SeedType[] HideInChooserSeedTypes = [
+    internal static readonly SeedType[] HideInChooserSeedTypes = [
         // Plants
         SeedType.Marigold
     ];
@@ -51,7 +51,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Gets a collection of seed types that ignore the initial cooldown period and are available immediately when the match starts.
     /// </summary>
-    internal readonly static SeedType[] IgnoreInitialCooldownSeedTypes = [
+    internal static readonly SeedType[] IgnoreInitialCooldownSeedTypes = [
         // Plants
         SeedType.Sunflower,
         SeedType.Peashooter,
@@ -76,7 +76,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Gets a collection of seed types that produce currency (sun for plants or brains for zombies).
     /// </summary>
-    internal readonly static SeedType[] CurrencyProducingSeedTypes = [
+    internal static readonly SeedType[] CurrencyProducingSeedTypes = [
         // Plants
         SeedType.Sunflower,
         SeedType.Sunshroom,
@@ -86,9 +86,17 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
+    /// Gets a lookup dictionary that maps an upgraded seed type back to its original seed type.
+    /// </summary>
+    internal static readonly Dictionary<SeedType, SeedType> UpgradeToSeedTypeLookup = new()
+    {
+        { SeedType.Twinsunflower, SeedType.Sunflower }
+    };
+
+    /// <summary>
     /// Gets a collection of seed types that are asleep by default and require waking.
     /// </summary>
-    internal readonly static SeedType[] SleepingPlants = [.. Enum.GetValues<SeedType>().Where(Plant.IsNocturnal)];
+    internal static readonly SeedType[] SleepingPlants = [.. Enum.GetValues<SeedType>().Where(Plant.IsNocturnal)];
 
     /// <summary>
     /// Gets a lookup of base plant definitions containing original values for cost, refresh time, and sudden death refresh time.
