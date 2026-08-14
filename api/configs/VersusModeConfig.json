@@ -20,7 +20,7 @@
     "ZombieNormal",
     "ZombieTrashCan"
   ],
-  "disabledSeedPacketsInSuddenDeath": [
+  "disabledInSuddenDeath": [
     "Sunflower",
     "Sunshroom",
     "ZombieGravestone"

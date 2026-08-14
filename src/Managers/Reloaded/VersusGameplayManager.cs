@@ -95,7 +95,7 @@ internal static class VersusGameplayManager
                 {
                     foreach (var seedPacket in seedBank.mSeedPackets)
                     {
-                        if (!GetVersusModeConfig().DisabledSeedPacketsInSuddenDeath.Contains(seedPacket.PacketType))
+                        if (!GetVersusModeConfig().DisabledInSuddenDeath.Contains(seedPacket.PacketType))
                             continue;
 
                         seedBank.SetSeedPacketDisabled(seedPacket, true);

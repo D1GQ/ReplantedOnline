@@ -176,7 +176,7 @@ internal sealed class CloudyDayArena : IArena, IArenaData
             foreach (var seedPacket in seedBank.mSeedPackets)
             {
                 if (VersusGameplayManager.GetVersusModeConfig()
-                    .DisabledSeedPacketsInSuddenDeath.Contains(seedPacket.PacketType)
+                    .DisabledInSuddenDeath.Contains(seedPacket.PacketType)
                     && VersusState.VersusPhase == VersusPhase.SuddenDeath)
                     continue;
 

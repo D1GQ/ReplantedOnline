@@ -64,7 +64,7 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     /// Gets the list of seed packets that are disabled in sudden death.
     /// </summary>
     [JsonConverter(typeof(JsonSeedTypeListConverter))]
-    public List<SeedType> DisabledSeedPacketsInSuddenDeath { get; set; } = [];
+    public List<SeedType> DisabledInSuddenDeath { get; set; } = [];
 
     /// <summary>
     /// Gets the configurations for CloudyDayArena.
@@ -247,8 +247,8 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
             packetWriter.WriteEnum(seedType);
         }
 
-        packetWriter.WritePackedInt(DisabledSeedPacketsInSuddenDeath.Count);
-        foreach (var seedType in DisabledSeedPacketsInSuddenDeath)
+        packetWriter.WritePackedInt(DisabledInSuddenDeath.Count);
+        foreach (var seedType in DisabledInSuddenDeath)
         {
             packetWriter.WriteEnum(seedType);
         }
@@ -287,10 +287,10 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         }
 
         int disabledCount = packetReader.ReadPackedInt();
-        DisabledSeedPacketsInSuddenDeath.Clear();
+        DisabledInSuddenDeath.Clear();
         for (int i = 0; i < disabledCount; i++)
         {
-            DisabledSeedPacketsInSuddenDeath.Add(packetReader.ReadEnum<SeedType>());
+            DisabledInSuddenDeath.Add(packetReader.ReadEnum<SeedType>());
         }
 
         CloudyDayArenaConfig.Deserialize(packetReader);
