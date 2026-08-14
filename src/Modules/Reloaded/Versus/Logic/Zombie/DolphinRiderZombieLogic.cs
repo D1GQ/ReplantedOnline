@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 
@@ -9,10 +10,10 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 internal sealed class DolphinRiderZombieLogic : IZombieLogic
 {
     /// <inheritdoc/>
-    public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY)
+    public bool CanBePlacedAt(ArenaType arena, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
         // Only in pool
-        if (gridY is 2 or 3)
+        if (boardUnitY.Grid is 2 or 3)
         {
             return true;
         }
@@ -21,5 +22,5 @@ internal sealed class DolphinRiderZombieLogic : IZombieLogic
     }
 
     /// <inheritdoc/>
-    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY) { }
+    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, BoardUnitX boardUnitX, BoardUnitY boardUnitY) { }
 }

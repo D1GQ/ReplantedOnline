@@ -40,10 +40,10 @@ internal interface IArena
     /// Determines whether the seed type can be placed at the specified grid coordinates in the given arena.
     /// </summary>
     /// <param name="seedType">The seed type being attempted to be placed</param>
-    /// <param name="gridX">The X grid coordinate (column)</param>
-    /// <param name="gridY">The Y grid coordinate (row)</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <returns>True if the seed type can be placed at the specified location; otherwise, false</returns>
-    bool CanBePlacedAt(SeedType seedType, int gridX, int gridY);
+    bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY);
 
     public static CustomRecommentedFlags GetDefaultRecommentedFlags(SeedType seedType, ArenaType arenaType)
     {

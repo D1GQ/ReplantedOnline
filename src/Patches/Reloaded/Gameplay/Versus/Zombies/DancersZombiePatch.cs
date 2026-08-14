@@ -79,10 +79,10 @@ internal static class DancersZombiePatch
                 return false;
             }
 
-            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, thePosX, theRow, false).Zombie;
+            var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, (float)thePosX, theRow, false).Zombie;
             backupDancer.mRelatedZombieID = __instance.DataID;
             backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
-            SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, thePosX, theRow);
+            SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, (float)thePosX, theRow);
             __result = backupDancer.DataID;
 
             return false;

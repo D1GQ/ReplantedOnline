@@ -33,7 +33,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         zombie.mController.gameObject.SetActive(false);
 
         // Spawn bungee zombie
-        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, Net.GridX, Net.GridY, SpawnType.None, false).Zombie;
+        var bungee = SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, Net.BoardUnitX, Net.BoardUnitY, SpawnType.None, false).Zombie;
         bungee.BungeeLiftTarget(); // Make arms close with 
         bungee.mZombieRect = RectUtils.NonInteractableRect; // Make invulnerable
 
@@ -44,7 +44,7 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
         {
             SeedPacketDefinitions.SetBungeeTarget(bungee, false);
             bungee.mZombiePhase = ZombiePhase.BungeeDivingScreaming;
-            bungee.mAltitude = 500 + 100 * Net.GridY;
+            bungee.mAltitude = 500 + 100 * Net.BoardUnitY.Grid;
         }
 
         // Animate descent

@@ -13,6 +13,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -70,12 +71,12 @@ internal sealed class ZombieNetworked : NetworkObject
     /// <summary>
     /// The grid X coordinate where this zombie is located when spawning.
     /// </summary>
-    internal int GridX;
+    internal BoardUnitX BoardUnitX;
 
     /// <summary>
     /// The grid Y coordinate where this zombie is located when spawning.
     /// </summary>
-    internal int GridY;
+    internal BoardUnitY BoardUnitY;
 
     /// <summary>
     /// The current event state the zombie is in.
@@ -477,8 +478,8 @@ internal sealed class ZombieNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteEnum(ZombieType);
             packetWriter.WriteEnum(SpawnType);
-            packetWriter.WriteInt(GridX);
-            packetWriter.WriteInt(GridY);
+            BoardUnitX.Serialize(packetWriter);
+            BoardUnitY.Serialize(packetWriter);
 
             LogicComponent.Serialize(packetWriter, init);
             ClearDirtyBits();
@@ -498,10 +499,10 @@ internal sealed class ZombieNetworked : NetworkObject
             // Read spawn info
             ZombieType = packetReader.ReadEnum<ZombieType>();
             SpawnType = packetReader.ReadEnum<SpawnType>();
-            GridX = packetReader.ReadInt();
-            GridY = packetReader.ReadInt();
+            BoardUnitX = BoardUnitX.Deserialize(packetReader);
+            BoardUnitY = BoardUnitY.Deserialize(packetReader);
 
-            var zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, GridX, GridY, SpawnType, false).Zombie;
+            var zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, BoardUnitX, BoardUnitY, SpawnType, false).Zombie;
             _z.SetTarget(() => zombie?.mController?.m_zombie);
 
             OnInit();

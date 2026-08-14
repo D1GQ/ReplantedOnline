@@ -36,9 +36,14 @@ internal readonly struct CustomSeedType
         internal const SeedType SnorkelSeedType = (SeedType)20000;
 
         /// <summary>
+        /// The base seed type value for the Backup Dancer zombie.
+        /// </summary>
+        internal const SeedType BackupDancerSeedType = (SeedType)30000;
+
+        /// <summary>
         /// The base seed type value for the Yeti zombie.
         /// </summary>
-        internal const SeedType YetiSeedType = (SeedType)30000;
+        internal const SeedType YetiSeedType = (SeedType)40000;
     }
 
     // Custom SeedTypes
@@ -56,6 +61,11 @@ internal readonly struct CustomSeedType
     /// Custom seed type for the Snorkel zombie.
     /// </summary>
     internal static CustomSeedType ZombieSnorkel { get; } = new(ReloadedSeedTypes.SnorkelSeedType, ZombieType.Snorkel, ReanimationType.Snorkel);
+
+    /// <summary>
+    /// Custom seed type for the Backup Dancer zombie.
+    /// </summary>
+    internal static CustomSeedType ZombieBackupDancer { get; } = new(ReloadedSeedTypes.BackupDancerSeedType, ZombieType.BackupDancer, ReanimationType.ZombieBackup);
 
     /// <summary>
     /// Custom seed type for the Yeti zombie.

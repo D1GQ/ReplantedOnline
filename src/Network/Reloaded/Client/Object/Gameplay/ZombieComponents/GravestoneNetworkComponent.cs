@@ -36,8 +36,7 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
 
         if (Net.SpawnType == SpawnType.RiseFromPool)
         {
-            var theX = Instances.GameplayActivity.Board.GridToPixelX(Net.GridX, Net.GridY);
-            Net.Zombie.mPosX = theX - 25;
+            Net.Zombie.mPosX = Net.BoardUnitX.Pos + 5;
             Net.Zombie.PoolSplash(true);
             _whiteWaterEffect = WhiteWaterEffect.Create(Net.Zombie.mController, false);
             _whiteWaterEffect.transform.localPosition = new(15f, -5f, 0f);
@@ -74,7 +73,7 @@ internal sealed class GravestoneNetworkComponent : ZombieNetworkComponent
             zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _dirtlessTexture;
         }
 
-        if (zombie.mBoard.IsPoolSquare(Net.GridX, Net.GridY))
+        if (zombie.mBoard.IsPoolSquare(Net.BoardUnitX.Grid, Net.BoardUnitY.Grid))
         {
             zombie.mController.m_materialEffectController.m_colorMaterial.mainTexture = _poolTexture;
             zombie.mController.m_shadowController.gameObject.SetActive(false);

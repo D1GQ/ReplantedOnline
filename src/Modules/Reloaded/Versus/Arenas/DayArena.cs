@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
@@ -67,5 +68,5 @@ internal class DayArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;
+    public bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY) => true;
 }

@@ -14,6 +14,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 
@@ -61,12 +62,12 @@ internal sealed class PlantNetworked : NetworkObject
     /// <summary>
     /// The grid X coordinate where this plant is located when spawning.
     /// </summary>
-    internal int GridX;
+    internal BoardUnitX BoardUnitX;
 
     /// <summary>
     /// The grid Y coordinate where this plant is located when spawning.
     /// </summary>
-    internal int GridY;
+    internal BoardUnitY BoardUnitY;
 
     /// <summary>
     /// Gets or sets if the the plant is currently dying on the network.
@@ -295,8 +296,8 @@ internal sealed class PlantNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteEnum(SeedType);
             packetWriter.WriteEnum(SpawnType);
-            packetWriter.WriteInt(GridX);
-            packetWriter.WriteInt(GridY);
+            BoardUnitX.Serialize(packetWriter);
+            BoardUnitY.Serialize(packetWriter);
 
             LogicComponent.Serialize(packetWriter, init);
             ClearDirtyBits();
@@ -321,10 +322,10 @@ internal sealed class PlantNetworked : NetworkObject
             // Read spawn info
             SeedType = packetReader.ReadEnum<SeedType>();
             SpawnType = packetReader.ReadEnum<SpawnType>();
-            GridX = packetReader.ReadInt();
-            GridY = packetReader.ReadInt();
+            BoardUnitX = BoardUnitX.Deserialize(packetReader);
+            BoardUnitY = BoardUnitY.Deserialize(packetReader);
 
-            var plant = SeedPacketDefinitions.SpawnPlant(SeedType, GridX, GridY, false).Plant;
+            var plant = SeedPacketDefinitions.SpawnPlant(SeedType, BoardUnitX, BoardUnitY, false).Plant;
             _p.SetTarget(() => plant?.mController?.m_plant);
 
             OnInit();

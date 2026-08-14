@@ -165,9 +165,9 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
+    public bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
-        if (Instances.GameplayActivity.Board.mPlantRow[gridY] == PlantRowType.Pool)
+        if (Instances.GameplayActivity.Board.mPlantRow[boardUnitY.Grid] == PlantRowType.Pool)
         {
             if (seedType is SeedType.Zomboni or SeedType.ZombieCatapult or SeedType.ZombieDigger or
                 SeedType.ZombiePogo or SeedType.ZombiePolevaulter or SeedType.ZombieBalloon or

@@ -8,6 +8,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine.InputSystem;
 
@@ -118,7 +119,7 @@ internal sealed class DebugArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY) => true;
+    public bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY) => true;
 
     private void SetMode()
     {

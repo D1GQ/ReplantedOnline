@@ -48,7 +48,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         {
             foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
             {
-                if (zombie.mRow != Net.GridY) continue;
+                if (zombie.mRow != Net.BoardUnitY.Grid) continue;
                 if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
                 if (zombie.IsDeadOrDying()) continue;
 
@@ -139,7 +139,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
     {
         foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
         {
-            if (zombie.mRow != Net.GridY) continue;
+            if (zombie.mRow != Net.BoardUnitY.Grid) continue;
             if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
             if (zombie.IsDeadOrDying()) continue;
             if (zombie.mVelX <= 0f) continue;

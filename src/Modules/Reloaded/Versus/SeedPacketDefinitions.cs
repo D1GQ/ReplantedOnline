@@ -20,17 +20,18 @@ using Zombie = Il2CppReloaded.Gameplay.Zombie;
 namespace ReplantedOnline.Modules.Reloaded.Versus;
 
 /// <summary>
-/// Handles seed packet definition modifications including versus costs and other properties.
+/// Handles seed packet definition modifications including versus costs, refresh times,
+/// and spawning logic for both plants and zombies in versus mode.
 /// </summary>
 internal static class SeedPacketDefinitions
 {
     /// <summary>
-    /// The SeedType used to hide seed.
+    /// Gets the <see cref="SeedType"/> used as a placeholder for hidden seed packets.
     /// </summary>
     internal readonly static SeedType RandomHiddenSeed = SeedType.SlotMachineDiamond;
 
     /// <summary>
-    /// Collection of seed types that are not real seeds.
+    /// Gets a collection of seed types that are not considered valid or real seeds.
     /// </summary>
     internal readonly static SeedType[] NoneSeedTypes = [
         SeedType.NumSeedsInChooser,
@@ -40,7 +41,7 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
-    /// Collection of seed types that are disabled and cannot be used in gameplay.
+    /// Gets a collection of seed types that are disabled and cannot be used in gameplay.
     /// </summary>
     internal readonly static SeedType[] HideInChooserSeedTypes = [
         // Plants
@@ -48,7 +49,7 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
-    /// Collection of seed types that ignore the initial cooldown period and are available immediately.
+    /// Gets a collection of seed types that ignore the initial cooldown period and are available immediately when the match starts.
     /// </summary>
     internal readonly static SeedType[] IgnoreInitialCooldownSeedTypes = [
         // Plants
@@ -73,7 +74,7 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
-    /// Collection of seed types that produce currency, sun or brains.
+    /// Gets a collection of seed types that produce currency (sun for plants or brains for zombies).
     /// </summary>
     internal readonly static SeedType[] CurrencyProducingSeedTypes = [
         // Plants
@@ -85,22 +86,22 @@ internal static class SeedPacketDefinitions
     ];
 
     /// <summary>
-    /// Collection of seed types that sleep by default.
+    /// Gets a collection of seed types that are asleep by default and require waking.
     /// </summary>
     internal readonly static SeedType[] SleepingPlants = [.. Enum.GetValues<SeedType>().Where(Plant.IsNocturnal)];
 
     /// <summary>
-    /// A lookup of the original plant definitions containing base values for cost, refresh time, and sudden death refresh time.
+    /// Gets a lookup of base plant definitions containing original values for cost, refresh time, and sudden death refresh time.
     /// </summary>
     internal static readonly Dictionary<SeedType, (int Cost, int RefreshTime, int SuddenDeathRefreshTime)> BasePlantDefinitions = [];
 
     /// <summary>
-    /// A lookup of the original zombie definitions containing base values for body health, armor health, and easter egg chance.
+    /// Gets a lookup of base zombie definitions containing original values for body health, armor health, and easter egg chance.
     /// </summary>
     internal static readonly Dictionary<ZombieType, (int BodyHealth, int ArmorHealth, float EasterEggChance100)> BaseZombieDefinitions = [];
 
     /// <summary>
-    /// Initializes plant definitions and applies custom modifications.
+    /// Initializes plant and zombie definitions and applies custom modifications for versus mode.
     /// </summary>
     internal static void Initialize()
     {
@@ -135,9 +136,9 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
-    /// Updates plant and zombie definitions from the loaded configuration data.
+    /// Updates plant and zombie definitions from the loaded configuration data for the current arena.
     /// </summary>
-    /// <param name="arenaType">The current arena type used to determine if nocturnal cost surplus should be applied.</param>
+    /// <param name="arenaType">The current arena type, used to determine if nocturnal cost surplus should be applied.</param>
     internal static void UpdateDefinitionsFromConfigs(ArenaType arenaType = ArenaType.Day)
     {
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
@@ -166,7 +167,7 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
-    /// Resets all plant and zombie definitions back to their base values.
+    /// Resets all plant and zombie definitions back to their base (original) values.
     /// </summary>
     internal static void ResetDefinitions()
     {
@@ -195,7 +196,7 @@ internal static class SeedPacketDefinitions
     /// Sets the versus properties of a plant definition based on its base properties.
     /// </summary>
     /// <param name="seedType">The type of seed to set properties for.</param>
-    /// <param name="baseRefreshTimeX">Multiplier for the base refresh time.</param>
+    /// <param name="baseRefreshTimeX">Multiplier for the base refresh time. Default is 1.0f.</param>
     /// <returns>The updated plant definition.</returns>
     private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType, float baseRefreshTimeX = 1f)
     {
@@ -211,11 +212,11 @@ internal static class SeedPacketDefinitions
     /// Places a seed on the board, handling both plant and zombie seeds appropriately.
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this object.</param>
-    /// <returns>The spawned ReloadedObject (either Plant or Zombie).</returns>
-    internal static ReloadedObject PlaceSeed(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
+    /// <returns>The spawned <see cref="ReloadedObject"/> (either Plant or Zombie).</returns>
+    internal static ReloadedObject PlaceSeed(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY, bool spawnOnNetwork)
     {
         // Check if this is a zombie seed (from I, Zombie mode)
         // Zombie seeds have special handling since they spawn zombies instead of plants
@@ -226,12 +227,12 @@ internal static class SeedPacketDefinitions
             var type = Challenge.IZombieSeedTypeToZombieType(seedType);
 
             // Delegate to zombie spawning logic
-            return SpawnZombie(type, gridX, gridY, spawnOnNetwork).Zombie;
+            return SpawnZombie(type, boardUnitX, boardUnitY, spawnOnNetwork).Zombie;
         }
         else
         {
             // This is a regular plant seed - delegate to plant spawning logic
-            return SpawnPlant(seedType, gridX, gridY, spawnOnNetwork).Plant;
+            return SpawnPlant(seedType, boardUnitX, boardUnitY, spawnOnNetwork).Plant;
         }
     }
 
@@ -239,28 +240,28 @@ internal static class SeedPacketDefinitions
     /// Spawns a plant at the specified grid coordinates.
     /// </summary>
     /// <param name="seedType">The type of seed to spawn as a plant.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
-    /// <returns>The spawned Plant objects.</returns>
-    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
+    /// <returns>A tuple containing the spawned <see cref="Plant"/> and optional <see cref="PlantNetworked"/> controller.</returns>
+    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY, bool spawnOnNetwork)
     {
-        return SpawnPlant(seedType, gridX, gridY, SpawnType.None, spawnOnNetwork);
+        return SpawnPlant(seedType, boardUnitX, boardUnitY, SpawnType.None, spawnOnNetwork);
     }
 
     /// <summary>
-    /// Spawns a plant at the specified grid coordinates.
+    /// Spawns a plant at the specified grid coordinates with a specific spawn type.
     /// </summary>
     /// <param name="seedType">The type of seed to spawn as a plant.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <param name="spawnType">The type of spawning to use.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
-    /// <returns>The spawned Plant objects.</returns>
-    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    /// <returns>A tuple containing the spawned <see cref="Plant"/> and optional <see cref="PlantNetworked"/> controller.</returns>
+    internal static (Plant Plant, PlantNetworked? PlantNetworked) SpawnPlant(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY, SpawnType spawnType, bool spawnOnNetwork)
     {
         // Create the actual plant object in the game world using the original game method
-        var plant = Instances.GameplayActivity.Board.AddPlant(gridX, gridY, seedType, SeedType.None);
+        var plant = Instances.GameplayActivity.Board.AddPlant(boardUnitX.Grid, boardUnitY.Grid, seedType, SeedType.None);
 
         // Update position visually in countdown
         plant.UpdateInternal();
@@ -271,12 +272,12 @@ internal static class SeedPacketDefinitions
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this plant across all clients
-            plantNetworked = SpawnPlantOnNetwork(plant, gridX, gridY, spawnType);
+            plantNetworked = SpawnPlantOnNetwork(plant, boardUnitX, boardUnitY, spawnType);
         }
 
         Instances.GameplayActivity.Board.m_plants.NewArrayItem(plant, plant.DataID);
 
-        ICharacterLogic.OnPlantPlanted(plant, gridX, gridY);
+        ICharacterLogic.OnPlantPlanted(plant, boardUnitX, boardUnitY);
 
         return (plant, plantNetworked);
     }
@@ -285,75 +286,67 @@ internal static class SeedPacketDefinitions
     /// Creates a networked controller for an existing plant to enable network synchronization.
     /// </summary>
     /// <param name="plant">The plant to create a network controller for.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
-    /// <returns>The spawned PlantNetworked controller object.</returns>
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, Action<PlantNetworked>? callback = null)
+    /// <returns>The spawned <see cref="PlantNetworked"/> controller object.</returns>
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, BoardUnitX boardUnitX, BoardUnitY boardUnitY, Action<PlantNetworked>? callback = null)
     {
-        return SpawnPlantOnNetwork(plant, gridX, gridY, SpawnType.None, callback);
+        return SpawnPlantOnNetwork(plant, boardUnitX, boardUnitY, SpawnType.None, callback);
     }
 
     /// <summary>
     /// Creates a networked controller for an existing plant to enable network synchronization.
     /// </summary>
     /// <param name="plant">The plant to create a network controller for.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <param name="spawnType">The type of spawning used for this plant.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
-    /// <returns>The spawned PlantNetworked controller object.</returns>
-    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, int gridX, int gridY, SpawnType spawnType, Action<PlantNetworked>? callback = null)
+    /// <returns>The spawned <see cref="PlantNetworked"/> controller object.</returns>
+    internal static PlantNetworked SpawnPlantOnNetwork(Plant plant, BoardUnitX boardUnitX, BoardUnitY boardUnitY, SpawnType spawnType, Action<PlantNetworked>? callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<PlantNetworked>(net =>
         {
             net._p.SetTarget(() => plant?.mController?.m_plant);
             net.SeedType = plant.mSeedType;
             net.SpawnType = spawnType;
-            net.GridX = gridX;
-            net.GridY = gridY;
+            net.BoardUnitX = boardUnitX;
+            net.BoardUnitY = boardUnitY;
             callback?.Invoke(net);
         }, VersusState.PlantClientId);
         return networkObj!;
     }
 
     /// <summary>
-    /// Spawns a zombie at the specified grid coordinates with optional rising animation.
+    /// Spawns a zombie at the specified grid coordinates.
     /// </summary>
     /// <param name="zombieType">The type of zombie to spawn.</param>
-    /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
-    /// <param name="gridY">The Y grid coordinate (row) or target row for Bungee zombies.</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
-    /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
-    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, bool spawnOnNetwork)
+    /// <returns>A tuple containing the spawned <see cref="Zombie"/> and optional <see cref="ZombieNetworked"/> controller.</returns>
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, BoardUnitX boardUnitX, BoardUnitY boardUnitY, bool spawnOnNetwork)
     {
-        int truegridX = gridX;
-        if (zombieType == ZombieType.BackupDancer)
-        {
-            truegridX = PvZRUtils.ReloadedObjectXToGridX(gridX);
-        }
-
-        return SpawnZombie(zombieType, gridX, gridY, GetZombieSpawnType(zombieType, truegridX, gridY), spawnOnNetwork);
+        return SpawnZombie(zombieType, boardUnitX, boardUnitY, GetZombieSpawnType(zombieType, boardUnitX, boardUnitY), spawnOnNetwork);
     }
 
     /// <summary>
-    /// Spawns a zombie at the specified grid coordinates with optional rising animation.
+    /// Spawns a zombie at the specified grid coordinates with a specific spawn type.
     /// </summary>
     /// <param name="zombieType">The type of zombie to spawn.</param>
-    /// <param name="gridX">The X grid coordinate (column) or target column for Bungee zombies.</param>
-    /// <param name="gridY">The Y grid coordinate (row) or target row for Bungee zombies.</param>
-    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <param name="spawnType">The type of spawning to use.</param>
     /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
-    /// <returns>The spawned Zombie objects, or null if spawning was prevented.</returns>
-    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, int gridX, int gridY, SpawnType spawnType, bool spawnOnNetwork)
+    /// <returns>A tuple containing the spawned <see cref="Zombie"/> and optional <see cref="ZombieNetworked"/> controller.</returns>
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) SpawnZombie(ZombieType zombieType, BoardUnitX boardUnitX, BoardUnitY boardUnitY, SpawnType spawnType, bool spawnOnNetwork)
     {
         // Add zombie to the board at the specified position
         bool spawnInBack = spawnType is SpawnType.Background or SpawnType.BackgroundAndShakeBushes || zombieType == ZombieType.BackupDancer;
-        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnInBack ? 9 : gridX, gridY);
+        var zombie = Instances.GameplayActivity.Board.AddZombieAtCell(zombieType, spawnInBack ? 9 : boardUnitX.Grid, boardUnitY.Grid);
 
         bool canRise = !VersusState.IsInPreCountDown;
-        var theX = Instances.GameplayActivity.Board.GridToPixelX(gridX, gridY);
-        var theY = Instances.GameplayActivity.Board.GridToPixelY(gridX, gridY);
 
         if (spawnType == SpawnType.RiseFromGround)
         {
@@ -368,18 +361,14 @@ internal static class SeedPacketDefinitions
             {
                 case ZombieType.Gravestone:
                     if (canRise)
-                        Instances.GameplayActivity.AddTodParticle(theX + 25, theY + 75, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
+                        Instances.GameplayActivity.AddTodParticle(boardUnitX.Pos + 40, boardUnitY.Pos + 115, zombie.RenderOrder - 5, ParticleEffect.GraveStoneRise);
                     else
                         zombie.mPhaseCounter = 0;
-                    zombie.mPosX = theX - 25;
-                    break;
-                case ZombieType.BackupDancer:
-                    if (canRise) Instances.GameplayActivity.AddTodParticle(gridX + 55, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
-                    zombie.mPosX = gridX;
+                    zombie.mPosX = boardUnitX.Pos;
                     break;
                 default:
-                    if (canRise) Instances.GameplayActivity.AddTodParticle(theX + 35, theY + 75, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
-                    zombie.mPosX = theX - 25;
+                    if (canRise) Instances.GameplayActivity.AddTodParticle(boardUnitX.Pos + 60, boardUnitY.Pos + 115, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    zombie.mPosX = boardUnitX.Pos;
                     break;
             }
         }
@@ -393,59 +382,39 @@ internal static class SeedPacketDefinitions
                 case ZombieType.Gravestone:
                     // Handled in GravestoneNetworkComponent.cs
                     break;
-                case ZombieType.BackupDancer:
-                    zombie.mPosX = gridX;
-                    break;
                 default:
-                    zombie.mPosX = theX - 25;
+                    zombie.mPosX = boardUnitX.Pos;
                     break;
             }
         }
         else if (spawnType is SpawnType.BungeeDropZombie or SpawnType.BungeeDropZombieNoTarget)
         {
-            switch (zombieType)
-            {
-                case ZombieType.BackupDancer:
-                    zombie.mPosX = gridX;
-                    break;
-                default:
-                    zombie.mPosX = theX - 25;
-                    break;
-            }
+            zombie.mPosX = boardUnitX.Pos;
         }
         else if (spawnType == SpawnType.FallFromSky)
         {
-            Animations.PlayFallFromSky(zombie, gridY);
-
-            switch (zombieType)
-            {
-                case ZombieType.BackupDancer:
-                    zombie.mPosX = gridX;
-                    break;
-                default:
-                    zombie.mPosX = theX - 25;
-                    break;
-            }
+            Animations.PlayFallFromSky(zombie, boardUnitY.Grid);
+            zombie.mPosX = boardUnitX.Pos;
         }
         else if (spawnType == SpawnType.BackgroundAndShakeBushes)
         {
-            Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(gridY);
+            Instances.GameplayActivity.BackgroundController.ZombieSpawnedInRow(boardUnitY.Grid);
         }
 
         // Set Gravestone grid pos
         if (zombieType == ZombieType.Gravestone)
         {
             Instances.GameplayActivity.Board.m_vsGravestones.Add(zombie);
-            zombie.mGraveX = gridX;
-            zombie.mGraveY = gridY;
+            zombie.mGraveX = boardUnitX.Grid;
+            zombie.mGraveY = boardUnitY.Grid;
         }
 
         // Set Bungee grid target
         if (zombieType == ZombieType.Bungee)
         {
             SetBungeeTarget(zombie, true);
-            zombie.mTargetCol = gridX;
-            zombie.mTargetRow = gridY;
+            zombie.mTargetCol = boardUnitX.Grid;
+            zombie.mTargetRow = boardUnitY.Grid;
         }
 
         // Update position visually in countdown
@@ -456,12 +425,12 @@ internal static class SeedPacketDefinitions
         if (spawnOnNetwork)
         {
             // Spawn a networked controller that will sync this zombie across all clients
-            zombieNetworked = SpawnZombieOnNetwork(zombie, gridX, gridY, spawnType);
+            zombieNetworked = SpawnZombieOnNetwork(zombie, boardUnitX, boardUnitY, spawnType);
         }
 
         Instances.GameplayActivity.Board.m_zombies.NewArrayItem(zombie, zombie.DataID);
 
-        ICharacterLogic.OnZombiePlanted(zombie, gridX, gridY);
+        ICharacterLogic.OnZombiePlanted(zombie, boardUnitX, boardUnitY);
 
         return (zombie, zombieNetworked);
     }
@@ -470,60 +439,53 @@ internal static class SeedPacketDefinitions
     /// Creates a networked controller for an existing zombie to enable network synchronization.
     /// </summary>
     /// <param name="zombie">The zombie to create a network controller for.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
-    /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, Action<ZombieNetworked>? callback = null)
+    /// <returns>The spawned <see cref="ZombieNetworked"/> controller object.</returns>
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, BoardUnitX boardUnitX, BoardUnitY boardUnitY, Action<ZombieNetworked>? callback = null)
     {
-        return SpawnZombieOnNetwork(zombie, gridX, gridY, GetZombieSpawnType(zombie.mZombieType, gridX, gridY), callback);
+        return SpawnZombieOnNetwork(zombie, boardUnitX, boardUnitY, GetZombieSpawnType(zombie.mZombieType, boardUnitX, boardUnitY), callback);
     }
 
     /// <summary>
     /// Creates a networked controller for an existing zombie to enable network synchronization.
     /// </summary>
     /// <param name="zombie">The zombie to create a network controller for.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <param name="spawnType">The type of spawning.</param>
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <param name="spawnType">The type of spawning used for this zombie.</param>
     /// <param name="callback">Optional callback to configure the object before spawning.</param>
-    /// <returns>The spawned ZombieNetworked controller object.</returns>
-    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, int gridX, int gridY, SpawnType spawnType, Action<ZombieNetworked>? callback = null)
+    /// <returns>The spawned <see cref="ZombieNetworked"/> controller object.</returns>
+    internal static ZombieNetworked SpawnZombieOnNetwork(Zombie zombie, BoardUnitX boardUnitX, BoardUnitY boardUnitY, SpawnType spawnType, Action<ZombieNetworked>? callback = null)
     {
         var networkObj = NetworkObject.SpawnNew<ZombieNetworked>(net =>
         {
             net._z.SetTarget(() => zombie?.mController?.m_zombie);
             net.ZombieType = zombie.mZombieType;
             net.SpawnType = spawnType;
-            net.GridX = gridX;
-            net.GridY = gridY;
+            net.BoardUnitX = boardUnitX;
+            net.BoardUnitY = boardUnitY;
             callback?.Invoke(net);
         }, VersusState.PlantClientId);
         return networkObj!;
     }
 
     /// <summary>
-    /// Determines the appropriate spawn type for a given zombie type based on its characteristics.
+    /// Determines the appropriate spawn type for a given zombie type based on its characteristics and current arena.
     /// </summary>
     /// <param name="zombieType">The type of zombie to evaluate.</param>
-    /// <param name="gridX">The X grid coordinate.</param>
-    /// <param name="gridY">The Y grid coordinate.</param>
-    /// <returns>
-    /// The spawn type for the zombie:
-    /// </returns>
-    internal static SpawnType GetZombieSpawnType(ZombieType zombieType, int gridX, int gridY)
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <returns>The appropriate <see cref="SpawnType"/> for the zombie.</returns>
+    internal static SpawnType GetZombieSpawnType(ZombieType zombieType, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
-        if (zombieType is ZombieType.BackupDancer)
-        {
-            gridX = PvZRUtils.ReloadedObjectXToGridX(gridX);
-        }
-
         if (zombieType is ZombieType.Target or ZombieType.Bungee)
         {
             return SpawnType.None;
         }
 
-        if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
+        if (zombieType is ZombieType.Gravestone or ZombieType.Digger && Instances.GameplayActivity.Board.mPlantRow[boardUnitY.Grid] != PlantRowType.Pool)
         {
             if (zombieType == ZombieType.Gravestone && VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China)
             {
@@ -537,9 +499,9 @@ internal static class SeedPacketDefinitions
         var isForceXPos = ZombieSpawnsInBack(zombieType);
         if (isDefault && !isForceXPos)
         {
-            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && gridX < 9)
+            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && boardUnitX.Grid < 9)
             {
-                if (Instances.GameplayActivity.Board.IsPoolSquare(gridX, gridY))
+                if (Instances.GameplayActivity.Board.IsPoolSquare(boardUnitX.Grid, boardUnitY.Grid))
                 {
                     return SpawnType.RiseFromPool;
                 }
@@ -554,25 +516,51 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
+    /// Spawns a plant at the specified grid coordinates for debug purposes.
+    /// </summary>
+    /// <param name="seedType">The type of seed to spawn as a plant.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="spawnOnNetwork">Whether to create network synchronization for this plant.</param>
+    /// <returns>A tuple containing the spawned <see cref="Plant"/> and optional <see cref="PlantNetworked"/> controller.</returns>
+    internal static (Plant Plant, PlantNetworked? PlantNetworked) DebugSpawnPlant(SeedType seedType, int gridX, int gridY, bool spawnOnNetwork)
+    {
+        return SpawnPlant(seedType, gridX, gridY, SpawnType.None, spawnOnNetwork);
+    }
+
+    /// <summary>
+    /// Spawns a zombie at the specified grid coordinates for debug purposes.
+    /// </summary>
+    /// <param name="zombieType">The type of zombie to spawn.</param>
+    /// <param name="gridX">The X grid coordinate (column).</param>
+    /// <param name="gridY">The Y grid coordinate (row).</param>
+    /// <param name="spawnOnNetwork">Whether to create network synchronization for this zombie.</param>
+    /// <returns>A tuple containing the spawned <see cref="Zombie"/> and optional <see cref="ZombieNetworked"/> controller.</returns>
+    internal static (Zombie Zombie, ZombieNetworked? ZombieNetworked) DebugSpawnZombie(ZombieType zombieType, int gridX, BoardUnitY gridY, bool spawnOnNetwork)
+    {
+        return SpawnZombie(zombieType, gridX, gridY, GetZombieSpawnType(zombieType, gridX, gridY), spawnOnNetwork);
+    }
+
+    /// <summary>
     /// Determines if a seed can be placed at the specified grid coordinates.
     /// </summary>
     /// <param name="seedType">The type of seed to place.</param>
-    /// <param name="gridX">The X grid coordinate (column).</param>
-    /// <param name="gridY">The Y grid coordinate (row).</param>
-    /// <returns>True if the seed can be placed at the specified location, false otherwise.</returns>
-    internal static bool CanPlace(SeedType seedType, int gridX, int gridY)
+    /// <param name="boardUnitX">The board unit for the X axis.</param>
+    /// <param name="boardUnitY">The board unit for the Y axis.</param>
+    /// <returns><see langword="true"/> if the seed can be placed at the specified location; otherwise, <see langword="false"/>.</returns>
+    internal static bool CanPlace(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
         if (VersusState.VersusPhase is not (VersusPhase.Gameplay or VersusPhase.SuddenDeath))
         {
             return false;
         }
 
-        if (!ICharacterLogic.CanBePlacedAt(seedType, VersusState.ArenaSynced, gridX, gridY))
+        if (!ICharacterLogic.CanBePlacedAt(seedType, VersusState.ArenaSynced, boardUnitX, boardUnitY))
         {
             return false;
         }
 
-        if (IArena.GetCurrentArena()?.CanBePlacedAt(seedType, gridX, gridY) == false)
+        if (IArena.GetCurrentArena()?.CanBePlacedAt(seedType, boardUnitX, boardUnitY) == false)
         {
             return false;
         }
@@ -584,7 +572,7 @@ internal static class SeedPacketDefinitions
     /// Determines whether a zombie type should rise from the ground when spawned.
     /// </summary>
     /// <param name="zombieType">The type of zombie to check.</param>
-    /// <returns>True if the zombie should rise from the ground; false if it should spawn normally.</returns>
+    /// <returns><see langword="true"/> if the zombie should rise from the ground; otherwise, <see langword="false"/>.</returns>
     internal static bool ZombieRisesFromGround(ZombieType zombieType)
     {
         if (zombieType is ZombieType.Bungee or ZombieType.Target or ZombieType.Bobsled or ZombieType.DolphinRider or ZombieType.Snorkel)
@@ -601,10 +589,10 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
-    /// Determines whether a zombie type should spawn at the back of the lawn
+    /// Determines whether a zombie type should spawn at the back of the lawn.
     /// </summary>
     /// <param name="zombieType">The type of zombie to check.</param>
-    /// <returns>True if the zombie should spawn at the back of the lawn; false otherwise.</returns>
+    /// <returns><see langword="true"/> if the zombie should spawn at the back of the lawn; otherwise, <see langword="false"/>.</returns>
     internal static bool ZombieSpawnsInBack(ZombieType zombieType)
     {
         if (zombieType is ZombieType.Bobsled or ZombieType.Balloon or ZombieType.DolphinRider or ZombieType.Snorkel or ZombieType.Yeti)
@@ -621,9 +609,9 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
-    /// Sets up Bungee rendering.
+    /// Sets up Bungee rendering order based on the current arena.
     /// </summary>
-    /// <param name="bungee">The Bungee zombie.</param>
+    /// <param name="bungee">The Bungee zombie to configure.</param>
     internal static void SetBungeeRenderOrder(Zombie bungee)
     {
         if (bungee.mZombieType != ZombieType.Bungee)
@@ -639,10 +627,10 @@ internal static class SeedPacketDefinitions
     }
 
     /// <summary>
-    /// Sets the Bungees target SpriteRender active.
+    /// Sets the Bungee's target SpriteRender active state.
     /// </summary>
-    /// <param name="bungee">The Bungee zombie.</param>
-    /// <param name="active">If it should be visible.</param>
+    /// <param name="bungee">The Bungee zombie to configure.</param>
+    /// <param name="active"><see langword="true"/> to show the target; <see langword="false"/> to hide it.</param>
     internal static void SetBungeeTarget(Zombie bungee, bool active)
     {
         if (bungee.mZombieType != ZombieType.Bungee)

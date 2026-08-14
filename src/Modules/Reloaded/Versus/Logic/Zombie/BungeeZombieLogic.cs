@@ -2,6 +2,7 @@
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
+using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 
@@ -9,10 +10,10 @@ namespace ReplantedOnline.Modules.Reloaded.Versus.Logic.Zombie;
 internal sealed class BungeeZombieLogic : IZombieLogic
 {
     /// <inheritdoc/>
-    public bool CanBePlacedAt(ArenaType arena, int gridX, int gridY) => true;
+    public bool CanBePlacedAt(ArenaType arena, BoardUnitX boardUnitX, BoardUnitY boardUnitY) => true;
 
     /// <inheritdoc/>
-    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, int gridX, int gridY)
+    public void OnPlanted(Il2CppReloaded.Gameplay.Zombie zombie, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
         zombie.mRenderOrder -= 400;
     }

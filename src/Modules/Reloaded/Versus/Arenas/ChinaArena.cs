@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -142,11 +143,11 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public bool CanBePlacedAt(SeedType seedType, int gridX, int gridY)
+    public bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY)
     {
         if (!Challenge.IsZombieSeedType(seedType) && seedType != SeedType.Flowerpot)
         {
-            if (Instances.GameplayActivity.Board.GetFlowerPotAt(gridX, gridY) == null)
+            if (Instances.GameplayActivity.Board.GetFlowerPotAt(boardUnitX.Grid, boardUnitY.Grid) == null)
             {
                 return false;
             }

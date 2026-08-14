@@ -40,7 +40,7 @@ internal static class PvZRUtils
     /// </returns>
     internal static int ReloadedObjectXToGridX(float X)
     {
-        return (int)((X - 40) / 80f);
+        return (int)(X / 75f);
     }
 
     /// <summary>
@@ -52,31 +52,31 @@ internal static class PvZRUtils
     /// </returns>
     internal static int ReloadedObjectYToGridY(float Y)
     {
-        return (int)(Y / 80f) - 1;
+        return (int)(Y / 100f);
     }
 
     /// <summary>
-    /// Converts a ReloadedObject X position to a normalized grid position.
+    /// Converts a grid X index back to a ReloadedObject X coordinate.
     /// </summary>
-    /// <param name="X">The ReloadedObject X coordinate to convert.</param>
+    /// <param name="gridX">The grid X index to convert.</param>
     /// <returns>
-    /// The normalized grid position as a float.
+    /// The ReloadedObject X coordinate.
     /// </returns>
-    internal static float ReloadedObjectXToGridXNormalized(float X)
+    internal static float GridXToReloadedObjectX(int gridX)
     {
-        return (X - 40) / 80f;
+        return (gridX * 75f) + 52f;
     }
 
     /// <summary>
-    /// Converts a ReloadedObject Y position to a normalized grid position.
+    /// Converts a grid Y index back to a ReloadedObject Y coordinate.
     /// </summary>
-    /// <param name="Y">The ReloadedObject Y coordinate to convert.</param>
+    /// <param name="gridY">The grid Y index to convert.</param>
     /// <returns>
-    /// The normalized grid position as a float.
+    /// The ReloadedObject Y coordinate.
     /// </returns>
-    internal static float ReloadedObjectYToGridYNormalized(float Y)
+    internal static float GridYToReloadedObjectY(int gridY)
     {
-        return (Y / 80f) - 1f;
+        return (gridY * 100f) + 50f;
     }
 
     /// <summary>
