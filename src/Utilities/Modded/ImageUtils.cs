@@ -176,15 +176,12 @@ internal static class ImageUtils
     {
         try
         {
-            Texture2D texture = new(1, 1, TextureFormat.ARGB32, false);
-            using (var ms = new MemoryStream())
-            {
-                if (!texture.LoadImage(bytes, false))
-                    return null;
-            }
+            Texture2D texture = new(1, 1, TextureFormat.ARGB32, true);
+            if (!texture.LoadImage(bytes, false))
+                return null;
 
-            texture.Apply(true);
             texture.filterMode = FilterMode.Trilinear;
+            texture.Apply(true, true);
 
             return texture;
         }
