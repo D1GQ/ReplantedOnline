@@ -131,13 +131,10 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         OnUpdate(zombie);
 
-        if (!_hasPicked && Net.AmOwner)
+        if (zombie.mZombiePhase != ZombiePhase.RisingFromGrave)
         {
-            if (zombie.mZombiePhase != ZombiePhase.RisingFromGrave)
-            {
-                _hasPicked = true;
-                PickRandomSpeed(zombie);
-            }
+            _hasPicked = true;
+            PickRandomSpeed(zombie);
         }
 
         if (!_pickingSpeed)

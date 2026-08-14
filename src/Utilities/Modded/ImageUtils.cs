@@ -183,6 +183,9 @@ internal static class ImageUtils
                     return null;
             }
 
+            texture.Apply(true);
+            texture.filterMode = FilterMode.Trilinear;
+
             return texture;
         }
         catch (Exception ex)
