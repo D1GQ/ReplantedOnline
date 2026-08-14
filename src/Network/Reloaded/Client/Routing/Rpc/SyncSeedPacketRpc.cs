@@ -37,7 +37,7 @@ internal sealed class SyncSeedPacketRpc : IRpcMessage<SeedType>
 
         if (seedPacket != null)
         {
-            if (seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeed)
+            if (seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeedType)
             {
                 seedPacket.PacketType = seedType;
             }

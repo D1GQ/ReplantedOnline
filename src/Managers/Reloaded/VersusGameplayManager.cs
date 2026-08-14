@@ -57,7 +57,9 @@ internal static class VersusGameplayManager
 
         foreach (var seedPacket in allSeedPackets)
         {
-            if (SeedPacketDefinitions.IgnoreInitialCooldownSeedTypes.Contains(seedPacket.mPacketType)) continue;
+            if (GetVersusModeConfig().IgnoreInitialCooldown.Contains(seedPacket.mPacketType)
+                || seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeedType)
+                continue;
 
             seedPacket.Deactivate();
             var time = Instances.IDataService.GetPlantDefinition(seedPacket.mPacketType)?.m_versusBaseRefreshTime ?? 0;

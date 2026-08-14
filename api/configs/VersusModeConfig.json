@@ -6,6 +6,20 @@
   "plantProductionRate": 14,
   "zombieProductionRate": 34,
   "plantShooterLaunchRateSurplus": 25,
+  "ignoreInitialCooldown": [
+    "Sunflower",
+    "Peashooter",
+    "Potatomine",
+    "Wallnut",
+    "Tallnut",
+    "Puffshroom",
+    "Cabbagepult",
+    "Kernelpult",
+    "Sunshroom",
+    "ZombieGravestone",
+    "ZombieNormal",
+    "ZombieTrashCan"
+  ],
   "disabledSeedPacketsInSuddenDeath": [
     "Sunflower",
     "Sunshroom",

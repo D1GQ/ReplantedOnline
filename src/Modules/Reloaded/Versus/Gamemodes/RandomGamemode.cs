@@ -80,7 +80,7 @@ internal sealed class RandomGamemode : IVersusGamemode
         {
             SeedPacket seedPacket = Instances.GameplayActivity.Board.SeedBanks.OpponentItem().SeedPackets[i];
             seedPacket.mActive = false;
-            seedPacket.PacketType = SeedPacketDefinitions.RandomHiddenSeed;
+            seedPacket.PacketType = SeedPacketDefinitions.RandomHiddenSeedType;
         }
     }
 

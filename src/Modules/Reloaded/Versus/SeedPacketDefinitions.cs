@@ -28,7 +28,7 @@ internal static class SeedPacketDefinitions
     /// <summary>
     /// Gets the <see cref="SeedType"/> used as a placeholder for hidden seed packets.
     /// </summary>
-    internal static readonly SeedType RandomHiddenSeed = SeedType.SlotMachineDiamond;
+    internal static readonly SeedType RandomHiddenSeedType = SeedType.SlotMachineDiamond;
 
     /// <summary>
     /// Gets a collection of seed types that are not considered valid or real seeds.
@@ -46,31 +46,6 @@ internal static class SeedPacketDefinitions
     internal static readonly SeedType[] HideInChooserSeedTypes = [
         // Plants
         SeedType.Marigold
-    ];
-
-    /// <summary>
-    /// Gets a collection of seed types that ignore the initial cooldown period and are available immediately when the match starts.
-    /// </summary>
-    internal static readonly SeedType[] IgnoreInitialCooldownSeedTypes = [
-        // Plants
-        SeedType.Sunflower,
-        SeedType.Peashooter,
-        SeedType.Potatomine,
-        SeedType.Wallnut,
-        SeedType.Tallnut,
-        SeedType.Puffshroom,
-
-        // Replanted Online
-        SeedType.Cabbagepult,
-        SeedType.Kernelpult,
-        SeedType.Sunshroom,
-
-        // Zombies
-        SeedType.ZombieGravestone,
-        SeedType.ZombieNormal,
-        SeedType.ZombieTrashCan,
-
-        RandomHiddenSeed
     ];
 
     /// <summary>
@@ -114,7 +89,7 @@ internal static class SeedPacketDefinitions
     internal static void Initialize()
     {
         // Replace seed packet icon for hidden seed packet
-        var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeed);
+        var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeedType);
         var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
         IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
         slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon.Asset, ReloadedLobby.AmInLobby);

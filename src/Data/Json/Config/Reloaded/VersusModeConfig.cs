@@ -55,6 +55,12 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
     public int PlantShooterLaunchRateSurplus { get; set; }
 
     /// <summary>
+    /// Gets a collection of seed types that ignore the initial cooldown period and are available immediately when the match starts.
+    /// </summary>
+    [JsonConverter(typeof(JsonSeedTypeListConverter))]
+    public List<SeedType> IgnoreInitialCooldown { get; set; } = [];
+
+    /// <summary>
     /// Gets the list of seed packets that are disabled in sudden death.
     /// </summary>
     [JsonConverter(typeof(JsonSeedTypeListConverter))]
@@ -235,6 +241,12 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         packetWriter.WriteInt(ZombieProductionRate);
         packetWriter.WriteInt(PlantShooterLaunchRateSurplus);
 
+        packetWriter.WritePackedInt(IgnoreInitialCooldown.Count);
+        foreach (var seedType in IgnoreInitialCooldown)
+        {
+            packetWriter.WriteEnum(seedType);
+        }
+
         packetWriter.WritePackedInt(DisabledSeedPacketsInSuddenDeath.Count);
         foreach (var seedType in DisabledSeedPacketsInSuddenDeath)
         {
@@ -266,6 +278,13 @@ internal sealed class VersusModeConfig : JsonObject<VersusModeConfig>, INetworkC
         PlantProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
         ZombieProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
         PlantShooterLaunchRateSurplus = packetReader.ReadInt();
+
+        int ignoreCount = packetReader.ReadPackedInt();
+        IgnoreInitialCooldown.Clear();
+        for (int i = 0; i < ignoreCount; i++)
+        {
+            IgnoreInitialCooldown.Add(packetReader.ReadEnum<SeedType>());
+        }
 
         int disabledCount = packetReader.ReadPackedInt();
         DisabledSeedPacketsInSuddenDeath.Clear();
