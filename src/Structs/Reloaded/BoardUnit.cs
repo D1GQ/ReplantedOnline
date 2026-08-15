@@ -1,5 +1,4 @@
-﻿using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Utilities.Modded;
+﻿using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Structs.Reloaded;
 
@@ -97,28 +96,6 @@ internal readonly struct BoardUnitX
 
     /// <inheritdoc/>
     public override string ToString() => $"GridX: {Grid}, PosX: {Pos}";
-
-    /// <summary>
-    /// Serializes the <see cref="BoardUnitX"/> to a packet writer.
-    /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
-    internal void Serialize(PacketWriter packetWriter)
-    {
-        packetWriter.WriteInt(Grid);
-        packetWriter.WriteFloat(Pos);
-    }
-
-    /// <summary>
-    /// Deserializes a <see cref="BoardUnitX"/> from a packet reader.
-    /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>A new <see cref="BoardUnitX"/> instance deserialized from the packet.</returns>
-    internal static BoardUnitX Deserialize(PacketReader packetReader)
-    {
-        var grid = packetReader.ReadInt();
-        var pos = packetReader.ReadFloat();
-        return new BoardUnitX(grid, pos);
-    }
 }
 
 /// <summary>
@@ -215,26 +192,4 @@ internal readonly struct BoardUnitY
 
     /// <inheritdoc/>
     public override string ToString() => $"GridY: {Grid}, PosY: {Pos}";
-
-    /// <summary>
-    /// Serializes the <see cref="BoardUnitY"/> to a packet writer.
-    /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
-    internal void Serialize(PacketWriter packetWriter)
-    {
-        packetWriter.WriteInt(Grid);
-        packetWriter.WriteFloat(Pos);
-    }
-
-    /// <summary>
-    /// Deserializes a <see cref="BoardUnitY"/> from a packet reader.
-    /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
-    /// <returns>A new <see cref="BoardUnitY"/> instance deserialized from the packet.</returns>
-    internal static BoardUnitY Deserialize(PacketReader packetReader)
-    {
-        var grid = packetReader.ReadInt();
-        var pos = packetReader.ReadFloat();
-        return new BoardUnitY(grid, pos);
-    }
 }

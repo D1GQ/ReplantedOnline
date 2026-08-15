@@ -5,6 +5,7 @@ using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 

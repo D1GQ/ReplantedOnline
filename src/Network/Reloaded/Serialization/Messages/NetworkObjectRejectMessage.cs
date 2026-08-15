@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Structs.Network;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 

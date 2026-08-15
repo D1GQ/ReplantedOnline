@@ -478,8 +478,8 @@ internal sealed class ZombieNetworked : NetworkObject
             // Set spawn info
             packetWriter.WriteEnum(ZombieType);
             packetWriter.WriteEnum(SpawnType);
-            BoardUnitX.Serialize(packetWriter);
-            BoardUnitY.Serialize(packetWriter);
+            packetWriter.WriteBoardUnitX(BoardUnitX);
+            packetWriter.WriteBoardUnitY(BoardUnitY);
 
             LogicComponent.Serialize(packetWriter, init);
             ClearDirtyBits();
@@ -499,8 +499,8 @@ internal sealed class ZombieNetworked : NetworkObject
             // Read spawn info
             ZombieType = packetReader.ReadEnum<ZombieType>();
             SpawnType = packetReader.ReadEnum<SpawnType>();
-            BoardUnitX = BoardUnitX.Deserialize(packetReader);
-            BoardUnitY = BoardUnitY.Deserialize(packetReader);
+            BoardUnitX = packetReader.ReadBoardUnitX();
+            BoardUnitY = packetReader.ReadBoardUnitY();
 
             var zombie = SeedPacketDefinitions.SpawnZombie(ZombieType, BoardUnitX, BoardUnitY, SpawnType, false).Zombie;
             _z.SetTarget(() => zombie?.mController?.m_zombie);

@@ -14,6 +14,7 @@ using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.MelonLoader;
+using ReplantedOnline.Utilities.Modded;
 using System.Collections;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;

@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Data.Json.Converters;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Utilities.Modded;
 using System.Text.Json.Serialization;
 
 namespace ReplantedOnline.Data.Json.Config.Reloaded;

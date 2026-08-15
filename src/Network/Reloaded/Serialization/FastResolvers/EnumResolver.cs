@@ -1,5 +1,6 @@
 ﻿using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Interfaces.Network;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.FastResolvers;
 

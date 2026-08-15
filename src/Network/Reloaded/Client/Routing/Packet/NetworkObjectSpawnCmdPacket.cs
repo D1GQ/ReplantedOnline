@@ -8,6 +8,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Network.Reloaded.Serialization.Messages;
 using ReplantedOnline.Utilities.MelonLoader;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 

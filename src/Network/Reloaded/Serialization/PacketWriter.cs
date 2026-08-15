@@ -1,9 +1,5 @@
-﻿using Il2CppSteamworks;
-using ReplantedOnline.Interfaces.Network;
+﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded;
-using ReplantedOnline.Network.Reloaded.Client.Object;
-using ReplantedOnline.Structs.Network;
-using System.Net;
 using System.Text;
 using UnityEngine;
 
@@ -92,84 +88,6 @@ internal sealed class PacketWriter : IPacket
 
         var messageStart = _messageStarts.Pop();
         _data.RemoveRange(messageStart, _data.Count - messageStart);
-    }
-
-    /// <summary>
-    /// Writes an ID to the packet.
-    /// </summary>
-    /// <param name="id">The ID value to write.</param>
-    internal void WriteID(ID id)
-    {
-        if (id == null! || id.IsNull)
-        {
-            WriteByte(0); // None type
-            return;
-        }
-
-        if (id.IsSteamId && id.TryGetSteamId(out SteamId steamId))
-        {
-            WriteByte(1); // SteamId type
-            WriteULong(steamId);
-        }
-        else if (id.IsULong && id.TryGetULong(out ulong ulongValue))
-        {
-            WriteByte(2); // UInt type
-            WriteULong(ulongValue);
-        }
-        else if (id.IsIPEndPoint && id.TryGetIPEndPoint(out IPEndPoint endpoint))
-        {
-            WriteByte(3); // IPEndPoint type
-            WriteString(endpoint.Address.ToString());
-            WriteInt(endpoint.Port);
-        }
-        else
-        {
-            WriteByte(0);
-        }
-    }
-
-    /// <summary>
-    /// Writes an NetworkId to the packet.
-    /// </summary>
-    /// <param name="networkId">The NetworkId value to write.</param>
-    internal void WriteNetworkId(NetworkIdentifier networkId)
-    {
-        WriteUInt(networkId.Id);
-    }
-
-    /// <summary>
-    /// Writes an NetworkObject.
-    /// </summary>
-    internal void WriteNetworkObject(NetworkObject? networkObj)
-    {
-        if (networkObj != null)
-        {
-            WriteUInt(networkObj.NetworkId.Id);
-        }
-        else
-        {
-            WriteUInt(NetworkObject.NULL);
-        }
-    }
-
-    /// <summary>
-    /// Writes a Vector2 to the packet as two consecutive float values (X and Y).
-    /// </summary>
-    /// <param name="value">The Vector2 value to write.</param>
-    internal void WriteVector2(Vector2 value)
-    {
-        _data.AddRange(BitConverter.GetBytes(value.x));
-        _data.AddRange(BitConverter.GetBytes(value.y));
-    }
-
-    /// <summary>
-    /// Writes an enum value to the packet as an integer.
-    /// </summary>
-    /// <typeparam name="T">The enum type to write</typeparam>
-    /// <param name="value">The enum value to write</param>
-    internal void WriteEnum<T>(T value) where T : Enum
-    {
-        WriteInt(Convert.ToInt32(value));
     }
 
     /// <summary>
