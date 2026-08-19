@@ -347,35 +347,32 @@ internal sealed class ZombieNetworked : NetworkObject
         Zombie?.StartMindControlledOriginal();
     }
 
-    internal void SendSetFrozenRpc(bool frozen)
+    internal void SendSetFrozenRpc(bool hitIceTrap)
     {
-        this.StartCoroutine(CoroutineUtils.WaitForCondition(() => !frozen || Zombie?.mChilledCounter > 0, () =>
+        int counter;
+        if (Zombie == null)
         {
-            int counter;
-            if (Zombie == null)
-            {
-                counter = 0;
-            }
-            else if (frozen)
-            {
-                counter = Zombie.mIceTrapCounter;
-            }
-            else
-            {
-                counter = Zombie.mChilledCounter;
-            }
+            counter = 0;
+        }
+        else if (hitIceTrap)
+        {
+            counter = Zombie.mIceTrapCounter;
+        }
+        else
+        {
+            counter = Zombie.mChilledCounter;
+        }
 
-            SendNetworkObjectRpc(ZombieRpcs.SetFrozen, frozen, counter);
-        }));
+        SendNetworkObjectRpc(ZombieRpcs.SetFrozen, hitIceTrap, counter);
     }
 
     [RpcHandler(ZombieRpcs.SetFrozen)]
-    private void HandleSetFrozenRpc(bool frozen, int counter)
+    private void HandleSetFrozenRpc(bool hitIceTrap, int counter)
     {
         if (Zombie == null)
             return;
 
-        if (frozen)
+        if (hitIceTrap)
         {
             Zombie.HitIceTrapOriginal();
             Zombie.mIceTrapCounter = counter;

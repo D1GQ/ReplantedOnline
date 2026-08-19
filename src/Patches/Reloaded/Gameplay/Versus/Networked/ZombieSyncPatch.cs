@@ -217,9 +217,12 @@ internal static class ZombieSyncPatch
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                // Execute the original HitIceTrap logic locally
+                // Execute the original RemoveIceTrap first to get timers
                 __instance.HitIceTrapOriginal();
-                zombieNetworked.SendSetFrozenRpc(true);
+                if (__instance.mIceTrapCounter > 0)
+                {
+                    zombieNetworked.SendSetFrozenRpc(true);
+                }
             }
 
             return false;
@@ -242,14 +245,18 @@ internal static class ZombieSyncPatch
         // Only handle network synchronization if we're in a multiplayer lobby
         if (ReloadedLobby.AmInLobby())
         {
-            if (!VersusState.AmPlantSide) return false;
+            if (!VersusState.AmPlantSide)
+                return false;
 
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                // Execute the original RemoveIceTrap logic locally
+                // Execute the original RemoveIceTrap first to get timers
                 __instance.RemoveIceTrapOriginal();
-                zombieNetworked.SendSetFrozenRpc(false);
+                if (__instance.mChilledCounter > 0)
+                {
+                    zombieNetworked.SendSetFrozenRpc(false);
+                }
             }
 
             return false;
