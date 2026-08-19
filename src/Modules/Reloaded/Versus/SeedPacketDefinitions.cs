@@ -1,5 +1,4 @@
-﻿using Il2CppReloaded.Data;
-using Il2CppReloaded.Gameplay;
+﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
 using ReplantedOnline.Data.Asset.Unity;
 using ReplantedOnline.Enums.Versus;
@@ -179,22 +178,6 @@ internal static class SeedPacketDefinitions
                 zombieDefinition.m_easterEggChance100 = baseZombieDef.EasterEggChance100;
             }
         }
-    }
-
-    /// <summary>
-    /// Sets the versus properties of a plant definition based on its base properties.
-    /// </summary>
-    /// <param name="seedType">The type of seed to set properties for.</param>
-    /// <param name="baseRefreshTimeX">Multiplier for the base refresh time. Default is 1.0f.</param>
-    /// <returns>The updated plant definition.</returns>
-    private static PlantDefinition SetVersusDefinitionFromBase(SeedType seedType, float baseRefreshTimeX = 1f)
-    {
-        var definition = Instances.IDataService.GetPlantDefinition(seedType);
-        int baseRefreshTime = Mathf.FloorToInt(definition.RefreshTime * baseRefreshTimeX);
-        definition.m_versusBaseRefreshTime = baseRefreshTime;
-        definition.m_versusSuddenDeathRefreshTime = baseRefreshTime / 2;
-        definition.m_versusCost = definition.SeedCost;
-        return definition;
     }
 
     /// <summary>
