@@ -396,28 +396,12 @@
       "suddenDeathRefresh": 10
     },
     {
-      "type": "Snorkel",
+      "type": "BackupDancer",
       "bodyHealth": 270,
       "armorHealth": 0,
-      "cost": 100,
-      "refreshTime": 25,
-      "suddenDeathRefresh": 12
-    },
-    {
-      "type": "Door",
-      "bodyHealth": 270,
-      "armorHealth": 1500,
-      "cost": 100,
-      "refreshTime": 15,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "Pail",
-      "bodyHealth": 270,
-      "armorHealth": 1100,
-      "cost": 100,
+      "cost": 75,
       "refreshTime": 30,
-      "suddenDeathRefresh": 10
+      "suddenDeathRefresh": 15
     },
     {
       "type": "Polevaulter",
@@ -428,12 +412,36 @@
       "suddenDeathRefresh": 10
     },
     {
+      "type": "Pail",
+      "bodyHealth": 270,
+      "armorHealth": 1100,
+      "cost": 100,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
+    },
+    {
+      "type": "Door",
+      "bodyHealth": 270,
+      "armorHealth": 1500,
+      "cost": 100,
+      "refreshTime": 15,
+      "suddenDeathRefresh": 15
+    },
+    {
       "type": "JackInTheBox",
       "bodyHealth": 340,
       "armorHealth": 0,
       "cost": 100,
       "refreshTime": 30,
       "suddenDeathRefresh": 10
+    },
+    {
+      "type": "Snorkel",
+      "bodyHealth": 270,
+      "armorHealth": 0,
+      "cost": 100,
+      "refreshTime": 25,
+      "suddenDeathRefresh": 12
     },
     {
       "type": "Bungee",
@@ -452,41 +460,17 @@
       "suddenDeathRefresh": 10
     },
     {
-      "type": "Digger",
-      "bodyHealth": 300,
-      "armorHealth": 0,
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "Dancer",
-      "bodyHealth": 340,
-      "armorHealth": 0,
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 10
-    },
-    {
-      "type": "BackupDancer",
-      "bodyHealth": 270,
-      "armorHealth": 0,
-      "cost": 75,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 15
-    },
-    {
-      "type": "DolphinRider",
-      "bodyHealth": 500,
-      "armorHealth": 0,
-      "cost": 150,
-      "refreshTime": 30,
-      "suddenDeathRefresh": 15
-    },
-    {
       "type": "Ladder",
       "bodyHealth": 340,
       "armorHealth": 500,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
+    },
+    {
+      "type": "Digger",
+      "bodyHealth": 300,
+      "armorHealth": 0,
       "cost": 150,
       "refreshTime": 30,
       "suddenDeathRefresh": 10
@@ -500,10 +484,34 @@
       "suddenDeathRefresh": 10
     },
     {
+      "type": "Dancer",
+      "bodyHealth": 340,
+      "armorHealth": 0,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 10
+    },
+    {
+      "type": "DolphinRider",
+      "bodyHealth": 500,
+      "armorHealth": 0,
+      "cost": 150,
+      "refreshTime": 30,
+      "suddenDeathRefresh": 15
+    },
+    {
       "type": "Zamboni",
       "bodyHealth": 1180,
       "armorHealth": 0,
       "cost": 175,
+      "refreshTime": 60,
+      "suddenDeathRefresh": 20
+    },
+    {
+      "type": "Catapult",
+      "bodyHealth": 720,
+      "armorHealth": 0,
+      "cost": 200,
       "refreshTime": 60,
       "suddenDeathRefresh": 20
     },
@@ -514,14 +522,6 @@
       "cost": 200,
       "refreshTime": 30,
       "suddenDeathRefresh": 15
-    },
-    {
-      "type": "Catapult",
-      "bodyHealth": 720,
-      "armorHealth": 0,
-      "cost": 200,
-      "refreshTime": 60,
-      "suddenDeathRefresh": 20
     },
     {
       "type": "Pogo",

@@ -121,7 +121,12 @@ internal static class SeedChooserPatch
             {
                 var definition1 = Instances.IDataService.GetPlantDefinition(cz1.mSeedType);
                 var definition2 = Instances.IDataService.GetPlantDefinition(cz2.mSeedType);
-                return definition1.m_versusCost.CompareTo(definition2.m_versusCost);
+
+                int costComparison = definition1.m_versusCost.CompareTo(definition2.m_versusCost);
+                if (costComparison != 0)
+                    return costComparison;
+
+                return ((int)cz1.mSeedType).CompareTo((int)cz2.mSeedType);
             }
 
             return isGravestone1 ? -1 : 1;
