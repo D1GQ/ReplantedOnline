@@ -353,7 +353,7 @@ internal static class SeedPacketDefinitions
                     zombie.mPosX = boardUnitX.Pos;
                     break;
                 default:
-                    if (canRise) Instances.GameplayActivity.AddTodParticle(boardUnitX.Pos + 60, boardUnitY.Pos + 115, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
+                    if (canRise) Instances.GameplayActivity.AddTodParticle(boardUnitX.Pos + 60, boardUnitY.Pos + 95, zombie.RenderOrder - 5, ParticleEffect.ZombieRise);
                     zombie.mPosX = boardUnitX.Pos;
                     break;
             }

@@ -53,6 +53,11 @@ internal static class PvZRUtils
     /// </returns>
     internal static int ReloadedObjectYToGridY(float Y)
     {
+        if (Instances.GameplayActivity?.Board?.StageHasPool() == true)
+        {
+            return (int)(Y / 90f);
+        }
+
         return (int)(Y / 100f);
     }
 
@@ -77,6 +82,11 @@ internal static class PvZRUtils
     /// </returns>
     internal static float GridYToReloadedObjectY(int gridY)
     {
+        if (Instances.GameplayActivity?.Board?.StageHasPool() == true)
+        {
+            return (gridY * 90f) + 50f;
+        }
+
         return (gridY * 100f) + 50f;
     }
 
