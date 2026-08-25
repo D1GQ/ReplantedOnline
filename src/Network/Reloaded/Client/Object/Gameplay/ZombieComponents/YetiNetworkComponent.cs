@@ -58,7 +58,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     private void UpdateCurious(Zombie zombie)
     {
         float t = Mathf.InverseLerp(750f, 350f, zombie.mPosX);
-        SetSpeed(Mathf.Lerp(1f, 0.1f, t));
+        zombie.mVelX = Mathf.Lerp(1f, 0.1f, t);
 
         if (Net.AmOwner)
         {
@@ -86,7 +86,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         }
 
         float t = Mathf.InverseLerp(400f, 350f, zombie.mPosX);
-        SetSpeed(Mathf.Lerp(0.8f, 0.2f, t));
+        zombie.mVelX = Mathf.Lerp(0.8f, 0.2f, t);
     }
 
     private bool TryGoIntoEnragedState(Zombie zombie)
@@ -104,7 +104,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     private void UpdateEnraged(Zombie zombie)
     {
         float t = Mathf.InverseLerp(500, 0, zombie.mBodyHealth);
-        SetSpeed(Mathf.Lerp(0.8f, 1.4f, t));
+        zombie.mVelX = Mathf.Lerp(0.8f, 1.4f, t);
     }
 
     private void SendRunBackRpc()

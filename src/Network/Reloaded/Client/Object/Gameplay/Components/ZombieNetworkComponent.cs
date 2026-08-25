@@ -1,10 +1,10 @@
 ﻿using Il2CppReloaded.Gameplay;
+using Il2CppSystem.Linq;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -37,31 +37,6 @@ internal class ZombieNetworkComponent : NetworkComponent
         ZombieType.Yeti
     ];
 
-    private bool _hasPickedInitSpeed = false;
-    private bool _pickingSpeed;
-    private float _previousVelX = -1;
-    private float _velX;
-
-    internal void PickRandomSpeed(Zombie zombie)
-    {
-        _pickingSpeed = true;
-        _previousVelX = -1;
-        zombie.PickRandomSpeedOriginal();
-        _velX = zombie.mVelX;
-        _pickingSpeed = false;
-    }
-
-    internal void SetSpeed(float velX)
-    {
-        if (Net.Zombie == null)
-            return;
-
-        _pickingSpeed = true;
-        _previousVelX = -1;
-        _velX = velX;
-        _pickingSpeed = false;
-    }
-
     internal float GetSpeedBuffMultiplier(Zombie zombie)
     {
         float multiplier = 1f;
@@ -90,7 +65,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         {
             if (Net.PoolComponent.InPool)
             {
-                multiplier *= 0.95f;
+                multiplier *= 0.9f;
             }
         }
 
@@ -131,30 +106,11 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         OnUpdate(zombie);
 
-        if (!_hasPickedInitSpeed)
-        {
-            PickRandomSpeed(zombie);
-            if (_velX > 0)
-            {
-                _hasPickedInitSpeed = true;
-            }
-        }
-
-        if (!_pickingSpeed)
-        {
-            var trueVelocity = _velX * GetSpeedBuffMultiplier(zombie);
-            if (_previousVelX != trueVelocity)
-            {
-                _previousVelX = trueVelocity;
-                zombie.mVelX = trueVelocity;
-                zombie.UpdateAnimSpeed();
-            }
-        }
-
+        float speedMultiplier = GetSpeedBuffMultiplier(zombie);
         float distance;
         lock (_distanceLock)
         {
-            distance = _accumulatedDistance;
+            distance = _accumulatedDistance * speedMultiplier;
             _accumulatedDistance = 0f;
         }
         UpdatePosition(zombie, distance);
@@ -263,11 +219,13 @@ internal class ZombieNetworkComponent : NetworkComponent
         if (init)
             return;
 
-        packetWriter.WriteBool(Net.Zombie == null);
-        if (Net.Zombie != null)
+        var zombie = Net.Zombie;
+
+        packetWriter.WriteBool(zombie == null);
+        if (zombie != null)
         {
-            packetWriter.WritePackedFloat(_velX, 500f);
-            packetWriter.WritePackedFloat(Net.Zombie.mPosX, 25f);
+            packetWriter.WritePackedFloat(zombie.mVelX, 500f);
+            packetWriter.WritePackedFloat(zombie.mPosX, 25f);
         }
     }
 
@@ -278,12 +236,31 @@ internal class ZombieNetworkComponent : NetworkComponent
 
         if (!Net.AmOwner)
         {
+            var zombie = Net.Zombie;
             bool isZombieNull = packetReader.ReadBool();
-            if (!isZombieNull && Net.Zombie != null)
+            if (!isZombieNull && zombie != null)
             {
-                SetSpeed(packetReader.ReadPackedFloat(500f));
+                zombie.mVelX = packetReader.ReadPackedFloat(500f);
                 SyncedPosX = packetReader.ReadPackedFloat(25f);
             }
+        }
+    }
+
+    private record ZombieVelocity(float OriginalX, float CurrentX, float Multiplier)
+    {
+        internal bool IsOriginal(float velX)
+        {
+            return Math.Abs(velX - OriginalX) < 0.0001f;
+        }
+
+        internal bool IsModified(float velX)
+        {
+            return Math.Abs(velX - CurrentX) < 0.0001f;
+        }
+
+        internal float ApplyMultiplier(float velX)
+        {
+            return velX * Multiplier;
         }
     }
 }
