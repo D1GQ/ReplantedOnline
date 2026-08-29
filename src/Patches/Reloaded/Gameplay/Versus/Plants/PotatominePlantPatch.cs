@@ -3,7 +3,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 using ReplantedOnline.Utilities.Modded;
 using System.Collections;
 using UnityEngine;

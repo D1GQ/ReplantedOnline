@@ -45,6 +45,29 @@ internal static class BoardPatch
         return true;
     }
 
+    private static readonly Zombie UnusedZombie = new();
+
+    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
+    [HarmonyPrefix]
+    private static bool Board_AddZombieInRow_Prefix(ref Zombie __result)
+    {
+        if (ReloadedLobby.AmInLobby() && VersusState.IsInGameplay)
+        {
+            // Remove normal zombie spawning from gameplay
+            __result = UnusedZombie;
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Board), nameof(Board.AddZombieInRow))]
+    internal static Zombie AddZombieInRowOriginal(this Board __instance, ZombieType theZombieType, int theRow, int theFromWave, bool shakeBrush = true)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
+
     [HarmonyPatch(typeof(CutScene), nameof(CutScene.AddFlowerPots))]
     [HarmonyPrefix]
     private static bool CutScene_AddFlowerPots_Prefix()

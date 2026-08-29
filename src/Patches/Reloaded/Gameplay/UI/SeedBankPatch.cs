@@ -12,7 +12,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 
 [HarmonyPatch]
 internal static class SeedBankPatch

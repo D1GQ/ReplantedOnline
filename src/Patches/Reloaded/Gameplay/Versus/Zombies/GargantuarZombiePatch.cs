@@ -9,7 +9,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;

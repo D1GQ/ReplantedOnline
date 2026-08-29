@@ -13,7 +13,7 @@ using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;

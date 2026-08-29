@@ -13,7 +13,7 @@ using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 using ReplantedOnline.Utilities.Modded;
 using static Il2CppReloaded.Constants;
 
-namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 
 [HarmonyPatch]
 internal static class CursorSyncPatch

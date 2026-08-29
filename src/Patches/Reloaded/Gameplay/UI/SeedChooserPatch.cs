@@ -14,7 +14,7 @@ using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 
 [HarmonyPatch]
 internal static class SeedChooserPatch

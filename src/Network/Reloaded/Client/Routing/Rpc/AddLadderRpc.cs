@@ -6,7 +6,7 @@ using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 

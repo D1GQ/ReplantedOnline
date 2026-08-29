@@ -3,7 +3,7 @@ using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.MonoScripts.Modded;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;

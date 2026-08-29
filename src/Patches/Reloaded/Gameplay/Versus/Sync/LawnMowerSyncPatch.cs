@@ -6,7 +6,7 @@ using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 
 [HarmonyPatch]
 internal static class LawnMowerSyncPatch

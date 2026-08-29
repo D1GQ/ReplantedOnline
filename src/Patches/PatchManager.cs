@@ -1,7 +1,7 @@
 ﻿using ReplantedOnline.Attributes.Hook;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Patches.Misc;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Patches;

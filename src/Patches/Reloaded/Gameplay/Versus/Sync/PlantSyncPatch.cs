@@ -4,7 +4,7 @@ using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Networked;
+namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
 
 [HarmonyPatch]
 internal static class PlantSyncPatch
