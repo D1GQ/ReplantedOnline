@@ -67,6 +67,7 @@ internal partial class ReplantedOnlineMod : MelonMod
 
             Assets.PreloadAssets();
             DataManager.Initialize();
+            LocalizationManager.Initialize();
             AutoRegisterAttribute.RegisterAll();
             NetworkObject.InitializePrefabs();
             RpcHandlerAttribute.Initialize();

@@ -4,7 +4,7 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Structs.Reloaded;
 
-namespace ReplantedOnline.Patches.Reloaded.Client.Binder;
+namespace ReplantedOnline.Patches.Reloaded.Client.Localization;
 
 [HarmonyPatch]
 internal static class FormattedLocalizationIdBinderPatch

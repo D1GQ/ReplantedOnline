@@ -13,7 +13,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 namespace ReplantedOnline.Patches.Reloaded;
 
 [HarmonyPatch]
-internal static class InstanceWrapperPatch
+internal static class GlobalInstancePatch
 {
     [HarmonyPatch(typeof(UiDataProviderActivity), nameof(UiDataProviderActivity.LoadingStarted))]
     [HarmonyPostfix]
@@ -31,8 +31,8 @@ internal static class InstanceWrapperPatch
                     dataProvider.m_gameplayDataModel.m_player2DataModel.m_isEnabled.m_value = true;
                 }
 
-                InstanceWrapper<GameplayDataProvider>.Instance = dataProvider;
-                InstanceWrapper<VersusDataModel>.Instance = dataProvider.m_gameplayDataModel.m_versusDataModel;
+                GlobalInstance<GameplayDataProvider>.Instance = dataProvider;
+                GlobalInstance<VersusDataModel>.Instance = dataProvider.m_gameplayDataModel.m_versusDataModel;
             }
         }
     }
@@ -41,7 +41,7 @@ internal static class InstanceWrapperPatch
     [HarmonyPostfix]
     private static void GameplayActivity_Awake_Postfix(GameplayActivity __instance)
     {
-        InstanceWrapper<GameplayActivity>.Instance = __instance;
+        GlobalInstance<GameplayActivity>.Instance = __instance;
     }
 
     [HarmonyPatch(typeof(TreeState), nameof(TreeState.Awake))]
@@ -50,8 +50,10 @@ internal static class InstanceWrapperPatch
     {
         if (__instance.gameObject.name == "GameBoot")
         {
-            var dataServiceActivity = __instance.GetComponentInChildren<DataServiceActivity>(true);
-            InstanceWrapper<DataServiceActivity>.Instance = dataServiceActivity;
+            var dataServiceActivity = __instance.GetComponent<DataServiceActivity>();
+            GlobalInstance<DataServiceActivity>.Instance = dataServiceActivity;
+            var localizationActivity = __instance.GetComponent<LocalizationActivity>();
+            GlobalInstance<LocalizationActivity>.Instance = localizationActivity;
         }
     }
 
@@ -72,7 +74,7 @@ internal static class InstanceWrapperPatch
     {
         if (__instance.name == "StateRoot")
         {
-            InstanceWrapper<AppCore>.Instance = __instance.GetComponent<AppCore>();
+            GlobalInstance<AppCore>.Instance = __instance.GetComponent<AppCore>();
         }
     }
 }
