@@ -46,7 +46,7 @@ internal sealed class LanTransport : INetworkTransport
             {
                 ReplantedOnlineMod.Logger.Msg(typeof(LanTransport), "No lobbies found");
                 _isJoining = false;
-                ShowDisconnectPopup("No LAN lobbies found");
+                ShowDisconnectPopup("$POPUP_NO_LAN_LOBBIES_FOUND");
                 return;
             }
 
@@ -59,17 +59,17 @@ internal sealed class LanTransport : INetworkTransport
         {
             ReplantedOnlineMod.Logger.Error(typeof(LanTransport), $"Error: {ex.Message}");
             _isJoining = false;
-            ShowDisconnectPopup("Error joining LAN lobby");
+            ShowDisconnectPopup("$POPUP_ERROR_JOINING_LAN_LOBBY");
         }
     }
 
-    private static void ShowDisconnectPopup(string message)
+    private static void ShowDisconnectPopup(string localizationKey)
     {
         MainThreadDispatcher.Execute(() =>
         {
             Transitions.ToMainMenu(() =>
             {
-                CustomPopupPanel.Show("Disconnected", message);
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", localizationKey);
             });
         });
     }

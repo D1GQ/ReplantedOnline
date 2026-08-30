@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Extensions;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine.UI;
 
@@ -72,22 +73,23 @@ internal static class CustomPopupPanel
     }
 
     /// <summary>
-    /// Displays the popup with the specified header and text content.
+    /// Displays the popup with localized header and formatted text content.
     /// </summary>
-    /// <param name="header">The main header/title text for the popup.</param>
-    /// <param name="text">The body/subtext content of the popup message.</param>
-    internal static void Show(string header, string text)
+    /// <param name="headerKey">The localization key for the main header/title text.</param>
+    /// <param name="textKey">The localization key for the body/subtext content.</param>
+    /// <param name="textFormat">An array of objects to format the localized text with.</param>
+    internal static void ShowLocalized(string headerKey, string textKey, params string[] textFormat)
     {
         if (!HasInit)
             return;
 
         if (LabelText?.text == string.Empty)
         {
-            LabelText?.SetText("Ok");
+            LabelText?.SetText(LocalizationManager.GetLocalization("$BUTTON_OK"));
         }
         Panel?.gameObject?.SetActive(true);
-        HeaderText?.SetText(header);
-        Text?.SetText(text);
+        HeaderText?.SetText(LocalizationManager.GetLocalization(headerKey));
+        Text?.SetText(LocalizationManager.GetLocalizationFormatted(textKey, textFormat));
     }
 
     /// <summary>

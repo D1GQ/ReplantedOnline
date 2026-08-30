@@ -33,7 +33,7 @@ internal sealed class RemoveClientPacket : IPacketMessage<ID, BanReason>
             var reason = packetReader.ReadEnum<BanReason>();
             ReloadedLobby.LeaveLobby(() =>
             {
-                CustomPopupPanel.Show("Disconnected", "You have been disconnected by the Host!");
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_DISCONNECTED_BY_HOST");
             });
             ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), "P2P closed by host");
         }

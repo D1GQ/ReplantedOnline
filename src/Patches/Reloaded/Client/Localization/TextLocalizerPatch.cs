@@ -11,6 +11,16 @@ internal static class TextLocalizerPatch
     [HarmonyPrefix]
     private static bool FormattedLocalizationIdBinder_BindValue_Prefix(TextLocalizer __instance)
     {
+        if (string.IsNullOrEmpty(__instance.Id))
+        {
+            if (__instance?.Text != null)
+            {
+                __instance.Text.SetText(string.Empty);
+            }
+
+            return false;
+        }
+
         if (LocalizationManager.TryGetLocalization(__instance.Id, out var localization))
         {
             __instance.Text.SetText(localization);

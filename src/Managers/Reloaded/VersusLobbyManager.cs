@@ -4,11 +4,10 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
-using ReplantedOnline.Network.Reloaded.Server.Lan;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -41,9 +40,9 @@ internal static class VersusLobbyManager
             switch (ReloadedLobby.TransportMode)
             {
                 case TransportMode.Steam:
-                    return $"Lobby Code: {ReloadedLobby.LobbyData?.LobbyCode ?? "???"}";
+                    return LocalizationManager.GetLocalizationFormatted("$PANEL_LOBBY_CODE", ReloadedLobby.LobbyData?.LobbyCode ?? "???");
                 case TransportMode.Lan:
-                    return "LAN Lobby";
+                    return LocalizationManager.GetLocalization("$PANEL_LAN_LOBBY");
                 default:
                     break;
             }
@@ -268,7 +267,7 @@ internal static class VersusLobbyManager
             {
                 if (!CopyingLobbyCode)
                 {
-                    PickSides?.SetText($"Click to Copy");
+                    PickSides?.SetText(LocalizationManager.GetLocalization("$PANEL_CLICK_TO_COPY"));
                     Instances.GameplayActivity.SoundSystem.PlaySample(Sound.SOUND_BLEEP);
                 }
             }));
@@ -300,22 +299,9 @@ internal static class VersusLobbyManager
         }
 
         CopyingLobbyCode = true;
-        if (ReloadedLobby.TransportMode == TransportMode.Steam)
-        {
-            GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
-        }
-        else
-        {
-            CustomPopupPanel.Show(
-                "Warning",
-                "Sharing your IP address can be dangerous.\n" +
-                "Only share with people you trust.\n" +
-                "Or use a VPN for safe connections"
-            );
-            GUIUtility.systemCopyBuffer = $"{LanServer.GetLocalNetworkIP()}:{LanServer.GetPort()}";
-        }
+        GUIUtility.systemCopyBuffer = ReloadedLobby.LobbyData.LobbyCode;
         Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
-        PickSides?.SetText($"Copied to Clipboard!");
+        PickSides?.SetText(LocalizationManager.GetLocalization("$PANEL_COPIED_TO_CLIPBOARD"));
 
         yield return new WaitForSeconds(1f);
 

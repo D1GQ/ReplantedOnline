@@ -38,7 +38,6 @@ internal static class LobbyCodePanel
 
         // Remove existing text localization components
         Panel.m_id = "I_LobbyCodePanel";
-        Panel.gameObject.DestroyAllTextLocalizers();
 
         // Get reference to the input field and set up validation
         InputField = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField")?.GetComponentInChildren<ReloadedInputField>(true)!;
@@ -50,13 +49,13 @@ internal static class LobbyCodePanel
 
         // Update all text elements in the panel
         var headerText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/HeaderText")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        headerText?.SetText("Join Lobby");
+        headerText?.SetTextLocalizer("$MESSAGE_JOIN_LOBBY");
 
         var subheadingText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/SubheadingText")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        subheadingText?.SetText("Please enter lobby code:");
+        subheadingText?.SetTextLocalizer("$MESSAGE_PLEASE_ENTER_LOBBY_CODE");
 
         var placeholderText = Panel?.transform?.Find("Canvas/Layout/Center/Rename/NameInputField/Text Area/Placeholder")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        placeholderText?.SetText("Enter code...");
+        placeholderText?.SetTextLocalizer("$MESSAGE_ENTER_CODE");
 
         // Set up OK button to search for lobby with entered code
         var okButton = Panel?.transform?.Find("Canvas/Layout/Center/Rename/Buttons/P_BacicButton_OK")?.GetComponentInChildren<Button>(true);
@@ -81,7 +80,7 @@ internal static class LobbyCodePanel
                     }
                     else
                     {
-                        CustomPopupPanel.Show("Error", $"Lobby code must contain {ReloadedMatchmaking.CODE_LENGTH} characters!");
+                        CustomPopupPanel.ShowLocalized("$POPUP_HEADER_ERROR", "$POPUP_LOBBY_CODE_LENGTH", ReloadedMatchmaking.CODE_LENGTH.ToString());
                     }
                 }
             });

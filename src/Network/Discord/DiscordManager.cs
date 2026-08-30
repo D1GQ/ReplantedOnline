@@ -302,20 +302,19 @@ internal static class DiscordManager
 
             if (secret.FormatError)
             {
-                CustomPopupPanel.Show("Disconnected", "Failed to read secret!");
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_FAILED_TO_READ_SECRET");
                 return;
             }
 
             if (secret.ModSignatureHash != ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash)
             {
-                CustomPopupPanel.Show("Disconnected", "Failed to read secret due to hash!");
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_SECRET_HASH_MISMATCH");
                 return;
             }
 
             if (secret.VersionFormatted != ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED)
             {
-                CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{secret.VersionFormatted}");
-
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_VERSION_MISMATCH", secret.VersionFormatted);
                 return;
             }
 

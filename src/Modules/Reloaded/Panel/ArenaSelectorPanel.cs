@@ -108,6 +108,7 @@ internal static class ArenaSelectorPanel
         var button = UnityEngine.Object.Instantiate(prefab, Panel!.transform)?.GetComponent<Button>();
         if (button != null)
         {
+            button.gameObject.DestroyAllTextLocalizers();
             var text = button.transform.Find("ButtonText")?.GetComponent<TextMeshProUGUI>();
             if (text != null)
             {

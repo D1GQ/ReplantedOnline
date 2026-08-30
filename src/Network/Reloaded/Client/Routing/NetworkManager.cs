@@ -221,7 +221,7 @@ internal static partial class NetworkManager
                 ReplantedOnlineMod.Logger.Error(typeof(NetworkManager), $"Exception in CoListening: {ex}");
                 ReloadedLobby.LeaveLobby(() =>
                 {
-                    CustomPopupPanel.Show("Error", "An error occurred while processing network packets.");
+                    CustomPopupPanel.ShowLocalized("$POPUP_HEADER_ERROR", "$POPUP_NETWORK_PACKET_ERROR");
                 });
                 Heartbeat.Dispose();
                 ListeningToken = null;

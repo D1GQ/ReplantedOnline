@@ -73,7 +73,7 @@ internal static class ReloadedMatchmaking
                                     ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Mod version mismatch. Expected: v{ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED}, Found: {modVersion}");
                                     Transitions.ToMainMenu(() =>
                                     {
-                                        CustomPopupPanel.Show("Disconnected", $"Unable to join due to mod version mismatch\nv{modVersion}");
+                                        CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_VERSION_MISMATCH", modVersion);
                                     });
                                     return;
                                 }
@@ -86,7 +86,7 @@ internal static class ReloadedMatchmaking
                                 ReplantedOnlineMod.Logger.Warning(typeof(ReloadedMatchmaking), $"Game code mismatch. Expected: {gameCode}, Found: {foundGameCode}");
                                 Transitions.ToMainMenu(() =>
                                 {
-                                    CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
+                                    CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_LOBBY_NOT_FOUND", gameCode);
                                 });
                             }
                         }
@@ -94,13 +94,13 @@ internal static class ReloadedMatchmaking
                     case LobbyListResult.Failed:
                         Transitions.ToMainMenu(() =>
                         {
-                            CustomPopupPanel.Show("Disconnected", $"Unable to find lobby with {gameCode} code!");
+                            CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_LOBBY_NOT_FOUND", gameCode);
                         });
                         break;
                     case LobbyListResult.Error:
                         Transitions.ToMainMenu(() =>
                         {
-                            CustomPopupPanel.Show("Disconnected", $"An critical error occurred!");
+                            CustomPopupPanel.ShowLocalized("$POPUP_HEADER_ERROR", "$POPUP_CRITICAL_ERROR");
                         });
                         break;
                 }

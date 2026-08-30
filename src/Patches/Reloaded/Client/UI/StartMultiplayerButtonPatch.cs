@@ -17,9 +17,6 @@ internal static class StartMultiplayerButtonPatch
     [HarmonyPrefix]
     private static void StartMultiplayerButton_Awake_Postfix(StartMultiplayerButton __instance)
     {
-        // Remove existing text localization components
-        __instance.gameObject.DestroyAllTextLocalizers();
-
         // Get references to button and text components
         var button = __instance.GetComponentInChildren<Button>(true);
         var texts = __instance.GetComponentsInChildren<TextMeshProUGUI>(true);
@@ -30,7 +27,7 @@ internal static class StartMultiplayerButtonPatch
             // Update all text elements to say "Join"
             foreach (var textComp in texts)
             {
-                textComp.SetText("Join");
+                textComp.SetTextLocalizer("$BUTTON_JOIN");
             }
 
             // Set up button click handler
@@ -48,7 +45,7 @@ internal static class StartMultiplayerButtonPatch
             // Update all text elements to say "Host"
             foreach (var textComp in texts)
             {
-                textComp.SetText("Host");
+                textComp.SetTextLocalizer("$BUTTON_HOST");
             }
 
             // Set up button click handler
@@ -69,7 +66,7 @@ internal static class StartMultiplayerButtonPatch
     {
         if (ReplantedOnlineMod.HasUnauthorizedMod(out var mod))
         {
-            CustomPopupPanel.Show("Unauthorized Mod", $"Remove {mod.Info.Name} {mod.Info.Version}\nfor a fair environment!");
+            CustomPopupPanel.ShowLocalized("$POPUP_HEADER_UNAUTHORIZED_MOD", "$POPUP_UNAUTHORIZED_MOD_DETECTED", mod.Info.Name, mod.Info.Version);
             return false;
         }
 

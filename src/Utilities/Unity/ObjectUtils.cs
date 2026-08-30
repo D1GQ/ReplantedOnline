@@ -2,6 +2,7 @@
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
+using Il2CppTMPro;
 using UnityEngine;
 
 namespace ReplantedOnline.Utilities.Unity;
@@ -11,6 +12,30 @@ namespace ReplantedOnline.Utilities.Unity;
 /// </summary>
 internal static class ObjectUtils
 {
+    /// <summary>
+    /// Sets the text of a TMP_Text component using a localization key and triggers localization.
+    /// </summary>
+    /// <param name="tmp_Text">The TMP_Text component to localize.</param>
+    /// <param name="localizationKey">The localization key used to retrieve the localized text.</param>
+    internal static void SetTextLocalizer(this TMP_Text tmp_Text, string localizationKey)
+    {
+        TextLocalizer[] textLocalizers = tmp_Text.GetComponents<TextLocalizer>();
+        foreach (var textLocalizer in textLocalizers)
+        {
+            if (textLocalizer.Text == tmp_Text)
+            {
+                textLocalizer.Id = localizationKey;
+                textLocalizer.LocalizeText();
+                return;
+            }
+        }
+
+        var newTextLocalizer = tmp_Text.gameObject.AddComponent<TextLocalizer>();
+        newTextLocalizer.Text = tmp_Text;
+        newTextLocalizer.Id = localizationKey;
+        newTextLocalizer.LocalizeText();
+    }
+
     /// <summary>
     /// Destroys all TextLocalizer components on the GameObject and its children.
     /// This is useful when replacing UI elements that have localization bindings that need to be cleaned up.

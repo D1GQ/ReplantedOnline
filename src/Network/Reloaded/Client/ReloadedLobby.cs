@@ -306,7 +306,7 @@ internal static class ReloadedLobby
         {
             ResetLobby(() =>
             {
-                CustomPopupPanel.Show("Lobby Restarted", "The other player has left the game!");
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_LOBBY_RESTARTED", "$POPUP_OTHER_PLAYER_LEFT");
             });
         }
         else
@@ -315,7 +315,7 @@ internal static class ReloadedLobby
             {
                 LeaveLobby(() =>
                 {
-                    CustomPopupPanel.Show("Disconnected", "Host has left the game!");
+                    CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_HOST_LEFT_GAME");
                 });
             }
         }

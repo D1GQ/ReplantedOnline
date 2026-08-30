@@ -28,8 +28,7 @@ internal static class PauseMenuPatch
                     {
                         ReloadedLobby.LobbyData?.ResetLobby();
                     });
-                    restartLevelButton.gameObject.DestroyAllTextLocalizers();
-                    restartLevelButton.GetComponentInChildren<TextMeshProUGUI>(true)?.SetText("Restart Lobby");
+                    restartLevelButton.GetComponentInChildren<TextMeshProUGUI>(true)?.SetTextLocalizer("$BUTTON_RESTART_LOBBY");
                 }
                 else
                 {

@@ -130,7 +130,7 @@ internal static class Transitions
                 {
                     ReloadedLobby.LeaveLobby(() =>
                     {
-                        CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
+                        CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_TRANSITION_TIMED_OUT", transitionName);
                     });
                 }
                 else
@@ -152,7 +152,7 @@ internal static class Transitions
                 {
                     ReloadedLobby.LeaveLobby(() =>
                     {
-                        CustomPopupPanel.Show("Disconnected", $"`{transitionName}` Transition has timed out!");
+                        CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_TRANSITION_TIMED_OUT", transitionName);
                     });
                 }
                 else

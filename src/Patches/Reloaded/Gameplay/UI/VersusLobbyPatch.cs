@@ -40,8 +40,6 @@ internal static class VersusLobbyPatch
         if (VsSideChooser == null)
             return;
 
-        VsSideChooser.gameObject.DestroyAllTextLocalizers();
-
         InteractableBlocker = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/DisableInteraction")?.gameObject;
         InteractableGamePad = VsSideChooser.transform.Find("Canvas/Layout/Center/Panel/SelectionSets/SelectionSets_SidesChosenNavLayer")?.gameObject;
 
@@ -62,12 +60,12 @@ internal static class VersusLobbyPatch
     private static void SetupHostUI(PanelView panelView)
     {
         panelView.SetVSButton("QuickPlay", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Quickplay));
-        panelView.SetVsButtonTitle("QuickPlay", "Quick\nBattle");
+        panelView.SetVsButtonTitle("QuickPlay", "$BUTTON_QUICK_BATTLE");
 
         panelView.RemoveVSButton("Custom");
 
         panelView.SetVSButton("CustomAll", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Custom));
-        panelView.SetVsButtonTitle("CustomAll", "Custom\nBattle");
+        panelView.SetVsButtonTitle("CustomAll", "$BUTTON_CUSTOM_BATTLE");
 
         panelView.SetVSButton("Random", () => NetworkManager.Rpc<StartGameRpc>.Singleton.Send(VersusGamemodeType.Random));
 
@@ -176,10 +174,10 @@ internal static class VersusLobbyPatch
         if (bt != null) UnityEngine.Object.Destroy(bt);
     }
 
-    private static void SetVsButtonTitle(this PanelView panelView, string name, string title)
+    private static void SetVsButtonTitle(this PanelView panelView, string name, string titleKey)
     {
         var textPro = panelView.transform.Find($"Canvas/Layout/Center/Panel/SelectionSets/{name}")?.GetComponentInChildren<TextMeshProUGUI>(true);
-        textPro?.SetText(title);
+        textPro?.SetTextLocalizer(titleKey);
     }
 
     private static void RemoveVSButton(this PanelView panelView, string name)
