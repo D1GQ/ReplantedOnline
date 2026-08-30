@@ -30,5 +30,6 @@
   "POPUP_DISCONNECTED_BY_HOST": "您已被主机断开连接！",
   "POPUP_NO_LAN_LOBBIES_FOUND": "未找到LAN大厅",
   "POPUP_ERROR_JOINING_LAN_LOBBY": "加入LAN大厅时出错",
-  "POPUP_UNAUTHORIZED_MOD_DETECTED": "请移除 {0} {1}\n以维护公平的游戏环境！"
+  "POPUP_UNAUTHORIZED_MOD_DETECTED": "请移除 {0} {1}\n以维护公平的游戏环境！",
+  "EVENT_PUSH_BACK": "击退！"
 }

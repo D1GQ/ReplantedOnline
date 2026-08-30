@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Enums.Versus;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
@@ -35,7 +36,7 @@ internal static class ArenaEvents
     {
         string title = eventTitle switch
         {
-            EventTitle.PushBack => "Push Back!",
+            EventTitle.PushBack => LocalizationManager.GetLocalization("$EVENT_PUSH_BACK"),
             _ => string.Empty
         };
 

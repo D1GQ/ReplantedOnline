@@ -30,5 +30,6 @@
   "POPUP_DISCONNECTED_BY_HOST": "Você foi desconectado pelo anfitrião!",
   "POPUP_NO_LAN_LOBBIES_FOUND": "Nenhuma sala LAN encontrada",
   "POPUP_ERROR_JOINING_LAN_LOBBY": "Erro ao entrar na sala LAN",
-  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Remova {0} {1}\npara um ambiente justo!"
+  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Remova {0} {1}\npara um ambiente justo!",
+  "EVENT_PUSH_BACK": "Recuar!"
 }

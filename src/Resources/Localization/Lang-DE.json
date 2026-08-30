@@ -30,5 +30,6 @@
   "POPUP_DISCONNECTED_BY_HOST": "Sie wurden vom Host getrennt!",
   "POPUP_NO_LAN_LOBBIES_FOUND": "Keine LAN-Lobbys gefunden",
   "POPUP_ERROR_JOINING_LAN_LOBBY": "Fehler beim Beitreten zur LAN-Lobby",
-  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Entfernen Sie {0} {1}\nfür eine faire Umgebung!"
+  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Entfernen Sie {0} {1}\nfür eine faire Umgebung!",
+  "EVENT_PUSH_BACK": "Zurückdrängen!"
 }

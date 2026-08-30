@@ -30,5 +30,6 @@
   "POPUP_DISCONNECTED_BY_HOST": "Vous avez été déconnecté par l'hôte !",
   "POPUP_NO_LAN_LOBBIES_FOUND": "Aucun salon LAN trouvé",
   "POPUP_ERROR_JOINING_LAN_LOBBY": "Erreur lors de la connexion au salon LAN",
-  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Supprimez {0} {1}\npour un environnement équitable !"
+  "POPUP_UNAUTHORIZED_MOD_DETECTED": "Supprimez {0} {1}\npour un environnement équitable !",
+  "EVENT_PUSH_BACK": "Repousser !"
 }

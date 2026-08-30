@@ -30,5 +30,6 @@
   "POPUP_DISCONNECTED_BY_HOST": "ホストによって切断されました！",
   "POPUP_NO_LAN_LOBBIES_FOUND": "LANロビーが見つかりません",
   "POPUP_ERROR_JOINING_LAN_LOBBY": "LANロビーへの参加中にエラーが発生しました",
-  "POPUP_UNAUTHORIZED_MOD_DETECTED": "{0} {1}を削除してください\n公平な環境のために！"
+  "POPUP_UNAUTHORIZED_MOD_DETECTED": "{0} {1}を削除してください\n公平な環境のために！",
+  "EVENT_PUSH_BACK": "押し戻せ！"
 }
