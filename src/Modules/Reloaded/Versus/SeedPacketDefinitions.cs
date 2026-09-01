@@ -94,23 +94,29 @@ internal static class SeedPacketDefinitions
         slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon.Asset, ReloadedLobby.AmInLobby);
 
         CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel, "SNORKEL_ZOMBIE",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel,
+            "$SNORKEL_ZOMBIE",
+            "SNORKEL_ZOMBIE_DESCRIPTION_HEADER",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.SnorkelSeedPacketIcon.Asset);
 
         CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider, "DOLPHIN_RIDER_ZOMBIE",
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieDolphinRider,
+            "$DOLPHIN_RIDER_ZOMBIE",
+            "DOLPHIN_RIDER_ZOMBIE_DESCRIPTION_HEADER",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.DolphinriderSeedPacketIcon.Asset);
 
         var BackupDancerDefinition = CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieBackupDancer, "BACKUP_DANCER",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon.Asset,
-            "$CHARACTER_DESCRIPTION_BACKUP_DANCER");
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieBackupDancer,
+            "$BACKUP_DANCER",
+            "$CHARACTER_DESCRIPTION_BACKUP_DANCER",
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon.Asset);
         BackupDancerDefinition!.m_previewSpriteScale = 0.82f;
 
         CustomPlantDefinition
-            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
-            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon.Asset,
-            "$CHARACTER_DESCRIPTION_ZOMBIE_YETI");
+            .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti,
+            "$ZOMBIE_YETI",
+            "$CHARACTER_DESCRIPTION_ZOMBIE_YETI",
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon.Asset);
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {

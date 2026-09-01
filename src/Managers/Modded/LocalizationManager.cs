@@ -2,6 +2,7 @@
 using ReplantedOnline.Data.Asset.Resource;
 using ReplantedOnline.Data.Json;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Unity;
 
 namespace ReplantedOnline.Managers.Modded;
 
@@ -37,14 +38,13 @@ internal static class LocalizationManager
             }
         }
 
-        AddDollarPrefixToAllKeys();
+        AddPrefixToAllKeys();
     }
 
     /// <summary>
     /// Parses a single language file from embedded resources and adds its translations to <see cref="Localizations"/>.
     /// </summary>
-    /// <param name="fileName">The name of the language file (e.g., "en.json"). Must be embedded in 
-    /// "ReplantedOnline.Resources.Localization." namespace.</param>
+    /// <param name="fileName">The name of the language file.</param>
     private static void ParseLocalizationFile(string fileName)
     {
         var langAsset = new JsonResourceAsset<Dictionary<string, string>>($"ReplantedOnline.Resources.Localization.{fileName}");
@@ -67,7 +67,7 @@ internal static class LocalizationManager
     /// <summary>
     /// Adds a "$" prefix to every key in all loaded localization dictionaries.
     /// </summary>
-    private static void AddDollarPrefixToAllKeys()
+    private static void AddPrefixToAllKeys()
     {
         var languages = Localizations.Keys.ToList();
 
@@ -88,57 +88,33 @@ internal static class LocalizationManager
     /// <summary>
     /// Attempts to retrieve a localized string for the current game language.
     /// </summary>
-    /// <param name="key">The localization key to look up.</param>
+    /// <param name="lid">The localization key to look up.</param>
     /// <param name="localization">When this method returns, contains the localized string if found;
     /// otherwise, an empty string.</param>
     /// <returns><c>true</c> if the localization was found; otherwise, <c>false</c>.</returns>
-    internal static bool TryGetLocalization(string key, out string localization)
+    internal static bool TryGetLocalization(string lid, out string localization)
     {
-        if (string.IsNullOrEmpty(key))
-        {
-            localization = string.Empty;
-            return false;
-        }
-
-        var currentLanguage = Instances.LocalizationActivity.m_settings.CurrentLanguage;
-
-        if (Localizations.TryGetValue(currentLanguage, out var localizationMap))
-        {
-            if (localizationMap.TryGetValue(key, out localization!))
-            {
-                return true;
-            }
-        }
-
-        if (currentLanguage != Language.English && Localizations.TryGetValue(Language.English, out var englishMap))
-        {
-            if (englishMap.TryGetValue(key, out localization!))
-            {
-                return true;
-            }
-        }
-
-        localization = string.Empty;
-        return false;
+        localization = GetLocalization(lid);
+        return !string.IsNullOrEmpty(localization) && localization != lid;
     }
 
     /// <summary>
     /// Retrieves a localized string for the current game language.
     /// </summary>
-    /// <param name="key">The localization key to look up.</param>
-    /// <returns>The localized string if found; otherwise, returns the original key.</returns>
-    internal static string GetLocalization(string key)
+    /// <param name="lid">The localization id to look up.</param>
+    /// <returns>The localized string if found; otherwise, returns the original id.</returns>
+    internal static string GetLocalization(string lid)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(lid))
         {
-            return key ?? string.Empty;
+            return lid ?? string.Empty;
         }
 
         var currentLanguage = Instances.LocalizationActivity.m_settings.CurrentLanguage;
 
         if (Localizations.TryGetValue(currentLanguage, out var localizationMap))
         {
-            if (localizationMap.TryGetValue(key, out var localization))
+            if (localizationMap.TryGetValue(lid, out var localization))
             {
                 return localization;
             }
@@ -146,49 +122,39 @@ internal static class LocalizationManager
 
         if (currentLanguage != Language.English && Localizations.TryGetValue(Language.English, out var englishMap))
         {
-            if (englishMap.TryGetValue(key, out var localizationForce))
+            if (englishMap.TryGetValue(lid, out var localizationForce))
             {
                 return localizationForce;
             }
         }
 
-        return key;
+        // Can not use Localizer.Instance due to it being a generic type class that enforces a interface,
+        // the il2cpp type does not play well in managed runtime,
+        // so instead use this janky workaround to be able to localize text from the game.
+        // This is due to interfaces being treated as a class in il2cpp, and the generic type being a class, so it does not match the interface type.
+        GlobalGameObjects.Localizer.m_Id = lid;
+        GlobalGameObjects.Localizer.LocalizeText();
+        string gameLocalization = GlobalGameObjects.Localizer.m_format;
+        if (!string.IsNullOrEmpty(gameLocalization))
+        {
+            return gameLocalization;
+        }
+
+        return lid;
     }
 
     /// <summary>
     /// Retrieves a localized string for the current game language and formats it with the specified arguments.
     /// </summary>
-    /// <param name="key">The localization key to look up.</param>
+    /// <param name="lid">The localization id to look up.</param>
     /// <param name="format">An array of objects to format the localized string with.</param>
     /// <returns>
-    /// The formatted localized string if found; otherwise, returns the original key.
+    /// The formatted localized string if found; otherwise, returns the original id.
     /// </returns>
-    internal static string GetLocalizationFormatted(string key, params string[] format)
+    internal static string GetLocalizationFormatted(string lid, params string[] format)
     {
-        if (string.IsNullOrEmpty(key))
-        {
-            return key ?? string.Empty;
-        }
-
-        var currentLanguage = Instances.LocalizationActivity.m_settings.CurrentLanguage;
-
-        if (Localizations.TryGetValue(currentLanguage, out var localizationMap))
-        {
-            if (localizationMap.TryGetValue(key, out var localization))
-            {
-                return string.Format(localization, format);
-            }
-        }
-
-        if (currentLanguage != Language.English && Localizations.TryGetValue(Language.English, out var englishMap))
-        {
-            if (englishMap.TryGetValue(key, out var localizationForce))
-            {
-                return string.Format(localizationForce, format);
-            }
-        }
-
-        return key;
+        var localization = GetLocalization(lid);
+        return localization == lid ? lid : string.Format(localization, format);
     }
 
     /// <summary>

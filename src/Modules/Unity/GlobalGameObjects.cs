@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Il2CppTekly.DataModels.Binders;
+using Il2CppTMPro;
+using UnityEngine;
 
 namespace ReplantedOnline.Modules.Unity;
 
@@ -54,6 +56,24 @@ internal static class GlobalGameObjects
             if (field == null)
             {
                 field = new GameObject("NetworkObjects");
+            }
+
+            return field;
+        }
+    }
+
+    internal static FormattedStringBinder Localizer
+    {
+        get
+        {
+            if (field == null)
+            {
+                var go = new GameObject("Localizer");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                go.SetActive(false);
+                var formattedStringBinder = go.AddComponent<FormattedStringBinder>();
+                formattedStringBinder.m_text = go.AddComponent<TextMeshPro>();
+                field = formattedStringBinder;
             }
 
             return field;

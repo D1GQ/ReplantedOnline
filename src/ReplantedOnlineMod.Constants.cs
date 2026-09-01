@@ -43,7 +43,6 @@ internal partial class ReplantedOnlineMod
             internal const int DEFAULT_PLAYER_INDEX = -1;
             internal const int LOCAL_PLAYER_INDEX = 0;
             internal const int OPPONENT_PLAYER_INDEX = 1;
-            internal const string REDIRECT_ALMANAC_PREFIX = "ALMANAC-REDIRECT:";
             internal const float X2_SEEDPACKET_COOLDOWN_TIME_END = 60f;
             internal const int PLANT_LAUNCHRATE_MULTIPLIER = 25;
             internal const float VERSUS_PRECOUNTDOWN_TIME = 4f;
