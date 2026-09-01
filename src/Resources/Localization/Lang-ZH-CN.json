@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "ChineseSimplified",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "一名古怪的伴舞，可为附近的僵尸提供可叠加的速度提升。",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "一种奇特的生物，它很容易发怒！",
   "BUTTON_OK": "确定",
   "BUTTON_HOST": "主机",
   "BUTTON_JOIN": "加入",

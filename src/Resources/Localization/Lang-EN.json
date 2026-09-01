@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "English",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "A quirky backup dancer that gives a stackable speed boost to nearby zombies.",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "A curious creature that can be enraged!",
   "BUTTON_OK": "Ok",
   "BUTTON_HOST": "Host",
   "BUTTON_JOIN": "Join",

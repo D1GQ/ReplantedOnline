@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "Spanish",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "Un bailarín de apoyo peculiar que otorga un aumento de velocidad acumulable a los zombis cercanos.",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "¡Una criatura curiosa que puede enfurecerse!",
   "BUTTON_OK": "Aceptar",
   "BUTTON_HOST": "Anfitrión",
   "BUTTON_JOIN": "Unirse",

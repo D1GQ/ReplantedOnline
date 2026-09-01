@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "German",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "Ein skurriler Background-Tänzer, der nahegelegenen Zombies einen stapelbaren Geschwindigkeitsbonus verleiht.",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "Eine neugierige Kreatur, die in Rage versetzt werden kann!",
   "BUTTON_OK": "Ok",
   "BUTTON_HOST": "Host",
   "BUTTON_JOIN": "Beitreten",

@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "French",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "Un danseur de soutien excentrique qui confère un bonus de vitesse cumulable aux zombies proches.",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "Une créature curieuse qui peut être mise en rage !",
   "BUTTON_OK": "Ok",
   "BUTTON_HOST": "Hôte",
   "BUTTON_JOIN": "Rejoindre",

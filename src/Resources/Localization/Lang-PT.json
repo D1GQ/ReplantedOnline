@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "Portuguese",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "Um dançarino de apoio peculiar que concede um aumento de velocidade acumulável aos zumbis próximos.",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "Uma criatura curiosa que pode ficar enfurecida!",
   "BUTTON_OK": "Ok",
   "BUTTON_HOST": "Anfitrião",
   "BUTTON_JOIN": "Entrar",

@@ -104,13 +104,13 @@ internal static class SeedPacketDefinitions
         var BackupDancerDefinition = CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieBackupDancer, "BACKUP_DANCER",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.BackupDancerSeedPacketIcon.Asset,
-            "A quirky backup dancer that gives a stackable speed boost to nearby zombies.");
+            "$CHARACTER_DESCRIPTION_BACKUP_DANCER");
         BackupDancerDefinition!.m_previewSpriteScale = 0.82f;
 
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieYeti, "ZOMBIE_YETI",
             ReplantedOnlineMod.Assets.Sprites.SeedPacket.YetiSeedPacketIcon.Asset,
-            "A curious creature that can be enraged!");
+            "$CHARACTER_DESCRIPTION_ZOMBIE_YETI");
 
         foreach (var seedDefinition in Instances.IDataService.PlantDefinitions.EnumerateIl2CppReadonlyList())
         {

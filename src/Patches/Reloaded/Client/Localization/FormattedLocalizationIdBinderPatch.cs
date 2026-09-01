@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Binders;
 using Il2CppReloaded.Gameplay;
+using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Structs.Reloaded;
 
@@ -13,9 +14,9 @@ internal static class FormattedLocalizationIdBinderPatch
     [HarmonyPrefix]
     private static bool FormattedLocalizationIdBinder_BindValue_Prefix(FormattedLocalizationIdBinder __instance, string value)
     {
-        if (value.StartsWith("raw:"))
+        if (LocalizationManager.TryGetLocalization(value, out var localization))
         {
-            __instance.m_text.SetText(value[4..]);
+            __instance.m_text.SetText(localization);
             return false;
         }
 

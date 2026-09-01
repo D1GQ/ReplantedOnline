@@ -1,5 +1,7 @@
 {
   "LANGUAGE": "Japanese",
+  "CHARACTER_DESCRIPTION_BACKUP_DANCER": "近くのゾンビに重ね掛け可能なスピードアップ効果を与える、個性的なバックアップダンサー。",
+  "CHARACTER_DESCRIPTION_ZOMBIE_YETI": "怒り狂うこともある、不思議な生き物！",
   "BUTTON_OK": "OK",
   "BUTTON_HOST": "ホスト",
   "BUTTON_JOIN": "参加",
