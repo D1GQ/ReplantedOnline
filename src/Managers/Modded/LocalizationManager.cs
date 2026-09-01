@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Services;
+using ReplantedOnline.Data.Asset.Resource;
 using ReplantedOnline.Data.Json;
 using ReplantedOnline.Modules.Modded.Instance;
-using System.Text.Json;
 
 namespace ReplantedOnline.Managers.Modded;
 
@@ -10,6 +10,11 @@ namespace ReplantedOnline.Managers.Modded;
 /// </summary>
 internal static class LocalizationManager
 {
+    /// <summary>
+    /// The JSON resource asset for the master localization configuration.
+    /// </summary>
+    private static readonly JsonResourceAsset<LocalizationConfig> LocalizationAsset = new("ReplantedOnline.Resources.Localization.Localizations.json");
+
     /// <summary>
     /// Stores all loaded localizations keyed by <see cref="Language"/>.
     /// </summary>
@@ -21,15 +26,11 @@ internal static class LocalizationManager
     /// </summary>
     internal static void Initialize()
     {
-        using var masterStream = ReplantedOnlineMod.ModInfo.Assembly
-            .GetManifestResourceStream("ReplantedOnline.Resources.Localization.Localizations.json");
-        if (masterStream != null)
-        {
-            using StreamReader reader = new(masterStream);
-            string content = reader.ReadToEnd();
-            LocalizationConfig config = new();
-            config.Deserialize(content);
+        LocalizationAsset.Load();
 
+        if (LocalizationAsset.Loadded)
+        {
+            var config = LocalizationAsset.Asset;
             foreach (var fileName in config.LanguageFiles)
             {
                 ParseLocalizationFile(fileName);
@@ -46,15 +47,12 @@ internal static class LocalizationManager
     /// "ReplantedOnline.Resources.Localization." namespace.</param>
     private static void ParseLocalizationFile(string fileName)
     {
-        using var langStream = ReplantedOnlineMod.ModInfo.Assembly
-            .GetManifestResourceStream($"ReplantedOnline.Resources.Localization.{fileName}");
+        var langAsset = new JsonResourceAsset<Dictionary<string, string>>($"ReplantedOnline.Resources.Localization.{fileName}");
+        langAsset.Load();
 
-        if (langStream != null)
+        if (langAsset.Loadded)
         {
-            using StreamReader langReader = new(langStream);
-            string langContent = langReader.ReadToEnd();
-            var translations = JsonSerializer.Deserialize<Dictionary<string, string>>(langContent);
-
+            var translations = langAsset.Asset;
             if (translations != null)
             {
                 if (translations.TryGetValue("LANGUAGE", out var languageStr) && Enum.TryParse<Language>(languageStr, out var language))
