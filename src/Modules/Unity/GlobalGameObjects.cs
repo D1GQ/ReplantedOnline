@@ -12,7 +12,6 @@ internal static class GlobalGameObjects
     /// <summary>
     /// Gets the container GameObject for all prefabs. Creates a new "Prefabs" GameObject if none exists, and marks it to persist across scene loads.
     /// </summary>
-    /// <value>The GameObject that serves as the container for prefabs.</value>
     internal static GameObject PrefabsGo
     {
         get
@@ -30,7 +29,6 @@ internal static class GlobalGameObjects
     /// <summary>
     /// Gets the container GameObject for all network prefabs. Creates a new "NetworkPrefabs" GameObject if none exists, and marks it to persist across scene loads.
     /// </summary>
-    /// <value>The GameObject that serves as the container for network prefabs.</value>
     internal static GameObject NetworkPrefabsObj
     {
         get
@@ -48,7 +46,6 @@ internal static class GlobalGameObjects
     /// <summary>
     /// Gets the container GameObject for all network objects. Creates a new "NetworkObjects" GameObject if none exists.
     /// </summary>
-    /// <value>The GameObject that serves as the container for network objects.</value>
     internal static GameObject NetworkObjectsGo
     {
         get
@@ -62,6 +59,9 @@ internal static class GlobalGameObjects
         }
     }
 
+    /// <summary>
+    /// Gets the localizer binder component for formatted string localization.
+    /// </summary>
     internal static FormattedStringBinder Localizer
     {
         get

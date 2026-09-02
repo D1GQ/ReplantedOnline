@@ -24,8 +24,8 @@ internal static class BloomEngineManager
 
         var mod = ModMenuService.CreateEntry(replantedOnline);
         mod.AddIcon(ReplantedOnlineMod.Assets.Sprites.ModIcon.Asset);
-        mod.AddDisplayName(ReplantedOnlineMod.ModInfo.MOD_NAME);
-        mod.AddDescription("Replanted Online is a mod that adds online support to versus!");
+        mod.AddDisplayName("$MOD_CONFIG_NAME");
+        mod.AddDescription("$MOD_CONFIG_DESCRIPTION");
         mod.AddConfigInputs(BloomConfigs.TransportModeConfig, BloomConfigs.AppServerConfig, BloomConfigs.ModifyMusicConfig);
         mod.Register();
     }
@@ -45,22 +45,22 @@ internal static class BloomEngineManager
         internal static void Init()
         {
             TransportModeConfig = ConfigService.CreateEnum(
-                "Transport Mode",
-                "Choose what network transport to use when hosting a lobby.",
+                "$MOD_CONFIG_TRANSPORT_MODE",
+                "$MOD_CONFIG_TRANSPORT_MODE_DESCRIPTION",
                 TransportMode.Steam
             );
             TransportModeConfig.OnValueChanged += ReloadedLobby.SetTransportMode;
 
             AppServerConfig = ConfigService.CreateEnum(
-                "App Server",
-                "Choose what app id the steam matchmaking uses.",
+                "$MOD_CONFIG_APP_SERVER",
+                "$MOD_CONFIG_APP_SERVER_DESCRIPTION",
                 AppIds.Replanted
             );
             AppServerConfig.OnValueChanged += SteamClientPatch.SetApp;
 
             ModifyMusicConfig = ConfigService.CreateBool(
-                "Modify Music",
-                "Modifies music tracks.",
+                "$MOD_CONFIG_MODIFY_MUSIC",
+                "$MOD_CONFIG_MODIFY_MUSIC_DESCRIPTION",
                 true
             );
             ModifyMusicConfig.OnValueChanged += @bool =>

@@ -25,6 +25,7 @@ internal static class PatchManager
         try
         {
             harmony.PatchAll();
+            BloomEnginePatch.Patch(harmony);
             DebugLoggerPatch.Patch(harmony);
             Il2CppInteropExceptionLogPatch.Patch(harmony);
             DetourHookAttribute.InstallAll();

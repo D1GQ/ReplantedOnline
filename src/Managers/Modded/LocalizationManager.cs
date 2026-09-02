@@ -107,7 +107,12 @@ internal static class LocalizationManager
     {
         if (string.IsNullOrEmpty(lid))
         {
-            return lid ?? string.Empty;
+            return lid;
+        }
+
+        if (Instances.LocalizationActivity == null)
+        {
+            return lid;
         }
 
         var currentLanguage = Instances.LocalizationActivity.m_settings.CurrentLanguage;

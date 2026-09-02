@@ -3,7 +3,6 @@ using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Patches.Misc;
 
-[HarmonyPatch]
 internal static class UniverseLibPatch
 {
     internal static void Patch(HarmonyLib.Harmony harmony)
