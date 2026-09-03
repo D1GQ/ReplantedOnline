@@ -27,14 +27,14 @@ internal sealed class NightArena : DayArena
     }
 
     /// <inheritdoc/>
-    public override CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public override CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
         if (seedType == SeedType.Seashroom)
         {
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.Night);
+        return IArena.DefaultGetRecommentedFlags(seedType, ArenaType.Night);
     }
 
     /// <inheritdoc/>

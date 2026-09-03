@@ -74,7 +74,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
         if (seedType == SeedType.Flowerpot)
         {
@@ -102,7 +102,7 @@ internal class RoofArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotRecommended | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArena.GetDefaultRecommentedFlags(seedType, Type);
+        return IArena.DefaultGetRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

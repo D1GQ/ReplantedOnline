@@ -56,7 +56,7 @@ internal sealed class DebugArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
         return CustomRecommentedFlags.Recommended;
     }

@@ -32,9 +32,9 @@ internal class DayArena : IArena, IArenaData
     }
 
     /// <inheritdoc/>
-    public virtual CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public virtual CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
-        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.Day);
+        return IArena.DefaultGetRecommentedFlags(seedType, ArenaType.Day);
     }
 
     /// <inheritdoc/>

@@ -69,14 +69,14 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
         if (seedType == SeedType.Lilypad)
         {
             return CustomRecommentedFlags.Required | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArena.GetDefaultRecommentedFlags(seedType, Type);
+        return IArena.DefaultGetRecommentedFlags(seedType, Type);
     }
 
     /// <inheritdoc/>

@@ -162,7 +162,7 @@ internal sealed class RandomGamemode : IVersusGamemode
                 foreach (var (hasDeps, deps) in PlantSeedTypeDependencies)
                 {
                     if (hasDeps.Contains(seedType) && !deps.Any(s => !currentSeedTypes.Contains(s) &&
-                    !arena.GetSeedTypeCustomRecommentedFlags(s).HasFlag(CustomRecommentedFlags.ExcludeFromRandomDependency)))
+                    !arena.GetRecommentedFlags(s).HasFlag(CustomRecommentedFlags.ExcludeFromRandomDependency)))
                     {
                         hasDependency = true;
                         break;
@@ -182,7 +182,7 @@ internal sealed class RandomGamemode : IVersusGamemode
             if (Plant.IsUpgrade(seedType))
                 continue;
 
-            if (arena.GetSeedTypeCustomRecommentedFlags(seedType)
+            if (arena.GetRecommentedFlags(seedType)
                 .HasFlag(CustomRecommentedFlags.ExcludeFromRandom))
                 continue;
 
@@ -227,7 +227,7 @@ internal sealed class RandomGamemode : IVersusGamemode
             if (Challenge.IsZombieSeedType(seedType) != zombieSeedTypes)
                 continue;
 
-            if (!arena.GetSeedTypeCustomRecommentedFlags(seedType)
+            if (!arena.GetRecommentedFlags(seedType)
                 .HasFlag(CustomRecommentedFlags.Required))
                 continue;
 
@@ -294,7 +294,7 @@ internal sealed class RandomGamemode : IVersusGamemode
             List<SeedType> availableDependents = [];
             foreach (var dependent in deps)
             {
-                var flags = arena.GetSeedTypeCustomRecommentedFlags(dependent);
+                var flags = arena.GetRecommentedFlags(dependent);
                 if (flags.HasFlag(CustomRecommentedFlags.ExcludeFromRandomDependency))
                     continue;
 

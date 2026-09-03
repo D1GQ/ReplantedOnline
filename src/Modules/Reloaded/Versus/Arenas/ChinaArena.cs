@@ -71,7 +71,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
     }
 
     /// <inheritdoc/>
-    public CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType)
+    public CustomRecommentedFlags GetRecommentedFlags(SeedType seedType)
     {
         if (seedType == SeedType.Flowerpot)
         {
@@ -83,7 +83,7 @@ internal sealed class ChinaArena : IArena, IArenaData, IArenaSetupSeedbank
             return CustomRecommentedFlags.NotAllowed | CustomRecommentedFlags.ExcludeFromRandom;
         }
 
-        return IArena.GetDefaultRecommentedFlags(seedType, ArenaType.China);
+        return IArena.DefaultGetRecommentedFlags(seedType, ArenaType.China);
     }
 
     /// <inheritdoc/>

@@ -254,7 +254,7 @@ internal static class SeedChooserPatch
 
         var seedType = chosen.mSeedType;
         bool isZombie = Challenge.IsZombieSeedType(seedType);
-        var flags = IArena.GetCurrentArena().GetSeedTypeCustomRecommentedFlags(seedType);
+        var flags = IArena.GetCurrentArena().GetRecommentedFlags(seedType);
 
         if (flags.HasFlag(CustomRecommentedFlags.Required))
         {
@@ -285,7 +285,7 @@ internal static class SeedChooserPatch
 
     private static void SetSeedPacketRecommendations(SeedChooserEntryModel seedChooserEntryModel, ChosenSeed chosen)
     {
-        var flags = IArena.GetCurrentArena().GetSeedTypeCustomRecommentedFlags(chosen.mSeedType);
+        var flags = IArena.GetCurrentArena().GetRecommentedFlags(chosen.mSeedType);
 
         bool isNotAllowed = flags.HasFlag(CustomRecommentedFlags.NotAllowed);
         bool isNotRecommended = flags.HasFlag(CustomRecommentedFlags.NotRecommended) ||

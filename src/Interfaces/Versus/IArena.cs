@@ -22,7 +22,7 @@ internal interface IArena
     /// </summary>
     /// <param name="seedType">The seed type to get recommended flags for.</param>
     /// <returns>The custom recommended flags for the specified seed type.</returns>
-    CustomRecommentedFlags GetSeedTypeCustomRecommentedFlags(SeedType seedType);
+    CustomRecommentedFlags GetRecommentedFlags(SeedType seedType);
 
     /// <summary>
     /// Called when the versus gameplay starts.
@@ -45,7 +45,7 @@ internal interface IArena
     /// <returns>True if the seed type can be placed at the specified location; otherwise, false</returns>
     bool CanBePlacedAt(SeedType seedType, BoardUnitX boardUnitX, BoardUnitY boardUnitY);
 
-    public static CustomRecommentedFlags GetDefaultRecommentedFlags(SeedType seedType, ArenaType arenaType)
+    public static CustomRecommentedFlags DefaultGetRecommentedFlags(SeedType seedType, ArenaType arenaType)
     {
         bool isNight = arenaType.IsArenaAtNight();
         bool isCloudy = arenaType == ArenaType.CloudyDay;
