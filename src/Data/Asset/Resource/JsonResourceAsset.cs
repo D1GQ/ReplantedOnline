@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using ReplantedOnline.Data.Json;
+using System.Text.Json;
 
 namespace ReplantedOnline.Data.Asset.Resource;
 
@@ -26,7 +27,21 @@ internal sealed class JsonResourceAsset<T>(string path) : ResourceAsset<T>(path)
             {
                 using StreamReader reader = new(stream);
                 string content = reader.ReadToEnd();
-                T? config = JsonSerializer.Deserialize<T>(content);
+                T? config;
+
+                if (typeof(JsonObject).IsAssignableFrom(typeof(T)))
+                {
+                    config = Activator.CreateInstance<T>();
+                    if (config is JsonObject jsonObject)
+                    {
+                        jsonObject.Deserialize(content);
+                    }
+                }
+                else
+                {
+                    config = JsonSerializer.Deserialize<T>(content);
+                }
+
                 if (config != null)
                 {
                     Loadded = true;

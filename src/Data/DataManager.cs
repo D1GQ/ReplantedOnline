@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Data.Json.Config.Reloaded;
+﻿using ReplantedOnline.Data.Asset.Resource;
+using ReplantedOnline.Data.Json.Config.Reloaded;
 
 namespace ReplantedOnline.Data;
 
@@ -7,6 +8,11 @@ namespace ReplantedOnline.Data;
 /// </summary>
 internal static class DataManager
 {
+    /// <summary>
+    /// The JSON resource asset for VersusModeConfig.
+    /// </summary>
+    private static readonly JsonResourceAsset<VersusModeConfig> VersusModeConfigAsset = new("ReplantedOnline.Resources.VersusModeConfig.json");
+
     /// <summary>
     /// Gets the versus mode configuration containing all seed packet and zombie data.
     /// </summary>
@@ -17,19 +23,14 @@ internal static class DataManager
     /// </summary>
     internal static void Initialize()
     {
-        using var stream = ReplantedOnlineMod.ModInfo.Assembly.GetManifestResourceStream("ReplantedOnline.Resources.VersusModeConfig.json");
-        if (stream != null)
+        VersusModeConfigAsset.Load();
+        if (VersusModeConfigAsset.Loadded)
         {
-            using var streamReader = new StreamReader(stream);
-            string json = streamReader.ReadToEnd();
-
-            var config = new VersusModeConfig();
-            config.Deserialize(json);
-            VersusModeConfig = config!;
+            VersusModeConfig = VersusModeConfigAsset.Asset;
         }
         else
         {
-            throw new InvalidOperationException("Could not find embedded resource: ReplantedOnline.Resources.VersusModeConfig.json");
+            throw new InvalidOperationException("Could not load VersusModeConfigAsset.");
         }
     }
 }
