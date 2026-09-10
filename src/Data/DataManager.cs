@@ -17,7 +17,7 @@ internal static class DataManager
     /// </summary>
     internal static void Initialize()
     {
-        var stream = ReplantedOnlineMod.ModInfo.Assembly.GetManifestResourceStream("ReplantedOnline.Resources.VersusModeConfig.json");
+        using var stream = ReplantedOnlineMod.ModInfo.Assembly.GetManifestResourceStream("ReplantedOnline.Resources.VersusModeConfig.json");
         if (stream != null)
         {
             using var streamReader = new StreamReader(stream);

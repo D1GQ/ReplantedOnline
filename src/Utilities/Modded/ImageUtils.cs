@@ -19,7 +19,7 @@ internal static class ImageUtils
     {
         try
         {
-            var stream = assembly.GetManifestResourceStream(resourcePath);
+            using var stream = assembly.GetManifestResourceStream(resourcePath);
             if (stream == null)
                 return null;
 
@@ -103,7 +103,7 @@ internal static class ImageUtils
     {
         try
         {
-            var stream = assembly.GetManifestResourceStream(resourcePath);
+            using var stream = assembly.GetManifestResourceStream(resourcePath);
             if (stream == null)
                 return null;
 

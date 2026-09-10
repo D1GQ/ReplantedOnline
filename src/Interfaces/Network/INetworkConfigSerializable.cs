@@ -1,5 +1,7 @@
 ﻿using ReplantedOnline.Network.Reloaded.Serialization;
 
+namespace ReplantedOnline.Interfaces.Network;
+
 /// <summary>
 /// Represents an object that can serialize and deserialize its configuration state for network transmission.
 /// </summary>

@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Data.Json.Config.Reloaded.Arenas;
 using ReplantedOnline.Data.Json.Converters;
+using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs;
 using ReplantedOnline.Utilities.Modded;
