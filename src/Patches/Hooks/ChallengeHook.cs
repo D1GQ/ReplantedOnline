@@ -7,6 +7,7 @@ namespace ReplantedOnline.Patches.Hooks;
 [DetourHook]
 internal static class ChallengeHook
 {
+    // This method is inlined! So this hook is for local modification.
     [DetourHook(typeof(Challenge), nameof(Challenge.IsZombieSeedType))]
     private static bool Challenge_IsZombieSeedType_Hook(Func<SeedType, bool> orig, SeedType seed)
     {
@@ -20,6 +21,7 @@ internal static class ChallengeHook
         return orig(seed);
     }
 
+    // This method is inlined! So this hook is for local modification.
     [DetourHook(typeof(Challenge), nameof(Challenge.IZombieSeedTypeToZombieType))]
     private static ZombieType Challenge_IZombieSeedTypeToZombieType_Hook(Func<SeedType, ZombieType> orig, SeedType seed)
     {

@@ -13,11 +13,8 @@ internal sealed class BungeeDropZombieComponent : ZombieNetworkComponent
 {
     internal sealed override void OnEnabled()
     {
-        _screamRng = Math.Min(_screamRng, 2);
         Net.StartCoroutine(CoBungeeDropZombie());
     }
-
-    private int _screamRng;
 
     private IEnumerator CoBungeeDropZombie()
     {
