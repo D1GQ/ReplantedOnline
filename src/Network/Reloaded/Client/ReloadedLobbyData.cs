@@ -364,13 +364,28 @@ internal sealed class ReloadedLobbyData : IDisposable
             if (ReloadedLobby.AmLobbyHost())
             {
                 ReloadedClientData.LocalClient!.Team = hostTeam;
-                ReloadedClientData.OpponentClient?.Team = otherTeam;
+                foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
+                {
+                    if (client.AmLocal)
+                        continue;
+
+                    client?.Team = otherTeam;
+                }
                 InputManager.SetPlayerInput(hostTeam);
             }
             else
             {
                 ReloadedClientData.LocalClient!.Team = otherTeam;
-                ReloadedClientData.OpponentClient?.Team = hostTeam;
+
+                foreach (var client in ReloadedLobby.LobbyData!.AllClients.Values)
+                {
+                    if (!client.AmHost)
+                        continue;
+
+                    client?.Team = hostTeam;
+                    break;
+                }
+
                 InputManager.SetPlayerInput(otherTeam);
             }
 

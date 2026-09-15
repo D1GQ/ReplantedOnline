@@ -23,10 +23,6 @@ internal sealed class ReloadedClientData
         {
             LocalClient = this;
         }
-        else
-        {
-            OpponentClient = this;
-        }
 
         Ready = new(id, nameof(Ready), false);
         ReceivedConfig = new(id, nameof(ReceivedConfig), false)
@@ -49,11 +45,6 @@ internal sealed class ReloadedClientData
     /// Get the local ReloadedClientData
     /// </summary>
     internal static ReloadedClientData? LocalClient { get; private set; }
-
-    /// <summary>
-    /// Get the opponent ReloadedClientData
-    /// </summary>
-    internal static ReloadedClientData? OpponentClient { get; private set; }
 
     /// <summary>
     /// The ID of this client.

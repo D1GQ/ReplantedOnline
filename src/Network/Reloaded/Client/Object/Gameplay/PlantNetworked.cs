@@ -292,6 +292,9 @@ internal sealed class PlantNetworked : NetworkObject
         if (!Plant.IsUpgradableTo(upgrade))
             return;
 
+        if (VersusGameplayManager.GetVersusModeConfig().GetPlantConfig(upgrade) == null)
+            return;
+
         bool wasOnNetwork = IsOnNetwork;
         IsOnNetwork = false;
 
@@ -315,6 +318,9 @@ internal sealed class PlantNetworked : NetworkObject
             return;
 
         if (!Plant.IsUpgradableTo(upgrade))
+            return;
+
+        if (VersusGameplayManager.GetVersusModeConfig().GetPlantConfig(upgrade) == null)
             return;
 
         bool wasOnNetwork = IsOnNetwork;
