@@ -242,7 +242,7 @@
     {
       "type": "Cactus",
       "health": 300,
-      "cost": 100,
+      "cost": 125,
       "refreshTime": 7.5,
       "suddenDeathRefresh": 2.5
     },

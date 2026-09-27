@@ -42,7 +42,7 @@ internal class PriorityVar<T>
     /// otherwise, null. This parameter is passed uninitialized.
     /// </param>
     /// <returns>true if a value has been added and is available; otherwise, false.</returns>
-    internal bool TryGet(out T? value)
+    internal bool TryGet(out T value)
     {
         if (_value != null)
         {
@@ -50,7 +50,7 @@ internal class PriorityVar<T>
             return true;
         }
 
-        value = default;
+        value = default!;
         return false;
     }
 }
