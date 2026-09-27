@@ -1,9 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
-using ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 using ReplantedOnline.Network.Reloaded.Client;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
@@ -76,12 +74,6 @@ internal static class CurrencyProductionPatch
                 {
                     __instance.mZombiePhase = (ZombiePhase)100;
                     __instance.mPhaseCounter = VersusGameplayManager.GetInitPlantOrGraveRate();
-                    return;
-                }
-
-                if (VersusState.ArenaSynced == ArenaType.CloudyDay && CloudyDayArena.IsRaining)
-                {
-                    __instance.mPhaseCounter += 1;
                     return;
                 }
 

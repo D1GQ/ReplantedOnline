@@ -50,26 +50,16 @@ internal static class CloudyDayArenaPatch
         }
     }
 
-    [HarmonyPatch(typeof(SeedChooserScreen), nameof(SeedChooserScreen.SeedNotRecommendedToPick))]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateGravestone))]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPrefix]
-    private static bool SeedChooserScreen_Update_Prefix(SeedType theSeedType, ref RecommentedFlags __result)
+    private static bool Zombie_UpdateGravestone_Prefix()
     {
-        if (VersusState.ArenaSynced != ArenaType.CloudyDay)
-            return true;
-
         if (ReloadedLobby.AmInLobby())
         {
-            // Set to recommended
-            if (Plant.IsNocturnal(theSeedType))
+            // Stop graves from spawning brains during rain
+            if (VersusState.ArenaSynced == ArenaType.CloudyDay && CloudyDayArena.IsRaining)
             {
-                __result = RecommentedFlags.None;
-                return false;
-            }
-
-            // Set to not recommended
-            if (theSeedType == SeedType.InstantCoffee)
-            {
-                __result = RecommentedFlags.NotRecommentedNocturnal;
                 return false;
             }
         }
