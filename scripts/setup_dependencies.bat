@@ -49,7 +49,7 @@ echo.
 
 REM Define dependencies
 REM Format: URL|FILENAME|TARGET_PATH (TARGET_PATH is relative to project root, ROOT will be prepended)
-set "DEP_0=https://github.com/PalmForest0/BloomEngine/releases/download/v0.3.2-beta/BloomEngine.dll|BloomEngine.dll|References\Dependencies\"
+set "DEP_0=https://github.com/PalmForest0/BloomEngine/releases/download/v0.4.1-beta/BloomEngine.dll|BloomEngine.dll|References\Dependencies\"
 
 REM Count dependencies properly
 set DEP_COUNT=0

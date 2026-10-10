@@ -28,8 +28,10 @@ namespace ReplantedOnline;
 /// </summary>
 internal partial class ReplantedOnlineMod : MelonMod
 {
-    internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""));
-    internal static MelonLogger.Instance DebugLogger { get; } = new(ModInfo.MOD_NAME.Replace(" ", "") + "Debug");
+    internal static MelonLogger.Instance Logger { get; } = new(ModInfo.MOD_NAME.Replace(" ", ""),
+        MelonLoader.Logging.ColorARGB.FromArgb(ModInfo.ModColor.R, ModInfo.ModColor.G, ModInfo.ModColor.B));
+    internal static MelonLogger.Instance DebugLogger { get; } = new(ModInfo.MOD_NAME.Replace(" ", "") + "Debug",
+        MelonLoader.Logging.ColorARGB.FromArgb(ModInfo.ModColor.R, ModInfo.ModColor.G, ModInfo.ModColor.B));
 
     internal static bool LoadFailed { get; private set; }
 

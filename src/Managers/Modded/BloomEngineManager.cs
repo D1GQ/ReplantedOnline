@@ -49,24 +49,24 @@ internal static class BloomEngineManager
                 "$MOD_CONFIG_TRANSPORT_MODE_DESCRIPTION",
                 TransportMode.Steam
             );
-            TransportModeConfig.OnValueChanged += ReloadedLobby.SetTransportMode;
+            TransportModeConfig.WithOnValueApplied(ReloadedLobby.SetTransportMode);
 
             AppServerConfig = ConfigService.CreateEnum(
                 "$MOD_CONFIG_APP_SERVER",
                 "$MOD_CONFIG_APP_SERVER_DESCRIPTION",
                 AppIds.Replanted
             );
-            AppServerConfig.OnValueChanged += SteamClientPatch.SetApp;
+            AppServerConfig.WithOnValueApplied(SteamClientPatch.SetApp);
 
             ModifyMusicConfig = ConfigService.CreateBool(
                 "$MOD_CONFIG_MODIFY_MUSIC",
                 "$MOD_CONFIG_MODIFY_MUSIC_DESCRIPTION",
                 true
             );
-            ModifyMusicConfig.OnValueChanged += @bool =>
+            ModifyMusicConfig.WithOnValueApplied(@bool =>
             {
                 AudioManager.OnModifyMusic(@bool, true);
-            };
+            });
         }
     }
 }

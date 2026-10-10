@@ -105,6 +105,32 @@ internal partial class ReplantedOnlineMod
         }
 
         /// <summary>
+        /// The color for the mod.
+        /// </summary>
+        internal static class ModColor
+        {
+            /// <summary>
+            /// The alpha component of the mod's color.
+            /// </summary>
+            internal const byte A = 255;
+
+            /// <summary>
+            /// The red component of the mod's color.
+            /// </summary>
+            internal const byte R = 255;
+
+            /// <summary>
+            /// The green component of the mod's color.
+            /// </summary>
+            internal const byte G = 71;
+
+            /// <summary>
+            /// The blue component of the mod's color.
+            /// </summary>
+            internal const byte B = 203;
+        }
+
+        /// <summary>
         /// Contains constants related to Plants vs. Zombies™: Replanted game information.
         /// </summary>
         internal static class Replanted

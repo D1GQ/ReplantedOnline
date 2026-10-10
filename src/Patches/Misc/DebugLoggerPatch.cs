@@ -14,6 +14,7 @@ internal static class DebugLoggerPatch
 
     internal static void Patch(HarmonyLib.Harmony harmony)
     {
+#if DEBUG
         foreach (var method in Targets)
         {
             if (method != null)
@@ -21,6 +22,7 @@ internal static class DebugLoggerPatch
                 harmony.Patch(method, postfix: new HarmonyMethod(typeof(DebugLoggerPatch), nameof(Postfix)));
             }
         }
+#endif
     }
 
     private static void LogInfo(string className, string methodName, object[] args, ParameterInfo[] parameters)
