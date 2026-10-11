@@ -73,7 +73,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static void WriteEnum<T>(this PacketWriter packetWriter, T value) where T : Enum
     {
-        packetWriter.WriteInt(Convert.ToInt32(value));
+        packetWriter.WritePackedInt(Convert.ToInt32(value));
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static Enum ReadEnum(this PacketReader packetReader, Type type)
     {
-        int value = packetReader.ReadInt();
+        int value = packetReader.ReadPackedInt();
         return (Enum)Enum.ToObject(type, value);
     }
 
@@ -196,7 +196,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static void WriteBoardUnitX(this PacketWriter packetWriter, BoardUnitX value)
     {
-        packetWriter.WriteInt(value.Grid);
+        packetWriter.WritePackedInt(value.Grid);
         packetWriter.WriteFloat(value.Pos);
     }
 
@@ -205,7 +205,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static BoardUnitX ReadBoardUnitX(this PacketReader packetReader)
     {
-        int grid = packetReader.ReadInt();
+        int grid = packetReader.ReadPackedInt();
         float pos = packetReader.ReadFloat();
         return new BoardUnitX(grid, pos);
     }
@@ -215,7 +215,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static void WriteBoardUnitY(this PacketWriter packetWriter, BoardUnitY value)
     {
-        packetWriter.WriteInt(value.Grid);
+        packetWriter.WritePackedInt(value.Grid);
         packetWriter.WriteFloat(value.Pos);
     }
 
@@ -224,7 +224,7 @@ internal static class PacketExtensions
     /// </summary>
     internal static BoardUnitY ReadBoardUnitY(this PacketReader packetReader)
     {
-        int grid = packetReader.ReadInt();
+        int grid = packetReader.ReadPackedInt();
         float pos = packetReader.ReadFloat();
         return new BoardUnitY(grid, pos);
     }

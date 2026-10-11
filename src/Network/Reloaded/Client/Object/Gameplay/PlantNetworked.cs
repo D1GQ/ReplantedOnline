@@ -14,6 +14,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
+using ReplantedOnline.Structs;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -228,7 +229,7 @@ internal sealed class PlantNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendReadyToFireRpc(int row, ref PlantWeapon plantWeapon)
+    internal void SendReadyToFireRpc(PackedInt row, ref PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -240,7 +241,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.ReadyToFire)]
-    private void HandleReadyToFireRpc(int row, PlantWeapon plantWeapon)
+    private void HandleReadyToFireRpc(PackedInt row, PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -251,7 +252,7 @@ internal sealed class PlantNetworked : NetworkObject
         Plant?.FindTargetAndFireOriginal(row, plantWeapon);
     }
 
-    internal void SendFireRpc(Zombie target, int row, ref PlantWeapon plantWeapon)
+    internal void SendFireRpc(Zombie target, PackedInt row, ref PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -263,7 +264,7 @@ internal sealed class PlantNetworked : NetworkObject
     }
 
     [RpcHandler(PlantRpcs.Fire)]
-    private void HandleFireRpc(Zombie target, int row, PlantWeapon plantWeapon)
+    private void HandleFireRpc(Zombie target, PackedInt row, PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {

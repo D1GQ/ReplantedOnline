@@ -234,13 +234,13 @@ internal sealed class VersusModeConfig : JsonObject, INetworkConfigSerializable
     /// <inheritdoc/>
     public void Serialize(PacketWriter packetWriter)
     {
-        packetWriter.WriteInt(InitialSkyProductionRate);
-        packetWriter.WriteInt(InitialProductionRateMax);
-        packetWriter.WriteInt(InitialProductionRateMin);
-        packetWriter.WriteInt(SkyProductionRate);
-        packetWriter.WriteInt(PlantProductionRate);
-        packetWriter.WriteInt(ZombieProductionRate);
-        packetWriter.WriteInt(PlantShooterLaunchRateSurplus);
+        packetWriter.WritePackedInt(InitialSkyProductionRate);
+        packetWriter.WritePackedInt(InitialProductionRateMax);
+        packetWriter.WritePackedInt(InitialProductionRateMin);
+        packetWriter.WritePackedInt(SkyProductionRate);
+        packetWriter.WritePackedInt(PlantProductionRate);
+        packetWriter.WritePackedInt(ZombieProductionRate);
+        packetWriter.WritePackedInt(PlantShooterLaunchRateSurplus);
 
         packetWriter.WritePackedInt(IgnoreInitialCooldown.Count);
         foreach (var seedType in IgnoreInitialCooldown)
@@ -272,13 +272,13 @@ internal sealed class VersusModeConfig : JsonObject, INetworkConfigSerializable
     /// <inheritdoc/>
     public void Deserialize(PacketReader packetReader)
     {
-        InitialSkyProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
-        InitialProductionRateMax = IntTime.FromGameValue(packetReader.ReadInt());
-        InitialProductionRateMin = IntTime.FromGameValue(packetReader.ReadInt());
-        SkyProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
-        PlantProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
-        ZombieProductionRate = IntTime.FromGameValue(packetReader.ReadInt());
-        PlantShooterLaunchRateSurplus = packetReader.ReadInt();
+        InitialSkyProductionRate = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        InitialProductionRateMax = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        InitialProductionRateMin = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        SkyProductionRate = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        PlantProductionRate = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        ZombieProductionRate = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        PlantShooterLaunchRateSurplus = packetReader.ReadPackedInt();
 
         int ignoreCount = packetReader.ReadPackedInt();
         IgnoreInitialCooldown.Clear();

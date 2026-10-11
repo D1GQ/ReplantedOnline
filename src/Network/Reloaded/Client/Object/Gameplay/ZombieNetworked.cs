@@ -13,6 +13,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
+using ReplantedOnline.Structs;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -167,13 +168,13 @@ internal sealed class ZombieNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    internal void SendTakeDamageRpc(int theDamage, DamageFlags theDamageFlags)
+    internal void SendTakeDamageRpc(PackedInt theDamage, DamageFlags theDamageFlags)
     {
         SendNetworkObjectRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
     }
 
     [RpcHandler(ZombieRpcs.TakeDamage)]
-    internal void HandleTakeDamageRpc(int theDamage, DamageFlags damageFlags)
+    internal void HandleTakeDamageRpc(PackedInt theDamage, DamageFlags damageFlags)
     {
         if (Zombie == null)
             return;
@@ -367,7 +368,7 @@ internal sealed class ZombieNetworked : NetworkObject
     }
 
     [RpcHandler(ZombieRpcs.SetFrozen)]
-    private void HandleSetFrozenRpc(bool hitIceTrap, int counter)
+    private void HandleSetFrozenRpc(bool hitIceTrap, PackedInt counter)
     {
         if (Zombie == null)
             return;
@@ -451,13 +452,13 @@ internal sealed class ZombieNetworked : NetworkObject
         State = state;
     }
 
-    internal void SendMoveToRowRpc(int row)
+    internal void SendMoveToRowRpc(PackedInt row)
     {
         SendNetworkObjectRpc(ZombieRpcs.MoveToRow, row);
     }
 
     [RpcHandler(ZombieRpcs.MoveToRow)]
-    private void HandleMoveToRowRpc(int row)
+    private void HandleMoveToRowRpc(PackedInt row)
     {
         if (Zombie == null)
             return;

@@ -30,8 +30,8 @@ internal sealed class ZombieConfig : SeedPacketConfig
     public override void Serialize(PacketWriter packetWriter)
     {
         packetWriter.WriteEnum(Type);
-        packetWriter.WriteInt(BodyHealth);
-        packetWriter.WriteInt(ArmorHealth);
+        packetWriter.WritePackedInt(BodyHealth);
+        packetWriter.WritePackedInt(ArmorHealth);
         base.Serialize(packetWriter);
     }
 
@@ -39,8 +39,8 @@ internal sealed class ZombieConfig : SeedPacketConfig
     public override void Deserialize(PacketReader packetReader)
     {
         Type = packetReader.ReadEnum<ZombieType>();
-        BodyHealth = packetReader.ReadInt();
-        ArmorHealth = packetReader.ReadInt();
+        BodyHealth = packetReader.ReadPackedInt();
+        ArmorHealth = packetReader.ReadPackedInt();
         base.Deserialize(packetReader);
     }
 }

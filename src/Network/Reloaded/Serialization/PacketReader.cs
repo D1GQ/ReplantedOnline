@@ -76,7 +76,7 @@ internal sealed class PacketReader : IPacket
     /// <exception cref="IndexOutOfRangeException">Thrown when there's not enough data to read the string.</exception>
     internal string ReadString()
     {
-        int length = ReadInt();
+        int length = (int)ReadPackedUInt();
         if (Remaining < length)
             throw new IndexOutOfRangeException("Not enough data to read string");
 
@@ -116,13 +116,14 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Reads a variable-length 32-bit signed integer encoded with 7-bit packing (LEB128).
+    /// Reads a signed 4-byte integer encoded with zigzag + 7-bit packing (LEB128).
     /// </summary>
     /// <returns>The decoded signed integer value.</returns>
     /// <exception cref="InvalidDataException">Thrown when the encoded length exceeds the remaining packet data.</exception>
-    public int ReadPackedInt()
+    internal int ReadPackedInt()
     {
-        return (int)ReadPackedUInt();
+        uint zigzag = ReadPackedUInt();
+        return (int)(zigzag >> 1) ^ -(int)(zigzag & 1);
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ internal sealed class PlantConfig : SeedPacketConfig
     public override void Serialize(PacketWriter packetWriter)
     {
         packetWriter.WriteEnum(Type);
-        packetWriter.WriteInt(Health);
+        packetWriter.WritePackedInt(Health);
         base.Serialize(packetWriter);
     }
 
@@ -34,7 +34,7 @@ internal sealed class PlantConfig : SeedPacketConfig
     public override void Deserialize(PacketReader packetReader)
     {
         Type = packetReader.ReadEnum<SeedType>();
-        Health = packetReader.ReadInt();
+        Health = packetReader.ReadPackedInt();
         base.Deserialize(packetReader);
     }
 }

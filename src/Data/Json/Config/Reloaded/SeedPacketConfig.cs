@@ -36,18 +36,18 @@ internal abstract class SeedPacketConfig : JsonObject, INetworkConfigSerializabl
     /// <inheritdoc/>
     public virtual void Serialize(PacketWriter packetWriter)
     {
-        packetWriter.WriteInt(Cost);
-        packetWriter.WriteInt(NocturnalCostSurplus);
-        packetWriter.WriteInt(RefreshTime);
-        packetWriter.WriteInt(SuddenDeathRefresh);
+        packetWriter.WritePackedInt(Cost);
+        packetWriter.WritePackedInt(NocturnalCostSurplus);
+        packetWriter.WritePackedInt(RefreshTime);
+        packetWriter.WritePackedInt(SuddenDeathRefresh);
     }
 
     /// <inheritdoc/>
     public virtual void Deserialize(PacketReader packetReader)
     {
-        Cost = packetReader.ReadInt();
-        NocturnalCostSurplus = packetReader.ReadInt();
-        RefreshTime = IntTime.FromGameValue(packetReader.ReadInt());
-        SuddenDeathRefresh = IntTime.FromGameValue(packetReader.ReadInt());
+        Cost = packetReader.ReadPackedInt();
+        NocturnalCostSurplus = packetReader.ReadPackedInt();
+        RefreshTime = IntTime.FromGameValue(packetReader.ReadPackedInt());
+        SuddenDeathRefresh = IntTime.FromGameValue(packetReader.ReadPackedInt());
     }
 }

@@ -97,7 +97,7 @@ internal sealed class PacketWriter : IPacket
     internal void WriteString(string value)
     {
         byte[] bytes = Encoding.UTF8.GetBytes(value);
-        WriteInt(bytes.Length);
+        WritePackedUInt((uint)bytes.Length);
         _data.AddRange(bytes);
     }
 
@@ -120,15 +120,14 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
-    /// Writes a 4-byte signed integer to the packet using 7-bit packed encoding (LEB128).
+    /// Writes a signed 4-byte integer using zigzag + 7-bit packed encoding (LEB128).
+    /// Small-magnitude values (positive or negative) encode to fewer bytes than a fixed int.
     /// </summary>
-    /// <param name="value">The integer value to write.</param>
+    /// <param name="value">The signed integer value to write.</param>
     internal void WritePackedInt(int value)
     {
-        if (value < 0)
-            throw new ArgumentException("Use WriteInt() for negative values");
-
-        WritePackedUInt((uint)value);
+        uint zigzag = (uint)((value << 1) ^ (value >> 31));
+        WritePackedUInt(zigzag);
     }
 
     /// <summary>
