@@ -12,7 +12,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.DolphinRider)]
 internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
 {
-    private enum DolphinRiderRpcs : byte
+    private enum DolphinRiderMsgs : byte
     {
         Jump
     }
@@ -25,7 +25,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
             if (zombie.mZombiePhase == ZombiePhase.DolphinInJump && !_hasJumped)
             {
                 _hasJumped = true;
-                SendJumpRpc();
+                SendJumpMessage();
             }
         }
         else
@@ -51,16 +51,16 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
         base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
-    private void SendJumpRpc()
+    private void SendJumpMessage()
     {
         if (Net.Zombie == null)
             return;
 
-        SendNetworkComponentRpc(DolphinRiderRpcs.Jump);
+        SendMessage(DolphinRiderMsgs.Jump);
     }
 
-    [RpcHandler(DolphinRiderRpcs.Jump)]
-    private void HandleJumpRpc()
+    [ObjectMessageHandler(DolphinRiderMsgs.Jump)]
+    private void HandleJumpMessage()
     {
         if (Net.Zombie == null)
             return;

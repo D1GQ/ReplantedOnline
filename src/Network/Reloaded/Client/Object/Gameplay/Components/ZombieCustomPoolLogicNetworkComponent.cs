@@ -13,7 +13,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 /// <inheritdoc/>
 internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 {
-    private enum ZombieInPoolRpcs : byte
+    private enum ZombieInPoolMsgs : byte
     {
         Drown
     }
@@ -113,7 +113,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
                 if (!_isDrowning && zombie.mZombieType == ZombieType.Imp && zombie.mZombiePhase == ZombiePhase.ZombieNormal)
                 {
                     _isDrowning = true;
-                    SendDrownRpc();
+                    SendDrownMessage();
                     Net.StartCoroutine(CoDrown());
                     Net.DespawnAndDestroyWhenNullOrDead(true);
                 }
@@ -196,13 +196,13 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         return typeCheck && phaseCheck && zombie.mController?.gameObject.active == true;
     }
 
-    private void SendDrownRpc()
+    private void SendDrownMessage()
     {
-        SendNetworkComponentRpc(ZombieInPoolRpcs.Drown);
+        SendMessage(ZombieInPoolMsgs.Drown);
     }
 
-    [RpcHandler(ZombieInPoolRpcs.Drown)]
-    private void HandleDrownRpc()
+    [ObjectMessageHandler(ZombieInPoolMsgs.Drown)]
+    private void HandleDrownMessage()
     {
         if (!_isDrowning)
         {

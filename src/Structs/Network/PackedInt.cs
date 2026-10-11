@@ -1,4 +1,4 @@
-﻿namespace ReplantedOnline.Structs;
+﻿namespace ReplantedOnline.Structs.Network;
 
 /// <summary>
 /// A lightweight wrapper around an <see cref="int"/> that behaves like a normal integer

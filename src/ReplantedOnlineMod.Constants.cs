@@ -15,6 +15,7 @@ internal partial class ReplantedOnlineMod
 
         internal static class Network
         {
+            internal const uint NULL_NETWORK_OBJECT_ID = uint.MaxValue;
             internal const int MAX_NETWORK_CHILDREN = 5;
             internal const string MOD_KEY = "mod";
             internal const string MOD_VERSION_KEY = "mod_version";

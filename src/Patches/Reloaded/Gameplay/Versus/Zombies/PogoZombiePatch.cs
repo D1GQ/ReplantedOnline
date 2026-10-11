@@ -44,7 +44,7 @@ internal static class PogoZombiePatch
             {
                 if (zombieNetworked.TryGetNetworkComponent<PogoNetworkComponent>(out var comp))
                 {
-                    comp.SendPogoBreakRpc(theDamageFlags);
+                    comp.SendPogoBreakMessage(theDamageFlags);
                 }
             }
         }

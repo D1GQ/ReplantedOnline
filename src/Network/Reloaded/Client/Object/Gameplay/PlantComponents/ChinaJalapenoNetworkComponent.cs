@@ -11,7 +11,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 /// <inheritdoc/>
 internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkComponent
 {
-    private enum ChinaJalapenoRpcs : byte
+    private enum ChinaJalapenoMsgs : byte
     {
         Activate
     }
@@ -58,7 +58,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
                     {
                         plant.mSeedType = SeedType.Jalapeno;
                         plant.SetSleeping(false);
-                        SendActivateRpc();
+                        SendActivateMessage();
                     }
 
                     if (zombie.mBodyHealth - 25 > 10)
@@ -108,17 +108,17 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
     }
 
-    internal void SendActivateRpc()
+    internal void SendActivateMessage()
     {
         if (!_activated)
         {
             _activated = true;
-            SendNetworkComponentRpc(ChinaJalapenoRpcs.Activate);
+            SendMessage(ChinaJalapenoMsgs.Activate);
         }
     }
 
-    [RpcHandler(ChinaJalapenoRpcs.Activate)]
-    internal void HandleActivateRpc()
+    [ObjectMessageHandler(ChinaJalapenoMsgs.Activate)]
+    internal void HandleActivateMessage()
     {
         var plant = Net.Plant;
         if (plant == null)

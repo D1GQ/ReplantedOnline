@@ -49,7 +49,7 @@ internal static class ZombieSyncPatch
             if (VersusState.AmPlantSide)
             {
                 var zombieNetworked = __instance.GetNetworked();
-                zombieNetworked?.SendEnteringHouseRpc(__instance.mPosX);
+                zombieNetworked?.SendEnteringHouseMessage(__instance.mPosX);
                 VersusGameplayManager.EndGame(__instance.mController.transform.position, PlayerTeam.Zombies);
                 __instance.mBoard.mCutScene.StartZombiesWon();
             }
@@ -88,7 +88,7 @@ internal static class ZombieSyncPatch
                     if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE;
-                        zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE);
+                        zombieNetworked.SendSetStateMessage(ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE);
                     }
                 }
                 else
@@ -96,7 +96,7 @@ internal static class ZombieSyncPatch
                     if (zombieNetworked.State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_CHEWING_PLANT_STATE)
                     {
                         zombieNetworked.State = null;
-                        zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE);
+                        zombieNetworked.SendSetStateMessage(ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE);
                     }
                 }
             }
@@ -133,7 +133,7 @@ internal static class ZombieSyncPatch
             {
                 if (VersusState.AmPlantSide)
                 {
-                    zombieNetworked.SendDeathRpc(theDamageFlags);
+                    zombieNetworked.SendDeathMessage(theDamageFlags);
                 }
                 else
                 {
@@ -167,7 +167,7 @@ internal static class ZombieSyncPatch
             {
                 if (VersusState.AmPlantSide)
                 {
-                    zombieNetworked.SendDieLootRpc(true);
+                    zombieNetworked.SendDieLootMessage(true);
                 }
                 else
                 {
@@ -201,7 +201,7 @@ internal static class ZombieSyncPatch
             {
                 if (VersusState.AmPlantSide)
                 {
-                    zombieNetworked.SendDieLootRpc(false);
+                    zombieNetworked.SendDieLootMessage(false);
                 }
                 else
                 {
@@ -235,7 +235,7 @@ internal static class ZombieSyncPatch
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendDragUnderRpc();
+                zombieNetworked.SendDragUnderMessage();
             }
         }
 
@@ -265,7 +265,7 @@ internal static class ZombieSyncPatch
                 {
                     if (VersusState.AmPlantSide)
                     {
-                        zombieNetworked.SendMowDownRpc();
+                        zombieNetworked.SendMowDownMessage();
                     }
                     else
                     {
@@ -302,7 +302,7 @@ internal static class ZombieSyncPatch
                 var zombieNetworked = __instance.GetNetworked();
                 if (zombieNetworked != null)
                 {
-                    zombieNetworked.SendTakeDamageRpc(theDamage, theDamageFlags);
+                    zombieNetworked.SendTakeDamageMessage(theDamage, theDamageFlags);
                 }
             }
         }
@@ -333,7 +333,7 @@ internal static class ZombieSyncPatch
                 __instance.HitIceTrapOriginal();
                 if (__instance.mIceTrapCounter > 0)
                 {
-                    zombieNetworked.SendSetFrozenRpc(true);
+                    zombieNetworked.SendSetFrozenMessage(true);
                 }
             }
 
@@ -367,7 +367,7 @@ internal static class ZombieSyncPatch
                 __instance.RemoveIceTrapOriginal();
                 if (__instance.mChilledCounter > 0)
                 {
-                    zombieNetworked.SendSetFrozenRpc(false);
+                    zombieNetworked.SendSetFrozenMessage(false);
                 }
             }
 
@@ -407,7 +407,7 @@ internal static class ZombieSyncPatch
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendApplyBurnRpc();
+                zombieNetworked.SendApplyBurnMessage();
             }
         }
 
@@ -432,7 +432,7 @@ internal static class ZombieSyncPatch
             var zombieNetworked = __instance.GetNetworked();
             if (zombieNetworked != null)
             {
-                zombieNetworked.SendMindControlledRpc();
+                zombieNetworked.SendMindControlledMessage();
             }
         }
 
@@ -466,7 +466,7 @@ internal static class ZombieSyncPatch
                     var zombieNetworked = __instance.GetNetworked();
                     if (zombieNetworked != null)
                     {
-                        zombieNetworked.SendMoveToRowRpc(__instance.mRow);
+                        zombieNetworked.SendMoveToRowMessage(__instance.mRow);
                     }
                 }
             }

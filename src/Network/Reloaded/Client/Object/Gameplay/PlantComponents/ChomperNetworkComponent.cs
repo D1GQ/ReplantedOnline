@@ -13,7 +13,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Chomper)]
 internal sealed class ChomperNetworkComponent : PlantNetworkComponent
 {
-    private enum ChomperRpcs : byte
+    private enum ChomperMsgs : byte
     {
         ChomperState
     }
@@ -29,7 +29,7 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
             {
                 _chomperState = plantState;
                 bool hasTarget = plant.FindTargetZombieOriginal(plant.mRow, PlantWeapon.Primary) != null;
-                SendChomperStateRpc(plantState, hasTarget);
+                SendChomperStateMessage(plantState, hasTarget);
             }
         }
         else
@@ -67,13 +67,13 @@ internal sealed class ChomperNetworkComponent : PlantNetworkComponent
         UpdateHealthSync(plant);
     }
 
-    private void SendChomperStateRpc(PlantState plantState, bool hasTarget)
+    private void SendChomperStateMessage(PlantState plantState, bool hasTarget)
     {
-        SendNetworkComponentRpc(ChomperRpcs.ChomperState, plantState, hasTarget);
+        SendMessage(ChomperMsgs.ChomperState, plantState, hasTarget);
     }
 
-    [RpcHandler(ChomperRpcs.ChomperState)]
-    private void HandleChomperStateRpc(PlantState plantState, bool hasTarget)
+    [ObjectMessageHandler(ChomperMsgs.ChomperState)]
+    private void HandleChomperStateMessage(PlantState plantState, bool hasTarget)
     {
         _chomperState = plantState;
 

@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Bungee)]
 internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 {
-    private enum BungeeRpcs : byte
+    private enum BungeeMsgs : byte
     {
         Dive,
         TakePlant
@@ -29,7 +29,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 if (!_isDiving)
                 {
                     _isDiving = true;
-                    SendDiveRpc();
+                    SendDiveMessage();
                 }
             }
             else if (zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
@@ -37,7 +37,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 if (zombie.mPhaseCounter < 10 && !_isTakingPlant)
                 {
                     _isTakingPlant = true;
-                    SendTakePlantRpc();
+                    SendTakePlantMessage();
                     Net.DespawnAndDestroyWhenNullOrDead(true);
                 }
             }
@@ -65,25 +65,25 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendDiveRpc()
+    private void SendDiveMessage()
     {
-        SendNetworkComponentRpc(BungeeRpcs.Dive);
+        SendMessage(BungeeMsgs.Dive);
     }
 
-    [RpcHandler(BungeeRpcs.Dive)]
-    private void HandleDiveRpc()
+    [ObjectMessageHandler(BungeeMsgs.Dive)]
+    private void HandleDiveMessage()
     {
         _isDiving = true;
         Net.Zombie?.mPhaseCounter = 0;
     }
 
-    private void SendTakePlantRpc()
+    private void SendTakePlantMessage()
     {
-        SendNetworkComponentRpc(BungeeRpcs.TakePlant);
+        SendMessage(BungeeMsgs.TakePlant);
     }
 
-    [RpcHandler(BungeeRpcs.TakePlant)]
-    private void HandleTakePlantRpc()
+    [ObjectMessageHandler(BungeeMsgs.TakePlant)]
+    private void HandleTakePlantMessage()
     {
         _isTakingPlant = true;
         Net.Zombie?.mPhaseCounter = 0;

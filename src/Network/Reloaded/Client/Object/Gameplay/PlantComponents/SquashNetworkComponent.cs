@@ -13,7 +13,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Squash)]
 internal sealed class SquashNetworkComponent : PlantNetworkComponent
 {
-    private enum SquashRpcs : byte
+    private enum SquashMsgs : byte
     {
         Look,
         Jump
@@ -29,28 +29,28 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
             {
                 _looking = true;
                 Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
-                Net.SendSetZombieTargetRpc(target);
-                SendLookRpc();
+                Net.SendSetZombieTargetMessage(target);
+                SendLookMessage();
             }
             else if (plant.mState == PlantState.SquashPreLaunch && !_jump)
             {
                 _jump = true;
                 Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
-                Net.SendSetZombieTargetRpc(target);
-                SendJumpRpc();
+                Net.SendSetZombieTargetMessage(target);
+                SendJumpMessage();
             }
         }
 
         UpdateHealthSync(plant);
     }
 
-    private void SendLookRpc()
+    private void SendLookMessage()
     {
-        SendNetworkComponentRpc(SquashRpcs.Look);
+        SendMessage(SquashMsgs.Look);
     }
 
-    [RpcHandler(SquashRpcs.Look)]
-    private void HandleLookRpc()
+    [ObjectMessageHandler(SquashMsgs.Look)]
+    private void HandleLookMessage()
     {
         var plant = Net.Plant;
         if (plant == null)
@@ -81,13 +81,13 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
         }
     }
 
-    private void SendJumpRpc()
+    private void SendJumpMessage()
     {
-        SendNetworkComponentRpc(SquashRpcs.Jump);
+        SendMessage(SquashMsgs.Jump);
     }
 
-    [RpcHandler(SquashRpcs.Jump)]
-    private void HandleJumpRpc()
+    [ObjectMessageHandler(SquashMsgs.Jump)]
+    private void HandleJumpMessage()
     {
         var plant = Net.Plant;
         if (plant == null)

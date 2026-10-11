@@ -10,18 +10,18 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Umbrella)]
 internal sealed class UmbrellaNetworkComponent : PlantNetworkComponent
 {
-    private enum UmbrellaRpcs : byte
+    private enum UmbrellaMsgs : byte
     {
         HitAndDoSpecial
     }
 
-    internal void SendHitAndDoSpecialRpc()
+    internal void SendHitAndDoSpecialMessage()
     {
-        SendNetworkComponentRpc(UmbrellaRpcs.HitAndDoSpecial);
+        SendMessage(UmbrellaMsgs.HitAndDoSpecial);
     }
 
-    [RpcHandler(UmbrellaRpcs.HitAndDoSpecial)]
-    private void HandleHitAndDoSpecialRpc()
+    [ObjectMessageHandler(UmbrellaMsgs.HitAndDoSpecial)]
+    private void HandleHitAndDoSpecialMessage()
     {
         Net.Plant?.DoSpecialOriginal();
     }

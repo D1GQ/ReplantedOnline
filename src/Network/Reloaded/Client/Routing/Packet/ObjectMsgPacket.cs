@@ -11,15 +11,15 @@ using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 
-[RegisterPacket(PacketType.ObjectRpc)]
-internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacket?, bool>
+[RegisterPacket(PacketType.ObjectMsg)]
+internal class ObjectMsgPacket : IPacketMessage<INetworkIdentifier, uint, IPacket?, bool>
 {
     /// <inheritdoc/>
-    public void Send(INetworkIdentifier networkIdentifier, byte rpcId, IPacket? payload = null, bool receiveLocally = false)
+    public void Send(INetworkIdentifier networkIdentifier, uint messageId, IPacket? payload = null, bool receiveLocally = false)
     {
-        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.ObjectRpc);
-        Message<ObjectRpcMessage>.Singleton.Serialize(packetWriter, networkIdentifier, rpcId, payload);
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {rpcId} for NetworkId: {networkIdentifier.NetworkId}");
+        PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.ObjectMsg);
+        Message<ObjectMsgMessage>.Singleton.Serialize(packetWriter, networkIdentifier, messageId, payload);
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Object RPC: {messageId} for NetworkId: {networkIdentifier.NetworkId}");
         NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Rpc, true, receiveLocally);
     }
 
@@ -32,7 +32,7 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
     private static IEnumerator CoWaitForNetworkObject(ReloadedClientData sender, PacketReader packetReader)
     {
         var packet = PacketReader.Get(packetReader.GetSubpacketBytes());
-        var message = Message<ObjectRpcMessage>.Singleton.Deserialize(packet);
+        var message = Message<ObjectMsgMessage>.Singleton.Deserialize(packet);
         float timeOut = 0f;
 
         try
@@ -43,20 +43,20 @@ internal class ObjectRpcPacket : IPacketMessage<INetworkIdentifier, byte, IPacke
                 {
                     if (!message.IsComponent)
                     {
-                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectRpcPacket), $"Processing NetworkObject RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId}");
-                        RpcHandlerAttribute.HandleRpcReceiver(networkObj, sender, message.RpcId, packet);
+                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectMsgPacket), $"Processing NetworkObject RPC from {sender.Name}: {message.MessageId} for NetworkId: {message.NetworkId}");
+                        ObjectMessageHandlerAttribute.HandleObjectMessage(networkObj, networkObj, sender, message.MessageId, packet);
                     }
                     else
                     {
                         var component = networkObj.NetworkComponents.ElementAtOrDefault(message.ComponentIndex);
                         if (component == null)
                         {
-                            ReplantedOnlineMod.Logger.Error(typeof(ObjectRpcPacket), $"Error processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex} not found!");
+                            ReplantedOnlineMod.Logger.Error(typeof(ObjectMsgPacket), $"Error processing NetworkObjectComponent RPC from {sender.Name}: {message.MessageId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex} not found!");
                             break;
                         }
 
-                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectRpcPacket), $"Processing NetworkObjectComponent RPC from {sender.Name}: {message.RpcId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex}");
-                        RpcHandlerAttribute.HandleRpcReceiver(component, sender, message.RpcId, packet);
+                        ReplantedOnlineMod.Logger.Msg(typeof(ObjectMsgPacket), $"Processing NetworkObjectComponent RPC from {sender.Name}: {message.MessageId} for NetworkId: {message.NetworkId} Component at Index: {message.ComponentIndex}");
+                        ObjectMessageHandlerAttribute.HandleObjectMessage(component, component, sender, message.MessageId, packet);
                     }
 
                     break;

@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Cactus)]
 internal sealed class CactusNetworkComponent : PlantNetworkComponent
 {
-    private enum CactusRpcs : byte
+    private enum CactusMsgs : byte
     {
         High,
         Lowering
@@ -25,7 +25,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
                 if (_isHigh)
                 {
                     _isHigh = false;
-                    SendLoweringRpc();
+                    SendLoweringMessage();
                 }
             }
             else if (plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
@@ -33,7 +33,7 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
                 if (!_isHigh)
                 {
                     _isHigh = true;
-                    SendHighRpc();
+                    SendHighMessage();
                 }
             }
         }
@@ -52,24 +52,24 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
         UpdateHealthSync(plant);
     }
 
-    private void SendHighRpc()
+    private void SendHighMessage()
     {
-        SendNetworkComponentRpc(CactusRpcs.High);
+        SendMessage(CactusMsgs.High);
     }
 
-    [RpcHandler(CactusRpcs.High)]
-    private void HandleHighRpc()
+    [ObjectMessageHandler(CactusMsgs.High)]
+    private void HandleHighMessage()
     {
         _isHigh = true;
     }
 
-    private void SendLoweringRpc()
+    private void SendLoweringMessage()
     {
-        SendNetworkComponentRpc(CactusRpcs.Lowering);
+        SendMessage(CactusMsgs.Lowering);
     }
 
-    [RpcHandler(CactusRpcs.Lowering)]
-    private void HandleLoweringRpc()
+    [ObjectMessageHandler(CactusMsgs.Lowering)]
+    private void HandleLoweringMessage()
     {
         _isHigh = false;
     }

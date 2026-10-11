@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Ladder)]
 internal sealed class LadderNetworkComponent : ZombieNetworkComponent
 {
-    private enum LadderRpcs : byte
+    private enum LadderMsgs : byte
     {
         DonePlacingLadder
     }
@@ -26,7 +26,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
             {
                 // Send target to place ladder on
                 Plant target = zombie.FindPlantTarget(ZombieAttackType.Ladder);
-                Net.SendSetPlantTargetRpc(target);
+                Net.SendSetPlantTargetMessage(target);
             }
             else if (zombie.mZombiePhase == ZombiePhase.ZombieNormal)
             {
@@ -34,7 +34,7 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
                 if (!_donePlacingLadder)
                 {
                     _donePlacingLadder = true;
-                    SendDonePlacingLadderRpc();
+                    SendDonePlacingLadderMessage();
                 }
             }
         }
@@ -59,13 +59,13 @@ internal sealed class LadderNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendDonePlacingLadderRpc()
+    private void SendDonePlacingLadderMessage()
     {
-        SendNetworkComponentRpc(LadderRpcs.DonePlacingLadder);
+        SendMessage(LadderMsgs.DonePlacingLadder);
     }
 
-    [RpcHandler(LadderRpcs.DonePlacingLadder)]
-    private void HandleDonePlacingLadderRpc()
+    [ObjectMessageHandler(LadderMsgs.DonePlacingLadder)]
+    private void HandleDonePlacingLadderMessage()
     {
         _donePlacingLadder = true;
     }

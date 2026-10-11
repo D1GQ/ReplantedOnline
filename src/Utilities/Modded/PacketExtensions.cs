@@ -26,7 +26,7 @@ internal static class PacketExtensions
         }
         else
         {
-            packetWriter.WriteUInt(NetworkObject.NULL);
+            packetWriter.WriteUInt(ReplantedOnlineMod.Constants.Network.NULL_NETWORK_OBJECT_ID);
         }
     }
 
@@ -37,7 +37,7 @@ internal static class PacketExtensions
     {
         var netId = packetReader.ReadUInt();
 
-        if (netId == NetworkObject.NULL)
+        if (netId == ReplantedOnlineMod.Constants.Network.NULL_NETWORK_OBJECT_ID)
         {
             return default!;
         }

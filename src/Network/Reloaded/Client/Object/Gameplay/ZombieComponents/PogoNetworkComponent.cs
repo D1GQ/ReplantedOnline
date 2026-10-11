@@ -10,7 +10,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Pogo)]
 internal sealed class PogoNetworkComponent : ZombieNetworkComponent
 {
-    private enum PogoRpcs : byte
+    private enum PogoMsgs : byte
     {
         JumpOver,
         PogoBreak
@@ -28,7 +28,7 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
             if (zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2 && !_inJump)
             {
                 _inJump = true;
-                SendJumpOverRpc();
+                SendJumpOverMessage();
             }
         }
         else
@@ -59,16 +59,16 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
         base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
-    private void SendJumpOverRpc()
+    private void SendJumpOverMessage()
     {
         if (Net.Zombie == null)
             return;
 
-        SendNetworkComponentRpc(PogoRpcs.JumpOver, Net.Zombie.mPhaseCounter);
+        SendMessage(PogoMsgs.JumpOver, Net.Zombie.mPhaseCounter);
     }
 
-    [RpcHandler(PogoRpcs.JumpOver)]
-    private void HandleJumpOverRpc(int PhaseCounter)
+    [ObjectMessageHandler(PogoMsgs.JumpOver)]
+    private void HandleJumpOverMessage(int PhaseCounter)
     {
         if (Net.Zombie == null)
             return;
@@ -78,16 +78,16 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
         Net.Zombie.mZombiePhase = ZombiePhase.PogoForwardBounce2;
     }
 
-    internal void SendPogoBreakRpc(DamageFlags damageFlags)
+    internal void SendPogoBreakMessage(DamageFlags damageFlags)
     {
         if (Net.Zombie == null)
             return;
 
-        SendNetworkComponentRpc(PogoRpcs.PogoBreak, damageFlags);
+        SendMessage(PogoMsgs.PogoBreak, damageFlags);
     }
 
-    [RpcHandler(PogoRpcs.PogoBreak)]
-    private void HandlePogoBreakRpc(DamageFlags damageFlags)
+    [ObjectMessageHandler(PogoMsgs.PogoBreak)]
+    private void HandlePogoBreakMessage(DamageFlags damageFlags)
     {
         if (Net.Zombie == null)
             return;

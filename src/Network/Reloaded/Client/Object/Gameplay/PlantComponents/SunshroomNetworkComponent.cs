@@ -9,7 +9,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Sunshroom)]
 internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
 {
-    private enum SunshroomRpcs : byte
+    private enum SunshroomMsgs : byte
     {
         Grow
     }
@@ -23,7 +23,7 @@ internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
             if (plant.mState != PlantState.SunshroomSmall && !_hasGrown)
             {
                 _hasGrown = true;
-                SendGrowRpc();
+                SendGrowMessage();
             }
         }
         else
@@ -37,13 +37,13 @@ internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
         UpdateHealthSync(plant);
     }
 
-    internal void SendGrowRpc()
+    internal void SendGrowMessage()
     {
-        SendNetworkComponentRpc(SunshroomRpcs.Grow);
+        SendMessage(SunshroomMsgs.Grow);
     }
 
-    [RpcHandler(SunshroomRpcs.Grow)]
-    private void HandleGrowRpc()
+    [ObjectMessageHandler(SunshroomMsgs.Grow)]
+    private void HandleGrowMessage()
     {
         var plant = Net.Plant;
         if (plant == null)

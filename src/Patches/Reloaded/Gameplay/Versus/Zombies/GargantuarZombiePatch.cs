@@ -107,7 +107,7 @@ internal static class GargantuarZombiePatch
                         if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
                             zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE;
-                            zombieNetworked.SendSetStateRpc(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
+                            zombieNetworked.SendSetStateMessage(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
                         }
                     }
                     else

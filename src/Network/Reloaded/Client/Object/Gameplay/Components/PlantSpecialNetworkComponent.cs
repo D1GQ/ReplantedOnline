@@ -12,9 +12,9 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 [RegisterNetworkComponent(SeedType.InstantCoffee)]
 internal class PlantSpecialNetworkComponent : PlantNetworkComponent
 {
-    private enum PlantSpecialRpcs : byte
+    private enum PlantSpecialMsgs : byte
     {
-        DoSpecial = 255
+        DoSpecial
     }
 
     private bool _isDoingSpecial;
@@ -28,7 +28,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
                 if (!_isDoingSpecial)
                 {
                     Net.Dying = true;
-                    SendDoSpecialRpc();
+                    SendDoSpecialMessage();
                 }
             }
         }
@@ -38,20 +38,20 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         }
     }
 
-    internal void SendDoSpecialRpc()
+    internal void SendDoSpecialMessage()
     {
         if (!_isDoingSpecial)
         {
             _isDoingSpecial = true;
             DoSpecial_PlantSide();
-            SendNetworkComponentRpc(PlantSpecialRpcs.DoSpecial);
+            SendMessage(PlantSpecialMsgs.DoSpecial);
         }
 
         Net.DespawnAndDestroyWhenDeadOrNull(true);
     }
 
-    [RpcHandler(PlantSpecialRpcs.DoSpecial)]
-    protected void HandleDoSpecialRpc()
+    [ObjectMessageHandler(PlantSpecialMsgs.DoSpecial)]
+    protected void HandleDoSpecialMessage()
     {
         if (!_isDoingSpecial)
         {

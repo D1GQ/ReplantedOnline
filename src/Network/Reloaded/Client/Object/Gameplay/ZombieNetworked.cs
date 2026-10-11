@@ -13,12 +13,12 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
-using static ReplantedOnline.Attributes.Network.RpcHandlerAttribute;
+using static ReplantedOnline.Attributes.Network.ObjectMessageHandlerAttribute;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
@@ -29,7 +29,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 [RegisterTypeInIl2Cpp]
 internal sealed class ZombieNetworked : NetworkObject
 {
-    private enum ZombieRpcs : byte
+    private enum ZombieMsgs : byte
     {
         TakeDamage,
         Death,
@@ -168,13 +168,13 @@ internal sealed class ZombieNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    internal void SendTakeDamageRpc(PackedInt theDamage, DamageFlags theDamageFlags)
+    internal void SendTakeDamageMessage(PackedInt theDamage, DamageFlags theDamageFlags)
     {
-        SendNetworkObjectRpc(ZombieRpcs.TakeDamage, theDamage, theDamageFlags);
+        SendMessage(ZombieMsgs.TakeDamage, theDamage, theDamageFlags);
     }
 
-    [RpcHandler(ZombieRpcs.TakeDamage)]
-    internal void HandleTakeDamageRpc(PackedInt theDamage, DamageFlags damageFlags)
+    [ObjectMessageHandler(ZombieMsgs.TakeDamage)]
+    internal void HandleTakeDamageMessage(PackedInt theDamage, DamageFlags damageFlags)
     {
         if (Zombie == null)
             return;
@@ -208,20 +208,20 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendDeathRpc(DamageFlags damageFlags)
+    internal void SendDeathMessage(DamageFlags damageFlags)
     {
         if (!Dying)
         {
             Dying = true;
             LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendNetworkObjectRpc(ZombieRpcs.Death, damageFlags);
+            SendMessage(ZombieMsgs.Death, damageFlags);
         }
 
         DespawnAndDestroyWhenNullOrDead(true);
     }
 
-    [RpcHandler(ZombieRpcs.Death)]
-    private void HandleDeathRpc(DamageFlags damageFlags)
+    [ObjectMessageHandler(ZombieMsgs.Death)]
+    private void HandleDeathMessage(DamageFlags damageFlags)
     {
         if (!Dying)
         {
@@ -233,20 +233,20 @@ internal sealed class ZombieNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendDieLootRpc(bool withLoot)
+    internal void SendDieLootMessage(bool withLoot)
     {
         if (!Dying)
         {
             Dying = true;
             LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendNetworkObjectRpc(ZombieRpcs.DieLoot, withLoot);
+            SendMessage(ZombieMsgs.DieLoot, withLoot);
         }
 
         DespawnAndDestroy(true);
     }
 
-    [RpcHandler(ZombieRpcs.DieLoot)]
-    private void HandleDieLootRpc(bool withLoot)
+    [ObjectMessageHandler(ZombieMsgs.DieLoot)]
+    private void HandleDieLootMessage(bool withLoot)
     {
         if (!Dying)
         {
@@ -265,31 +265,31 @@ internal sealed class ZombieNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendDragUnderRpc()
+    internal void SendDragUnderMessage()
     {
-        SendNetworkObjectRpc(ZombieRpcs.DragUnder);
+        SendMessage(ZombieMsgs.DragUnder);
     }
 
-    [RpcHandler(ZombieRpcs.DragUnder)]
-    private void HandleDragUnderRpc()
+    [ObjectMessageHandler(ZombieMsgs.DragUnder)]
+    private void HandleDragUnderMessage()
     {
         Zombie?.DragUnderOriginal();
     }
 
-    internal void SendMowDownRpc()
+    internal void SendMowDownMessage()
     {
         if (!Dying)
         {
             Dying = true;
             LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendNetworkObjectRpc(ZombieRpcs.MowDown);
+            SendMessage(ZombieMsgs.MowDown);
         }
 
         DespawnAndDestroy(true);
     }
 
-    [RpcHandler(ZombieRpcs.MowDown)]
-    private void HandleMowDownRpc()
+    [ObjectMessageHandler(ZombieMsgs.MowDown)]
+    private void HandleMowDownMessage()
     {
         if (!Dying)
         {
@@ -301,29 +301,29 @@ internal sealed class ZombieNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendSetPlantTargetRpc(Plant target)
+    internal void SendSetPlantTargetMessage(Plant target)
     {
         if (Target != target)
         {
             Target = target;
-            SendNetworkObjectRpc(ZombieRpcs.SetPlantTarget, target);
+            SendMessage(ZombieMsgs.SetPlantTarget, target);
         }
     }
 
-    [RpcHandler(ZombieRpcs.SetPlantTarget)]
-    private void HandleSetPlantTargetRpc(Plant target)
+    [ObjectMessageHandler(ZombieMsgs.SetPlantTarget)]
+    private void HandleSetPlantTargetMessage(Plant target)
     {
         Target = target;
     }
 
-    internal void SendEnteringHouseRpc(float xPos)
+    internal void SendEnteringHouseMessage(float xPos)
     {
         EnteringHouse = true;
-        SendNetworkObjectRpc(ZombieRpcs.EnteringHouse, xPos);
+        SendMessage(ZombieMsgs.EnteringHouse, xPos);
     }
 
-    [RpcHandler(ZombieRpcs.EnteringHouse)]
-    private void HandleEnteringHouseRpc(float xPos)
+    [ObjectMessageHandler(ZombieMsgs.EnteringHouse)]
+    private void HandleEnteringHouseMessage(float xPos)
     {
         EnteringHouse = true;
         VersusGameplayManager.EndGame(Zombie?.mController?.transform.position ?? Vector3.zero, PlayerTeam.Zombies);
@@ -334,21 +334,21 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendMindControlledRpc()
+    internal void SendMindControlledMessage()
     {
         State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
-        SendNetworkObjectRpc(ZombieRpcs.MindControlled);
+        SendMessage(ZombieMsgs.MindControlled);
         DespawnAndDestroyWhenNullOrDead();
     }
 
-    [RpcHandler(ZombieRpcs.MindControlled)]
-    private void HandleMindControlledRpc()
+    [ObjectMessageHandler(ZombieMsgs.MindControlled)]
+    private void HandleMindControlledMessage()
     {
         State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
         Zombie?.StartMindControlledOriginal();
     }
 
-    internal void SendSetFrozenRpc(bool hitIceTrap)
+    internal void SendSetFrozenMessage(bool hitIceTrap)
     {
         int counter;
         if (Zombie == null)
@@ -364,11 +364,11 @@ internal sealed class ZombieNetworked : NetworkObject
             counter = Zombie.mChilledCounter;
         }
 
-        SendNetworkObjectRpc(ZombieRpcs.SetFrozen, hitIceTrap, counter);
+        SendMessage(ZombieMsgs.SetFrozen, hitIceTrap, counter);
     }
 
-    [RpcHandler(ZombieRpcs.SetFrozen)]
-    private void HandleSetFrozenRpc(bool hitIceTrap, PackedInt counter)
+    [ObjectMessageHandler(ZombieMsgs.SetFrozen)]
+    private void HandleSetFrozenMessage(bool hitIceTrap, PackedInt counter)
     {
         if (Zombie == null)
             return;
@@ -385,14 +385,14 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendApplyBurnRpc()
+    internal void SendApplyBurnMessage()
     {
         if (Zombie == null)
             return;
 
         bool reallyDead = Zombie.mBodyHealth <= 1800;
 
-        SendNetworkObjectRpc(ZombieRpcs.ApplyBurn, reallyDead);
+        SendMessage(ZombieMsgs.ApplyBurn, reallyDead);
 
         if (reallyDead && !Dying)
         {
@@ -402,8 +402,8 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    [RpcHandler(ZombieRpcs.ApplyBurn)]
-    private void HandleApplyBurnRpc(bool reallyDead)
+    [ObjectMessageHandler(ZombieMsgs.ApplyBurn)]
+    private void HandleApplyBurnMessage(bool reallyDead)
     {
         if (Zombie == null)
             return;
@@ -420,14 +420,14 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendSnapToPosRpc()
+    internal void SendSnapToPosMessage()
     {
-        SendNetworkObjectRpc(ZombieRpcs.SnapToPos, Zombie?.mPosX ?? 0);
+        SendMessage(ZombieMsgs.SnapToPos, Zombie?.mPosX ?? 0);
     }
 
-    [RpcHandler(ZombieRpcs.SnapToPos, false)]
+    [ObjectMessageHandler(ZombieMsgs.SnapToPos, false)]
     [HideFromIl2Cpp]
-    private void HandleSnapToPosRpc(float posX, RpcInfo rpcInfo)
+    private void HandleSnapToPosMessage(float posX, MessageInfo rpcInfo)
     {
         if (rpcInfo.Sender.Team != PlayerTeam.Zombies)
             return;
@@ -435,13 +435,13 @@ internal sealed class ZombieNetworked : NetworkObject
         Zombie?.mPosX = posX;
     }
 
-    internal void SendSetStateRpc(string state)
+    internal void SendSetStateMessage(string state)
     {
-        SendNetworkObjectRpc(ZombieRpcs.SetState, state);
+        SendMessage(ZombieMsgs.SetState, state);
     }
 
-    [RpcHandler(ZombieRpcs.SetState)]
-    private void HandleSetStateRpc(string state)
+    [ObjectMessageHandler(ZombieMsgs.SetState)]
+    private void HandleSetStateMessage(string state)
     {
         if (state == ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE)
         {
@@ -452,13 +452,13 @@ internal sealed class ZombieNetworked : NetworkObject
         State = state;
     }
 
-    internal void SendMoveToRowRpc(PackedInt row)
+    internal void SendMoveToRowMessage(PackedInt row)
     {
-        SendNetworkObjectRpc(ZombieRpcs.MoveToRow, row);
+        SendMessage(ZombieMsgs.MoveToRow, row);
     }
 
-    [RpcHandler(ZombieRpcs.MoveToRow)]
-    private void HandleMoveToRowRpc(PackedInt row)
+    [ObjectMessageHandler(ZombieMsgs.MoveToRow)]
+    private void HandleMoveToRowMessage(PackedInt row)
     {
         if (Zombie == null)
             return;

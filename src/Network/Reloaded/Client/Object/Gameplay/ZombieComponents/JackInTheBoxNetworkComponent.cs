@@ -12,7 +12,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.JackInTheBox)]
 internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
 {
-    private enum JackInTheBoxRpcs : byte
+    private enum JackInTheBoxMsgs : byte
     {
         Explode
     }
@@ -24,7 +24,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         {
             if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
-                SendExplodeRpc();
+                SendExplodeMessage();
             }
         }
         else
@@ -57,20 +57,20 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendExplodeRpc()
+    private void SendExplodeMessage()
     {
         if (!_isExploding)
         {
             _isExploding = true;
             Net.Dying = true;
-            SendNetworkComponentRpc(JackInTheBoxRpcs.Explode);
+            SendMessage(JackInTheBoxMsgs.Explode);
         }
 
         Net.DespawnAndDestroyWhenNullOrDead(true);
     }
 
-    [RpcHandler(JackInTheBoxRpcs.Explode)]
-    private void HandleExplodeRpc()
+    [ObjectMessageHandler(JackInTheBoxMsgs.Explode)]
+    private void HandleExplodeMessage()
     {
         if (!_isExploding)
         {

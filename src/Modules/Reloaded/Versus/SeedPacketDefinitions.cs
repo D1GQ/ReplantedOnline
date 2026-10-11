@@ -217,7 +217,7 @@ internal static class SeedPacketDefinitions
                     var plantNetworked = plant.GetNetworked();
                     if (plantNetworked != null)
                     {
-                        plantNetworked.SendUpgradeRpc(seedType);
+                        plantNetworked.SendUpgradeMessage(seedType);
                         return plantNetworked.Plant!;
                     }
                 }

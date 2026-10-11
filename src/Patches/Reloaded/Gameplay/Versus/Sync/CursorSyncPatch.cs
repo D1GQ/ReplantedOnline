@@ -49,7 +49,7 @@ internal static class CursorSyncPatch
                     if (plantNetworked != null)
                     {
                         __instance.mPlantsShoveled++;
-                        plantNetworked.SendShoveledRpc();
+                        plantNetworked.SendShoveledMessage();
                         Instances.GameplayActivity.PlaySample(Sound.SOUND_PLANT2);
                     }
                 }

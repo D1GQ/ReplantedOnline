@@ -14,7 +14,7 @@ using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
-using ReplantedOnline.Structs;
+using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
@@ -27,7 +27,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 [RegisterTypeInIl2Cpp]
 internal sealed class PlantNetworked : NetworkObject
 {
-    private enum PlantRpcs : byte
+    private enum PlantMsgs : byte
     {
         Die,
         Shoveled,
@@ -158,19 +158,19 @@ internal sealed class PlantNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    internal void SendDieRpc()
+    internal void SendDieMessage()
     {
         if (!Dying)
         {
             Dying = true;
-            SendNetworkObjectRpc(PlantRpcs.Die, Plant?.mDoSpecialCountdown ?? 0);
+            SendMessage(PlantMsgs.Die);
         }
 
         DespawnAndDestroy(true);
     }
 
-    [RpcHandler(PlantRpcs.Die)]
-    private void HandleDieRpc()
+    [ObjectMessageHandler(PlantMsgs.Die)]
+    private void HandleDieMessage()
     {
         if (!Dying)
         {
@@ -181,20 +181,20 @@ internal sealed class PlantNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendShoveledRpc()
+    internal void SendShoveledMessage()
     {
         if (!Dying)
         {
             Dying = true;
             Plant?.DieOriginal();
-            SendNetworkObjectRpc(PlantRpcs.Shoveled);
+            SendMessage(PlantMsgs.Shoveled);
         }
 
         DespawnAndDestroy(true);
     }
 
-    [RpcHandler(PlantRpcs.Shoveled)]
-    private void HandleShoveledRpc()
+    [ObjectMessageHandler(PlantMsgs.Shoveled)]
+    private void HandleShoveledMessage()
     {
         if (!Dying)
         {
@@ -206,19 +206,19 @@ internal sealed class PlantNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendSquashPlantRpc()
+    internal void SendSquashPlantMessage()
     {
         if (!Dying)
         {
             Dying = true;
-            SendNetworkObjectRpc(PlantRpcs.SquishPlant);
+            SendMessage(PlantMsgs.SquishPlant);
         }
 
         DespawnAndDestroyWhenDeadOrNull(true);
     }
 
-    [RpcHandler(PlantRpcs.SquishPlant)]
-    private void HandleSquashPlantRpc()
+    [ObjectMessageHandler(PlantMsgs.SquishPlant)]
+    private void HandleSquashPlantMessage()
     {
         if (!Dying)
         {
@@ -229,7 +229,7 @@ internal sealed class PlantNetworked : NetworkObject
         IsReadyToDespawn = true;
     }
 
-    internal void SendReadyToFireRpc(PackedInt row, ref PlantWeapon plantWeapon)
+    internal void SendReadyToFireMessage(PackedInt row, ref PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -237,11 +237,11 @@ internal sealed class PlantNetworked : NetworkObject
             plantWeapon = component.GetWeapon();
         }
 
-        SendNetworkObjectRpc(PlantRpcs.ReadyToFire, row, plantWeapon);
+        SendMessage(PlantMsgs.ReadyToFire, row, plantWeapon);
     }
 
-    [RpcHandler(PlantRpcs.ReadyToFire)]
-    private void HandleReadyToFireRpc(PackedInt row, PlantWeapon plantWeapon)
+    [ObjectMessageHandler(PlantMsgs.ReadyToFire)]
+    private void HandleReadyToFireMessage(PackedInt row, PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -252,7 +252,7 @@ internal sealed class PlantNetworked : NetworkObject
         Plant?.FindTargetAndFireOriginal(row, plantWeapon);
     }
 
-    internal void SendFireRpc(Zombie target, PackedInt row, ref PlantWeapon plantWeapon)
+    internal void SendFireMessage(Zombie target, PackedInt row, ref PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -260,11 +260,11 @@ internal sealed class PlantNetworked : NetworkObject
             plantWeapon = component.GetWeapon();
         }
 
-        SendNetworkObjectRpc(PlantRpcs.Fire, target, row, plantWeapon);
+        SendMessage(PlantMsgs.Fire, target, row, plantWeapon);
     }
 
-    [RpcHandler(PlantRpcs.Fire)]
-    private void HandleFireRpc(Zombie target, PackedInt row, PlantWeapon plantWeapon)
+    [ObjectMessageHandler(PlantMsgs.Fire)]
+    private void HandleFireMessage(Zombie target, PackedInt row, PlantWeapon plantWeapon)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
@@ -274,18 +274,18 @@ internal sealed class PlantNetworked : NetworkObject
         Plant?.FireOriginal(target, row, plantWeapon);
     }
 
-    internal void SendSetZombieTargetRpc(Zombie target)
+    internal void SendSetZombieTargetMessage(Zombie target)
     {
-        SendNetworkObjectRpc(PlantRpcs.SetZombieTarget, target);
+        SendMessage(PlantMsgs.SetZombieTarget, target);
     }
 
-    [RpcHandler(PlantRpcs.SetZombieTarget)]
-    private void HandleSetZombieTargetRpc(Zombie target)
+    [ObjectMessageHandler(PlantMsgs.SetZombieTarget)]
+    private void HandleSetZombieTargetMessage(Zombie target)
     {
         Target = target;
     }
 
-    internal void SendUpgradeRpc(SeedType upgrade)
+    internal void SendUpgradeMessage(SeedType upgrade)
     {
         if (Plant == null)
             return;
@@ -309,11 +309,11 @@ internal sealed class PlantNetworked : NetworkObject
         IsOnNetwork = wasOnNetwork;
         gameObject.name = GetObjectName();
 
-        SendNetworkObjectRpc(PlantRpcs.Upgrade, upgrade);
+        SendMessage(PlantMsgs.Upgrade, upgrade);
     }
 
-    [RpcHandler(PlantRpcs.Upgrade)]
-    private void HandleUpgradeRpc(SeedType upgrade)
+    [ObjectMessageHandler(PlantMsgs.Upgrade)]
+    private void HandleUpgradeMessage(SeedType upgrade)
     {
         if (Plant == null)
             return;

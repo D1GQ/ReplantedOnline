@@ -30,7 +30,7 @@ internal static class MagnetshroomPlantPatch
                         if (plantNetworked.Target != theZombie)
                         {
                             plantNetworked.Target = theZombie;
-                            plantNetworked.SendSetZombieTargetRpc(theZombie);
+                            plantNetworked.SendSetZombieTargetMessage(theZombie);
                         }
                     }
                 }

@@ -1,9 +1,12 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Interfaces;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
+using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Component;
 
@@ -11,8 +14,22 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Component;
 /// Abstract base class for network components that provide modular functionality to NetworkObjects.
 /// Components handle serialization, updates, and RPC communication for specific features.
 /// </summary>
-internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializable
+internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializable, ICatchedType
 {
+    /// <inheritdoc/>
+    public Type Type
+    {
+        get
+        {
+            if (field == null)
+            {
+                field = GetType();
+            }
+
+            return field;
+        }
+    }
+
     /// <summary>
     /// Gets or sets the NetworkObject that owns this component.
     /// </summary>
@@ -81,24 +98,31 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
 
     /// <summary>
-    /// Sends a Remote Procedure Call (RPC) for this network component.
+    /// Sends a message for this network component.
     /// </summary>
-    /// <typeparam name="T">The enum type of the RPC identifier.</typeparam>
-    /// <param name="rpcId">The RPC identifier to send.</param>
-    /// <param name="args">Optional arguments to pass to the RPC handler.</param>
+    /// <param name="message">The message identifier to send.</param>
+    /// <param name="args">Optional arguments to pass to the message handler.</param>
     [HideFromIl2Cpp]
-    public void SendNetworkComponentRpc<T>(T rpcId, params object[] args) where T : Enum
+    public void SendMessage(Enum message, params object[] args)
     {
+        if (!ObjectMessageHandlerAttribute.TryGetMessageId(this, message, out var messageId))
+        {
+            ReplantedOnlineMod.Logger.Warning(typeof(NetworkComponent), $"Message {message} is not registered with ObjectMessageHandlerAttribute. Cannot send message.");
+            return;
+        }
+
+        Type[] argTypes = ObjectMessageHandlerAttribute.GetMessageArgsTypes(this, message);
         PacketWriter? packetWriter = null;
         if (args.Length > 0)
         {
             packetWriter = PacketWriter.Get();
-            foreach (var arg in args)
+            for (int i = 0; i < args.Length; i++)
             {
-                IFastPacketResolver.WriteFast(packetWriter, arg, arg?.GetType() ?? typeof(NetworkObject));
+                object? arg = args[i];
+                IFastPacketResolver.WriteFast(packetWriter, arg, argTypes[i]);
             }
         }
-        NetworkManager.Packet<ObjectRpcPacket>.Singleton.Send(this, Convert.ToByte(rpcId), packetWriter);
+        NetworkManager.Packet<ObjectMsgPacket>.Singleton.Send(this, messageId, packetWriter);
         packetWriter?.Recycle();
     }
 }

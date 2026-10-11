@@ -14,7 +14,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Yeti)]
 internal sealed class YetiNetworkComponent : ZombieNetworkComponent
 {
-    private enum YetiRpcs : byte
+    private enum YetiMsgs : byte
     {
         RunBack,
         Enraged
@@ -71,7 +71,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
             if (zombie.mPosX < 350 && CurrentState != YetiState.Runningback)
             {
                 CurrentState = YetiState.Runningback;
-                SendRunBackRpc();
+                SendRunBackMessage();
             }
         }
     }
@@ -96,7 +96,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         if (zombie.mBodyHealth <= (100000 - _yetiConfig.ArmorHealth))
         {
             CurrentState = YetiState.Enraged;
-            SendEnragedRpc();
+            SendEnragedMessage();
             return true;
         }
 
@@ -110,16 +110,16 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         zombie.UpdateAnimSpeed();
     }
 
-    private void SendRunBackRpc()
+    private void SendRunBackMessage()
     {
         if (Net.Zombie == null)
             return;
 
-        SendNetworkComponentRpc(YetiRpcs.RunBack);
+        SendMessage(YetiMsgs.RunBack);
     }
 
-    [RpcHandler(YetiRpcs.RunBack)]
-    private void HandleRunBackRpc()
+    [ObjectMessageHandler(YetiMsgs.RunBack)]
+    private void HandleRunBackMessage()
     {
         if (Net.Zombie == null)
             return;
@@ -130,7 +130,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendEnragedRpc()
+    private void SendEnragedMessage()
     {
         if (Net.Zombie == null)
             return;
@@ -139,11 +139,11 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         Net.Zombie.mBodyHealth = _yetiConfig.BodyHealth;
         Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
-        SendNetworkComponentRpc(YetiRpcs.Enraged);
+        SendMessage(YetiMsgs.Enraged);
     }
 
-    [RpcHandler(YetiRpcs.Enraged)]
-    private void HandleEnragedRpc()
+    [ObjectMessageHandler(YetiMsgs.Enraged)]
+    private void HandleEnragedMessage()
     {
         if (Net.Zombie == null)
             return;

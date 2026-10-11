@@ -45,7 +45,7 @@ internal static class TanglekelpPlantPatch
                         if (plantNetworked.Target == null)
                         {
                             plantNetworked.Target = targetZombie;
-                            plantNetworked.SendSetZombieTargetRpc(targetZombie);
+                            plantNetworked.SendSetZombieTargetMessage(targetZombie);
                         }
 
                         return;
