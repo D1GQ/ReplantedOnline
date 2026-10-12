@@ -15,6 +15,7 @@ internal static class Instances
     internal static AppCore AppCore => GlobalInstance<AppCore>.Instance!;
     internal static GameplayDataProvider GameplayDataProvider => GlobalInstance<GameplayDataProvider>.Instance!;
     internal static GameplayActivity GameplayActivity => GlobalInstance<GameplayActivity>.Instance!;
+    internal static IUserService UserService => GlobalInstance<UserServiceActivity>.Instance.Service!;
     internal static LocalizationActivity LocalizationActivity => GlobalInstance<LocalizationActivity>.Instance;
     internal static IDataService IDataService => GlobalInstance<DataServiceActivity>.Instance.Service!;
     internal static VersusDataModel VersusDataModel => GlobalInstance<VersusDataModel>.Instance!;

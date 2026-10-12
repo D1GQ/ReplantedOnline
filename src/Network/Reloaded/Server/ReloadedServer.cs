@@ -1,5 +1,6 @@
 ﻿using Il2CppSteamworks;
 using ReplantedOnline.Enums.Network;
+using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.MonoScripts.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Serialization;
@@ -130,15 +131,7 @@ internal sealed class ReloadedServer : IDisposable
     /// </param>
     internal static void StartHost(int maxPlayers, bool broadcast = true)
     {
-        string name;
-        try
-        {
-            name = SteamFriends.Internal.GetPersonaName();
-        }
-        catch
-        {
-            name = "Host";
-        }
+        string name = Instances.UserService.GetName();
 
         lock (Server._stateLock)
         {
@@ -205,15 +198,7 @@ internal sealed class ReloadedServer : IDisposable
     /// </param>
     internal static void StartClient(ConnectionMode mode = ConnectionMode.LanClient)
     {
-        string name;
-        try
-        {
-            name = SteamFriends.Internal.GetPersonaName();
-        }
-        catch
-        {
-            name = "Client";
-        }
+        string name = Instances.UserService.GetName();
 
         lock (Server._stateLock)
         {

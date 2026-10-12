@@ -50,10 +50,9 @@ internal static class GlobalInstancePatch
     {
         if (__instance.gameObject.name == "GameBoot")
         {
-            var dataServiceActivity = __instance.GetComponent<DataServiceActivity>();
-            GlobalInstance<DataServiceActivity>.Instance = dataServiceActivity;
-            var localizationActivity = __instance.GetComponent<LocalizationActivity>();
-            GlobalInstance<LocalizationActivity>.Instance = localizationActivity;
+            GlobalInstance<DataServiceActivity>.Instance = __instance.GetComponent<DataServiceActivity>();
+            GlobalInstance<LocalizationActivity>.Instance = __instance.GetComponent<LocalizationActivity>();
+            GlobalInstance<UserServiceActivity>.Instance = __instance.GetComponent<UserServiceActivity>();
         }
     }
 
