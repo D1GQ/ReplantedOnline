@@ -2,13 +2,13 @@
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
 
-namespace ReplantedOnline.Network.Reloaded.Server.Lan;
+namespace ReplantedOnline.Network.Reloaded.Server;
 
 /// <summary>
-/// Represents member data for a connected player in a LAN server lobby.
+/// Represents member data for a connected player in an IP server lobby.
 /// Stores player identification and custom key-value data.
 /// </summary>
-internal sealed class LanMemberData
+internal sealed class ReloadedMemberData
 {
     /// <summary>
     /// Gets or sets the display name of the player.
@@ -28,8 +28,6 @@ internal sealed class LanMemberData
     /// <summary>
     /// Serializes the member data to a packet writer.
     /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
-    /// <param name="init">If true, also serializes the custom data dictionary.</param>
     internal void Serialize(PacketWriter packetWriter, bool init)
     {
         packetWriter.WriteString(PlayerName);
@@ -43,8 +41,6 @@ internal sealed class LanMemberData
     /// <summary>
     /// Deserializes member data from a packet reader.
     /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
-    /// <param name="init">If true, also deserializes the custom data dictionary.</param>
     internal void Deserialize(PacketReader packetReader, bool init)
     {
         PlayerName = packetReader.ReadString();
@@ -58,7 +54,6 @@ internal sealed class LanMemberData
     /// <summary>
     /// Serializes the custom data dictionary to a packet writer.
     /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
     internal void SerializeData(PacketWriter packetWriter)
     {
         packetWriter.WritePackedInt(Data.Count);
@@ -72,7 +67,6 @@ internal sealed class LanMemberData
     /// <summary>
     /// Deserializes the custom data dictionary from a packet reader.
     /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
     internal void DeserializeData(PacketReader packetReader)
     {
         Dictionary<string, string> data = [];

@@ -19,6 +19,7 @@ internal static class JoinLobbyCodePanelPatch
             if (usersRenamePanel != null)
             {
                 LobbyCodePanel.Init(usersRenamePanel);
+                DirectIpPanel.Init(usersRenamePanel);
             }
         }
     }

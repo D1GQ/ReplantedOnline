@@ -3,14 +3,15 @@ using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
 using System.Net;
+using System.Net.Sockets;
 
-namespace ReplantedOnline.Network.Reloaded.Server.Lan;
+namespace ReplantedOnline.Network.Reloaded.Server;
 
 /// <summary>
-/// Contains server metadata and lobby information for LAN games.
+/// Contains server metadata and lobby information for IP-based games.
 /// Manages lobby properties like name, player counts, joinability, and versioning.
 /// </summary>
-internal sealed class LanServerData : IDisposable
+internal sealed class ReloadedServerData : IDisposable
 {
     internal const string SERVER_NAME_KEY = "server_name";
     internal const string PLAYER_COUNT_KEY = "player_count";
@@ -19,20 +20,12 @@ internal sealed class LanServerData : IDisposable
     internal const string MOD_VERSION_KEY = "mod_version";
     internal const string GAME_CODE_KEY = "game_code";
 
-    /// <summary>
-    /// Creates server data.
-    /// </summary>
-    internal LanServerData()
-    {
-    }
+    internal ReloadedServerData() { }
 
     /// <summary>
     /// Creates server data for a direct IP connection.
     /// </summary>
-    /// <param name="ipAddress">The host IP address</param>
-    /// <param name="port">The host port</param>
-    /// <param name="hostId">Optional host ID (will be created from endpoint if not provided)</param>
-    internal LanServerData(IPAddress ipAddress, int port, ID? hostId = null)
+    internal ReloadedServerData(IPAddress ipAddress, int port, ID? hostId = null)
     {
         HostAddress = ipAddress;
         GamePort = port;
@@ -42,100 +35,77 @@ internal sealed class LanServerData : IDisposable
     }
 
     /// <summary>
-    /// Gets or sets the ID of the host member.
+    /// Builds server data for a direct connection from a host string (IP or hostname) and port.
+    /// Resolves DNS if the host is not a literal IP address.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the host cannot be parsed or resolved.</exception>
+    internal static ReloadedServerData ForDirectConnection(string host, int port)
+    {
+        if (string.IsNullOrWhiteSpace(host))
+            throw new ArgumentException("Host cannot be null or empty.", nameof(host));
+
+        if (port < 1 || port > 65535)
+            throw new ArgumentOutOfRangeException(nameof(port), port, "Port must be between 1 and 65535.");
+
+        IPAddress? ip = null;
+
+        // Try parse as literal IP first (fast path).
+        if (IPAddress.TryParse(host.Trim(), out var parsed))
+        {
+            ip = parsed;
+        }
+        else
+        {
+            // Fall back to DNS resolution. Prefer IPv4 for now (matches existing code paths).
+            try
+            {
+                var addresses = Dns.GetHostAddresses(host.Trim());
+                ip = addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)
+                  ?? addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetworkV6);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Could not resolve host '{host}': {ex.Message}", nameof(host), ex);
+            }
+        }
+
+        if (ip == null)
+            throw new ArgumentException($"Could not resolve host '{host}' to any IP address.", nameof(host));
+
+        return new ReloadedServerData(ip, port);
+    }
+
+    /// <summary>Gets or sets the ID of the host member.</summary>
     internal ID HostId { get; set; } = ID.Null;
 
-    /// <summary>
-    /// Gets or sets the unique lobby identifier.
-    /// </summary>
+    /// <summary>Gets or sets the unique lobby identifier.</summary>
     internal ID LobbyId { get; set; } = ID.Null;
 
-    /// <summary>
-    /// Gets or sets the port number for game connections.
-    /// </summary>
+    /// <summary>Gets or sets the port number for game connections.</summary>
     internal int GamePort { get; set; }
 
-    /// <summary>
-    /// Gets or sets the host's IP address.
-    /// </summary>
+    /// <summary>Gets or sets the host's IP address.</summary>
     internal IPAddress HostAddress { get; set; } = default!;
 
-    /// <summary>
-    /// Custom key-value data associated with the lobby.
-    /// </summary>
+    /// <summary>Custom key-value data associated with the lobby.</summary>
     internal Dictionary<string, string> Data = [];
 
-    /// <summary>
-    /// Sets the display name of the server.
-    /// </summary>
-    /// <param name="serverName">The server name to set.</param>
     internal void SetServerName(string serverName) => Data[SERVER_NAME_KEY] = serverName;
-
-    /// <summary>
-    /// Gets the display name of the server.
-    /// </summary>
-    /// <returns>The server name, or empty string if not set.</returns>
     internal string GetServerName() => Data.TryGetValue(SERVER_NAME_KEY, out var value) ? value : string.Empty;
 
-    /// <summary>
-    /// Sets the current number of players in the lobby.
-    /// </summary>
-    /// <param name="playerCount">The player count to set.</param>
     internal void SetPlayerCount(int playerCount) => Data[PLAYER_COUNT_KEY] = playerCount.ToString();
-
-    /// <summary>
-    /// Gets the current number of players in the lobby.
-    /// </summary>
-    /// <returns>The player count, or 0 if not set.</returns>
     internal int GetPlayerCount() => Data.TryGetValue(PLAYER_COUNT_KEY, out var value) && int.TryParse(value, out var count) ? count : 0;
 
-    /// <summary>
-    /// Sets the maximum number of players allowed in the lobby.
-    /// </summary>
-    /// <param name="maxPlayerCount">The maximum player count to set.</param>
     internal void SetMaxPlayerCount(int maxPlayerCount) => Data[MAX_PLAYER_COUNT_KEY] = maxPlayerCount.ToString();
-
-    /// <summary>
-    /// Gets the maximum number of players allowed in the lobby.
-    /// </summary>
-    /// <returns>The maximum player count, or 0 if not set.</returns>
     internal int GetMaxPlayerCount() => Data.TryGetValue(MAX_PLAYER_COUNT_KEY, out var value) && int.TryParse(value, out var count) ? count : 0;
 
-    /// <summary>
-    /// Sets whether new players can join the lobby.
-    /// </summary>
-    /// <param name="isJoinable">True if the lobby is joinable, false otherwise.</param>
     internal void SetIsJoinable(bool isJoinable) => Data[IS_JOINABLE_KEY] = isJoinable.ToString();
+    internal bool GetIsJoinable() => Data.TryGetValue(IS_JOINABLE_KEY, out var value) && bool.TryParse(value, out var joinable) && joinable;
 
-    /// <summary>
-    /// Gets whether new players can join the lobby.
-    /// </summary>
-    /// <returns>True if joinable, false otherwise.</returns>
-    internal bool GetIsJoinable() => Data.TryGetValue(IS_JOINABLE_KEY, out var value) && bool.TryParse(value, out var joinable) ? joinable : false;
-
-    /// <summary>
-    /// Sets the mod version required to join this lobby.
-    /// </summary>
-    /// <param name="modVersion">The mod version string.</param>
     internal void SetModVersion(string modVersion) => Data[MOD_VERSION_KEY] = modVersion;
-
-    /// <summary>
-    /// Gets the mod version required to join this lobby.
-    /// </summary>
-    /// <returns>The mod version string, or empty if not set.</returns>
     internal string GetModVersion() => Data.TryGetValue(MOD_VERSION_KEY, out var value) ? value : string.Empty;
 
-    /// <summary>
-    /// Sets the game code for joining this lobby.
-    /// </summary>
-    /// <param name="gameCode">The game code to set.</param>
     internal void SetGameCode(string gameCode) => Data[GAME_CODE_KEY] = gameCode;
-
-    /// <summary>
-    /// Gets the game code for joining this lobby.
-    /// </summary>
-    /// <returns>The game code, or empty if not set.</returns>
     internal string GetGameCode() => Data.TryGetValue(GAME_CODE_KEY, out var value) ? value : string.Empty;
 
     /// <summary>
@@ -153,16 +123,12 @@ internal sealed class LanServerData : IDisposable
     /// <summary>
     /// Serializes the server data for broadcast discovery.
     /// </summary>
-    /// <param name="packetWriter">The packet writer to write to.</param>
     internal void SerializeBroadcast(PacketWriter packetWriter)
     {
         packetWriter.WriteID(HostId);
         packetWriter.WriteID(LobbyId);
         packetWriter.WriteInt(GamePort);
-
-        // Write host IP address
-        string hostAddress = HostAddress?.ToString() ?? "127.0.0.1";
-        packetWriter.WriteString(hostAddress);
+        packetWriter.WriteString(HostAddress?.ToString() ?? "127.0.0.1");
 
         packetWriter.WritePackedInt(Data.Count);
         foreach (var data in Data)
@@ -175,7 +141,6 @@ internal sealed class LanServerData : IDisposable
     /// <summary>
     /// Deserializes server data from a broadcast packet.
     /// </summary>
-    /// <param name="packetReader">The packet reader to read from.</param>
     internal void DeserializeBroadcast(PacketReader packetReader)
     {
         HostId = packetReader.ReadID();
@@ -202,7 +167,6 @@ internal sealed class LanServerData : IDisposable
     /// <summary>
     /// Converts the server data to a ServerLobby structure.
     /// </summary>
-    /// <returns>A ServerLobby object representing this lobby.</returns>
     internal ServerLobby ToServerLobby()
     {
         return new ServerLobby(
@@ -216,10 +180,5 @@ internal sealed class LanServerData : IDisposable
         );
     }
 
-    /// <summary>
-    /// Disposes of resources used by the LanServerData.
-    /// </summary>
-    public void Dispose()
-    {
-    }
+    public void Dispose() { }
 }

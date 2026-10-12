@@ -132,6 +132,7 @@ internal partial class ReplantedOnlineMod : MelonMod
         PatchManager.UpdatePatchs();
         DiscordManager.Update();
         LobbyCodePanel.ValidateText();
+        DirectIpPanel.ValidateText();
     }
 
     public override void OnApplicationQuit()

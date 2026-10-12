@@ -6,8 +6,10 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Modded.Instance;
+using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Server;
 using ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -43,6 +45,8 @@ internal static class VersusLobbyManager
                     return LocalizationManager.GetLocalizationFormatted("$PANEL_LOBBY_CODE", ReloadedLobby.LobbyData?.LobbyCode ?? "???");
                 case TransportMode.Lan:
                     return LocalizationManager.GetLocalization("$PANEL_LAN_LOBBY");
+                case TransportMode.DirectIp:
+                    return LocalizationManager.GetLocalization("$PANEL_DIRECT_IP_LOBBY");
                 default:
                     break;
             }
@@ -295,6 +299,27 @@ internal static class VersusLobbyManager
     {
         if (ReloadedLobby.LobbyData == null)
         {
+            yield break;
+        }
+
+        if (ReloadedLobby.TransportMode == TransportMode.DirectIp)
+        {
+            CopyingLobbyCode = true;
+            var serverData = ReloadedServer.Server?.ServerData;
+            if (serverData != null)
+            {
+                GUIUtility.systemCopyBuffer = $"{serverData.HostAddress}:{serverData.GamePort}";
+            }
+            Instances.GameplayActivity.m_audioService.PlaySample(Sound.SOUND_CHIME);
+            PickSides?.SetText(LocalizationManager.GetLocalization("$PANEL_COPIED_TO_CLIPBOARD"));
+
+            CustomPopupPanel.ShowLocalized("$POPUP_HEADER_WARNING", "$POPUP_DIRECT_IP_WARNING");
+
+            yield return new WaitForSeconds(1f);
+
+            PickSides?.SetText(HeaderText);
+            CopyingLobbyCode = false;
+
             yield break;
         }
 

@@ -11,7 +11,7 @@ using ReplantedOnline.Network.Discord;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
-using ReplantedOnline.Network.Reloaded.Server.Lan;
+using ReplantedOnline.Network.Reloaded.Server;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.MelonLoader;
@@ -60,8 +60,12 @@ internal static class ReloadedLobby
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to Steam");
                 break;
             case TransportMode.Lan:
-                NetworkTransport = new LanTransport();
+                NetworkTransport = new ReloadedTransport(true);
                 ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to LAN");
+                break;
+            case TransportMode.DirectIp:
+                NetworkTransport = new ReloadedTransport(false);
+                ReplantedOnlineMod.Logger.Msg(typeof(ReloadedLobby), "Network transport set to Direct IP");
                 break;
             default:
                 ReplantedOnlineMod.Logger.Warning(typeof(ReloadedLobby), $"Invalid transport mode: {mode}, defaulting to Steam");
@@ -140,15 +144,15 @@ internal static class ReloadedLobby
     /// </summary>
     internal static void InitializeLan()
     {
-        LanServer.OnLobbyCreatedCompleted += OnLobbyCreatedCompleted;
+        ReloadedServer.OnLobbyCreatedCompleted += OnLobbyCreatedCompleted;
 
-        LanServer.OnLobbyEnteredCompleted += OnLobbyEnteredCompleted;
+        ReloadedServer.OnLobbyEnteredCompleted += OnLobbyEnteredCompleted;
 
-        LanServer.OnLobbyDataChanged += OnLobbyDataChanged;
+        ReloadedServer.OnLobbyDataChanged += OnLobbyDataChanged;
 
-        LanServer.OnLobbyMemberJoined += OnLobbyMemberJoined;
+        ReloadedServer.OnLobbyMemberJoined += OnLobbyMemberJoined;
 
-        LanServer.OnLobbyMemberLeave += OnLobbyMemberLeave;
+        ReloadedServer.OnLobbyMemberLeave += OnLobbyMemberLeave;
     }
 
     /// <summary>

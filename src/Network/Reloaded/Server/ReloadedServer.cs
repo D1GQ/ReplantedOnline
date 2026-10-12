@@ -8,42 +8,30 @@ using ReplantedOnline.Utilities.MelonLoader;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ReplantedOnline.Network.Reloaded.Server.Lan;
+namespace ReplantedOnline.Network.Reloaded.Server;
 
 /// <summary>
-/// Main LAN server implementation that handles both hosting and member connections.
+/// Main IP server implementation that handles both hosting and member connections.
 /// Manages P2P networking, lobby creation, member synchronization, and packet routing.
+/// Works over raw UDP for LAN, direct-IP, and any reachable endpoint.
 /// </summary>
-internal sealed class LanServer : IDisposable
+internal sealed class ReloadedServer : IDisposable
 {
-    /// <summary>
-    /// Event fired when a lobby creation operation completes.
-    /// </summary>
+    /// <summary>Fired when a lobby creation operation completes.</summary>
     internal static event Action<Result, ServerLobby>? OnLobbyCreatedCompleted;
 
-    /// <summary>
-    /// Event fired when successfully entering a lobby.
-    /// </summary>
+    /// <summary>Fired when successfully entering a lobby.</summary>
     internal static event Action<ServerLobby>? OnLobbyEnteredCompleted;
 
-    /// <summary>
-    /// Event fired when lobby data is modified.
-    /// </summary>
+    /// <summary>Fired when lobby data is modified.</summary>
     internal static event Action<ServerLobby>? OnLobbyDataChanged;
 
-    /// <summary>
-    /// Event fired when a new member joins the lobby.
-    /// </summary>
+    /// <summary>Fired when a new member joins the lobby.</summary>
     internal static event Action<ServerLobby, ID>? OnLobbyMemberJoined;
 
-    /// <summary>
-    /// Event fired when a member leaves the lobby.
-    /// </summary>
+    /// <summary>Fired when a member leaves the lobby.</summary>
     internal static event Action<ServerLobby, ID>? OnLobbyMemberLeave;
 
-    /// <summary>
-    /// Packet types used for server/member communication.
-    /// </summary>
     internal enum ServerPacket
     {
         HandshakeRequest,
@@ -60,74 +48,52 @@ internal sealed class LanServer : IDisposable
     private readonly object _stateLock = new();
     private readonly object _membersLock = new();
 
-    /// <summary>
-    /// Gets the singleton server instance.
-    /// </summary>
-    internal static LanServer Server { get; set; } = default!;
+    /// <summary>Gets the singleton server instance.</summary>
+    internal static ReloadedServer Server { get; set; } = default!;
+
+    /// <summary>Server data containing lobby information and metadata.</summary>
+    internal ReloadedServerData ServerData = default!;
 
     /// <summary>
-    /// Server data containing lobby information and metadata.
+    /// Optional LAN broadcast service. Null when LAN discovery is disabled
+    /// (e.g. direct-IP hosting or dedicated server).
     /// </summary>
-    internal LanServerData ServerData = default!;
+    internal readonly ReloadedServerBroadcast? ServerBroadcast;
 
-    /// <summary>
-    /// Broadcast service for LAN discovery.
-    /// </summary>
-    internal readonly LanServerBroadcast? ServerBroadcast;
-
-    /// <summary>
-    /// UDP client for P2P communication.
-    /// </summary>
+    /// <summary>UDP client for P2P communication.</summary>
     internal UdpClient? P2PClient;
 
-    /// <summary>
-    /// Cancellation token source for async operations.
-    /// </summary>
+    /// <summary>Cancellation token source for async operations.</summary>
     internal CancellationTokenSource P2PCTS = default!;
 
-    /// <summary>
-    /// Packet queues organized by channel type.
-    /// </summary>
+    /// <summary>Packet queues organized by channel type.</summary>
     internal readonly Dictionary<PacketChannel, Queue<PendingPacket>> PacketQueue = [];
 
-    /// <summary>
-    /// Local member's unique identifier.
-    /// </summary>
+    /// <summary>Local member's unique identifier.</summary>
     internal ID LocalMemberId = ID.Null;
 
-    /// <summary>
-    /// Dictionary of all connected members.
-    /// </summary>
-    internal readonly Dictionary<ID, LanMemberData> Members = [];
+    /// <summary>Dictionary of all connected members.</summary>
+    internal readonly Dictionary<ID, ReloadedMemberData> Members = [];
 
-    /// <summary>
-    /// Set of member IDs with pending connection requests.
-    /// </summary>
+    /// <summary>Set of member IDs with pending connection requests.</summary>
     internal readonly HashSet<ID> PendingRequests = [];
 
-    /// <summary>
-    /// Rejection reasons for failed connection attempts.
-    /// </summary>
+    /// <summary>Rejection reasons for failed connection attempts.</summary>
     internal readonly Dictionary<ID, string> RejectionReasons = [];
 
-    /// <summary>
-    /// Name of the local player.
-    /// </summary>
+    /// <summary>Name of the local player.</summary>
     internal string LocalPlayerName = "Player";
 
-    /// <summary>
-    /// Indicates whether this instance is acting as a host.
-    /// </summary>
+    /// <summary>Indicates whether this instance is acting as a host.</summary>
     internal bool IsHost = false;
 
-    /// <summary>
-    /// Indicates whether the member is connected to a lobby.
-    /// </summary>
+    /// <summary>Indicates whether the member is connected to a lobby.</summary>
     internal bool IsConnected = false;
 
-    /// <summary>
-    /// Task completion source for handshake operations.
-    /// </summary>
+    /// <summary>Describes how this peer is connected.</summary>
+    internal ConnectionMode Mode = ConnectionMode.None;
+
+    /// <summary>Task completion source for handshake operations.</summary>
     internal TaskCompletionSource<bool>? HandshakeCompletionSource;
 
     private static readonly IPAddress LOCALHOST_IP = IPAddress.Parse("127.0.0.1");
@@ -135,12 +101,19 @@ internal sealed class LanServer : IDisposable
     private bool _isRunning;
 
     /// <summary>
-    /// Initializes a new instance of the LanServer class.
+    /// Initializes a new instance of the IpServer class.
     /// </summary>
-    internal LanServer()
+    /// <param name="enableBroadcast">
+    /// If true, sets up LAN broadcast discovery. Set to false for direct-IP-only
+    /// or dedicated server use to avoid binding port 14242.
+    /// </param>
+    internal ReloadedServer(bool enableBroadcast = true)
     {
         ServerData = new();
-        ServerBroadcast = new(this);
+        if (enableBroadcast)
+        {
+            ServerBroadcast = new(this);
+        }
         foreach (var channel in Enum.GetValues<PacketChannel>())
         {
             PacketQueue[channel] = [];
@@ -150,19 +123,33 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Starts a new lobby as a host.
     /// </summary>
-    /// <param name="playerName">The name of the host player.</param>
     /// <param name="maxPlayers">Maximum number of players allowed in the lobby.</param>
-    internal static void StartHost(string playerName, int maxPlayers)
+    /// <param name="broadcast">
+    /// If true, advertises the lobby on the LAN. If false, clients must connect
+    /// by explicit IP/hostname and port.
+    /// </param>
+    internal static void StartHost(int maxPlayers, bool broadcast = true)
     {
+        string name;
+        try
+        {
+            name = SteamFriends.Internal.GetPersonaName();
+        }
+        catch
+        {
+            name = "Host";
+        }
+
         lock (Server._stateLock)
         {
             if (Server._isRunning)
                 return;
 
             Server._isRunning = true;
-            Server.LocalPlayerName = playerName;
+            Server.LocalPlayerName = name;
             Server.IsHost = true;
             Server.IsConnected = true;
+            Server.Mode = broadcast ? ConnectionMode.LanHost : ConnectionMode.DirectHost;
         }
 
         Server.P2PCTS?.Dispose();
@@ -179,7 +166,7 @@ internal sealed class LanServer : IDisposable
 
         Server.ServerData.HostAddress = localIP;
         Server.ServerData.GamePort = localEndpoint.Port;
-        Server.ServerData.SetServerName($"{playerName}'s Lobby");
+        Server.ServerData.SetServerName($"{name}'s Lobby");
         Server.ServerData.SetMaxPlayerCount(maxPlayers);
         Server.ServerData.SetPlayerCount(1);
         Server.ServerData.SetIsJoinable(true);
@@ -192,8 +179,12 @@ internal sealed class LanServer : IDisposable
         Server.LocalMemberId = new ID(actualLocalEndpoint, IdType.IPEndPoint);
         Server.ServerData.HostId = Server.LocalMemberId;
 
-        Server.CreateMember(Server.LocalMemberId, actualLocalEndpoint, playerName);
-        Server.ServerBroadcast?.StartBroadcasting();
+        Server.CreateMember(Server.LocalMemberId, actualLocalEndpoint, name);
+
+        if (broadcast)
+        {
+            Server.ServerBroadcast?.StartBroadcasting();
+        }
 
         MainThreadDispatcher.Execute(() =>
         {
@@ -208,18 +199,32 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Initializes the client for joining a lobby.
     /// </summary>
-    /// <param name="playerName">The name of the local player.</param>
-    internal static void StartClient(string playerName)
+    /// <param name="mode">
+    /// Whether this client will discover via LAN or connect directly by IP.
+    /// Affects bookkeeping only — the handshake path is identical.
+    /// </param>
+    internal static void StartClient(ConnectionMode mode = ConnectionMode.LanClient)
     {
+        string name;
+        try
+        {
+            name = SteamFriends.Internal.GetPersonaName();
+        }
+        catch
+        {
+            name = "Client";
+        }
+
         lock (Server._stateLock)
         {
             if (Server._isRunning)
                 return;
 
             Server._isRunning = true;
-            Server.LocalPlayerName = playerName;
+            Server.LocalPlayerName = name;
             Server.IsHost = false;
             Server.IsConnected = false;
+            Server.Mode = mode;
         }
 
         Server.P2PCTS?.Dispose();
@@ -239,11 +244,44 @@ internal sealed class LanServer : IDisposable
     }
 
     /// <summary>
-    /// Sends a join request to a discovered server.
+    /// Tears down an in-progress client that never successfully joined.
     /// </summary>
-    /// <param name="serverData">The server data of the lobby to join.</param>
-    /// <returns>Task that completes with true if handshake succeeded, false if rejected.</returns>
-    internal async Task<bool> JoinServer(LanServerData serverData)
+    internal static void AbortClient()
+    {
+        if (Server == null)
+            return;
+
+        bool wasRunning;
+        lock (Server._stateLock)
+        {
+            wasRunning = Server._isRunning;
+            Server._isRunning = false;
+            Server.IsConnected = false;
+            Server.Mode = ConnectionMode.None;
+        }
+
+        if (!wasRunning)
+            return;
+
+        try { Server.ServerBroadcast?.StopBroadcasting(); } catch { }
+        try { Server.P2PCTS?.Cancel(); } catch { }
+        try { Server.P2PClient?.Close(); } catch { }
+
+        Server.ServerData?.Reset();
+
+        lock (Server._membersLock) Server.Members.Clear();
+        lock (Server._stateLock)
+        {
+            Server.PendingRequests.Clear();
+            Server.RejectionReasons.Clear();
+            Server.HandshakeCompletionSource = null;
+        }
+    }
+
+    /// <summary>
+    /// Sends a join request to a discovered or explicitly-specified server.
+    /// </summary>
+    internal async Task<bool> JoinServer(ReloadedServerData serverData)
     {
         lock (_stateLock)
         {
@@ -254,14 +292,14 @@ internal sealed class LanServer : IDisposable
 
         if (serverData.HostAddress == null)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(LanServer), "No host address in server data");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), "No host address in server data");
             return false;
         }
 
         var hostEndpoint = new IPEndPoint(serverData.HostAddress, serverData.GamePort);
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.HandshakeRequest);
-        LanServerProtocol.SerializeHandshakeRequest(writer, LocalPlayerName, LocalMemberId);
+        ReloadedServerProtocol.SerializeHandshakeRequest(writer, LocalPlayerName, LocalMemberId);
         writer.EndSubpacket();
         SendRawPacketTo(hostEndpoint, writer);
         writer.Recycle();
@@ -273,7 +311,7 @@ internal sealed class LanServer : IDisposable
 
             if (completed == timeout)
             {
-                ReplantedOnlineMod.Logger.Error(typeof(LanServer), "Handshake timed out");
+                ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), "Handshake timed out");
                 return false;
             }
 
@@ -281,9 +319,37 @@ internal sealed class LanServer : IDisposable
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"Handshake error: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), $"Handshake error: {ex}");
             return false;
         }
+    }
+
+    /// <summary>
+    /// Joins a server by explicit IP address or hostname and port.
+    /// Performs DNS resolution off the main thread.
+    /// </summary>
+    /// <param name="host">IP literal (e.g. "192.168.1.20") or hostname (e.g. "play.example.com").</param>
+    /// <param name="port">UDP port the host is listening on.</param>
+    /// <returns>True if the handshake succeeded, false otherwise.</returns>
+    internal async Task<bool> JoinServerDirect(string host, int port)
+    {
+        ReloadedServerData data;
+        try
+        {
+            data = await Task.Run(() => ReloadedServerData.ForDirectConnection(host, port));
+        }
+        catch (Exception ex)
+        {
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), $"Invalid direct connection target '{host}:{port}': {ex.Message}");
+            return false;
+        }
+
+        lock (_stateLock)
+        {
+            Mode = ConnectionMode.DirectClient;
+        }
+
+        return await JoinServer(data);
     }
 
     /// <summary>
@@ -311,13 +377,11 @@ internal sealed class LanServer : IDisposable
         {
             var writer = PacketWriter.Get();
 
-            // Handshake leave notification
             writer.StartSubpacket((byte)ServerPacket.HandshakeLeave);
             writer.EndSubpacket();
 
-            // Empty member sync to signal lobby is closed
             writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-            LanServerProtocol.SerializeSyncMembers(writer, [], false);
+            ReloadedServerProtocol.SerializeSyncMembers(writer, [], false);
             writer.EndSubpacket();
 
             foreach (var member in Server.GetOtherMembers())
@@ -354,13 +418,10 @@ internal sealed class LanServer : IDisposable
         {
             Server.PendingRequests.Clear();
             Server.IsConnected = false;
+            Server.Mode = ConnectionMode.None;
         }
     }
 
-    /// <summary>
-    /// Listens for incoming P2P packets asynchronously.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task ListenForP2P()
     {
         while (!P2PCTS.Token.IsCancellationRequested)
@@ -379,22 +440,15 @@ internal sealed class LanServer : IDisposable
             catch (ObjectDisposedException) { break; }
             catch (Exception ex)
             {
-                ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"P2P listen error: {ex}");
+                ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), $"P2P listen error: {ex}");
                 await Task.Delay(100, P2PCTS.Token);
             }
         }
     }
 
-    /// <summary>
-    /// Creates a new member entry and adds it to the member dictionary.
-    /// </summary>
-    /// <param name="memberId">The unique identifier for the member.</param>
-    /// <param name="iPEndPoint">The network endpoint of the member.</param>
-    /// <param name="playerName">The display name of the player.</param>
-    /// <returns>The created member data object.</returns>
-    internal LanMemberData CreateMember(ID memberId, IPEndPoint iPEndPoint, string playerName)
+    internal ReloadedMemberData CreateMember(ID memberId, IPEndPoint iPEndPoint, string playerName)
     {
-        var member = new LanMemberData
+        var member = new ReloadedMemberData
         {
             PlayerName = playerName,
             MemberId = memberId
@@ -404,12 +458,7 @@ internal sealed class LanServer : IDisposable
         return member;
     }
 
-    /// <summary>
-    /// Removes a member from the connected members dictionary and updates lobby state.
-    /// Packs leave notification and updated member sync into a single packet.
-    /// </summary>
-    /// <param name="member">The member data to remove.</param>
-    internal void RemoveMember(LanMemberData member)
+    internal void RemoveMember(ReloadedMemberData member)
     {
         lock (_membersLock) Members.Remove(member.MemberId);
         lock (_stateLock)
@@ -424,13 +473,11 @@ internal sealed class LanServer : IDisposable
 
             var writer = PacketWriter.Get();
 
-            // Handshake leave notification for the removed member
             writer.StartSubpacket((byte)ServerPacket.HandshakeLeave);
             writer.EndSubpacket();
 
-            // Updated member sync
             writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-            lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members, false);
+            lock (_membersLock) ReloadedServerProtocol.SerializeSyncMembers(writer, Members, false);
             writer.EndSubpacket();
 
             foreach (var otherMember in GetOtherMembers())
@@ -441,10 +488,6 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Sends a packet to all connected members except the local member.
-    /// </summary>
-    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
     internal void SendServerPacket(PacketWriter packetWriter)
     {
         foreach (var member in GetOtherMembers())
@@ -453,11 +496,6 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Sends a raw packet to a specific network endpoint.
-    /// </summary>
-    /// <param name="iPEndPoint">The destination endpoint.</param>
-    /// <param name="packetWriter">The packet writer containing the completed packet.</param>
     internal void SendRawPacketTo(IPEndPoint iPEndPoint, PacketWriter packetWriter)
     {
         if (iPEndPoint == null)
@@ -471,17 +509,10 @@ internal sealed class LanServer : IDisposable
         }
         catch (Exception ex)
         {
-            ReplantedOnlineMod.Logger.Error(typeof(LanServer), $"Failed to send packet to {iPEndPoint}: {ex}");
+            ReplantedOnlineMod.Logger.Error(typeof(ReloadedServer), $"Failed to send packet to {iPEndPoint}: {ex}");
         }
     }
 
-    /// <summary>
-    /// Sends a P2P packet to a specific member.
-    /// </summary>
-    /// <param name="memberId">The ID of the target member.</param>
-    /// <param name="data">The packet data to send.</param>
-    /// <param name="channel">The channel to send the packet on.</param>
-    /// <returns>True if the packet was sent successfully, false otherwise.</returns>
     internal bool SendP2PPacket(ID memberId, byte[] data, PacketChannel channel)
     {
         if (memberId == LocalMemberId)
@@ -499,7 +530,7 @@ internal sealed class LanServer : IDisposable
         {
             if (!Members.ContainsKey(memberId))
             {
-                ReplantedOnlineMod.Logger.Warning(typeof(LanServer), $"Cannot send RPC to {memberId} - member not found");
+                ReplantedOnlineMod.Logger.Warning(typeof(ReloadedServer), $"Cannot send RPC to {memberId} - member not found");
                 return false;
             }
         }
@@ -509,19 +540,13 @@ internal sealed class LanServer : IDisposable
 
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.Rpc);
-        LanServerProtocol.SerializeRPC(writer, channel, data);
+        ReloadedServerProtocol.SerializeRPC(writer, channel, data);
         writer.EndSubpacket();
         SendRawPacketTo(endpoint, writer);
         writer.Recycle();
         return true;
     }
 
-    /// <summary>
-    /// Sets a key-value pair in the lobby data. Only callable by the host.
-    /// </summary>
-    /// <param name="key">The data key.</param>
-    /// <param name="value">The data value.</param>
-    /// <param name="remove">If true, removes the key instead of setting it.</param>
     internal void SetLobbyData(string key, string value, bool remove = false)
     {
         if (!IsHost)
@@ -538,17 +563,12 @@ internal sealed class LanServer : IDisposable
 
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.LobbyDataUpdate);
-        LanServerProtocol.SerializeSetLobbyData(writer, key, value, remove);
+        ReloadedServerProtocol.SerializeSetLobbyData(writer, key, value, remove);
         writer.EndSubpacket();
         SendServerPacket(writer);
         writer.Recycle();
     }
 
-    /// <summary>
-    /// Requests to set member data for the local member.
-    /// </summary>
-    /// <param name="key">The data key.</param>
-    /// <param name="value">The data value.</param>
     internal void SetMemberData(string key, string value)
     {
         lock (_membersLock)
@@ -559,17 +579,12 @@ internal sealed class LanServer : IDisposable
 
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.MemberData);
-        LanServerProtocol.SerializeMemberData(writer, key, value);
+        ReloadedServerProtocol.SerializeMemberData(writer, key, value);
         writer.EndSubpacket();
         SendServerPacket(writer);
         writer.Recycle();
     }
 
-    /// <summary>
-    /// Processes raw packet data by parsing it into subpackets and routing them appropriately.
-    /// </summary>
-    /// <param name="buffer">The raw packet data.</param>
-    /// <param name="remoteEndPoint">The endpoint the packet came from.</param>
     internal void ProcessPacketData(byte[] buffer, IPEndPoint remoteEndPoint)
     {
         var packetReader = PacketReader.Get(buffer);
@@ -597,13 +612,6 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Routes a parsed sub-packet to the appropriate handler based on its type.
-    /// </summary>
-    /// <param name="senderId">The ID of the sender.</param>
-    /// <param name="remoteEndPoint">The network endpoint of the sender.</param>
-    /// <param name="serverPacket">The type of server packet.</param>
-    /// <param name="reader">The packet reader positioned at the sub-packet payload.</param>
     private void ProcessServerPacket(ID senderId, IPEndPoint remoteEndPoint, ServerPacket serverPacket, PacketReader reader)
     {
         switch (serverPacket)
@@ -620,19 +628,13 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Processes a handshake request from a potential member.
-    /// Packs all response messages (accept, lobby data, member sync) into a single packet.
-    /// </summary>
-    /// <param name="senderId">The ID of the requesting member.</param>
-    /// <param name="endpoint">The network endpoint of the member.</param>
-    /// <param name="reader">The packet reader containing the request data.</param>
     private void ProcessHandshakeRequest(ID senderId, IPEndPoint endpoint, PacketReader reader)
     {
         if (!IsHost)
             return;
 
-        var (memberName, memberId) = LanServerProtocol.DeserializeHandshakeRequest(reader);
+        var (memberName, memberId) = ReloadedServerProtocol.DeserializeHandshakeRequest(reader);
+        ValidateMemberName(ref memberName);
 
         if (!ServerData.GetIsJoinable())
         {
@@ -660,39 +662,71 @@ internal sealed class LanServer : IDisposable
 
         var responseWriter = PacketWriter.Get();
 
-        // Lobby data
         responseWriter.StartSubpacket((byte)ServerPacket.LobbyData);
-        LanServerProtocol.SerializeLobbyData(responseWriter, ServerData);
+        ReloadedServerProtocol.SerializeLobbyData(responseWriter, ServerData);
         responseWriter.EndSubpacket();
 
-        // Member sync
         responseWriter.StartSubpacket((byte)ServerPacket.SyncMembers);
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(responseWriter, Members, true);
+        lock (_membersLock) ReloadedServerProtocol.SerializeSyncMembers(responseWriter, Members, true);
         responseWriter.EndSubpacket();
 
-        // Handshake accept
         responseWriter.StartSubpacket((byte)ServerPacket.HandshakeAccept);
-        LanServerProtocol.SerializeHandshakeAccept(responseWriter, ServerData.LobbyId);
+        ReloadedServerProtocol.SerializeHandshakeAccept(responseWriter, ServerData.LobbyId);
         responseWriter.EndSubpacket();
 
         SendRawPacketTo(endpoint, responseWriter);
         responseWriter.Recycle();
 
-        // Broadcast updated member list to all other members
         BroadcastSyncMembers(memberId);
     }
 
-    /// <summary>
-    /// Processes a handshake acceptance from a host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the acceptance data.</param>
+    private void ValidateMemberName(ref string memberName)
+    {
+        var sb = new System.Text.StringBuilder(memberName.Length);
+        foreach (char c in memberName)
+        {
+            if (char.IsLetterOrDigit(c) || c == '_' || c == ' ')
+                sb.Append(c);
+        }
+
+        string clean = System.Text.RegularExpressions.Regex
+            .Replace(sb.ToString(), @"\s+", " ")
+            .Trim();
+
+        if (clean.Length == 0)
+            clean = "Client";
+
+        string candidate = clean;
+        int suffix = 1;
+
+        while (NameExists(candidate))
+        {
+            candidate = $"{clean} {suffix}";
+            suffix++;
+        }
+
+        memberName = candidate;
+    }
+
+    private bool NameExists(string name)
+    {
+        lock (_membersLock)
+        {
+            foreach (var member in Members.Values)
+            {
+                if (string.Equals(member.PlayerName, name, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private void ProcessHandshakeAccept(ID senderId, PacketReader reader)
     {
         if (IsHost)
             return;
 
-        var lobbyId = LanServerProtocol.DeserializeHandshakeAccept(reader);
+        var lobbyId = ReloadedServerProtocol.DeserializeHandshakeAccept(reader);
         lock (_stateLock)
         {
             ServerData.LobbyId = lobbyId;
@@ -707,14 +741,9 @@ internal sealed class LanServer : IDisposable
         });
     }
 
-    /// <summary>
-    /// Processes a handshake rejection from a host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the rejection reason.</param>
     private void ProcessHandshakeReject(ID senderId, PacketReader reader)
     {
-        var reason = LanServerProtocol.DeserializeHandshakeReject(reader);
+        var reason = ReloadedServerProtocol.DeserializeHandshakeReject(reader);
         lock (_stateLock)
         {
             RejectionReasons[senderId] = reason;
@@ -722,10 +751,6 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Processes a leave notification from a member.
-    /// </summary>
-    /// <param name="senderId">The ID of the leaving member.</param>
     private void ProcessHandshakeLeave(ID senderId)
     {
         lock (_membersLock)
@@ -742,20 +767,15 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Processes a member synchronization packet from the host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the member list.</param>
     private void ProcessSyncMembers(ID senderId, PacketReader reader)
     {
         if (IsHost)
             return;
 
-        var (isHandshake, syncedMembers) = LanServerProtocol.DeserializeSyncMembers(reader);
+        var (isHandshake, syncedMembers) = ReloadedServerProtocol.DeserializeSyncMembers(reader);
 
-        Dictionary<ID, LanMemberData> oldMembers;
-        lock (_membersLock) oldMembers = new Dictionary<ID, LanMemberData>(Members);
+        Dictionary<ID, ReloadedMemberData> oldMembers;
+        lock (_membersLock) oldMembers = new Dictionary<ID, ReloadedMemberData>(Members);
 
         var newMembers = syncedMembers.Where(c => !oldMembers.ContainsKey(c.Key)).Select(c => c.Value).ToList();
         var removedMembers = oldMembers.Where(c => !syncedMembers.ContainsKey(c.Key)).Select(c => c.Value).ToList();
@@ -788,14 +808,9 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Processes an RPC packet and adds it to the appropriate channel queue.
-    /// </summary>
-    /// <param name="senderId">The ID of the member that sent the RPC.</param>
-    /// <param name="reader">The packet reader containing the RPC data.</param>
     private void ProcessRPC(ID senderId, PacketReader reader)
     {
-        var (channel, data) = LanServerProtocol.DeserializeRPC(reader);
+        var (channel, data) = ReloadedServerProtocol.DeserializeRPC(reader);
         lock (PacketQueue)
         {
             PacketQueue[channel].Enqueue(new PendingPacket
@@ -807,27 +822,17 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Processes initial lobby data from the host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the lobby data.</param>
     private void ProcessLobbyData(ID senderId, PacketReader reader)
     {
-        if (!IsHost) LanServerProtocol.DeserializeLobbyData(reader, ServerData);
+        if (!IsHost) ReloadedServerProtocol.DeserializeLobbyData(reader, ServerData);
     }
 
-    /// <summary>
-    /// Processes a lobby data update from the host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the updated lobby data.</param>
     private void ProcessLobbyDataUpdate(ID senderId, PacketReader reader)
     {
         if (IsHost)
             return;
 
-        var (key, value, remove) = LanServerProtocol.DeserializeSetLobbyData(reader);
+        var (key, value, remove) = ReloadedServerProtocol.DeserializeSetLobbyData(reader);
         if (remove) ServerData.Data.Remove(key);
         else ServerData.Data[key] = value;
 
@@ -838,14 +843,9 @@ internal sealed class LanServer : IDisposable
         });
     }
 
-    /// <summary>
-    /// Processes member data from the host.
-    /// </summary>
-    /// <param name="senderId">The ID of the host.</param>
-    /// <param name="reader">The packet reader containing the member data.</param>
     private void ProcessMemberData(ID senderId, PacketReader reader)
     {
-        var (key, value) = LanServerProtocol.DeserializeMemberData(reader);
+        var (key, value) = ReloadedServerProtocol.DeserializeMemberData(reader);
         lock (_membersLock)
         {
             if (Members.TryGetValue(senderId, out var member))
@@ -853,12 +853,6 @@ internal sealed class LanServer : IDisposable
         }
     }
 
-    /// <summary>
-    /// Reads the next available P2P packet from the specified channel queue.
-    /// </summary>
-    /// <param name="buffer">The buffer to store the packet data in.</param>
-    /// <param name="channel">The channel to read from.</param>
-    /// <returns>True if a packet was available, false otherwise.</returns>
     internal bool ReadP2PPacket(PacketBuffer buffer, PacketChannel channel)
     {
         lock (PacketQueue)
@@ -884,12 +878,6 @@ internal sealed class LanServer : IDisposable
         return false;
     }
 
-    /// <summary>
-    /// Checks if a P2P packet is available on the specified channel.
-    /// </summary>
-    /// <param name="msgSize">Output parameter that receives the size of the next packet.</param>
-    /// <param name="channel">The channel to check.</param>
-    /// <returns>True if a packet is available, false otherwise.</returns>
     internal bool IsP2PPacketAvailable(ref uint msgSize, PacketChannel channel)
     {
         lock (PacketQueue)
@@ -903,29 +891,21 @@ internal sealed class LanServer : IDisposable
         return false;
     }
 
-    /// <summary>
-    /// Sends a rejection response to a member.
-    /// </summary>
-    /// <param name="endpoint">The endpoint to send the rejection to.</param>
-    /// <param name="reason">The reason for rejection.</param>
     private void SendRejection(IPEndPoint endpoint, string reason)
     {
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.HandshakeReject);
-        LanServerProtocol.SerializeHandshakeReject(writer, reason);
+        ReloadedServerProtocol.SerializeHandshakeReject(writer, reason);
         writer.EndSubpacket();
         SendRawPacketTo(endpoint, writer);
         writer.Recycle();
     }
 
-    /// <summary>
-    /// Broadcasts the current member list to all connected members.
-    /// </summary>
     internal void BroadcastSyncMembers(ID ignoreMember)
     {
         var writer = PacketWriter.Get();
         writer.StartSubpacket((byte)ServerPacket.SyncMembers);
-        lock (_membersLock) LanServerProtocol.SerializeSyncMembers(writer, Members, false);
+        lock (_membersLock) ReloadedServerProtocol.SerializeSyncMembers(writer, Members, false);
         writer.EndSubpacket();
 
         foreach (var member in GetOtherMembers())
@@ -938,11 +918,7 @@ internal sealed class LanServer : IDisposable
         writer.Recycle();
     }
 
-    /// <summary>
-    /// Gets a list of all connected members except the local member.
-    /// </summary>
-    /// <returns>A list of member data objects.</returns>
-    private List<LanMemberData> GetOtherMembers()
+    private List<ReloadedMemberData> GetOtherMembers()
     {
         lock (_membersLock)
         {
@@ -953,7 +929,6 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Gets the local network IP address.
     /// </summary>
-    /// <returns>The local IPv4 address.</returns>
     internal static IPAddress GetLocalNetworkIP()
     {
         try
@@ -972,16 +947,12 @@ internal sealed class LanServer : IDisposable
     /// <summary>
     /// Gets the port the server is listening on.
     /// </summary>
-    /// <returns>The port number, or 0 if not hosting.</returns>
     internal static int GetPort()
     {
         if (Server == null || !Server._isRunning || !Server.IsHost) return 0;
         return Server.ServerData.GamePort;
     }
 
-    /// <summary>
-    /// Disposes of all resources used by the LanServer.
-    /// </summary>
     public void Dispose()
     {
         ServerData?.Dispose();
@@ -990,29 +961,12 @@ internal sealed class LanServer : IDisposable
         P2PClient?.Dispose();
     }
 
-    /// <summary>
-    /// Represents a pending packet waiting to be processed.
-    /// </summary>
     internal sealed class PendingPacket : IDisposable
     {
-        /// <summary>
-        /// The raw packet data.
-        /// </summary>
         public byte[]? Data { get; set; }
-
-        /// <summary>
-        /// The ID of the member that sent the packet.
-        /// </summary>
         public ID SenderId { get; set; }
-
-        /// <summary>
-        /// The size of the packet in bytes.
-        /// </summary>
         public uint Size { get; set; }
 
-        /// <summary>
-        /// Clear the data of the PendingPacket.
-        /// </summary>
         public void Dispose()
         {
             Data = null;

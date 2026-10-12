@@ -7,6 +7,7 @@ using ReplantedOnline.Managers.Modded;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Panel;
 using ReplantedOnline.Network.Discord;
+using ReplantedOnline.Network.Reloaded.Client.Routing.Transport;
 using ReplantedOnline.Patches.Steam;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Il2Cpp;
@@ -167,6 +168,19 @@ internal static class ReloadedMatchmaking
         {
             ReplantedOnlineMod.Logger.Error(typeof(ReloadedMatchmaking), $"Error starting Replanted Steam lobby search: {ex.Message}");
             callback.Invoke(LobbyListResult.Error, null!);
+        }
+    }
+
+    /// <summary>
+    /// Attempts to join an IP-based lobby using the specified host and port.
+    /// </summary>
+    /// <param name="host">The host address of the lobby to join.</param>
+    /// <param name="port">The port number of the lobby to join.</param>
+    internal static void JoinIpLobbyByAddress(string host, int port)
+    {
+        if (ReloadedLobby.NetworkTransport is ReloadedTransport transport)
+        {
+            _ = transport.JoinDirectAsync(host, port);
         }
     }
 

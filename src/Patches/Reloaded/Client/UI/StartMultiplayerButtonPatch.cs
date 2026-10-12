@@ -79,14 +79,19 @@ internal static class StartMultiplayerButtonPatch
         else
         {
             // Join button clicked - show the lobby code input panel
-            if (ReloadedLobby.NetworkTransport is LanTransport lanTransport &&
+            if (ReloadedLobby.NetworkTransport is ReloadedTransport lanTransport &&
                 ReloadedLobby.TransportMode == TransportMode.Lan)
             {
                 _ = lanTransport.JoinFirstLanLobby();
             }
-            else
+            else if (ReloadedLobby.TransportMode == TransportMode.Steam)
             {
                 LobbyCodePanel.Show();
+            }
+            else
+            {
+                CustomPopupPanel.ShowLocalized("$POPUP_HEADER_WARNING", "$POPUP_DIRECT_IP_JOIN_WARNING");
+                DirectIpPanel.Show();
             }
         }
 
