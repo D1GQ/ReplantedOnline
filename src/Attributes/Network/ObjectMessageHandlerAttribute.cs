@@ -2,6 +2,7 @@
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Utilities.Modded;
 using System.Reflection;
 
 namespace ReplantedOnline.Attributes.Network;
@@ -163,7 +164,7 @@ internal sealed class ObjectMessageHandlerAttribute : Attribute
                 : IFastPacketResolver.ReadFast(packetReader, paramType);
         }
 
-        rpcMethodInfo.Method.Invoke(networkIdentifier, args);
+        rpcMethodInfo.MethodDispatcher(networkIdentifier, args);
     }
 
     /// <summary>
@@ -191,6 +192,11 @@ internal sealed class ObjectMessageHandlerAttribute : Attribute
         /// Gets the parameters of the message handler method.
         /// </summary>
         public readonly ParameterInfo[] Parameters = methodInfo.GetParameters();
+
+        /// <summary>
+        /// Gets the <see cref="MethodInfo"/> for the message handler method.
+        /// </summary>
+        public readonly ReflectionUtils.MethodDispatcher MethodDispatcher = ReflectionUtils.CreateMethodDispatcher(methodInfo);
 
         /// <summary>
         /// Gets whether owner validation is required for this handler.
