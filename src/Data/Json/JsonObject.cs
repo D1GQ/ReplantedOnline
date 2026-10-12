@@ -1,4 +1,5 @@
-﻿using ReplantedOnline.Utilities.MelonLoader;
+﻿using ReplantedOnline.Interfaces;
+using ReplantedOnline.Utilities.MelonLoader;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,8 +9,22 @@ namespace ReplantedOnline.Data.Json;
 /// <summary>
 /// Provides a base class for JSON serializable objects with configurable serializer options.
 /// </summary>
-internal abstract class JsonObject
+internal abstract class JsonObject : ICatchedType
 {
+    /// <inheritdoc/>
+    public Type CatchedType
+    {
+        get
+        {
+            if (field == null)
+            {
+                field = GetType();
+            }
+
+            return field;
+        }
+    }
+
     /// <summary>
     /// Gets the JSON serializer options for consistent serialization behavior across all derived types.
     /// </summary>
@@ -46,7 +61,7 @@ internal abstract class JsonObject
     internal string Serialize()
     {
         OnSerialize();
-        return JsonSerializer.Serialize(this, GetType(), SerializerOptions);
+        return JsonSerializer.Serialize(this, CatchedType, SerializerOptions);
     }
 
     /// <summary>
@@ -57,7 +72,7 @@ internal abstract class JsonObject
     {
         if (string.IsNullOrWhiteSpace(json))
         {
-            var newObj = (JsonObject?)Activator.CreateInstance(GetType())!;
+            var newObj = (JsonObject?)Activator.CreateInstance(CatchedType)!;
             if (CopyProperties(newObj))
             {
                 OnDeserialize();
@@ -68,7 +83,7 @@ internal abstract class JsonObject
 
         try
         {
-            var obj = (JsonObject?)JsonSerializer.Deserialize(json, GetType(), SerializerOptions);
+            var obj = (JsonObject?)JsonSerializer.Deserialize(json, CatchedType, SerializerOptions);
             if (obj != null)
             {
                 if (CopyProperties(obj))
@@ -93,8 +108,8 @@ internal abstract class JsonObject
     /// </returns>
     private bool CopyProperties(JsonObject from)
     {
-        var type = from.GetType();
-        if (type != GetType())
+        var type = from.CatchedType;
+        if (type != CatchedType)
             return false;
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);

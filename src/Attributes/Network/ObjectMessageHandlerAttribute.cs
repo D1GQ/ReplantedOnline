@@ -64,7 +64,7 @@ internal sealed class ObjectMessageHandlerAttribute : Attribute
     internal static bool TryGetMessageId(ICatchedType catchedType, Enum rpc, out uint rpcId)
     {
         rpcId = 0;
-        return MessageIdLookup.TryGetValue(catchedType.Type, out var lookup)
+        return MessageIdLookup.TryGetValue(catchedType.CatchedType, out var lookup)
             && lookup.TryGetValue(rpc, out rpcId);
     }
 
@@ -76,12 +76,12 @@ internal sealed class ObjectMessageHandlerAttribute : Attribute
     /// <returns>An array of <see cref="Type"/> representing the argument types.</returns>
     internal static Type[] GetMessageArgsTypes(ICatchedType catchedType, Enum rpc)
     {
-        if (ArgsTypesLookup.TryGetValue(catchedType.Type, out var lookup) && lookup.TryGetValue(rpc, out var argsTypes))
+        if (ArgsTypesLookup.TryGetValue(catchedType.CatchedType, out var lookup) && lookup.TryGetValue(rpc, out var argsTypes))
         {
             return argsTypes;
         }
 
-        throw new InvalidOperationException($"Message method info not found for message '{rpc}' in type '{catchedType.Type.FullName}'.");
+        throw new InvalidOperationException($"Message method info not found for message '{rpc}' in type '{catchedType.CatchedType.FullName}'.");
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ internal sealed class ObjectMessageHandlerAttribute : Attribute
     /// <param name="packetReader">The packet reader containing the message data payload.</param>
     internal static void HandleObjectMessage(INetworkIdentifier networkIdentifier, ICatchedType catchedType, ReloadedClientData sender, uint rpcId, PacketReader packetReader)
     {
-        var type = catchedType.Type;
+        var type = catchedType.CatchedType;
 
         if (!HandlerLookup.TryGetValue(type, out var handlers))
             return;

@@ -24,7 +24,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
 {
     /// <inheritdoc/>
     [HideFromIl2Cpp]
-    public Type Type
+    public Type CatchedType
     {
         get
         {
@@ -248,7 +248,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     /// <returns></returns>
     public virtual string GetObjectName()
     {
-        return GetType().Name + $" ({NetworkId})";
+        return CatchedType.Name + $" ({NetworkId})";
     }
 
     /// <summary>
@@ -319,7 +319,7 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     [HideFromIl2Cpp]
     internal void AddNetworkComponent(NetworkComponent networkComponent)
     {
-        var type = networkComponent.GetType();
+        var type = networkComponent.CatchedType;
         if (_networkComponentsLookup.ContainsKey(type))
         {
             throw new Exception($"NetworkObject already contains a component with the type: {type.Name}");

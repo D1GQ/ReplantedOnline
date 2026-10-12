@@ -17,7 +17,7 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Component;
 internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializable, ICatchedType
 {
     /// <inheritdoc/>
-    public Type Type
+    public Type CatchedType
     {
         get
         {
