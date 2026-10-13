@@ -160,13 +160,14 @@ internal sealed class PacketReader : IPacket
     }
 
     /// <summary>
-    /// Reads a float value that was packed into a short.
+    /// Reads a float packed into a <see cref="ushort"/> using IEEE 754 half-precision,
+    /// then adds <paramref name="offset"/>.
     /// </summary>
-    /// <returns>The unpacked float value.</returns>
-    internal float ReadPackedFloat(float scale)
+    /// <param name="offset">Value added to the unpacked float. Defaults to 0.</param>
+    /// <returns>The unpacked float value plus <paramref name="offset"/>.</returns>
+    internal float ReadPackedFloat(float offset = 0f)
     {
-        short packedValue = ReadShort();
-        return packedValue / (float)scale;
+        return (float)BitConverter.UInt16BitsToHalf(ReadUShort()) + offset;
     }
 
     /// <summary>

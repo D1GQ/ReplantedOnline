@@ -1,7 +1,6 @@
 ﻿using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Modded;
 using System.Text;
-using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization;
 
@@ -150,17 +149,14 @@ internal sealed class PacketWriter : IPacket
     }
 
     /// <summary>
-    /// Writes a float value packed into a short.
+    /// Writes a float packed into a <see cref="ushort"/> using IEEE 754 half-precision,
+    /// after subtracting <paramref name="offset"/>.
     /// </summary>
     /// <param name="value">The float value to write.</param>
-    /// <param name="scale">The scale factor to multiply the value by.</param>
-    internal void WritePackedFloat(float value, float scale)
+    /// <param name="offset">Value subtracted from <paramref name="value"/> before packing. Defaults to 0.</param>
+    internal void WritePackedFloat(float value, float offset = 0f)
     {
-        if (scale == 0)
-            throw new ArgumentException("Scale cannot be zero", nameof(scale));
-
-        short packedValue = (short)Mathf.Clamp(Mathf.RoundToInt(value * scale), short.MinValue, short.MaxValue);
-        WriteShort(packedValue);
+        WriteUShort(BitConverter.HalfToUInt16Bits((Half)(value - offset)));
     }
 
     /// <summary>

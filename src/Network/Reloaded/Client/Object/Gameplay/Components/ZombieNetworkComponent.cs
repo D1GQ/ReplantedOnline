@@ -224,8 +224,8 @@ internal class ZombieNetworkComponent : NetworkComponent
         packetWriter.WriteBool(zombie == null);
         if (zombie != null)
         {
-            packetWriter.WritePackedFloat(zombie.mVelX, 500f);
-            packetWriter.WritePackedFloat(zombie.mPosX, 25f);
+            packetWriter.WritePackedFloat(zombie.mVelX);
+            packetWriter.WritePackedFloat(zombie.mPosX, 400f);
         }
     }
 
@@ -240,8 +240,8 @@ internal class ZombieNetworkComponent : NetworkComponent
             bool isZombieNull = packetReader.ReadBool();
             if (!isZombieNull && zombie != null)
             {
-                zombie.mVelX = packetReader.ReadPackedFloat(500f);
-                SyncedPosX = packetReader.ReadPackedFloat(25f);
+                zombie.mVelX = packetReader.ReadPackedFloat();
+                SyncedPosX = packetReader.ReadPackedFloat(400f);
             }
         }
     }

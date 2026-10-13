@@ -62,13 +62,13 @@ internal sealed class CloudyDayArenaConfig : JsonObject, INetworkConfigSerializa
         {
             packetWriter.WriteEnum(seedType);
         }
-        packetWriter.WritePackedFloat(SunnyPhaseTime, 10f);
-        packetWriter.WritePackedFloat(RainPhaseTime, 10f);
-        packetWriter.WritePackedFloat(CostReductionMultiplier, 100f);
+        packetWriter.WritePackedFloat(SunnyPhaseTime);
+        packetWriter.WritePackedFloat(RainPhaseTime);
+        packetWriter.WritePackedFloat(CostReductionMultiplier);
         packetWriter.WritePackedInt(CostReductionRoundStep);
         packetWriter.WritePackedInt(RefreshTimeMaxValue);
-        packetWriter.WritePackedFloat(RefreshTimePower, 100f);
-        packetWriter.WritePackedFloat(RefreshTimeMultiplier, 100f);
+        packetWriter.WritePackedFloat(RefreshTimePower);
+        packetWriter.WritePackedFloat(RefreshTimeMultiplier);
     }
 
     /// <inheritdoc/>
@@ -81,12 +81,12 @@ internal sealed class CloudyDayArenaConfig : JsonObject, INetworkConfigSerializa
             var seedType = packetReader.ReadEnum<SeedType>();
             DisabledSeedPacketsInRain.Add(seedType);
         }
-        SunnyPhaseTime = packetReader.ReadPackedFloat(10f);
-        RainPhaseTime = packetReader.ReadPackedFloat(10f);
-        CostReductionMultiplier = packetReader.ReadPackedFloat(100f);
+        SunnyPhaseTime = packetReader.ReadPackedFloat();
+        RainPhaseTime = packetReader.ReadPackedFloat();
+        CostReductionMultiplier = packetReader.ReadPackedFloat();
         CostReductionRoundStep = packetReader.ReadPackedInt();
         RefreshTimeMaxValue = packetReader.ReadPackedInt();
-        RefreshTimePower = packetReader.ReadPackedFloat(100f);
-        RefreshTimeMultiplier = packetReader.ReadPackedFloat(100f);
+        RefreshTimePower = packetReader.ReadPackedFloat();
+        RefreshTimeMultiplier = packetReader.ReadPackedFloat();
     }
 }
