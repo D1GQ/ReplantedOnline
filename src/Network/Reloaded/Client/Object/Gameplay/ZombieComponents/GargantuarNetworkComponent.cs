@@ -58,7 +58,7 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         var imp = SeedPacketDefinitions.SpawnZombie(ZombieType.Imp, 20, Net.Zombie.mRow, SpawnType.None, true);
         int waitForTime = Mathf.FloorToInt(VersusState.VersusTimeSynced + 1f);
         Net.StartCoroutine(CoImpJumpOut(imp.Zombie, waitForTime));
-        Net.StartCoroutine(CoTimeOutImpJumpOut(Net, imp.ZombieNetworked!));
+        Net.StartCoroutine(CoTimeoutImpJumpOut(imp.ZombieNetworked!));
         SendMessage(GargantuarMsgs.ImpJumpOut, imp.ZombieNetworked!.NetworkId.Id, waitForTime);
     }
 
@@ -163,7 +163,7 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private IEnumerator CoTimeOutImpJumpOut(ZombieNetworked impNetworked)
+    private IEnumerator CoTimeoutImpJumpOut(ZombieNetworked impNetworked)
     {
         if (!impNetworked.AmOwner)
             yield break;
