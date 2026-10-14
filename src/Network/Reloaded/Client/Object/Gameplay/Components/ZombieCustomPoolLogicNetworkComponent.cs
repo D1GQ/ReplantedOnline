@@ -1,10 +1,8 @@
 ﻿using Il2CppReloaded.Gameplay;
-using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.MonoScripts.Modded;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
-using ReplantedOnline.Utilities.Unity;
 using System.Collections;
 using UnityEngine;
 
@@ -13,11 +11,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 /// <inheritdoc/>
 internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 {
-    private enum ZombieInPoolMsgs : byte
-    {
-        Drown
-    }
-
     internal bool InPool;
     private bool _isDrowning;
 
@@ -105,20 +98,6 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         }
 
         UpdateWhiteWaterEffect(zombie, onPool);
-
-        if (InPool)
-        {
-            if (Net.AmOwner)
-            {
-                if (!_isDrowning && zombie.mZombieType == ZombieType.Imp && zombie.mZombiePhase == ZombiePhase.ZombieNormal)
-                {
-                    _isDrowning = true;
-                    SendDrownMessage();
-                    Net.StartCoroutine(CoDrown());
-                    Net.DespawnAndDestroyWhenNullOrDead(true);
-                }
-            }
-        }
     }
 
     private void UpdateWhiteWaterEffect(Zombie zombie, bool onPool)
@@ -194,21 +173,6 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         bool phaseCheck = zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
         return typeCheck && phaseCheck && zombie.mController?.gameObject.active == true;
-    }
-
-    private void SendDrownMessage()
-    {
-        SendMessage(ZombieInPoolMsgs.Drown);
-    }
-
-    [ObjectMessageHandler(ZombieInPoolMsgs.Drown)]
-    private void HandleDrownMessage()
-    {
-        if (!_isDrowning)
-        {
-            _isDrowning = true;
-            Net.StartCoroutine(CoDrown());
-        }
     }
 
     private IEnumerator CoDrown()

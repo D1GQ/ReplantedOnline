@@ -23,6 +23,17 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         ImpJumpOut
     }
 
+    internal override void OnInit(Zombie zombie)
+    {
+        var groundType = zombie.mBoard.mPlantRow[zombie.mRow];
+        if (groundType == PlantRowType.Pool)
+        {
+            zombie.mHasObject = false;
+            zombie.mController.AssignRenderGroupToPrefix("Zombie_imp", -1);
+            zombie.mController.AssignRenderGroupToTrack("Zombie_imp_track", -1);
+        }
+    }
+
     private int GetPoleSkinIndex()
     {
         if (Net.Zombie == null)
