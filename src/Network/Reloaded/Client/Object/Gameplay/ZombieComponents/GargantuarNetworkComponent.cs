@@ -10,6 +10,7 @@ using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
+using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponents;
 
@@ -55,22 +56,23 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
             return;
 
         var imp = SeedPacketDefinitions.SpawnZombie(ZombieType.Imp, 20, Net.Zombie.mRow, SpawnType.None, true);
-        Net.StartCoroutine(CoImpJumpOut(imp.Zombie));
-
-        SendMessage(GargantuarMsgs.ImpJumpOut, imp.ZombieNetworked!.NetworkId.Id);
+        int waitForTime = Mathf.FloorToInt(VersusState.VersusTimeSynced + 1f);
+        Net.StartCoroutine(CoImpJumpOut(imp.Zombie, waitForTime));
+        Net.StartCoroutine(CoTimeOutImpJumpOut(Net, imp.ZombieNetworked!));
+        SendMessage(GargantuarMsgs.ImpJumpOut, imp.ZombieNetworked!.NetworkId.Id, waitForTime);
     }
 
     [ObjectMessageHandler(GargantuarMsgs.ImpJumpOut)]
-    private void HandleImpJumpOutMessage(uint networkId)
+    private void HandleImpJumpOutMessage(uint networkId, int waitForTime)
     {
         if (Net.Zombie == null)
             return;
 
         NetworkIdentifier impNetworkIdentifier = NetworkIdentifier.Get(networkId);
-        Net.StartCoroutine(CoWaitForImp(impNetworkIdentifier));
+        Net.StartCoroutine(CoWaitForImp(impNetworkIdentifier, waitForTime));
     }
 
-    private IEnumerator CoWaitForImp(NetworkIdentifier impNetworkIdentifier)
+    private IEnumerator CoWaitForImp(NetworkIdentifier impNetworkIdentifier, int waitForTime)
     {
         Zombie? imp = null;
         while (imp == null)
@@ -94,10 +96,10 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
             yield return null;
         }
 
-        yield return CoImpJumpOut(imp);
+        yield return CoImpJumpOut(imp, waitForTime);
     }
 
-    private IEnumerator CoImpJumpOut(Zombie? imp)
+    private IEnumerator CoImpJumpOut(Zombie? imp, int waitForTime)
     {
         Zombie? gargantuar = Net.Zombie;
         if (imp == null || gargantuar == null)
@@ -112,6 +114,11 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         // Set IZombie hp
         imp.mBodyMaxHealth = 70;
         imp.mBodyHealth = 70;
+
+        while (VersusState.VersusTimeSynced < waitForTime)
+        {
+            yield return null;
+        }
 
         while (gargantuar.mZombiePhase != ZombiePhase.ZombieNormal)
         {
@@ -154,6 +161,26 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
 
             yield return null;
         }
+    }
+
+    private IEnumerator CoTimeOutImpJumpOut(ZombieNetworked impNetworked)
+    {
+        if (!impNetworked.AmOwner)
+            yield break;
+
+        var gargantuarNetworked = Net;
+        while (gargantuarNetworked.IsOnNetwork && !gargantuarNetworked.Dying)
+        {
+            if (impNetworked.Zombie?.mController == null ||
+                impNetworked.Zombie.mController.gameObject.active)
+            {
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        impNetworked.DespawnAndDestroy();
     }
 
     private void SetPoleSkinByIndex(int index)
