@@ -91,6 +91,22 @@ internal static class GargantuarZombiePatch
         {
             if (VersusState.AmPlantSide)
             {
+                // Make imp jump out when too close to throw
+                if (!__instance.ZombieNotWalking() && __instance.mHasObject && __instance.mZombiePhase == ZombiePhase.ZombieNormal)
+                {
+                    if (__instance.mBodyHealth <= __instance.mBodyMaxHealth / 2 &&
+                        __instance.mPosX <= 400f)
+                    {
+                        var _zombieNetworked = __instance.GetNetworked();
+                        if (_zombieNetworked != null && _zombieNetworked.TryGetNetworkComponent<GargantuarNetworkComponent>(out var gargantuarNetworkComponent))
+                        {
+                            __instance.mHasObject = false;
+                            gargantuarNetworkComponent.SendImpJumpOutMessage();
+                            return false;
+                        }
+                    }
+                }
+
                 if (__instance.mHasObject && __instance.mZombiePhase == ZombiePhase.GargantuarThrowing)
                 {
                     HandleGargantuarThrow(__instance);
