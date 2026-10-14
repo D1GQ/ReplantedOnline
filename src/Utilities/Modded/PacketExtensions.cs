@@ -1,4 +1,5 @@
-﻿using Il2CppSteamworks;
+﻿using Il2CppSource.Controllers;
+using Il2CppSteamworks;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Reloaded.Serialization;
@@ -227,5 +228,90 @@ internal static class PacketExtensions
         int grid = packetReader.ReadPackedInt();
         float pos = packetReader.ReadFloat();
         return new BoardUnitY(grid, pos);
+    }
+
+    /// <summary>
+    /// Serializes the character's skin overrides to the packet.
+    /// </summary>
+    internal static void SerializeCharacterSkin(this ReloadedCharacterController reloadedCharacterController, PacketWriter packetWriter)
+    {
+        var skinController = reloadedCharacterController?.m_skinController;
+        var skinSets = skinController?.m_skinSets;
+
+        bool hasSkins = skinSets != null;
+        packetWriter.WriteBool(hasSkins);
+
+        if (!hasSkins)
+            return;
+
+        List<byte> skinBytes = [];
+        foreach (var skinSet in skinSets!)
+        {
+            if (skinSet?.Skins == null)
+                continue;
+
+            foreach (var skin in skinSet.Skins)
+            {
+                if (skin?.Entries == null)
+                {
+                    skinBytes.Add(255);
+                    continue;
+                }
+
+                string currentCodeName = reloadedCharacterController!.GetImageOverride(skin.SlotTrackName);
+
+                byte entryIndex = 255;
+                for (byte i = 0; i < skin.Entries.Count; i++)
+                {
+                    if (skin.Entries[i].CodeName == currentCodeName)
+                    {
+                        entryIndex = i;
+                        break;
+                    }
+                }
+                skinBytes.Add(entryIndex);
+            }
+        }
+
+        packetWriter.WriteBytes([.. skinBytes]);
+    }
+
+    /// <summary>
+    /// Deserializes the character's skin overrides from the packet.
+    /// </summary>
+    internal static void DeserializeCharacterSkin(this ReloadedCharacterController reloadedCharacterController, PacketReader packetReader)
+    {
+        bool hasSkins = packetReader.ReadBool();
+        if (!hasSkins)
+            return;
+
+        byte[] skinBytes = packetReader.ReadBytes();
+
+        var skinSets = reloadedCharacterController?.m_skinController?.m_skinSets;
+        if (skinSets == null)
+            return;
+
+        int idx = 0;
+        foreach (var skinSet in skinSets)
+        {
+            if (skinSet?.Skins == null)
+                continue;
+
+            foreach (var skin in skinSet.Skins)
+            {
+                if (idx >= skinBytes.Length)
+                    return;
+
+                byte entryIndex = skinBytes[idx++];
+                if (entryIndex == 255)
+                    continue;
+
+                if (skin?.Entries == null || entryIndex >= skin.Entries.Count)
+                    continue;
+
+                string codeName = skin.Entries[entryIndex].CodeName;
+                reloadedCharacterController!.SetImageOverride(skin.SlotTrackName, codeName);
+            }
+        }
     }
 }

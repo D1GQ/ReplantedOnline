@@ -12,7 +12,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkComponent
 {
     internal bool InPool;
-    private bool _isDrowning;
 
     internal WhiteWaterEffect? WhiteWaterEffect { get; private set; } = null;
 

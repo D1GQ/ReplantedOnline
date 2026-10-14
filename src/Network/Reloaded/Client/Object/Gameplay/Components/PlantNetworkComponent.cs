@@ -3,6 +3,7 @@ using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -77,8 +78,17 @@ internal class PlantNetworkComponent : NetworkComponent
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        packetWriter.WriteBool(Net.Plant == null);
         var plant = Net.Plant;
+        packetWriter.WriteBool(Net.Plant == null);
+
+        if (init)
+        {
+            if (plant != null)
+            {
+                plant.mController.SerializeCharacterSkin(packetWriter);
+            }
+        }
+
         if (plant != null)
         {
             packetWriter.WritePackedInt(plant.mPlantHealth);
@@ -87,8 +97,18 @@ internal class PlantNetworkComponent : NetworkComponent
 
     public override void Deserialize(PacketReader packetReader, bool init)
     {
+        var plant = Net.Plant;
         bool isPlantNull = packetReader.ReadBool();
-        if (!isPlantNull && Net.Plant != null)
+
+        if (init)
+        {
+            if (!isPlantNull && plant != null)
+            {
+                plant.mController.DeserializeCharacterSkin(packetReader);
+            }
+        }
+
+        if (!isPlantNull && plant != null)
         {
             lastSyncPlantHealth = Math.Max(packetReader.ReadPackedInt(), 25);
         }

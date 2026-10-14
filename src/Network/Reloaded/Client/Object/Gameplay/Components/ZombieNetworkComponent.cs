@@ -216,12 +216,18 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     public override void Serialize(PacketWriter packetWriter, bool init)
     {
-        if (init)
-            return;
-
         var zombie = Net.Zombie;
-
         packetWriter.WriteBool(zombie == null);
+
+        if (init)
+        {
+            if (zombie != null)
+            {
+                zombie.mController.SerializeCharacterSkin(packetWriter);
+            }
+            return;
+        }
+
         if (zombie != null)
         {
             packetWriter.WritePackedFloat(zombie.mVelX);
@@ -231,18 +237,22 @@ internal class ZombieNetworkComponent : NetworkComponent
 
     public override void Deserialize(PacketReader packetReader, bool init)
     {
-        if (init)
-            return;
+        var zombie = Net.Zombie;
+        bool isZombieNull = packetReader.ReadBool();
 
-        if (!Net.AmOwner)
+        if (init)
         {
-            var zombie = Net.Zombie;
-            bool isZombieNull = packetReader.ReadBool();
             if (!isZombieNull && zombie != null)
             {
-                zombie.mVelX = packetReader.ReadPackedFloat();
-                SyncedPosX = packetReader.ReadPackedFloat(400f);
+                zombie.mController.DeserializeCharacterSkin(packetReader);
             }
+            return;
+        }
+
+        if (!isZombieNull && zombie != null)
+        {
+            zombie.mVelX = packetReader.ReadPackedFloat();
+            SyncedPosX = packetReader.ReadPackedFloat(400f);
         }
     }
 

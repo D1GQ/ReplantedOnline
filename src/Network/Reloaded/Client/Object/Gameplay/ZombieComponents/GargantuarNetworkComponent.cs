@@ -6,7 +6,6 @@ using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
-using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Unity;
 using System.Collections;
@@ -32,33 +31,6 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
             zombie.mController.AssignRenderGroupToPrefix("Zombie_imp", -1);
             zombie.mController.AssignRenderGroupToTrack("Zombie_imp_track", -1);
         }
-    }
-
-    private int GetPoleSkinIndex()
-    {
-        if (Net.Zombie == null)
-            return 0;
-
-        string codeName = Net.Zombie.mController.GetImageOverride(Animations.GARGANTUAR_POLE_OBJECT.Slot);
-        var skinData = Net.Zombie.mController.m_skinController.m_skinSets.First();
-
-        foreach (var skin in skinData.Skins)
-        {
-            if (skin.SlotTrackName != Animations.GARGANTUAR_POLE_OBJECT.Slot)
-                continue;
-
-            for (int i = 0; i < skin.Entries.Count; i++)
-            {
-                if (skin.Entries[i].CodeName == codeName)
-                {
-                    return i;
-                }
-            }
-
-            break;
-        }
-
-        return 0;
     }
 
     internal void SendImpJumpOutMessage()
@@ -192,53 +164,5 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         }
 
         impNetworked.DespawnAndDestroy();
-    }
-
-    private void SetPoleSkinByIndex(int index)
-    {
-        if (Net.Zombie == null)
-            return;
-
-        var skinData = Net.Zombie.mController.m_skinController.m_skinSets.First();
-
-        foreach (var skin in skinData.Skins)
-        {
-            if (skin.SlotTrackName != Animations.GARGANTUAR_POLE_OBJECT.Slot)
-                continue;
-
-            if (index >= skin.Entries.Count)
-                return;
-
-            var entry = skin.Entries[index];
-            if (entry != null)
-            {
-                Net.Zombie.mController.SetImageOverride(Animations.GARGANTUAR_POLE_OBJECT.Slot, entry.CodeName);
-            }
-            break;
-        }
-    }
-
-    public sealed override void Serialize(PacketWriter packetWriter, bool init)
-    {
-        if (init)
-        {
-            // Sync pole type used
-            var poleSkinIndex = GetPoleSkinIndex();
-            packetWriter.WritePackedInt(poleSkinIndex);
-        }
-
-        base.Serialize(packetWriter, init);
-    }
-
-    public sealed override void Deserialize(PacketReader packetReader, bool init)
-    {
-        if (init)
-        {
-            // Sync pole type used
-            var poleSkinIndex = packetReader.ReadPackedInt();
-            SetPoleSkinByIndex(poleSkinIndex);
-        }
-
-        base.Deserialize(packetReader, init);
     }
 }
