@@ -137,7 +137,7 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
 
         // Set movement
         imp.mVelZ = 0.5f;
-        imp.mAltitude = 150f;
+        imp.mAltitude = gargantuar.mAltitude + 140f;
         imp.mPosX = gargantuar.mPosX + 15f;
 
         // Play imp flying animation with sound
