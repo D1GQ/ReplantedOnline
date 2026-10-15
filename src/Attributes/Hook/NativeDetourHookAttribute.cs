@@ -10,7 +10,7 @@ namespace ReplantedOnline.Attributes.Hook;
 /// Abstract base attribute for creating native detour hooks that intercept IL2CPP method calls.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-internal class NativeDetourHook : Attribute
+internal class NativeDetourHookAttribute : Attribute
 {
     /// <summary>
     /// Installs all native detour hooks defined in the current assembly.
@@ -23,12 +23,12 @@ internal class NativeDetourHook : Attribute
         {
             foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             {
-                if (type.GetCustomAttribute<NativeDetourHook>() == null) continue;
+                if (type.GetCustomAttribute<NativeDetourHookAttribute>() == null) continue;
 
                 var attributes = method.GetCustomAttributes();
                 foreach (var attribute in attributes)
                 {
-                    if (attribute is NativeDetourHook hook)
+                    if (attribute is NativeDetourHookAttribute hook)
                     {
                         hook.Install(method);
                     }
@@ -49,7 +49,7 @@ internal class NativeDetourHook : Attribute
 /// </summary>
 /// <typeparam name="TDelegate">The delegate type that matches the signature of the target method.</typeparam>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-internal sealed class NativeDetourHook<TDelegate> : NativeDetourHook where TDelegate : Delegate
+internal sealed class NativeDetourHook<TDelegate> : NativeDetourHookAttribute where TDelegate : Delegate
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NativeDetourHook{TDelegate}"/> class with the specified target method.

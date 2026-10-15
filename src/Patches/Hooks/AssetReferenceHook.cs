@@ -9,7 +9,7 @@ using UnityEngine.AddressableAssets;
 namespace ReplantedOnline.Patches.Hooks;
 
 [DetourHook]
-[NativeDetourHook]
+[NativeDetourHookAttribute]
 internal static class AssetReferenceHook
 {
     [DetourHook(typeof(AssetReference), nameof(AssetReference.RuntimeKeyIsValid))]

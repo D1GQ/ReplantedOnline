@@ -29,7 +29,8 @@ internal static class PatchManager
             DebugLoggerPatch.Patch(harmony);
             Il2CppInteropExceptionLogPatch.Patch(harmony);
             DetourHookAttribute.InstallAll();
-            NativeDetourHook.InstallAll();
+            NativeDetourHookAttribute.InstallAll();
+            MethodAutoHookAttribute.InstallAll();
         }
         catch (Exception ex)
         {
