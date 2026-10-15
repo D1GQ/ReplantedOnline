@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using ReplantedOnline.MonoScripts.Modded;
 using System.Reflection;
 using System.Text;
 
@@ -27,9 +26,6 @@ internal static class DebugLoggerPatch
 
     private static void LogInfo(string className, string methodName, object[] args, ParameterInfo[] parameters)
     {
-        if (!InfoDisplay.DebugLoggerEnabled)
-            return;
-
         var sb = new StringBuilder();
         sb.Append($"{className}.{methodName}: ");
 

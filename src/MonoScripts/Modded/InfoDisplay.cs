@@ -20,7 +20,6 @@ namespace ReplantedOnline.MonoScripts.Modded;
 internal sealed class InfoDisplay : MonoBehaviour
 {
     internal static bool DebugEnabled { get; private set; }
-    internal static bool DebugLoggerEnabled { get; private set; }
 
     private bool _enabled = true;
     internal static GUIStyle? Style;
@@ -38,11 +37,6 @@ internal sealed class InfoDisplay : MonoBehaviour
         if (Keyboard.current.f2Key.wasPressedThisFrame)
         {
             DebugEnabled = !DebugEnabled;
-        }
-
-        if (Keyboard.current.f3Key.wasPressedThisFrame)
-        {
-            DebugLoggerEnabled = !DebugLoggerEnabled;
         }
     }
 
@@ -156,11 +150,6 @@ internal sealed class InfoDisplay : MonoBehaviour
         StringBuilder sb = new();
 
         sb.AppendLine("Debug Info >");
-
-        if (DebugLoggerEnabled)
-        {
-            sb.AppendLine($" Debug Logger: True");
-        }
 
         sb.AppendLine($" Mod Signature: {ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash}");
 
