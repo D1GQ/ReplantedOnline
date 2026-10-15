@@ -3,7 +3,6 @@ using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Modules.Modded;
 using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Utilities.Modded;
-using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
 
 namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
@@ -11,37 +10,6 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
 [HarmonyPatch]
 internal static class ProjectilePatch
 {
-    [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetZombieRect))]
-    [HarmonyPostfix]
-    private static void Zombie_GetZombieRect_Postfix(Zombie __instance, ref Rect __result)
-    {
-        if (!__instance.mZombieType.IsGravestoneOrTarget())
-            return;
-
-        // Check if we're in an online multiplayer lobby
-        if (ReloadedLobby.AmInLobby())
-        {
-            // From Versus Mode Console:
-            // Make Target Zombies and Gravestones invulnerable when behind another gravestone
-            // This is a direct fix to Fumeshroom OP piercing logic
-            foreach (var gravestone in __instance.mBoard.m_vsGravestones)
-            {
-                if (gravestone == __instance) continue;
-                if (gravestone.mRow != __instance.mRow) continue;
-
-                // Check if Gravestone is in front of zombie
-                if (gravestone.mPosX < __instance.mPosX)
-                {
-                    if (gravestone.mZombiePhase != ZombiePhase.RisingFromGrave)
-                    {
-                        __result = RectUtils.NonInteractableRect;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     [HarmonyReversePatch]
     [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetZombieRect))]
     private static Rect GetZombieRectOriginal(this Zombie __instance)
