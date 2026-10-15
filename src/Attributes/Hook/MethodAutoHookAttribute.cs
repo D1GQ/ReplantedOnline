@@ -98,6 +98,13 @@ internal abstract class MethodAutoHookAttribute<T, InstanceT> : MethodAutoHookAt
     }
 
     /// <summary>
+    /// Called after a hook has been successfully installed for the method described by <paramref name="hookEntry"/>.
+    /// Override in a derived attribute to perform additional setup once the hook is active.
+    /// </summary>
+    /// <param name="hookEntry">The entry describing the method that was just hooked.</param>
+    protected virtual void OnHooked(HookEntry hookEntry) { }
+
+    /// <summary>
     /// Decides whether a discovered method should actually be hooked.
     /// </summary>
     /// <param name="hookEntry">The entry describing the method that is about to be hooked.</param>
@@ -133,6 +140,7 @@ internal abstract class MethodAutoHookAttribute<T, InstanceT> : MethodAutoHookAt
         {
             var trampoline = (DynamicMethod)detour.GenerateTrampoline();
             Hooks.Add(new HookInfo(entry, stub, detour, BuildOriginalAdapter(trampoline, target)));
+            entry.Attribute.OnHooked(entry);
         }
         catch
         {
