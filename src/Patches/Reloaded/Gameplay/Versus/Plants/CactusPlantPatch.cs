@@ -96,9 +96,7 @@ internal static class CactusPlantPatch
                 float damageMultiplier = Mathf.Max(0f, 1f - (0.2f * impactedCount));
                 int damage = Mathf.RoundToInt(baseDamage * damageMultiplier);
 
-                if (theZombie.mZombieType.IsGravestoneOrTarget() ||
-                    theZombie.mShieldHealth > 0 ||
-                    theZombie.mFlyingHealth > 0)
+                if (ShouldZombieConsumeAllDamage(theZombie))
                 {
                     theZombie.TakeDamage(damage + (2 * (impactedCount + theZombie.mFlyingHealth)), 0);
                     __instance.PlayImpactSound(theZombie);
@@ -121,6 +119,41 @@ internal static class CactusPlantPatch
         }
 
         return true;
+    }
+
+    private static bool ShouldZombieConsumeAllDamage(Zombie zombie)
+    {
+        if (zombie.mShieldHealth > 0)
+        {
+            return true;
+        }
+
+        if (zombie.mFlyingHealth > 0)
+        {
+            return true;
+        }
+
+        if (zombie.mZombieType.IsGravestoneOrTarget())
+        {
+            return true;
+        }
+
+        if (zombie.mZombieType is ZombieType.Gargantuar or ZombieType.RedeyeGargantuar)
+        {
+            return true;
+        }
+
+        if (zombie.mZombieType is ZombieType.Bobsled && zombie.mZombiePhase != ZombiePhase.ZombieNormal)
+        {
+            return true;
+        }
+
+        if (zombie.mZombieType is ZombieType.Zamboni or ZombieType.Catapult)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private sealed class SpikeProjectileInfo
