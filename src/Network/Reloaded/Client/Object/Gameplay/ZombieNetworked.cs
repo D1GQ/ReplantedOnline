@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
@@ -18,7 +19,6 @@ using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
-using static ReplantedOnline.Attributes.Network.ObjectMessageHandlerAttribute;
 using Zombie = Il2CppReloaded.Gameplay.Zombie;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
@@ -29,23 +29,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 [RegisterTypeInIl2Cpp]
 internal sealed class ZombieNetworked : NetworkObject
 {
-    private enum ZombieMsgs : byte
-    {
-        TakeDamage,
-        Death,
-        DieLoot,
-        DragUnder,
-        MowDown,
-        SetPlantTarget,
-        EnteringHouse,
-        MindControlled,
-        SetFrozen,
-        ApplyBurn,
-        SnapToPos,
-        SetState,
-        MoveToRow
-    }
-
     /// <summary>
     /// Gets the current target zombie.
     /// </summary>
@@ -168,13 +151,8 @@ internal sealed class ZombieNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    internal void SendTakeDamageMessage(PackedInt theDamage, DamageFlags theDamageFlags)
-    {
-        SendMessage(ZombieMsgs.TakeDamage, theDamage, theDamageFlags);
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.TakeDamage)]
-    internal void HandleTakeDamageMessage(PackedInt theDamage, DamageFlags damageFlags)
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcTakeDamage(PackedInt theDamage, DamageFlags theDamageFlags)
     {
         if (Zombie == null)
             return;
@@ -182,8 +160,8 @@ internal sealed class ZombieNetworked : NetworkObject
         int minimumHealth = 5;
         int relevantHealth;
 
-        if (((damageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
-            (damageFlags & DamageFlags.BypassesShield) == DamageFlags.BypassesShield) &&
+        if (((theDamageFlags & DamageFlags.Spike) == DamageFlags.Spike ||
+            (theDamageFlags & DamageFlags.BypassesShield) == DamageFlags.BypassesShield) &&
             ZombieType != ZombieType.Target)
         {
             relevantHealth = Zombie.mBodyHealth + Zombie.mHelmHealth;
@@ -199,59 +177,60 @@ internal sealed class ZombieNetworked : NetworkObject
 
             if (damageToApply > 0)
             {
-                Zombie.TakeDamageOriginal(damageToApply, damageFlags);
+                Zombie.TakeDamageOriginal(damageToApply, theDamageFlags);
             }
         }
         else
         {
-            Zombie.TakeDamageOriginal(theDamage, damageFlags);
+            Zombie.TakeDamageOriginal(theDamage, theDamageFlags);
         }
     }
 
-    internal void SendDeathMessage(DamageFlags damageFlags)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcDeath(DamageFlags damageFlags, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendMessage(ZombieMsgs.Death, damageFlags);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        DespawnAndDestroyWhenNullOrDead(true);
-    }
+        Dying = true;
 
-    [ObjectMessageHandler(ZombieMsgs.Death)]
-    private void HandleDeathMessage(DamageFlags damageFlags)
-    {
-        if (!Dying)
+        LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+
+        if (rpcInfo.IsLocal)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+            DespawnAndDestroyWhenNullOrDead(true);
+        }
+        else
+        {
             Zombie?.PlayDeathAnimOriginal(damageFlags);
+            IsReadyToDespawn = true;
         }
-
-        IsReadyToDespawn = true;
     }
 
-    internal void SendDieLootMessage(bool withLoot)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcDieLoot(bool withLoot, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendMessage(ZombieMsgs.DieLoot, withLoot);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        DespawnAndDestroy(true);
-    }
+        Dying = true;
 
-    [ObjectMessageHandler(ZombieMsgs.DieLoot)]
-    private void HandleDieLootMessage(bool withLoot)
-    {
-        if (!Dying)
+        LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+
+        if (rpcInfo.IsLocal)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+            DespawnAndDestroy(true);
+        }
+        else
+        {
             if (withLoot)
             {
                 Zombie?.DieWithLootOriginal();
@@ -260,72 +239,66 @@ internal sealed class ZombieNetworked : NetworkObject
             {
                 Zombie?.DieNoLootOriginal();
             }
+            IsReadyToDespawn = true;
         }
-
-        IsReadyToDespawn = true;
     }
 
-    internal void SendDragUnderMessage()
-    {
-        SendMessage(ZombieMsgs.DragUnder);
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.DragUnder)]
-    private void HandleDragUnderMessage()
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcDragUnder()
     {
         Zombie?.DragUnderOriginal();
     }
 
-    internal void SendMowDownMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcMowDown(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
-            SendMessage(ZombieMsgs.MowDown);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        DespawnAndDestroy(true);
-    }
+        Dying = true;
 
-    [ObjectMessageHandler(ZombieMsgs.MowDown)]
-    private void HandleMowDownMessage()
-    {
-        if (!Dying)
+        LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+
+        if (rpcInfo.IsLocal)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Normal);
+            DespawnAndDestroy(true);
+        }
+        else
+        {
             Zombie?.MowDownOriginal();
+            IsReadyToDespawn = true;
         }
-
-        IsReadyToDespawn = true;
     }
 
-    internal void SendSetPlantTargetMessage(Plant target)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcSetPlantTarget(Plant target, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (Target != target)
+        if (rpcInfo.IsLocal && Target == target)
         {
-            Target = target;
-            SendMessage(ZombieMsgs.SetPlantTarget, target);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
-    }
 
-    [ObjectMessageHandler(ZombieMsgs.SetPlantTarget)]
-    private void HandleSetPlantTargetMessage(Plant target)
-    {
         Target = target;
     }
 
-    internal void SendEnteringHouseMessage(float xPos)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcEnteringHouse(float xPos, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        EnteringHouse = true;
-        SendMessage(ZombieMsgs.EnteringHouse, xPos);
-    }
+        if (EnteringHouse)
+        {
+            rpcInfo.Local.CancelSend = true;
+            return;
+        }
 
-    [ObjectMessageHandler(ZombieMsgs.EnteringHouse)]
-    private void HandleEnteringHouseMessage(float xPos)
-    {
         EnteringHouse = true;
+
         VersusGameplayManager.EndGame(Zombie?.mController?.transform.position ?? Vector3.zero, PlayerTeam.Zombies);
         if (Zombie != null)
         {
@@ -334,114 +307,124 @@ internal sealed class ZombieNetworked : NetworkObject
         }
     }
 
-    internal void SendMindControlledMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcMindControlled(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
-        SendMessage(ZombieMsgs.MindControlled);
-        DespawnAndDestroyWhenNullOrDead();
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.MindControlled)]
-    private void HandleMindControlledMessage()
-    {
-        State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
-        Zombie?.StartMindControlledOriginal();
-    }
-
-    internal void SendSetFrozenMessage(bool hitIceTrap)
-    {
-        int counter;
-        if (Zombie == null)
+        if (State is ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE)
         {
-            counter = 0;
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
-        else if (hitIceTrap)
+
+        State = ReplantedOnlineMod.Constants.Network.ObjectStates.ZOMBIE_MIND_CONTROLLED_STATE;
+
+        if (rpcInfo.IsLocal)
         {
-            counter = Zombie.mIceTrapCounter;
+            DespawnAndDestroyWhenNullOrDead();
         }
         else
         {
-            counter = Zombie.mChilledCounter;
+            Zombie?.StartMindControlledOriginal();
         }
-
-        SendMessage(ZombieMsgs.SetFrozen, hitIceTrap, counter);
     }
 
-    [ObjectMessageHandler(ZombieMsgs.SetFrozen)]
-    private void HandleSetFrozenMessage(bool hitIceTrap, PackedInt counter)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcSetFrozen(bool hitIceTrap, PackedInt counter = default, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (Zombie == null)
-            return;
-
-        if (hitIceTrap)
+        if (rpcInfo.IsLocal)
         {
-            Zombie.HitIceTrapOriginal();
-            Zombie.mIceTrapCounter = counter;
+            if (Zombie == null)
+            {
+                rpcInfo.Local.Args[1] = (PackedInt)0;
+            }
+            else if (hitIceTrap)
+            {
+                rpcInfo.Local.Args[1] = (PackedInt)Zombie.mIceTrapCounter;
+            }
+            else
+            {
+                rpcInfo.Local.Args[1] = (PackedInt)Zombie.mChilledCounter;
+            }
         }
         else
         {
-            Zombie.RemoveIceTrapOriginal();
-            Zombie.mChilledCounter = counter;
+            if (Zombie == null)
+                return;
+
+            if (hitIceTrap)
+            {
+                Zombie.HitIceTrapOriginal();
+                Zombie.mIceTrapCounter = counter;
+            }
+            else
+            {
+                Zombie.RemoveIceTrapOriginal();
+                Zombie.mChilledCounter = counter;
+            }
         }
     }
 
-    internal void SendApplyBurnMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcApplyBurn(bool reallyDead = default, MethodRpc.RpcInfo rpcInfo = default!)
     {
         if (Zombie == null)
-            return;
-
-        bool reallyDead = Zombie.mBodyHealth <= 1800;
-
-        SendMessage(ZombieMsgs.ApplyBurn, reallyDead);
-
-        if (reallyDead && !Dying)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Burned);
-            DespawnAndDestroy(true);
-        }
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.ApplyBurn)]
-    private void HandleApplyBurnMessage(bool reallyDead)
-    {
-        if (Zombie == null)
+            rpcInfo.Local.CancelSend = true;
             return;
+        }
 
         if (Zombie.mZombieType.IsGravestoneOrTarget())
-            return;
-
-        if (reallyDead && !Dying)
         {
-            Dying = true;
-            LogicComponent.OnDeath(Zombie, DeathReason.Burned);
-            Zombie?.ApplyBurnOriginal();
-            IsReadyToDespawn = true;
+            rpcInfo.Local.CancelSend = true;
+            return;
+        }
+
+        if (Dying)
+        {
+            rpcInfo.Local.CancelSend = true;
+            return;
+        }
+
+        if (rpcInfo.IsLocal)
+        {
+            reallyDead = Zombie.mBodyHealth <= 1800;
+            rpcInfo.Local.Args[0] = reallyDead;
+            if (reallyDead)
+            {
+                Dying = true;
+                LogicComponent.OnDeath(Zombie, DeathReason.Burned);
+                DespawnAndDestroy(true);
+            }
+        }
+        else
+        {
+            if (reallyDead)
+            {
+                Dying = true;
+                LogicComponent.OnDeath(Zombie, DeathReason.Burned);
+                Zombie?.ApplyBurnOriginal();
+                IsReadyToDespawn = true;
+            }
         }
     }
 
-    internal void SendSnapToPosMessage()
-    {
-        SendMessage(ZombieMsgs.SnapToPos, Zombie?.mPosX ?? 0);
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.SnapToPos, false)]
     [HideFromIl2Cpp]
-    private void HandleSnapToPosMessage(float posX, MessageInfo rpcInfo)
+    [MethodRpc(false, LocalExecution.None)]
+    internal void RpcSnapToPos(float posX, MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (rpcInfo.Sender.Team != PlayerTeam.Zombies)
+        if (rpcInfo.Sender?.Team != PlayerTeam.Zombies)
+        {
             return;
+        }
 
         Zombie?.mPosX = posX;
     }
 
-    internal void SendSetStateMessage(string state)
-    {
-        SendMessage(ZombieMsgs.SetState, state);
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.SetState)]
-    private void HandleSetStateMessage(string state)
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcSetState(string state)
     {
         if (state == ReplantedOnlineMod.Constants.Network.ObjectStates.NULL_STATE)
         {
@@ -452,13 +435,8 @@ internal sealed class ZombieNetworked : NetworkObject
         State = state;
     }
 
-    internal void SendMoveToRowMessage(PackedInt row)
-    {
-        SendMessage(ZombieMsgs.MoveToRow, row);
-    }
-
-    [ObjectMessageHandler(ZombieMsgs.MoveToRow)]
-    private void HandleMoveToRowMessage(PackedInt row)
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcMoveToRow(PackedInt row)
     {
         if (Zombie == null)
             return;

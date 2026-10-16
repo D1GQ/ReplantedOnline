@@ -2,6 +2,7 @@
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -12,11 +13,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.DolphinRider)]
 internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
 {
-    private enum DolphinRiderMsgs : byte
-    {
-        Jump
-    }
-
     private bool _hasJumped;
     internal sealed override void OnUpdate(Zombie zombie)
     {
@@ -25,7 +21,7 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
             if (zombie.mZombiePhase == ZombiePhase.DolphinInJump && !_hasJumped)
             {
                 _hasJumped = true;
-                SendJumpMessage();
+                RpcJump();
             }
         }
         else
@@ -51,16 +47,8 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
         base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
-    private void SendJumpMessage()
-    {
-        if (Net.Zombie == null)
-            return;
-
-        SendMessage(DolphinRiderMsgs.Jump);
-    }
-
-    [ObjectMessageHandler(DolphinRiderMsgs.Jump)]
-    private void HandleJumpMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcJump()
     {
         if (Net.Zombie == null)
             return;

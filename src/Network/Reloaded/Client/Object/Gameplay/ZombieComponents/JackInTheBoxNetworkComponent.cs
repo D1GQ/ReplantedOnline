@@ -2,6 +2,7 @@
 using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Utilities.Modded;
@@ -12,11 +13,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.JackInTheBox)]
 internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
 {
-    private enum JackInTheBoxMsgs : byte
-    {
-        Explode
-    }
-
     private bool _isExploding;
     internal sealed override void OnUpdate(Zombie zombie)
     {
@@ -24,7 +20,7 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         {
             if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
-                SendExplodeMessage();
+                RpcExplode();
             }
         }
         else
@@ -57,28 +53,26 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendExplodeMessage()
+    [MethodRpc(LocalExecution.Before)]
+    private void RpcExplode(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!_isExploding)
+        if (_isExploding)
         {
-            _isExploding = true;
-            Net.Dying = true;
-            SendMessage(JackInTheBoxMsgs.Explode);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        Net.DespawnAndDestroyWhenNullOrDead(true);
-    }
+        _isExploding = true;
+        Net.Dying = true;
 
-    [ObjectMessageHandler(JackInTheBoxMsgs.Explode)]
-    private void HandleExplodeMessage()
-    {
-        if (!_isExploding)
+        if (rpcInfo.IsLocal)
         {
-            _isExploding = true;
-            Net.Dying = true;
+            Net.DespawnAndDestroyWhenNullOrDead(true);
+        }
+        else
+        {
             Net.Zombie?.mPhaseCounter = 0;
+            Net.IsReadyToDespawn = true;
         }
-
-        Net.IsReadyToDespawn = true;
     }
 }

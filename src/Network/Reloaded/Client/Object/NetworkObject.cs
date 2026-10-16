@@ -1,6 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using MelonLoader;
-using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Interfaces;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Modules.Unity;
@@ -11,7 +10,6 @@ using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
-using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object;
 
@@ -249,35 +247,6 @@ internal abstract class NetworkObject : RuntimePrefab, INetworkIdentifier, INetw
     public virtual string GetObjectName()
     {
         return CatchedType.Name + $" ({NetworkId})";
-    }
-
-    /// <summary>
-    /// Sends a message for this network object.
-    /// </summary>
-    /// <param name="message">The message identifier to send.</param>
-    /// <param name="args">Optional arguments to pass to the message handler.</param>
-    [HideFromIl2Cpp]
-    public void SendMessage(Enum message, params object[] args)
-    {
-        if (!ObjectMessageHandlerAttribute.TryGetMessageId(this, message, out var messageId))
-        {
-            ReplantedOnlineMod.Logger.Warning(typeof(NetworkObject), $"Message {message} is not registered with ObjectMessageHandlerAttribute. Cannot send message.");
-            return;
-        }
-
-        Type[] argTypes = ObjectMessageHandlerAttribute.GetMessageArgsTypes(this, message);
-        PacketWriter? packetWriter = null;
-        if (args.Length > 0)
-        {
-            packetWriter = PacketWriter.Get();
-            for (int i = 0; i < args.Length; i++)
-            {
-                object? arg = args[i];
-                IFastPacketResolver.WriteFast(packetWriter, arg, argTypes[i]);
-            }
-        }
-        NetworkManager.Packet<ObjectMsgPacket>.Singleton.Send(this, messageId, packetWriter);
-        packetWriter?.Recycle();
     }
 
     /// <summary>

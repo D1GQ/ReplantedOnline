@@ -3,6 +3,7 @@ using Il2CppReloaded.Gameplay;
 using MelonLoader;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded;
@@ -27,17 +28,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 [RegisterTypeInIl2Cpp]
 internal sealed class PlantNetworked : NetworkObject
 {
-    private enum PlantMsgs : byte
-    {
-        Die,
-        Shoveled,
-        SquishPlant,
-        ReadyToFire,
-        Fire,
-        SetZombieTarget,
-        Upgrade
-    }
-
     /// <summary>
     /// Gets the current target zombie.
     /// </summary>
@@ -158,162 +148,135 @@ internal sealed class PlantNetworked : NetworkObject
         LogicComponent.Update();
     }
 
-    internal void SendDieMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcDie(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            SendMessage(PlantMsgs.Die);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        DespawnAndDestroy(true);
-    }
+        Dying = true;
 
-    [ObjectMessageHandler(PlantMsgs.Die)]
-    private void HandleDieMessage()
-    {
-        if (!Dying)
+        if (rpcInfo.IsLocal)
         {
-            Dying = true;
+            DespawnAndDestroy(true);
+        }
+        else
+        {
             Plant?.DieOriginal();
+            IsReadyToDespawn = true;
         }
-
-        IsReadyToDespawn = true;
     }
 
-    internal void SendShoveledMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.After)]
+    internal void RpcShoveled(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            Plant?.DieOriginal();
-            SendMessage(PlantMsgs.Shoveled);
+            return;
         }
 
-        DespawnAndDestroy(true);
+        Dying = true;
+        Plant!.mBoard.mPlantsShoveled++;
+        Plant?.DieOriginal();
+        Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
+
+        if (rpcInfo.IsLocal)
+        {
+            DespawnAndDestroy(true);
+        }
+        else
+        {
+            IsReadyToDespawn = true;
+        }
     }
 
-    [ObjectMessageHandler(PlantMsgs.Shoveled)]
-    private void HandleShoveledMessage()
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcSquashPlant(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!Dying)
+        if (Dying)
         {
-            Dying = true;
-            Plant?.DieOriginal();
-            Instances.GameplayActivity.PlaySample(Il2CppReloaded.Constants.Sound.SOUND_PLANT2);
+            rpcInfo.Local.CancelSend = true;
+            return;
         }
 
-        IsReadyToDespawn = true;
-    }
+        Dying = true;
 
-    internal void SendSquashPlantMessage()
-    {
-        if (!Dying)
+        if (rpcInfo.IsLocal)
         {
-            Dying = true;
-            SendMessage(PlantMsgs.SquishPlant);
+            DespawnAndDestroyWhenDeadOrNull(true);
         }
-
-        DespawnAndDestroyWhenDeadOrNull(true);
-    }
-
-    [ObjectMessageHandler(PlantMsgs.SquishPlant)]
-    private void HandleSquashPlantMessage()
-    {
-        if (!Dying)
+        else
         {
-            Dying = true;
             Plant?.SquishOriginal();
+            IsReadyToDespawn = true;
         }
-
-        IsReadyToDespawn = true;
     }
 
-    internal void SendReadyToFireMessage(PackedInt row, ref PlantWeapon plantWeapon)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal PlantWeapon RpcReadyToFire(PackedInt row, PlantWeapon plantWeapon, MethodRpc.RpcInfo rpcInfo = default!)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
-            component.RandomizeWeapon();
-            plantWeapon = component.GetWeapon();
-        }
+            if (rpcInfo.IsLocal)
+            {
+                component.RandomizeWeapon();
+                plantWeapon = component.GetWeapon();
+                rpcInfo.Local.Args[1] = plantWeapon;
+                return plantWeapon;
+            }
 
-        SendMessage(PlantMsgs.ReadyToFire, row, plantWeapon);
-    }
-
-    [ObjectMessageHandler(PlantMsgs.ReadyToFire)]
-    private void HandleReadyToFireMessage(PackedInt row, PlantWeapon plantWeapon)
-    {
-        if (LogicComponent is KernelpultNetworkComponent component)
-        {
             component.SetVisuals(plantWeapon);
+        }
+        else if (rpcInfo.IsLocal)
+        {
+            return plantWeapon;
         }
 
         // Play animation
         Plant?.FindTargetAndFireOriginal(row, plantWeapon);
+        return plantWeapon;
     }
 
-    internal void SendFireMessage(Zombie target, PackedInt row, ref PlantWeapon plantWeapon)
+    [HideFromIl2Cpp]
+    [MethodRpc(LocalExecution.Before)]
+    internal PlantWeapon RpcFire(Zombie target, PackedInt row, PlantWeapon plantWeapon, MethodRpc.RpcInfo rpcInfo = default!)
     {
         if (LogicComponent is KernelpultNetworkComponent component)
         {
+            if (rpcInfo.IsLocal)
+            {
+                component.SetVisuals(PlantWeapon.Primary);
+                plantWeapon = component.GetWeapon();
+                rpcInfo.Local.Args[2] = plantWeapon;
+                return plantWeapon;
+            }
+
             component.SetVisuals(PlantWeapon.Primary);
-            plantWeapon = component.GetWeapon();
         }
-
-        SendMessage(PlantMsgs.Fire, target, row, plantWeapon);
-    }
-
-    [ObjectMessageHandler(PlantMsgs.Fire)]
-    private void HandleFireMessage(Zombie target, PackedInt row, PlantWeapon plantWeapon)
-    {
-        if (LogicComponent is KernelpultNetworkComponent component)
+        else if (rpcInfo.IsLocal)
         {
-            component.SetVisuals(PlantWeapon.Primary);
+            return plantWeapon;
         }
 
         Plant?.FireOriginal(target, row, plantWeapon);
+        return plantWeapon;
     }
 
-    internal void SendSetZombieTargetMessage(Zombie target)
-    {
-        SendMessage(PlantMsgs.SetZombieTarget, target);
-    }
-
-    [ObjectMessageHandler(PlantMsgs.SetZombieTarget)]
-    private void HandleSetZombieTargetMessage(Zombie target)
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcSetZombieTarget(Zombie target)
     {
         Target = target;
     }
 
-    internal void SendUpgradeMessage(SeedType upgrade)
-    {
-        if (Plant == null)
-            return;
-
-        if (!Plant.IsUpgradableTo(upgrade))
-            return;
-
-        if (VersusGameplayManager.GetVersusModeConfig().GetPlantConfig(upgrade) == null)
-            return;
-
-        bool wasOnNetwork = IsOnNetwork;
-        IsOnNetwork = false;
-
-        var plant = Plant;
-        plant.mController.Die();
-        SeedType = upgrade;
-        plant.PlantInitialize(BoardUnitX, BoardUnitY, upgrade, SeedType.None);
-        plant.mBoard.DoPlantingEffects(BoardUnitX, BoardUnitY, plant);
-
-        _p.SetTarget(() => plant.mController.m_plant);
-        IsOnNetwork = wasOnNetwork;
-        gameObject.name = GetObjectName();
-
-        SendMessage(PlantMsgs.Upgrade, upgrade);
-    }
-
-    [ObjectMessageHandler(PlantMsgs.Upgrade)]
-    private void HandleUpgradeMessage(SeedType upgrade)
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcUpgrade(SeedType upgrade)
     {
         if (Plant == null)
             return;

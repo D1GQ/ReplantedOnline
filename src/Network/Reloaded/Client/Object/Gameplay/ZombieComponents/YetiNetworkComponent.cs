@@ -3,6 +3,7 @@ using Il2CppReloaded.Services;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Data.Json.Config.Reloaded;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -14,12 +15,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Yeti)]
 internal sealed class YetiNetworkComponent : ZombieNetworkComponent
 {
-    private enum YetiMsgs : byte
-    {
-        RunBack,
-        Enraged
-    }
-
     internal enum YetiState
     {
         Curious,
@@ -71,7 +66,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
             if (zombie.mPosX < 350 && CurrentState != YetiState.Runningback)
             {
                 CurrentState = YetiState.Runningback;
-                SendRunBackMessage();
+                RpcRunBack();
             }
         }
     }
@@ -95,8 +90,7 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
     {
         if (zombie.mBodyHealth <= (100000 - _yetiConfig.ArmorHealth))
         {
-            CurrentState = YetiState.Enraged;
-            SendEnragedMessage();
+            RpcEnraged();
             return true;
         }
 
@@ -110,16 +104,8 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         zombie.UpdateAnimSpeed();
     }
 
-    private void SendRunBackMessage()
-    {
-        if (Net.Zombie == null)
-            return;
-
-        SendMessage(YetiMsgs.RunBack);
-    }
-
-    [ObjectMessageHandler(YetiMsgs.RunBack)]
-    private void HandleRunBackMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcRunBack()
     {
         if (Net.Zombie == null)
             return;
@@ -130,31 +116,25 @@ internal sealed class YetiNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendEnragedMessage()
+    [MethodRpc(LocalExecution.Before)]
+    private void RpcEnraged(MethodRpc.RpcInfo rpcInfo = default!)
     {
         if (Net.Zombie == null)
+        {
+            rpcInfo.Local.CancelSend = true;
             return;
+        }
 
+        if (CurrentState == YetiState.Enraged)
+        {
+            rpcInfo.Local.CancelSend = true;
+            return;
+        }
+
+        CurrentState = YetiState.Enraged;
         Net.Zombie.mBodyMaxHealth = _yetiConfig.BodyHealth;
         Net.Zombie.mBodyHealth = _yetiConfig.BodyHealth;
         Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
         Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
-        SendMessage(YetiMsgs.Enraged);
-    }
-
-    [ObjectMessageHandler(YetiMsgs.Enraged)]
-    private void HandleEnragedMessage()
-    {
-        if (Net.Zombie == null)
-            return;
-
-        if (CurrentState != YetiState.Enraged)
-        {
-            CurrentState = YetiState.Enraged;
-            Net.Zombie.mBodyMaxHealth = _yetiConfig.BodyHealth;
-            Net.Zombie.mBodyHealth = _yetiConfig.BodyHealth;
-            Net.Zombie.DropArm(DamageFlags.DoesntCauseFlash);
-            Instances.GameplayActivity.m_audioService.PlayFoleyPitch(FoleyType.NewspaperRarrgh, -18);
-        }
     }
 }

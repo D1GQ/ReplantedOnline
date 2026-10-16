@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
@@ -17,11 +18,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Gargantuar)]
 internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
 {
-    private enum GargantuarMsgs : byte
-    {
-        ImpJumpOut
-    }
-
     internal override void OnInit(Zombie zombie)
     {
         var groundType = zombie.mBoard.mPlantRow[zombie.mRow];
@@ -33,26 +29,29 @@ internal sealed class GargantuarNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    internal void SendImpJumpOutMessage()
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcImpJumpOut(uint networkId = default!, int waitForTime = default!, MethodRpc.RpcInfo rpcInfo = default!)
     {
         if (Net.Zombie == null)
+        {
+            rpcInfo.Local.CancelSend = true;
             return;
+        }
 
-        var imp = SeedPacketDefinitions.SpawnZombie(ZombieType.Imp, 20, Net.Zombie.mRow, SpawnType.None, true);
-        int waitForTime = Mathf.FloorToInt(VersusState.VersusTimeSynced + 1f);
-        Net.StartCoroutine(CoImpJumpOut(imp.Zombie, waitForTime));
-        Net.StartCoroutine(CoTimeoutImpJumpOut(imp.ZombieNetworked!));
-        SendMessage(GargantuarMsgs.ImpJumpOut, imp.ZombieNetworked!.NetworkId.Id, waitForTime);
-    }
-
-    [ObjectMessageHandler(GargantuarMsgs.ImpJumpOut)]
-    private void HandleImpJumpOutMessage(uint networkId, int waitForTime)
-    {
-        if (Net.Zombie == null)
-            return;
-
-        NetworkIdentifier impNetworkIdentifier = NetworkIdentifier.Get(networkId);
-        Net.StartCoroutine(CoWaitForImp(impNetworkIdentifier, waitForTime));
+        if (rpcInfo.IsLocal)
+        {
+            var imp = SeedPacketDefinitions.SpawnZombie(ZombieType.Imp, 20, Net.Zombie.mRow, SpawnType.None, true);
+            waitForTime = Mathf.FloorToInt(VersusState.VersusTimeSynced + 1f);
+            Net.StartCoroutine(CoImpJumpOut(imp.Zombie, waitForTime));
+            Net.StartCoroutine(CoTimeoutImpJumpOut(imp.ZombieNetworked!));
+            rpcInfo.Local.Args[0] = imp.ZombieNetworked!.NetworkId.Id;
+            rpcInfo.Local.Args[1] = waitForTime;
+        }
+        else
+        {
+            NetworkIdentifier impNetworkIdentifier = NetworkIdentifier.Get(networkId);
+            Net.StartCoroutine(CoWaitForImp(impNetworkIdentifier, waitForTime));
+        }
     }
 
     private IEnumerator CoWaitForImp(NetworkIdentifier impNetworkIdentifier, int waitForTime)

@@ -21,7 +21,7 @@ internal static class PlantSyncPatch
                 var plantNetworked = __instance.GetNetworked();
                 if (plantNetworked != null)
                 {
-                    plantNetworked.SendReadyToFireMessage(theRow, ref thePlantWeapon);
+                    thePlantWeapon = plantNetworked.RpcReadyToFire(theRow, thePlantWeapon);
                 }
             }
             else
@@ -52,7 +52,7 @@ internal static class PlantSyncPatch
                 var plantNetworked = __instance.GetNetworked();
                 if (plantNetworked != null)
                 {
-                    plantNetworked.SendFireMessage(theTargetZombie, theRow, ref thePlantWeapon);
+                    thePlantWeapon = plantNetworked.RpcFire(theTargetZombie, theRow, thePlantWeapon);
                 }
             }
             else
@@ -83,7 +83,7 @@ internal static class PlantSyncPatch
             {
                 if (VersusState.AmPlantSide)
                 {
-                    plantNetworked.SendDieMessage();
+                    plantNetworked.RpcDie();
                 }
                 else
                 {
@@ -117,7 +117,7 @@ internal static class PlantSyncPatch
             var plantNetworked = __instance.GetNetworked();
             if (plantNetworked != null)
             {
-                plantNetworked.SendSquashPlantMessage();
+                plantNetworked.RpcSquashPlant();
             }
         }
 

@@ -1,14 +1,14 @@
 ﻿using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Reloaded.Client.Object.Component;
 using ReplantedOnline.Structs.Network;
 using ReplantedOnline.Utilities.Modded;
+using static ReplantedOnline.Network.Reloaded.Client.Routing.Packet.ObjectRpcPacket;
 
 namespace ReplantedOnline.Network.Reloaded.Serialization.Messages;
 
 /// <summary>
-/// Represents a network message for invoking object messages on <see cref="INetworkIdentifier"/> targets.
+/// Represents a network RPC for invoking object RPCs on <see cref="INetworkIdentifier"/> targets.
 /// </summary>
-internal readonly struct ObjectMsgMessage : IMessage<ObjectMsgMessage, INetworkIdentifier, uint, IPacket?>
+internal readonly struct ObjectRpcMessage : IMessage<ObjectRpcMessage, CatchedNetworkIdentifier, uint, IPacket?>
 {
     /// <summary>
     /// Gets the unique network identifier of the target network object.
@@ -16,9 +16,9 @@ internal readonly struct ObjectMsgMessage : IMessage<ObjectMsgMessage, INetworkI
     public NetworkIdentifier NetworkId { get; private init; }
 
     /// <summary>
-    /// Gets the identifier of the message method to invoke on the target object.
+    /// Gets the identifier of the RPC method to invoke on the target object.
     /// </summary>
-    public uint MessageId { get; private init; }
+    public uint RpcId { get; private init; }
 
     /// <summary>
     /// Gets a value indicating whether the target is a NetworkComponent rather than a direct NetworkObject.
@@ -27,25 +27,25 @@ internal readonly struct ObjectMsgMessage : IMessage<ObjectMsgMessage, INetworkI
 
     /// <summary>
     /// Gets the component index within the parent NetworkObject's component collection.
-    /// Returns -1 if this is not a component-based message.
+    /// Returns -1 if this is not a component-based RPC.
     /// </summary>
     public int ComponentIndex { get; private init; }
 
     /// <summary>
-    /// Serializes a network object message invocation into a packet for network transmission.
+    /// Serializes a network object RPC invocation into a packet for network transmission.
     /// </summary>
     /// <param name="packetWriter">The packet writer to write the serialized data to.</param>
     /// <param name="networkIdentifier">The target INetworkIdentifier instance to serialize.</param>
-    /// <param name="messageId">The identifier of the message method to invoke.</param>
+    /// <param name="rpcId">The identifier of the RPC method to invoke.</param>
     /// <param name="payload">The packet payload.</param>
-    public void Serialize(PacketWriter packetWriter, INetworkIdentifier networkIdentifier, uint messageId, IPacket? payload)
+    public void Serialize(PacketWriter packetWriter, CatchedNetworkIdentifier networkIdentifier, uint rpcId, IPacket? payload)
     {
         packetWriter.WriteNetworkId(networkIdentifier.NetworkId);
-        packetWriter.WritePackedUInt(messageId);
-        if (networkIdentifier is NetworkComponent component)
+        packetWriter.WriteUInt(rpcId);
+        if (networkIdentifier.NetworkComponentIndex != ReplantedOnlineMod.Constants.Network.NULL_NETWORK_COMPONENT_INDEX)
         {
             packetWriter.WriteBool(true);
-            packetWriter.WritePackedInt(component.Index);
+            packetWriter.WritePackedInt(networkIdentifier.NetworkComponentIndex);
         }
         else
         {
@@ -59,26 +59,26 @@ internal readonly struct ObjectMsgMessage : IMessage<ObjectMsgMessage, INetworkI
     }
 
     /// <summary>
-    /// Deserializes a message invocation from incoming network data.
+    /// Deserializes an RPC invocation from incoming network data.
     /// </summary>
-    /// <param name="packetReader">The packet reader containing the message data.</param>
-    /// <returns>A new ObjectMsgMessage instance with deserialized data.</returns>
-    public ObjectMsgMessage Deserialize(PacketReader packetReader)
+    /// <param name="packetReader">The packet reader containing the RPC data.</param>
+    /// <returns>A new ObjectRpcMessage instance with deserialized data.</returns>
+    public ObjectRpcMessage Deserialize(PacketReader packetReader)
     {
         NetworkIdentifier networkId = packetReader.ReadNetworkId();
-        uint messageId = packetReader.ReadPackedUInt();
+        uint rpcId = packetReader.ReadUInt();
         bool isComponent = packetReader.ReadBool();
 
         int componentIndex;
         if (isComponent)
             componentIndex = packetReader.ReadPackedInt();
         else
-            componentIndex = -1;
+            componentIndex = ReplantedOnlineMod.Constants.Network.NULL_NETWORK_COMPONENT_INDEX;
 
-        ObjectMsgMessage message = new()
+        ObjectRpcMessage message = new()
         {
             NetworkId = networkId,
-            MessageId = messageId,
+            RpcId = rpcId,
             IsComponent = isComponent,
             ComponentIndex = componentIndex
         };

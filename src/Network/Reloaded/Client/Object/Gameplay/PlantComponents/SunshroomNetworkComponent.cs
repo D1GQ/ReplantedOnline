@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
@@ -9,11 +10,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Sunshroom)]
 internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
 {
-    private enum SunshroomMsgs : byte
-    {
-        Grow
-    }
-
     private bool _hasGrown;
 
     internal override void OnUpdate(Plant plant)
@@ -23,7 +19,7 @@ internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
             if (plant.mState != PlantState.SunshroomSmall && !_hasGrown)
             {
                 _hasGrown = true;
-                SendGrowMessage();
+                RpcGrow();
             }
         }
         else
@@ -37,13 +33,8 @@ internal sealed class SunshroomNetworkComponent : PlantNetworkComponent
         UpdateHealthSync(plant);
     }
 
-    internal void SendGrowMessage()
-    {
-        SendMessage(SunshroomMsgs.Grow);
-    }
-
-    [ObjectMessageHandler(SunshroomMsgs.Grow)]
-    private void HandleGrowMessage()
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcGrow()
     {
         var plant = Net.Plant;
         if (plant == null)

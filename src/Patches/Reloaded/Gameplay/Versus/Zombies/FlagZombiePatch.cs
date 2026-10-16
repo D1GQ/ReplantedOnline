@@ -147,7 +147,7 @@ internal static class FlagZombiePatch
             var zombieNetworked = SeedPacketDefinitions.SpawnZombieOnNetwork(zombie, gridX, y, spawnType);
             if (gridX == 9)
             {
-                zombieNetworked.SendSnapToPosMessage();
+                zombieNetworked.RpcSnapToPos(zombie.mPosX);
             }
         }
         else

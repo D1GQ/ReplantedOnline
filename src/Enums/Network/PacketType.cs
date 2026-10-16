@@ -56,9 +56,9 @@ internal enum PacketType
     NetworkObjectSync,
 
     /// <summary>
-    /// Packet used for P2P session establishment and maintenance on a rpc receiver object.
+    /// Packet used for rpcs on objects.
     /// </summary>
-    ObjectMsg,
+    ObjectRpc,
 
     /// <summary>
     /// Syncs the vs mode time.

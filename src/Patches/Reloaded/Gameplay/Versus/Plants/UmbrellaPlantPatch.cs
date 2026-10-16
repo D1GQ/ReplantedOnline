@@ -25,7 +25,7 @@ internal static class UmbrellaPlantPatch
                 {
                     if (plantNetworked.TryGetNetworkComponent<UmbrellaNetworkComponent>(out var comp))
                     {
-                        comp.SendHitAndDoSpecialMessage();
+                        comp.RpcHitAndDoSpecial();
                     }
                 }
             }

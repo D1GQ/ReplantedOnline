@@ -1,5 +1,6 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -11,11 +12,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 /// <inheritdoc/>
 internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkComponent
 {
-    private enum ChinaJalapenoMsgs : byte
-    {
-        Activate
-    }
-
     private Texture _originalTexture = default!;
     private Texture _sleepingTexture = default!;
 
@@ -58,7 +54,7 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
                     {
                         plant.mSeedType = SeedType.Jalapeno;
                         plant.SetSleeping(false);
-                        SendActivateMessage();
+                        RpcActivate();
                     }
 
                     if (zombie.mBodyHealth - 25 > 10)
@@ -108,25 +104,23 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
         plant.mController.m_meshRenderer.material.mainTexture = _originalTexture;
     }
 
-    internal void SendActivateMessage()
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcActivate(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!_activated)
+        if (_activated)
         {
-            _activated = true;
-            SendMessage(ChinaJalapenoMsgs.Activate);
-        }
-    }
-
-    [ObjectMessageHandler(ChinaJalapenoMsgs.Activate)]
-    internal void HandleActivateMessage()
-    {
-        var plant = Net.Plant;
-        if (plant == null)
+            rpcInfo.Local.CancelSend = true;
             return;
+        }
 
-        if (!_activated)
+        _activated = true;
+
+        if (!rpcInfo.IsLocal)
         {
-            _activated = true;
+            var plant = Net.Plant;
+            if (plant == null)
+                return;
+
             if (Net.Plant != null)
             {
                 plant.mSeedType = SeedType.Jalapeno;

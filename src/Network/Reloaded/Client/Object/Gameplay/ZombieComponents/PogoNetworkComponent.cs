@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Zombies;
 
@@ -10,12 +11,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Pogo)]
 internal sealed class PogoNetworkComponent : ZombieNetworkComponent
 {
-    private enum PogoMsgs : byte
-    {
-        JumpOver,
-        PogoBreak
-    }
-
     private bool _inJump;
 
     internal sealed override void OnUpdate(Zombie zombie)
@@ -28,7 +23,7 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
             if (zombie.mZombiePhase == ZombiePhase.PogoForwardBounce2 && !_inJump)
             {
                 _inJump = true;
-                SendJumpOverMessage();
+                RpcJumpOver(zombie.mPhaseCounter);
             }
         }
         else
@@ -59,16 +54,8 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
         base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
-    private void SendJumpOverMessage()
-    {
-        if (Net.Zombie == null)
-            return;
-
-        SendMessage(PogoMsgs.JumpOver, Net.Zombie.mPhaseCounter);
-    }
-
-    [ObjectMessageHandler(PogoMsgs.JumpOver)]
-    private void HandleJumpOverMessage(int PhaseCounter)
+    [MethodRpc(LocalExecution.None)]
+    private void RpcJumpOver(int PhaseCounter)
     {
         if (Net.Zombie == null)
             return;
@@ -78,16 +65,8 @@ internal sealed class PogoNetworkComponent : ZombieNetworkComponent
         Net.Zombie.mZombiePhase = ZombiePhase.PogoForwardBounce2;
     }
 
-    internal void SendPogoBreakMessage(DamageFlags damageFlags)
-    {
-        if (Net.Zombie == null)
-            return;
-
-        SendMessage(PogoMsgs.PogoBreak, damageFlags);
-    }
-
-    [ObjectMessageHandler(PogoMsgs.PogoBreak)]
-    private void HandlePogoBreakMessage(DamageFlags damageFlags)
+    [MethodRpc(LocalExecution.None)]
+    internal void RpcPogoBreak(DamageFlags damageFlags)
     {
         if (Net.Zombie == null)
             return;

@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
@@ -9,12 +10,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Cactus)]
 internal sealed class CactusNetworkComponent : PlantNetworkComponent
 {
-    private enum CactusMsgs : byte
-    {
-        High,
-        Lowering
-    }
-
     private bool _isHigh;
     internal sealed override void OnUpdate(Plant plant)
     {
@@ -24,16 +19,14 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
             {
                 if (_isHigh)
                 {
-                    _isHigh = false;
-                    SendLoweringMessage();
+                    RpcSetLow();
                 }
             }
             else if (plant.mState is PlantState.CactusHigh or PlantState.CactusRising)
             {
                 if (!_isHigh)
                 {
-                    _isHigh = true;
-                    SendHighMessage();
+                    RpcSetHigh();
                 }
             }
         }
@@ -52,24 +45,14 @@ internal sealed class CactusNetworkComponent : PlantNetworkComponent
         UpdateHealthSync(plant);
     }
 
-    private void SendHighMessage()
-    {
-        SendMessage(CactusMsgs.High);
-    }
-
-    [ObjectMessageHandler(CactusMsgs.High)]
-    private void HandleHighMessage()
+    [MethodRpc(LocalExecution.Before)]
+    private void RpcSetHigh()
     {
         _isHigh = true;
     }
 
-    private void SendLoweringMessage()
-    {
-        SendMessage(CactusMsgs.Lowering);
-    }
-
-    [ObjectMessageHandler(CactusMsgs.Lowering)]
-    private void HandleLoweringMessage()
+    [MethodRpc(LocalExecution.Before)]
+    private void RpcSetLow()
     {
         _isHigh = false;
     }

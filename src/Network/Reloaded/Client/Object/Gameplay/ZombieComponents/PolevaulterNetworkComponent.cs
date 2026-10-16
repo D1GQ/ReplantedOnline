@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -10,11 +11,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Polevaulter)]
 internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
 {
-    private enum PolevaulterMsgs : byte
-    {
-        Vault
-    }
-
     private bool _hasVaulted;
     internal sealed override void OnUpdate(Zombie zombie)
     {
@@ -26,7 +22,7 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
             if (zombie.mZombiePhase == ZombiePhase.PolevaulterInVault && !_hasVaulted)
             {
                 _hasVaulted = true;
-                SendVaultMessage();
+                RpcVault();
             }
         }
         else
@@ -48,16 +44,8 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
         base.UpdatePosition(zombie, distance, useNonNetworkLogic);
     }
 
-    private void SendVaultMessage()
-    {
-        if (Net.Zombie == null)
-            return;
-
-        SendMessage(PolevaulterMsgs.Vault);
-    }
-
-    [ObjectMessageHandler(PolevaulterMsgs.Vault)]
-    private void HandleVaultMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcVault()
     {
         if (Net.Zombie == null)
             return;

@@ -79,7 +79,7 @@ internal abstract class MethodAutoHookAttribute<T, InstanceT> : MethodAutoHookAt
         var types = ReplantedOnlineMod.ModInfo.Assembly.GetTypes();
         foreach (var type in types)
         {
-            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
             foreach (var method in methods)
             {
                 var attr = method.GetCustomAttribute<T>();

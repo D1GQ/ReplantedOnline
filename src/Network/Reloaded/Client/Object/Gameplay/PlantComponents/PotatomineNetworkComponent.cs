@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponents;
@@ -9,11 +10,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Potatomine)]
 internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
 {
-    private enum PotatomineMsgs : byte
-    {
-        Wakeup
-    }
-
     internal bool HasExploded;
     private bool _isWakingup = true;
     internal sealed override void OnUpdate(Plant plant)
@@ -35,7 +31,7 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
                 if (plant.mStateCountdown < 5)
                 {
                     _isWakingup = false;
-                    SendWakeupMessage();
+                    RpcWakeup();
                 }
             }
         }
@@ -48,15 +44,16 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
         }
     }
 
-    private void SendWakeupMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcWakeup()
     {
-        SendMessage(PotatomineMsgs.Wakeup);
-    }
+        if (!_isWakingup)
+        {
+            return;
+        }
 
-    [ObjectMessageHandler(PotatomineMsgs.Wakeup)]
-    private void HandleWakeupMessage()
-    {
         _isWakingup = false;
+
         Net.Plant?.mStateCountdown = 0;
     }
 
@@ -64,10 +61,8 @@ internal sealed class PotatomineNetworkComponent : PlantSpecialNetworkComponent
     {
         if (!HasExploded)
         {
-            HasExploded = true;
-            SendDoSpecialMessage();
             DoSpecial();
-            Net.DespawnAndDestroyWhenDeadOrNull(true);
+            RpcDoSpecial();
         }
     }
 

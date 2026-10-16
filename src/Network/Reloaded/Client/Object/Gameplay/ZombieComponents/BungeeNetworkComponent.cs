@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -10,12 +11,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Bungee)]
 internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
 {
-    private enum BungeeMsgs : byte
-    {
-        Dive,
-        TakePlant
-    }
-
     private bool _isDiving;
     private bool _isTakingPlant;
     internal sealed override void OnUpdate(Zombie zombie)
@@ -29,7 +24,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 if (!_isDiving)
                 {
                     _isDiving = true;
-                    SendDiveMessage();
+                    RpcDive();
                 }
             }
             else if (zombie.mZombiePhase == ZombiePhase.BungeeAtBottom)
@@ -37,7 +32,7 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
                 if (zombie.mPhaseCounter < 10 && !_isTakingPlant)
                 {
                     _isTakingPlant = true;
-                    SendTakePlantMessage();
+                    RpcTakePlant();
                     Net.DespawnAndDestroyWhenNullOrDead(true);
                 }
             }
@@ -65,25 +60,15 @@ internal sealed class BungeeNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendDiveMessage()
-    {
-        SendMessage(BungeeMsgs.Dive);
-    }
-
-    [ObjectMessageHandler(BungeeMsgs.Dive)]
-    private void HandleDiveMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcDive()
     {
         _isDiving = true;
         Net.Zombie?.mPhaseCounter = 0;
     }
 
-    private void SendTakePlantMessage()
-    {
-        SendMessage(BungeeMsgs.TakePlant);
-    }
-
-    [ObjectMessageHandler(BungeeMsgs.TakePlant)]
-    private void HandleTakePlantMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcTakePlant()
     {
         _isTakingPlant = true;
         Net.Zombie?.mPhaseCounter = 0;

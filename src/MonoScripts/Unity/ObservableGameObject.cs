@@ -12,7 +12,7 @@ internal sealed class ObservableGameObject : MonoBehaviour
     /// <summary>
     /// Event that is invoked when the GameObject is destroyed.
     /// </summary>
-    internal Action<GameObject>? OnGameObjectDestroy;
+    internal Action<GameObject>? OnGameObjectDestroy = null;
 
     private void OnDestroy()
     {

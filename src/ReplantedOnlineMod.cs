@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS0162
 
 using MelonLoader;
-using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Data;
 using ReplantedOnline.Managers.Modded;
@@ -72,7 +71,6 @@ internal partial class ReplantedOnlineMod : MelonMod
             LocalizationManager.Initialize();
             AutoRegisterAttribute.RegisterAll();
             NetworkObject.InitializePrefabs();
-            ObjectMessageHandlerAttribute.Initialize();
             BloomEngineManager.InitializeBloom(this);
             MonoSingleton<InfoDisplay>.CreateInstance();
             MonoSingleton<GithubAPI>.CreateInstance();

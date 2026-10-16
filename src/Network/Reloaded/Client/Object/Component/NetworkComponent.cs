@@ -1,12 +1,7 @@
-﻿using Il2CppInterop.Runtime.Attributes;
-using ReplantedOnline.Attributes.Network;
-using ReplantedOnline.Interfaces;
+﻿using ReplantedOnline.Interfaces;
 using ReplantedOnline.Interfaces.Network;
-using ReplantedOnline.Network.Reloaded.Client.Routing;
-using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
 using ReplantedOnline.Structs.Network;
-using ReplantedOnline.Utilities.MelonLoader;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Component;
 
@@ -96,33 +91,4 @@ internal abstract class NetworkComponent : INetworkIdentifier, INetworkSerializa
     /// <param name="packetReader">The packet reader containing serialized state data.</param>
     /// <param name="init">If true, performs full initialization deserialization; if false, performs delta/dirty deserialization.</param>
     public virtual void Deserialize(PacketReader packetReader, bool init) { }
-
-    /// <summary>
-    /// Sends a message for this network component.
-    /// </summary>
-    /// <param name="message">The message identifier to send.</param>
-    /// <param name="args">Optional arguments to pass to the message handler.</param>
-    [HideFromIl2Cpp]
-    public void SendMessage(Enum message, params object[] args)
-    {
-        if (!ObjectMessageHandlerAttribute.TryGetMessageId(this, message, out var messageId))
-        {
-            ReplantedOnlineMod.Logger.Warning(typeof(NetworkComponent), $"Message {message} is not registered with ObjectMessageHandlerAttribute. Cannot send message.");
-            return;
-        }
-
-        Type[] argTypes = ObjectMessageHandlerAttribute.GetMessageArgsTypes(this, message);
-        PacketWriter? packetWriter = null;
-        if (args.Length > 0)
-        {
-            packetWriter = PacketWriter.Get();
-            for (int i = 0; i < args.Length; i++)
-            {
-                object? arg = args[i];
-                IFastPacketResolver.WriteFast(packetWriter, arg, argTypes[i]);
-            }
-        }
-        NetworkManager.Packet<ObjectMsgPacket>.Singleton.Send(this, messageId, packetWriter);
-        packetWriter?.Recycle();
-    }
 }

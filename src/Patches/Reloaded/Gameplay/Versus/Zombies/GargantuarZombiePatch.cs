@@ -101,7 +101,7 @@ internal static class GargantuarZombiePatch
                         if (_zombieNetworked != null && _zombieNetworked.TryGetNetworkComponent<GargantuarNetworkComponent>(out var gargantuarNetworkComponent))
                         {
                             __instance.mHasObject = false;
-                            gargantuarNetworkComponent.SendImpJumpOutMessage();
+                            gargantuarNetworkComponent.RpcImpJumpOut();
                             return false;
                         }
                     }
@@ -123,7 +123,7 @@ internal static class GargantuarZombiePatch
                         if (zombieNetworked.State is not ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE)
                         {
                             zombieNetworked.State = ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE;
-                            zombieNetworked.SendSetStateMessage(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
+                            zombieNetworked.RpcSetState(ReplantedOnlineMod.Constants.Network.ObjectStates.GARGANTUAR_SMASH_STATE);
                         }
                     }
                     else

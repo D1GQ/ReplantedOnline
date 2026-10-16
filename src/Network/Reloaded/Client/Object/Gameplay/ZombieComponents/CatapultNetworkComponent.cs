@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -10,15 +11,8 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 [RegisterNetworkComponent(ZombieType.Catapult)]
 internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
 {
-    private enum CatapultMsgs : byte
-    {
-        Drive,
-        ReadyToFire
-    }
-
     private bool _driving;
     internal bool ReadyToFire;
-    private int _lastSummonCounter;
     internal sealed override void OnUpdate(Zombie zombie)
     {
         if (Net.AmOwner)
@@ -27,14 +21,14 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
             {
                 _driving = true;
                 Net.Target = null;
-                SendDriveMessage();
+                RpcDrive();
             }
             else if (zombie.mZombiePhase == ZombiePhase.CatapultLaunching && !ReadyToFire)
             {
                 _driving = false;
                 ReadyToFire = true;
                 Plant plant = zombie.FindCatapultTarget();
-                SendReadyToFireMessage(plant, zombie.mSummonCounter);
+                RpcReadyToFire(plant, zombie.mSummonCounter);
             }
             else if (zombie.mZombiePhase == ZombiePhase.CatapultReloading)
             {
@@ -78,31 +72,20 @@ internal sealed class CatapultNetworkComponent : ZombieNetworkComponent
         }
     }
 
-    private void SendDriveMessage()
-    {
-        SendMessage(CatapultMsgs.Drive);
-    }
-
-    [ObjectMessageHandler(CatapultMsgs.Drive)]
-    private void HandleDriveMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcDrive()
     {
         _driving = true;
         Net.Target = null;
     }
 
-    private void SendReadyToFireMessage(Plant target, int summonCounter)
-    {
-        SendMessage(CatapultMsgs.ReadyToFire, target, summonCounter);
-    }
-
-    [ObjectMessageHandler(CatapultMsgs.ReadyToFire)]
-    private void HandleReadyToFireMessage(Plant target, int summonCounter)
+    [MethodRpc(LocalExecution.None)]
+    private void RpcReadyToFire(Plant target, int summonCounter)
     {
         if (Net.Zombie == null)
             return;
 
         Net.Target = target;
-        _lastSummonCounter = summonCounter;
         Net.Zombie.mSummonCounter = summonCounter;
         ReadyToFire = true;
     }

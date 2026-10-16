@@ -2,6 +2,7 @@
 using Il2CppSource.Controllers;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -13,12 +14,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.PlantComponent
 [RegisterNetworkComponent(SeedType.Squash)]
 internal sealed class SquashNetworkComponent : PlantNetworkComponent
 {
-    private enum SquashMsgs : byte
-    {
-        Look,
-        Jump
-    }
-
     private bool _looking;
     private bool _jump;
     internal sealed override void OnUpdate(Plant plant)
@@ -29,28 +24,23 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
             {
                 _looking = true;
                 Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
-                Net.SendSetZombieTargetMessage(target);
-                SendLookMessage();
+                Net.RpcSetZombieTarget(target);
+                RpcLook();
             }
             else if (plant.mState == PlantState.SquashPreLaunch && !_jump)
             {
                 _jump = true;
                 Zombie target = plant.mBoard.ZombieGet(plant.mTargetZombieID);
-                Net.SendSetZombieTargetMessage(target);
-                SendJumpMessage();
+                Net.RpcSetZombieTarget(target);
+                RpcJump();
             }
         }
 
         UpdateHealthSync(plant);
     }
 
-    private void SendLookMessage()
-    {
-        SendMessage(SquashMsgs.Look);
-    }
-
-    [ObjectMessageHandler(SquashMsgs.Look)]
-    private void HandleLookMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcLook()
     {
         var plant = Net.Plant;
         if (plant == null)
@@ -81,13 +71,8 @@ internal sealed class SquashNetworkComponent : PlantNetworkComponent
         }
     }
 
-    private void SendJumpMessage()
-    {
-        SendMessage(SquashMsgs.Jump);
-    }
-
-    [ObjectMessageHandler(SquashMsgs.Jump)]
-    private void HandleJumpMessage()
+    [MethodRpc(LocalExecution.None)]
+    private void RpcJump()
     {
         var plant = Net.Plant;
         if (plant == null)

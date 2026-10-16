@@ -1,6 +1,7 @@
 ﻿using Il2CppReloaded.Gameplay;
 using ReplantedOnline.Attributes.Network;
 using ReplantedOnline.Attributes.Register;
+using ReplantedOnline.Enums.Network;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 
@@ -12,11 +13,6 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
 [RegisterNetworkComponent(SeedType.InstantCoffee)]
 internal class PlantSpecialNetworkComponent : PlantNetworkComponent
 {
-    private enum PlantSpecialMsgs : byte
-    {
-        DoSpecial
-    }
-
     private bool _isDoingSpecial;
     internal override void OnUpdate(Plant plant)
     {
@@ -27,8 +23,7 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
             {
                 if (!_isDoingSpecial)
                 {
-                    Net.Dying = true;
-                    SendDoSpecialMessage();
+                    RpcDoSpecial();
                 }
             }
         }
@@ -38,28 +33,28 @@ internal class PlantSpecialNetworkComponent : PlantNetworkComponent
         }
     }
 
-    internal void SendDoSpecialMessage()
+    [MethodRpc(LocalExecution.Before)]
+    internal void RpcDoSpecial(MethodRpc.RpcInfo rpcInfo = default!)
     {
-        if (!_isDoingSpecial)
+        if (_isDoingSpecial)
         {
-            _isDoingSpecial = true;
+            rpcInfo.Local.CancelSend = true;
+            return;
+        }
+
+        _isDoingSpecial = true;
+
+        if (rpcInfo.IsLocal)
+        {
+            Net.Dying = true;
             DoSpecial_PlantSide();
-            SendMessage(PlantSpecialMsgs.DoSpecial);
+            Net.DespawnAndDestroyWhenDeadOrNull(true);
         }
-
-        Net.DespawnAndDestroyWhenDeadOrNull(true);
-    }
-
-    [ObjectMessageHandler(PlantSpecialMsgs.DoSpecial)]
-    protected void HandleDoSpecialMessage()
-    {
-        if (!_isDoingSpecial)
+        else
         {
-            _isDoingSpecial = true;
             DoSpecial();
+            Net.IsReadyToDespawn = true;
         }
-
-        Net.IsReadyToDespawn = true;
     }
 
     protected virtual void DoSpecial()
