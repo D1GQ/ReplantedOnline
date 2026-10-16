@@ -37,4 +37,30 @@ internal static class ZombiePatch
 
         return true;
     }
+
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DropArm))]
+    [HarmonyPrefix]
+    private static bool Zombie_DropArm_Prefix(Zombie __instance, DamageFlags theDamageFlags)
+    {
+        if (ReloadedLobby.AmInLobby())
+        {
+            // For some reason this method consistently catches a null exception.
+            // Garbage programmers I guess, so let's silent it out.
+            try
+            {
+                __instance.DropArmOriginal(theDamageFlags);
+            }
+            catch { }
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch(typeof(Zombie), nameof(Zombie.DropArm))]
+    private static void DropArmOriginal(this Zombie __instance, DamageFlags theDamageFlags)
+    {
+        throw new NotImplementedException("Reverse Patch Stub");
+    }
 }

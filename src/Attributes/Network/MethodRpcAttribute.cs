@@ -90,7 +90,7 @@ internal sealed class MethodRpc : MethodAutoHookAttribute<MethodRpc, INetworkIde
             /// <summary>
             /// An optional callback invoked after the RPC has been sent.
             /// </summary>
-            internal Action? AfterSend;
+            internal Action? AfterSend = null;
         }
     }
 
