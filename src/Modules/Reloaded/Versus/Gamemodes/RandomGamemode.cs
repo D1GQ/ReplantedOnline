@@ -63,7 +63,7 @@ internal sealed class RandomGamemode : IVersusGamemode
     /// <inheritdoc/>
     public void OnGameplayStart(VersusMode versusMode)
     {
-        IArenaSetupSeedbank.AddInitialSeedsToBanks();
+        PvZRUtils.ClearAllSeedsInAllSeedBacks();
 
         foreach (var seedType in ChosenPlantSeedTypes)
         {
@@ -98,7 +98,7 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         List<SeedType> zombieSeedTypes = [];
 
-        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount();
+        int numSeedsToAdd = IArena.GetCurrentArena().QuickPlayZombies.PacketCount;
         for (int i = 0; i < numSeedsToAdd; i++)
         {
             if (TryAddRequiredSeedType(zombieSeedTypes, true))
@@ -120,7 +120,7 @@ internal sealed class RandomGamemode : IVersusGamemode
     {
         List<SeedType> plantSeedTypes = [];
 
-        int numSeedsToAdd = IArenaSetupSeedbank.GetSeedPacketCount();
+        int numSeedsToAdd = IArena.GetCurrentArena().QuickPlayPlants.PacketCount;
         for (int i = 0; i < numSeedsToAdd; i++)
         {
             if (TryAddRequiredSeedType(plantSeedTypes, false))

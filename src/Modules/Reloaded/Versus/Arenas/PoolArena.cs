@@ -15,7 +15,7 @@ using UnityEngine;
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
 
 [RegisterArena(ArenaType.Pool)]
-internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
+internal class PoolArena : IArena, IArenaData
 {
     /// <inheritdoc/>
     public virtual ArenaType Type => ArenaType.Pool;
@@ -27,33 +27,12 @@ internal class PoolArena : IArena, IArenaData, IArenaSetupSeedbank
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
-    public int SeedPacketCount => 7;
+    public QuickplaySeedTypes QuickPlayPlants => new([SeedType.Sunflower, SeedType.Lilypad, SeedType.Peashooter,
+        SeedType.Squash, SeedType.Wallnut, SeedType.Jalapeno, SeedType.Tanglekelp]);
 
     /// <inheritdoc/>
-    public SeedType[] QuickPlayPlants
-    {
-        get
-        {
-            field ??=
-                [SeedType.Sunflower, SeedType.Lilypad, SeedType.Peashooter,
-                SeedType.Squash, SeedType.Wallnut, SeedType.Jalapeno,
-                SeedType.Tanglekelp];
-            return field;
-        }
-    }
-
-    /// <inheritdoc/>
-    public SeedType[] QuickPlayZombies
-    {
-        get
-        {
-            field ??=
-                [SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrashCan,
-                SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, CustomSeedType.ZombieDolphinRider,
-                SeedType.ZombieFlag];
-            return field;
-        }
-    }
+    public QuickplaySeedTypes QuickPlayZombies => new([SeedType.ZombieGravestone, SeedType.ZombieNormal, SeedType.ZombieTrashCan,
+        SeedType.ZombieTrafficCone, SeedType.ZombiePolevaulter, CustomSeedType.ZombieDolphinRider, SeedType.ZombieFlag]);
 
     /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()

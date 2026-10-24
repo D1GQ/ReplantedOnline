@@ -25,6 +25,12 @@ internal sealed class CloudyDayArena : IArena, IArenaData
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayPlants => QuickplaySeedTypes.DefaultPlantQuickplaySeedTypes;
+
+    /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayZombies => QuickplaySeedTypes.DefaultZombieQuickplaySeedTypes;
+
+    /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-CloudyDayLevel2")!;

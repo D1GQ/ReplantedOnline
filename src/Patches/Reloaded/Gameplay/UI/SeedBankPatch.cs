@@ -5,6 +5,7 @@ using Il2CppReloaded.Gameplay;
 using Il2CppReloaded.TreeStateActivities;
 using Il2CppSource.Controllers;
 using Il2CppTekly.DataModels.Models;
+using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
@@ -17,15 +18,36 @@ namespace ReplantedOnline.Patches.Reloaded.Gameplay.UI;
 [HarmonyPatch]
 internal static class SeedBankPatch
 {
-    [HarmonyPatch(typeof(Board), nameof(Board.GetNumSeedsInBank))]
-    [HarmonyPostfix]
-    private static void Board_GetNumSeedsInBank_Postfix(ref int __result)
+    [HarmonyPatch(typeof(SeedBank), nameof(SeedBank.UpdateWidth))]
+    [HarmonyPrefix]
+    private static bool Board_UpdateWidth_Prefix(SeedBank __instance)
     {
         if (ReloadedLobby.AmInLobby())
         {
-            // Set seed back size
-            __result = IArenaSetupSeedbank.GetSeedPacketCount();
+            var team = __instance.GetSeedBankTeam();
+            switch (team)
+            {
+                case PlayerTeam.Plants:
+                    __instance.mNumPackets = IArena.GetCurrentArena().QuickPlayPlants.PacketCount;
+                    break;
+                case PlayerTeam.Zombies:
+                    __instance.mNumPackets = IArena.GetCurrentArena().QuickPlayZombies.PacketCount;
+                    break;
+                default:
+                    __instance.mNumPackets = 0;
+                    break;
+            }
+            __instance.mWidth = __instance.mBoard.GetSeedBankExtraWidth() + 446;
+
+            for (int i = 0; i < __instance.mNumPackets; i++)
+            {
+                __instance.mSeedPackets[i].mX = __instance.mBoard.GetSeedPacketPositionX(i, __instance.mNumPackets);
+            }
+
+            return false;
         }
+
+        return true;
     }
 
     [HarmonyPatch(typeof(SeedBank), nameof(SeedBank.GetPacketCount))]
@@ -44,7 +66,7 @@ internal static class SeedBankPatch
                 }
             }
 
-            __result = inBank - (IArenaSetupSeedbank.GetSeedPacketCount() - VersusMode.k_numPackets);
+            __result = inBank - (__instance.mNumPackets - VersusMode.k_numPackets);
         }
 
         return false;

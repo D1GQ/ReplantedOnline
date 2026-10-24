@@ -220,6 +220,24 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Finds the <see cref="SeedChooserScreen.SeedBankInfo"/> that wraps the given <see cref="SeedBank"/>.
+    /// </summary>
+    /// <param name="seedBank">The seed bank to look up.</param>
+    /// <returns>The <see cref="SeedChooserScreen.SeedBankInfo"/> whose <c>mSeedBank</c> is the given seed bank.</returns>
+    internal static SeedChooserScreen.SeedBankInfo GetSeedBankInfoFromSeedBank(this SeedBank seedBank)
+    {
+        foreach (var bankInfo in Instances.GameplayActivity.SeedChooserScreen.m_seedBankInfos._items)
+        {
+            if (bankInfo.mSeedBank == seedBank)
+            {
+                return bankInfo;
+            }
+        }
+
+        throw new InvalidOperationException("No SeedBankInfo found for SeedBank.");
+    }
+
+    /// <summary>
     /// Gets the team associated with the seed bank.
     /// </summary>
     /// <param name="seedBank">The seed bank reference.</param>
@@ -229,6 +247,11 @@ internal static class PvZRUtils
     /// </returns>
     internal static PlayerTeam GetSeedBankTeam(this SeedBank seedBank)
     {
+        if (Instances.GameplayActivity.VersusMode == null)
+        {
+            return PlayerTeam.None;
+        }
+
         if (Instances.GameplayActivity.VersusMode.PlantPlayerIndex == seedBank.PlayerIndex)
         {
             return PlayerTeam.Plants;
@@ -371,6 +394,17 @@ internal static class PvZRUtils
                 break;
             }
         }
+    }
+
+    /// <summary>
+    /// Clears all seeds from every seed bank (both plant and zombie).
+    /// </summary>
+    internal static void ClearAllSeedsInAllSeedBacks()
+    {
+        var plantSeedBankInfo = GetPlantSeedBankInfo();
+        var zombieSeedBankInfo = GetZombieSeedBankInfo();
+        plantSeedBankInfo.ClearAllSeedsInSeedBack();
+        zombieSeedBankInfo.ClearAllSeedsInSeedBack();
     }
 
     /// <summary>

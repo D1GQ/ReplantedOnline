@@ -52,7 +52,7 @@ internal sealed class CustomGamemode : IVersusGamemode
             yield return null;
         }
 
-        IArenaSetupSeedbank.AddInitialSeedsToBanks();
+        PvZRUtils.ClearAllSeedsInAllSeedBacks();
         ReloadedClientData.LocalClient?.Ready.Value = true;
 
         if (ReplantedOnlineMod.ModInfo.DEBUG && ReloadedLobby.GetLobbyClientCount() == 1)
@@ -77,7 +77,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     private static void SetupDebugPlantSide()
     {
         var zombieSeedBankInfo = PvZRUtils.GetZombieSeedBankInfo();
-        SeedType[] quickPlayZombies = IArenaSetupSeedbank.GetQuickPlayZombies();
+        SeedType[] quickPlayZombies = IArena.GetCurrentArena().QuickPlayZombies.SeedTypes;
 
         for (int i = zombieSeedBankInfo.mSeedsInBank; i < quickPlayZombies.Length; i++)
         {
@@ -97,7 +97,7 @@ internal sealed class CustomGamemode : IVersusGamemode
     private static void SetupDebugZombieSide()
     {
         var plantSeedBankInfo = PvZRUtils.GetPlantSeedBankInfo();
-        SeedType[] quickPlayPlants = IArenaSetupSeedbank.GetQuickPlayPlants();
+        SeedType[] quickPlayPlants = IArena.GetCurrentArena().QuickPlayPlants.SeedTypes;
 
         for (int i = plantSeedBankInfo.mSeedsInBank; i < quickPlayPlants.Length; i++)
         {

@@ -43,6 +43,12 @@ internal sealed class DebugArena : IArena, IArenaData
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayPlants => QuickplaySeedTypes.DefaultPlantQuickplaySeedTypes;
+
+    /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayZombies => QuickplaySeedTypes.DefaultZombieQuickplaySeedTypes;
+
+    /// <inheritdoc/>
     public LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-Minigame-Beghouled")!;

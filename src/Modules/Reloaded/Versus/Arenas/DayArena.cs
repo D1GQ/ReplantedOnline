@@ -19,6 +19,12 @@ internal class DayArena : IArena, IArenaData
     public SpawnType DefaultZombieSpawnType => SpawnType.RiseFromGround;
 
     /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayPlants => QuickplaySeedTypes.DefaultPlantQuickplaySeedTypes;
+
+    /// <inheritdoc/>
+    public QuickplaySeedTypes QuickPlayZombies => QuickplaySeedTypes.DefaultZombieQuickplaySeedTypes;
+
+    /// <inheritdoc/>
     public virtual LevelEntryData GetLevelEntryData()
     {
         return LevelEntries.GetLevel("Level-AdventureArea1Level2")!;

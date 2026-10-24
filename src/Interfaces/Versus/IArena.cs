@@ -18,6 +18,16 @@ internal interface IArena
     SpawnType DefaultZombieSpawnType { get; }
 
     /// <summary>
+    /// Gets the quickplay seed types used for the plant side in this arena.
+    /// </summary>
+    QuickplaySeedTypes QuickPlayPlants { get; }
+
+    /// <summary>
+    /// Gets the quickplay seed types used for the zombie side in this arena.
+    /// </summary>
+    QuickplaySeedTypes QuickPlayZombies { get; }
+
+    /// <summary>
     /// Gets the custom recommended flags for a specific seed type.
     /// </summary>
     /// <param name="seedType">The seed type to get recommended flags for.</param>
