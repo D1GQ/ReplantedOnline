@@ -4,9 +4,9 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Interfaces.Network;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Modules.Reloaded.Versus;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Network.Reloaded.Serialization;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Routing.Rpc;
@@ -37,7 +37,7 @@ internal sealed class SyncSeedPacketRpc : IRpcMessage<SeedType>
 
         if (seedPacket != null)
         {
-            if (seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeedType)
+            if (seedPacket.mPacketType == CustomSeedType.HiddenSeedPacket)
             {
                 seedPacket.PacketType = seedType;
             }

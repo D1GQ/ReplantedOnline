@@ -10,6 +10,7 @@ using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Network.Reloaded.Client.Routing.Packet;
 using ReplantedOnline.Patches.Reloaded.Gameplay.Versus;
+using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using ReplantedOnline.Utilities.Unity;
 using UnityEngine;
@@ -58,7 +59,7 @@ internal static class VersusGameplayManager
         foreach (var seedPacket in allSeedPackets)
         {
             if (GetVersusModeConfig().IgnoreInitialCooldown.Contains(seedPacket.mPacketType)
-                || seedPacket.mPacketType == SeedPacketDefinitions.RandomHiddenSeedType)
+                || seedPacket.mPacketType == CustomSeedType.HiddenSeedPacket)
                 continue;
 
             seedPacket.Deactivate();

@@ -26,24 +26,29 @@ internal readonly struct CustomSeedType
         internal const SeedType InvalidSeedType = (SeedType)int.MinValue;
 
         /// <summary>
+        /// The base seed type value for the Hidden seedpacket.
+        /// </summary>
+        internal const SeedType HiddenSeedType = (SeedType)10000;
+
+        /// <summary>
         /// The base seed type value for the Dolphin Rider zombie.
         /// </summary>
-        internal const SeedType DolphinRiderSeedType = (SeedType)10000;
+        internal const SeedType DolphinRiderSeedType = (SeedType)20000;
 
         /// <summary>
         /// The base seed type value for the Snorkel zombie.
         /// </summary>
-        internal const SeedType SnorkelSeedType = (SeedType)20000;
+        internal const SeedType SnorkelSeedType = (SeedType)30000;
 
         /// <summary>
         /// The base seed type value for the Backup Dancer zombie.
         /// </summary>
-        internal const SeedType BackupDancerSeedType = (SeedType)30000;
+        internal const SeedType BackupDancerSeedType = (SeedType)40000;
 
         /// <summary>
         /// The base seed type value for the Yeti zombie.
         /// </summary>
-        internal const SeedType YetiSeedType = (SeedType)40000;
+        internal const SeedType YetiSeedType = (SeedType)50000;
     }
 
     // Custom SeedTypes
@@ -51,6 +56,11 @@ internal readonly struct CustomSeedType
     /// Represents an invalid or uninitialized custom seed type.
     /// </summary>
     internal static CustomSeedType Invalid { get; } = new(ReloadedSeedTypes.InvalidSeedType);
+
+    /// <summary>
+    /// Custom seed type for the Hidden seedpacket.
+    /// </summary>
+    internal static CustomSeedType HiddenSeedPacket { get; } = new(ReloadedSeedTypes.HiddenSeedType, ZombieType.Normal, ReanimationType.Zombie);
 
     /// <summary>
     /// Custom seed type for the Dolphin Rider zombie.

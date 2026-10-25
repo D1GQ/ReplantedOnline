@@ -1,12 +1,9 @@
 ﻿using Il2CppReloaded.Gameplay;
 using Il2CppSource.Controllers;
-using ReplantedOnline.Data.Asset.Unity;
 using ReplantedOnline.Enums.Versus;
-using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
-using ReplantedOnline.Network.Reloaded.Client;
 using ReplantedOnline.Network.Reloaded.Client.Object;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay;
 using ReplantedOnline.Structs.Reloaded;
@@ -24,11 +21,6 @@ namespace ReplantedOnline.Modules.Reloaded.Versus;
 /// </summary>
 internal static class SeedPacketDefinitions
 {
-    /// <summary>
-    /// Gets the <see cref="SeedType"/> used as a placeholder for hidden seed packets.
-    /// </summary>
-    internal static readonly SeedType RandomHiddenSeedType = SeedType.SlotMachineDiamond;
-
     /// <summary>
     /// Gets a collection of seed types that are not considered valid or real seeds.
     /// </summary>
@@ -87,11 +79,11 @@ internal static class SeedPacketDefinitions
     /// </summary>
     internal static void Initialize()
     {
-        // Replace seed packet icon for hidden seed packet
-        var slotMachineDiamondDef = Instances.IDataService.GetPlantDefinition(RandomHiddenSeedType);
-        var slotMachineDiamondAssetOverride = new AssetReferenceOverride<Sprite>(slotMachineDiamondDef.m_versusImage);
-        IAssetReferenceOverride.Register(slotMachineDiamondAssetOverride);
-        slotMachineDiamondAssetOverride.SetOverride(ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon.Asset, ReloadedLobby.AmInLobby);
+        CustomPlantDefinition
+            .CreateZombieSeedPacketDefinition(CustomSeedType.HiddenSeedPacket,
+            "$NONE",
+            "NONE",
+            ReplantedOnlineMod.Assets.Sprites.SeedPacket.HiddenSeedPacketIcon.Asset);
 
         CustomPlantDefinition
             .CreateZombieSeedPacketDefinition(CustomSeedType.ZombieSnorkel,

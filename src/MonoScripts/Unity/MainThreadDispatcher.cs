@@ -1,5 +1,4 @@
 ﻿using MelonLoader;
-using ReplantedOnline.Interfaces.Data;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Utilities.MelonLoader;
 using UnityEngine;
@@ -20,15 +19,6 @@ internal class MainThreadDispatcher : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        try
-        {
-            IAssetReferenceOverride.UpdateAllOverrides();
-        }
-        catch (Exception ex)
-        {
-            ReplantedOnlineMod.Logger.Error(typeof(MainThreadDispatcher), $"Error trying to override asset: {ex}");
-        }
-
         while (_executionQueue.Count > 0)
         {
             try
