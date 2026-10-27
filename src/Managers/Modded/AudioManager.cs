@@ -58,7 +58,6 @@ internal static class AudioManager
         if (custom)
         {
             ReplaceAudio(MusicFile.MainMusic, MusicTune.TitleCrazyDaveMainTheme, CustomMainMenuTheme, fromSetting);
-
         }
         else
         {

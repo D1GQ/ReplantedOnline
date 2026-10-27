@@ -76,7 +76,7 @@ internal sealed class SpriteSheetResourceAsset(string path, int rows, int column
                     {
                         sprite.name = $"{ResourcePath}_{row}_{col}";
                         sprites.Add(sprite);
-                        sprite.hideFlags |= HideFlags.HideAndDontSave;
+                        sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
                     }
                 }
             }

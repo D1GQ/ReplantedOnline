@@ -29,6 +29,7 @@ internal sealed class SpriteResourceAsset(string path, float pixelsPerUnit = 1f)
                 Failed = false;
                 asset.name = ResourcePath;
                 asset.texture.name = ResourcePath;
+                asset.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
                 Asset = asset;
             }
             else

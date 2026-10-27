@@ -23,6 +23,7 @@ internal sealed class AudioClipResourceAsset(string path) : ResourceAsset<AudioC
                 Loadded = true;
                 Failed = false;
                 asset.name = ResourcePath;
+                asset.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
                 Asset = asset;
             }
             else

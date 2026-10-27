@@ -196,7 +196,7 @@ internal static class VersusGameplayManager
     /// <returns>A random integer between <see cref="VersusModeConfig.InitialProductionRateMin"/> and <see cref="VersusModeConfig.InitialProductionRateMax"/>.</returns>
     internal static int GetInitPlantOrGraveRate()
     {
-        return Common.RandRangeInt(GetVersusModeConfig().InitialProductionRateMin, VersusGameplayManager.GetVersusModeConfig().InitialProductionRateMax);
+        return Common.RandRangeInt(GetVersusModeConfig().InitialProductionRateMin, GetVersusModeConfig().InitialProductionRateMax);
     }
 
     /// <summary>
