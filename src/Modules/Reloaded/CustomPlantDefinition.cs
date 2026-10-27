@@ -28,11 +28,6 @@ internal static class CustomPlantDefinition
     /// </returns>
     internal static PlantDefinition? CreateZombieSeedPacketDefinition(CustomSeedType customSeedType, string nameLID, string descriptionLID, Sprite seedPacketSprite)
     {
-        if (!customSeedType.HasValidZombieType())
-        {
-            return null;
-        }
-
         string nameTrim = nameLID.ToUpper().Replace("_", "");
 
         var customPlantDefinition = ScriptableObject.CreateInstance<PlantDefinition>();

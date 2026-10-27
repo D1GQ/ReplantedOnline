@@ -60,7 +60,7 @@ internal readonly struct CustomSeedType
     /// <summary>
     /// Custom seed type for the Hidden seedpacket.
     /// </summary>
-    internal static CustomSeedType HiddenSeedPacket { get; } = new(ReloadedSeedTypes.HiddenSeedType, ZombieType.Normal, ReanimationType.Zombie);
+    internal static CustomSeedType HiddenSeedPacket { get; } = new(ReloadedSeedTypes.HiddenSeedType, ZombieType.Invalid, ReanimationType.None);
 
     /// <summary>
     /// Custom seed type for the Dolphin Rider zombie.
