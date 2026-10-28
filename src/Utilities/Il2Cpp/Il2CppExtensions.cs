@@ -9,32 +9,27 @@ namespace ReplantedOnline.Utilities.Il2Cpp;
 internal static class Il2CppExtensions
 {
     /// <summary>
-    /// Enumerates an Il2Cpp IReadOnlyList, providing a safe way to iterate with a maximum attempt limit.
+    /// Enumerates an Il2Cpp IReadOnlyList by reading items through the indexer until it throws
+    /// an <see cref="Il2CppException"/> which marks the end of the list.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="list">The Il2Cpp IReadOnlyList to enumerate.</param>
-    /// <param name="maxAttempts">The maximum number of enumeration attempts before stopping.</param>
-    /// <returns>An enumerable sequence of elements from the list.</returns>
-    internal static IEnumerable<T> EnumerateIl2CppReadonlyList<T>(this Il2CppSystem.Collections.Generic.IReadOnlyList<T> list, int maxAttempts = 10000)
+    /// <returns>A lazily evaluated sequence of the list's elements, in index order.</returns>
+    internal static IEnumerable<T> EnumerateIl2CppReadonlyList<T>(this Il2CppSystem.Collections.Generic.IReadOnlyList<T> list)
     {
-        for (int i = 0; i < maxAttempts; i++)
+        for (int i = 0; ; i++)
         {
-            bool success;
             T item;
             try
             {
                 item = list[i];
-                success = true;
             }
-            catch (Exception)
+            catch
             {
                 yield break;
             }
 
-            if (success)
-            {
-                yield return item;
-            }
+            yield return item;
         }
     }
 
