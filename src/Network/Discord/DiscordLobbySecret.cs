@@ -7,6 +7,9 @@ namespace ReplantedOnline.Network.Discord;
 /// </summary>
 internal sealed class DiscordLobbySecret
 {
+    private const string HashSeparator = "->";
+    private const char PayloadSeparator = '|';
+
     /// <summary>
     /// Gets the hash of the mod signature used for validation.
     /// </summary>
@@ -23,114 +26,74 @@ internal sealed class DiscordLobbySecret
     internal string GameCode { get; init; } = string.Empty;
 
     /// <summary>
-    /// Gets a value indicating whether a format error occurred during deserialization.
+    /// Serializes this lobby secret to the format <c>{hash}->{base64("{version}|{base64(scrambled code)}")}</c>.
     /// </summary>
-    internal bool FormatError { get; init; }
-
-    /// <summary>
-    /// Serializes the current lobby secret.
-    /// </summary>
-    /// <returns>A string representing the serialized lobby secret.</returns>
     internal string Serialize()
     {
         byte[] codeBytes = Encoding.UTF8.GetBytes(GameCode);
-
         ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(codeBytes);
 
-        string encodedGameCode = Convert.ToBase64String(codeBytes);
-        string payload = $"{VersionFormatted}|{encodedGameCode}";
+        string payload = $"{VersionFormatted}{PayloadSeparator}{Convert.ToBase64String(codeBytes)}";
         string encodedPayload = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
 
-        return $"{ModSignatureHash}->{encodedPayload}";
+        return $"{ModSignatureHash}{HashSeparator}{encodedPayload}";
     }
 
     /// <summary>
-    /// Deserializes a string back into a DiscordLobbySecret object.
+    /// Attempts to deserialize a string into a <see cref="DiscordLobbySecret"/>.
     /// </summary>
-    /// <param name="data">The string to deserialize.</param>
-    /// <returns>
-    /// A new DiscordLobbySecret instance if deserialization succeeds; otherwise, <c>null</c>.
-    /// </returns>
-    internal static DiscordLobbySecret Deserialize(string data)
+    /// <param name="data">The serialized secret.</param>
+    /// <param name="secret">The parsed secret if successful; otherwise <c>null</c>.</param>
+    /// <returns><c>true</c> if the data was well-formed; otherwise <c>false</c>.</returns>
+    internal static bool TryDeserialize(string? data, out DiscordLobbySecret secret)
     {
+        secret = null!;
+
         if (string.IsNullOrWhiteSpace(data))
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
+            return false;
 
-        int hashSeparatorIndex = data.IndexOf("->", StringComparison.Ordinal);
+        int hashEnd = data.IndexOf(HashSeparator, StringComparison.Ordinal);
+        if (hashEnd <= 0 || hashEnd >= data.Length - HashSeparator.Length)
+            return false;
 
-        if (hashSeparatorIndex <= 0 || hashSeparatorIndex >= data.Length - 2)
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
+        if (!uint.TryParse(data[..hashEnd], out uint modSignatureHash))
+            return false;
 
-        string hashString = data[..hashSeparatorIndex];
-        string encodedPayload = data[(hashSeparatorIndex + 2)..];
+        if (!TryDecodeBase64(data[(hashEnd + HashSeparator.Length)..], out byte[] payloadBytes))
+            return false;
 
-        if (!uint.TryParse(hashString, out uint modSignatureHash))
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
+        string payload = Encoding.UTF8.GetString(payloadBytes);
 
-        string payload;
+        int versionEnd = payload.IndexOf(PayloadSeparator);
+        if (versionEnd <= 0 || versionEnd >= payload.Length - 1)
+            return false;
 
-        try
-        {
-            payload = Encoding.UTF8.GetString(Convert.FromBase64String(encodedPayload));
-        }
-        catch
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
-
-        int separatorIndex = payload.IndexOf('|');
-
-        if (separatorIndex <= 0 || separatorIndex >= payload.Length - 1)
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
-
-        string version = payload[..separatorIndex];
-        string encodedGameCode = payload[(separatorIndex + 1)..];
-
-        byte[] codeBytes;
-
-        try
-        {
-            codeBytes = Convert.FromBase64String(encodedGameCode);
-        }
-        catch
-        {
-            return new DiscordLobbySecret
-            {
-                FormatError = true
-            };
-        }
+        if (!TryDecodeBase64(payload[(versionEnd + 1)..], out byte[] codeBytes))
+            return false;
 
         ReplantedOnlineMod.ModInfo.ModSignature.ScrambleBytes(codeBytes);
 
-        return new DiscordLobbySecret
+        secret = new DiscordLobbySecret
         {
             ModSignatureHash = modSignatureHash,
-            VersionFormatted = version,
-            GameCode = Encoding.UTF8.GetString(codeBytes),
-            FormatError = false
+            VersionFormatted = payload[..versionEnd],
+            GameCode = Encoding.UTF8.GetString(codeBytes)
         };
+
+        return true;
+    }
+
+    private static bool TryDecodeBase64(string value, out byte[] bytes)
+    {
+        try
+        {
+            bytes = Convert.FromBase64String(value);
+            return true;
+        }
+        catch (FormatException)
+        {
+            bytes = [];
+            return false;
+        }
     }
 }

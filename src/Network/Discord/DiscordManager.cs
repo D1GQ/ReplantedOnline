@@ -16,59 +16,27 @@ namespace ReplantedOnline.Network.Discord;
 /// </summary>
 internal static class DiscordManager
 {
-    /// <summary>
-    /// The Discord application ID used for Rich Presence.
-    /// </summary>
     private const string DiscordAppId = "1505741829071573094";
 
-    /// <summary>
-    /// The UTC time when the Discord manager was initialized.
-    /// </summary>
+    private const string LoadingScreenDetails = "Loading Screen";
+    private const string MainMenuDetails = "Main Menu";
+
     private static readonly DateTime StartTime = DateTime.UtcNow;
 
-    /// <summary>
-    /// The Discord RPC client instance.
-    /// </summary>
-    private static DiscordRpcClient Client = default!;
+    private static readonly (string Details, string State, ActivityType Type) NoActivity =
+        (string.Empty, string.Empty, ActivityType.Playing);
 
-    /// <summary>
-    /// The current Rich Presence data.
-    /// </summary>
+    private static DiscordRpcClient Client = default!;
     private static RichPresence Presence = default!;
 
-    /// <summary>
-    /// The current presence details text.
-    /// </summary>
+    // Last values applied to the presence, used to detect changes.
     private static string Details = string.Empty;
-
-    /// <summary>
-    /// The current presence state text.
-    /// </summary>
     private static string State = string.Empty;
-
-    /// <summary>
-    /// The start time for the current activity.
-    /// </summary>
     private static DateTime? ActivityStartTime;
 
-    /// <summary>
-    /// Indicates whether the menu timestamp should be used.
-    /// </summary>
     private static bool MenuTimestamp = true;
-
-    /// <summary>
-    /// The last recorded party size to avoid unnecessary updates.
-    /// </summary>
     private static int LastPartySize = -1;
-
-    /// <summary>
-    /// Indicates whether the Discord client has been initialized.
-    /// </summary>
     private static bool Initialized;
-
-    /// <summary>
-    /// Indicates whether the presence data has changed and needs to be pushed.
-    /// </summary>
     private static bool Dirty;
 
     /// <summary>
@@ -80,7 +48,6 @@ internal static class DiscordManager
             return;
 
         Client = new DiscordRpcClient(DiscordAppId);
-
         Client.RegisterUriScheme();
 
         Client.OnJoin += OnJoin;
@@ -91,18 +58,11 @@ internal static class DiscordManager
         Presence = new RichPresence
         {
             Type = ActivityType.Playing,
-            Details = "Loading Screen",
+            Details = LoadingScreenDetails,
             State = string.Empty,
-
             Assets = new Assets(),
-
-            Timestamps = new Timestamps
-            {
-                Start = StartTime
-            },
-
+            Timestamps = new Timestamps { Start = StartTime },
             Secrets = new Secrets(),
-
             Party = new Party
             {
                 ID = string.Empty,
@@ -118,7 +78,7 @@ internal static class DiscordManager
     }
 
     /// <summary>
-    /// Subscribes to Discord events for join requests and join functionality.
+    /// Subscribes to Discord join and join-request events.
     /// </summary>
     internal static void ReadyToJoin()
     {
@@ -126,7 +86,7 @@ internal static class DiscordManager
     }
 
     /// <summary>
-    /// Updates the Discord presence state and pushes changes if necessary.
+    /// Refreshes the presence state and pushes it to Discord if anything changed.
     /// </summary>
     internal static void Update()
     {
@@ -136,22 +96,16 @@ internal static class DiscordManager
         UpdatePartySize();
         UpdateActivity();
 
-        if (Dirty)
-        {
-            PushPresence();
-            Dirty = false;
-        }
-    }
-
-    /// <summary>
-    /// Updates the party size in the Rich Presence if it has changed.
-    /// </summary>
-    private static void UpdatePartySize()
-    {
-        if (!ReloadedLobby.AmInLobby())
+        if (!Dirty)
             return;
 
-        if (!Presence.HasParty())
+        PushPresence();
+        Dirty = false;
+    }
+
+    private static void UpdatePartySize()
+    {
+        if (!ReloadedLobby.AmInLobby() || !Presence.HasParty())
             return;
 
         int size = ReloadedLobby.GetLobbyClientCount();
@@ -163,17 +117,12 @@ internal static class DiscordManager
         Dirty = true;
     }
 
-    /// <summary>
-    /// Updates the activity details, state, and type based on current game state.
-    /// </summary>
     private static void UpdateActivity()
     {
-        GetActivity(out string details, out string state, out ActivityType type);
+        var (details, state, type) = GetActivity();
 
-        if (Details == details && State == state && Presence.Type == type)
-        {
+        if (details == Details && state == State && type == Presence.Type)
             return;
-        }
 
         Details = details;
         State = state;
@@ -188,119 +137,80 @@ internal static class DiscordManager
         Dirty = true;
     }
 
-    /// <summary>
-    /// Determines the current activity details, state, and type based on game state.
-    /// </summary>
-    /// <param name="details">The output details text for the presence.</param>
-    /// <param name="state">The output state text for the presence.</param>
-    /// <param name="type">The output activity type for the presence.</param>
-    private static void GetActivity(out string details, out string state, out ActivityType type)
+    private static (string Details, string State, ActivityType Type) GetActivity()
     {
-        details = string.Empty;
-        state = string.Empty;
-        type = ActivityType.Playing;
+        return ReloadedLobby.AmInLobby() ? GetLobbyActivity() : GetOfflineActivity();
+    }
 
-        if (!ReloadedLobby.AmInLobby())
+    private static (string Details, string State, ActivityType Type) GetOfflineActivity()
+    {
+        switch (SceneManager.GetActiveScene().name)
         {
-            switch (SceneManager.GetActiveScene().name)
-            {
-                case "Frontend":
-                    details = "Main Menu"; return;
+            case "Frontend":
+                return (MainMenuDetails, string.Empty, ActivityType.Playing);
 
-                case "Gameplay":
-                    {
-                        var entry = Instances.GameplayActivity?.Board?.mLevelEntryData;
+            case "Gameplay":
+                var entry = Instances.GameplayActivity?.Board?.mLevelEntryData;
+                return entry != null
+                    ? ("Gameplay", entry.FullLevelName, ActivityType.Playing)
+                    : NoActivity;
 
-                        if (entry != null)
-                        {
-                            details = "Gameplay";
-                            state = entry.FullLevelName;
-                        }
-
-                        return;
-                    }
-            }
-
-            return;
-        }
-
-        bool lan = ReloadedLobby.TransportMode == TransportMode.Lan;
-
-        string prefix = lan ? "LAN: " : string.Empty;
-
-        switch (VersusState.VersusPhase)
-        {
-            case VersusPhase.PickSides:
-                details = $"{prefix}Versus Mode";
-                state = "In Lobby";
-                break;
-
-            case VersusPhase.ChoosePlantPacket:
-            case VersusPhase.ChooseZombiePacket:
-                details = $"{prefix}Versus Mode";
-                state = "Choosing Seeds";
-                break;
-
-            case VersusPhase.Gameplay:
-                details = $"{prefix}Versus Mode";
-                type = ActivityType.Competing;
-                break;
-
-            case VersusPhase.SuddenDeath:
-                details = $"{prefix}Sudden Death!";
-                type = ActivityType.Competing;
-                break;
-
-            case VersusPhase.PlantsWin:
-            case VersusPhase.ZombiesWin:
-                details = $"{prefix}Versus Mode";
-                state = "Results";
-                break;
+            default:
+                return NoActivity;
         }
     }
 
+    private static (string Details, string State, ActivityType Type) GetLobbyActivity()
+    {
+        string prefix = ReloadedLobby.TransportMode == TransportMode.Lan ? "LAN: " : string.Empty;
+        string versus = $"{prefix}Versus Mode";
+
+        return VersusState.VersusPhase switch
+        {
+            VersusPhase.PickSides => (versus, "In Lobby", ActivityType.Playing),
+
+            VersusPhase.ChoosePlantPacket or
+            VersusPhase.ChooseZombiePacket => (versus, "Choosing Seeds", ActivityType.Playing),
+
+            VersusPhase.Gameplay => (versus, string.Empty, ActivityType.Competing),
+
+            VersusPhase.SuddenDeath => ($"{prefix}Sudden Death!", string.Empty, ActivityType.Competing),
+
+            VersusPhase.PlantsWin or
+            VersusPhase.ZombiesWin => (versus, "Results", ActivityType.Playing),
+
+            _ => NoActivity
+        };
+    }
+
     /// <summary>
-    /// Updates the activity timestamp based on whether the user is in a menu or gameplay.
+    /// Switches the timer between "since launch" (menus) and "since now" (activities).
     /// </summary>
-    /// <param name="details">The current activity details used to determine menu state.</param>
     private static void UpdateTimestamp(string details)
     {
-        bool menuState = details is "Loading Screen" or "Main Menu";
+        bool isMenu = details is LoadingScreenDetails or MainMenuDetails;
 
-        if (MenuTimestamp == menuState)
+        if (MenuTimestamp == isMenu)
             return;
 
-        MenuTimestamp = menuState;
-
-        ActivityStartTime = menuState ? StartTime : DateTime.UtcNow;
+        MenuTimestamp = isMenu;
+        ActivityStartTime = isMenu ? StartTime : DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Pushes the current Rich Presence data to Discord.
-    /// </summary>
     private static void PushPresence()
     {
         Client.SetPresence(Presence);
         Client.Invoke();
     }
 
-    /// <summary>
-    /// Handles a Discord join event, attempting to join a lobby using the provided secret.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="args">The join message containing the lobby secret.</param>
     private static void OnJoin(object sender, JoinMessage args)
     {
         MainThreadDispatcher.Execute(() =>
         {
             if (ReloadedLobby.AmInLobby())
-            {
                 return;
-            }
 
-            DiscordLobbySecret secret = DiscordLobbySecret.Deserialize(args.Secret);
-
-            if (secret.FormatError)
+            if (!DiscordLobbySecret.TryDeserialize(args.Secret, out var secret))
             {
                 CustomPopupPanel.ShowLocalized("$POPUP_HEADER_DISCONNECTED", "$POPUP_FAILED_TO_READ_SECRET");
                 return;
@@ -322,21 +232,16 @@ internal static class DiscordManager
         });
     }
 
-    /// <summary>
-    /// Handles a Discord join request event, accepting or rejecting based on lobby joinability.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="args">The join request message containing user information.</param>
     private static void OnJoinRequested(object sender, JoinRequestMessage args)
     {
         if (ReloadedLobby.LobbyData == null)
             return;
+
         bool accept = ReloadedLobby.LobbyData.LobbyJoinable.Value;
         Client.Respond(args, accept);
+
         if (accept)
-        {
             Dirty = true;
-        }
     }
 
     /// <summary>
@@ -347,7 +252,7 @@ internal static class DiscordManager
         if (ReloadedLobby.TransportMode != TransportMode.Steam)
             return;
 
-        Presence.Party.ID = Secrets.CreateFriendlySecret(new());
+        RefreshPartyId();
         Dirty = true;
     }
 
@@ -359,16 +264,14 @@ internal static class DiscordManager
         if (ReloadedLobby.TransportMode != TransportMode.Steam)
             return;
 
-        Presence.Party.ID = Secrets.CreateFriendlySecret(new());
+        RefreshPartyId();
 
-        DiscordLobbySecret secret = new()
+        Presence.Secrets.Join = new DiscordLobbySecret
         {
             ModSignatureHash = ReplantedOnlineMod.ModInfo.ModSignature.SignatureHash,
             VersionFormatted = ReplantedOnlineMod.ModInfo.MOD_VERSION_FORMATTED,
             GameCode = ReloadedLobby.GetCurrentLobbyGameCode()
-        };
-
-        Presence.Secrets.Join = secret.Serialize();
+        }.Serialize();
 
         LastPartySize = -1;
         Dirty = true;
@@ -387,7 +290,6 @@ internal static class DiscordManager
     /// <summary>
     /// Sets whether the current lobby is joinable by other players.
     /// </summary>
-    /// <param name="canJoin">True if the lobby should be joinable, false otherwise.</param>
     internal static void SetJoinable(bool canJoin)
     {
         Presence.Party.Privacy = canJoin ? Party.PrivacySetting.Public : Party.PrivacySetting.Private;
@@ -409,5 +311,10 @@ internal static class DiscordManager
         Client.Dispose();
 
         Initialized = false;
+    }
+
+    private static void RefreshPartyId()
+    {
+        Presence.Party.ID = Secrets.CreateFriendlySecret(new());
     }
 }
