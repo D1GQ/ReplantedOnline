@@ -18,6 +18,15 @@ internal sealed class JackInTheBoxNetworkComponent : ZombieNetworkComponent
     {
         if (Net.AmOwner)
         {
+            if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxRunning)
+            {
+                if (zombie.mPosX < 125)
+                {
+                    zombie.mPhaseCounter = 0;
+                    return;
+                }
+            }
+
             if (zombie.mZombiePhase == ZombiePhase.JackInTheBoxPopping && !_isExploding)
             {
                 RpcExplode();
