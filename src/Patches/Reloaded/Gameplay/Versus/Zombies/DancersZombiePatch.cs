@@ -58,7 +58,7 @@ internal static class DancersZombiePatch
 
             var backupDancer = SeedPacketDefinitions.SpawnZombie(ZombieType.BackupDancer, (float)thePosX, theRow, false).Zombie;
             backupDancer.mRelatedZombieID = __instance.DataID;
-            backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX);
+            backupDancer.mGraveX = GetFollowerIndex(__instance, theRow, thePosX); // Temporarily store follower index in unused Field for dancer.
             SeedPacketDefinitions.SpawnZombieOnNetwork(backupDancer, (float)thePosX, theRow);
             __result = backupDancer.DataID;
 
@@ -116,6 +116,7 @@ internal static class DancersZombiePatch
             yield return null;
         }
 
+        backupDancer.mRelatedZombieID = dancer.DataID;
         ZombieID[] array = [.. dancer.mFollowerZombieID];
         array[index] = backupDancer.DataID;
         dancer.mFollowerZombieID = array;

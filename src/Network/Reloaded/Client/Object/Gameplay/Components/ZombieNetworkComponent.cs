@@ -41,22 +41,23 @@ internal class ZombieNetworkComponent : NetworkComponent
     {
         float multiplier = 1f;
 
-        if (zombie.mZombieType is not (ZombieType.Dancer or ZombieType.BackupDancer))
+        foreach (var zom in zombie.mBoard.GetZombies())
         {
-            foreach (var zom in zombie.mBoard.GetZombies())
-            {
-                float distance = Vector2.Distance(new(zombie.mPosX, zombie.mPosY), new(zom.mPosX, zom.mPosY));
+            // Do not add speed multiplier to related backup dancer or dancer.
+            if (zombie.IsLeaderOrFollowerOf(zom))
+                continue;
 
-                if (distance < 225)
+            float distance = Vector2.Distance(new(zombie.mPosX, zombie.mPosY), new(zom.mPosX, zom.mPosY));
+
+            if (distance < 225)
+            {
+                if (zom.mZombieType == ZombieType.Dancer)
                 {
-                    if (zom.mZombieType == ZombieType.Dancer)
-                    {
-                        multiplier += 0.1f * Mathf.Lerp(3.5f, 1f, distance / 255);
-                    }
-                    else if (zom.mZombieType == ZombieType.BackupDancer)
-                    {
-                        multiplier += 0.05f * Mathf.Lerp(3.5f, 1f, distance / 255);
-                    }
+                    multiplier += 0.08f * Mathf.Lerp(3.5f, 1f, distance / 255);
+                }
+                else if (zom.mZombieType == ZombieType.BackupDancer)
+                {
+                    multiplier += 0.025f * Mathf.Lerp(3.5f, 1f, distance / 255);
                 }
             }
         }
@@ -65,7 +66,7 @@ internal class ZombieNetworkComponent : NetworkComponent
         {
             if (Net.PoolComponent.InPool)
             {
-                multiplier *= 0.9f;
+                multiplier *= 0.95f;
             }
         }
 
@@ -75,9 +76,11 @@ internal class ZombieNetworkComponent : NetworkComponent
             if (gridX >= zombie.mBoard.LeftFogColumn() &&
                 FogUtils.GetFogAt(zombie.mBoard, gridX, zombie.mRow + 1) > 100)
             {
-                multiplier *= 0.9f;
+                multiplier *= 0.95f;
             }
         }
+
+        multiplier = Mathf.Clamp(multiplier, 0.25f, 1.8f);
 
         return multiplier;
     }

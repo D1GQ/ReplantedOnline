@@ -220,6 +220,43 @@ internal static class PvZRUtils
     }
 
     /// <summary>
+    /// Determines whether two zombies are in a leader/follower relationship with each other,
+    /// in either direction.
+    /// </summary>
+    /// <param name="zombie">The zombie to check from.</param>
+    /// <param name="other">The other zombie to check against.</param>
+    internal static bool IsLeaderOrFollowerOf(this Zombie zombie, Zombie other)
+    {
+        if (zombie.mRelatedZombieID == other.DataID)
+        {
+            return true;
+        }
+
+        if (other.mRelatedZombieID == zombie.DataID)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < zombie.mFollowerZombieID.Length; i++)
+        {
+            if (zombie.mFollowerZombieID[i] == other.DataID)
+            {
+                return true;
+            }
+        }
+
+        for (int i = 0; i < other.mFollowerZombieID.Length; i++)
+        {
+            if (other.mFollowerZombieID[i] == zombie.DataID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Finds the <see cref="SeedChooserScreen.SeedBankInfo"/> that wraps the given <see cref="SeedBank"/>.
     /// </summary>
     /// <param name="seedBank">The seed bank to look up.</param>
