@@ -2,8 +2,6 @@
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Reloaded;
 using ReplantedOnline.MonoScripts.Modded;
-using ReplantedOnline.Patches.Reloaded.Gameplay.Versus.Sync;
-using System.Collections;
 using UnityEngine;
 
 namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
@@ -172,26 +170,5 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         bool phaseCheck = zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
             or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
         return typeCheck && phaseCheck && zombie.mController?.gameObject.active == true;
-    }
-
-    private IEnumerator CoDrown()
-    {
-        var zombie = Net.Zombie;
-        if (zombie == null)
-            yield break;
-
-        float target = zombie.mAltitude - 150;
-        while (zombie.mAltitude > target)
-        {
-            zombie.mAltitude -= 25f;
-            zombie.mVelX = 0;
-            zombie.UpdateAnimSpeed();
-            zombie.PoolSplash(true);
-            zombie.mController.ClipRect(new(-500, -500, 1000, 615));
-            yield return null;
-        }
-        zombie.DieNoLootOriginal();
-        Net.Dying = true;
-        Net.IsReadyToDespawn = true;
     }
 }

@@ -180,6 +180,20 @@ internal static class ProjectilePatch
         }
     }
 
+    [HarmonyPatch(typeof(Projectile), nameof(Projectile.GetProjectileRect))]
+    [HarmonyPostfix]
+    private static void Projectile_GetProjectileRect_StarFruit_Postfix(Projectile __instance, ref Rect __result)
+    {
+        if (__instance.mProjectileType != ProjectileType.Star)
+            return;
+
+        if (ReloadedLobby.AmInLobby())
+        {
+            // Fix all of Starfruit projectiles hitting the same zombie close up.
+            __result.size *= 0.9f;
+        }
+    }
+
     [HarmonyPatch(typeof(Plant), nameof(Plant.FindTargetZombie))]
     [HarmonyPostfix]
     private static void Plant_FindTargetZombie_Puffshroom_Postfix(Plant __instance, ref Zombie? __result)
