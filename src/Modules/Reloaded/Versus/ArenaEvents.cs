@@ -72,48 +72,51 @@ internal static class ArenaEvents
         if (!ReloadedLobby.AmLobbyHost())
             return;
 
-        DisplayEventTitle(EventTitle.PushBack);
-        NetworkManager.Rpc<DisplayEventTitleRpc>.Singleton.Send(EventTitle.PushBack);
-
-        foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
+        NetworkManager.SendInBufferMode(() =>
         {
-            if (PushBackEventIgnoreZombie.Contains(zombie.mZombieType)) continue;
-            if (PushBackEventIgnoreZombiePhase.Contains(zombie.mZombiePhase)) continue;
-            if (zombie.IsDeadOrDying()) continue;
-            if (zombie.mVelX <= 0f) continue;
-            if (zombie.mPosX > 490f) continue;
-            if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
+            DisplayEventTitle(EventTitle.PushBack);
+            NetworkManager.Rpc<DisplayEventTitleRpc>.Singleton.Send(EventTitle.PushBack);
 
-            PushBackZombie(zombie);
-            NetworkManager.Rpc<PushBackZombieRpc>.Singleton.Send(zombie);
-        }
-
-        for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)
-        {
-            for (int gridX = 0; gridX < 5; gridX++)
+            foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
             {
-                var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
-                if (plant == null)
+                if (PushBackEventIgnoreZombie.Contains(zombie.mZombieType)) continue;
+                if (PushBackEventIgnoreZombiePhase.Contains(zombie.mZombiePhase)) continue;
+                if (zombie.IsDeadOrDying()) continue;
+                if (zombie.mVelX <= 0f) continue;
+                if (zombie.mPosX > 490f) continue;
+                if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight && Instances.GameplayActivity.Board.mPlantRow[zombie.mRow] != PlantRowType.Pool) continue;
+
+                PushBackZombie(zombie);
+                NetworkManager.Rpc<PushBackZombieRpc>.Singleton.Send(zombie);
+            }
+
+            for (int gridY = 0; gridY < Instances.GameplayActivity.Board.GetNumRows(); gridY++)
+            {
+                for (int gridX = 0; gridX < 5; gridX++)
                 {
-                    if (Instances.GameplayActivity.Board.GetGridItemAt(GridItemType.Crater, gridX, gridY) != null)
-                        continue;
-
-                    if (VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China)
+                    var plant = Instances.GameplayActivity.Board.GetTopPlantAt(gridX, gridY, PlantPriority.Any);
+                    if (plant == null)
                     {
-                        SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
-                    }
-                    else if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
-                    {
-                        if (Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
-                        {
+                        if (Instances.GameplayActivity.Board.GetGridItemAt(GridItemType.Crater, gridX, gridY) != null)
                             continue;
-                        }
 
-                        SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, gridX, gridY, true);
+                        if (VersusState.ArenaSynced is ArenaType.Roof or ArenaType.RoofNight or ArenaType.China)
+                        {
+                            SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, gridX, gridY, true);
+                        }
+                        else if (VersusState.ArenaSynced is ArenaType.Pool or ArenaType.PoolNight)
+                        {
+                            if (Instances.GameplayActivity.Board.mPlantRow[gridY] != PlantRowType.Pool)
+                            {
+                                continue;
+                            }
+
+                            SeedPacketDefinitions.SpawnPlant(SeedType.Lilypad, gridX, gridY, true);
+                        }
                     }
                 }
             }
-        }
+        });
     }
 
     /// <summary>

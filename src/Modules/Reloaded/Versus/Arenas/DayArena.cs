@@ -5,6 +5,7 @@ using ReplantedOnline.Attributes.Register;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Structs.Reloaded;
 
 namespace ReplantedOnline.Modules.Reloaded.Versus.Arenas;
@@ -53,17 +54,20 @@ internal class DayArena : IArena, IArenaData
     {
         if (ReloadedLobby.AmLobbyHost())
         {
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
+            NetworkManager.SendInBufferMode(() =>
+            {
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
 
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+            });
         }
     }
 

@@ -114,7 +114,18 @@ internal static partial class NetworkManager
             return;
         }
 
-        if (client.AmLocal == true)
+        bool isLocal = client.AmLocal;
+
+        if (BufferMode)
+        {
+            BufferedPacket bufferedPacket = new(packetWriter, packetChannel, targetId, isLocal);
+            BufferedPackets.Add(bufferedPacket);
+            ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Buffered send to {client.Name} -> Size: {packetWriter.Length} bytes");
+
+            return;
+        }
+
+        if (isLocal)
         {
             ProcessPacketData(ReloadedClientData.LocalClient, packetWriter.GetBytes());
             return;
@@ -130,6 +141,95 @@ internal static partial class NetworkManager
         {
             ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent to {client.Name} -> Size: {packetWriter.Length} bytes");
         }
+    }
+
+    /// <summary>
+    ///  Indicates whether the network manager is currently in buffer mode, where packets are queued instead of sent immediately.
+    /// </summary>
+    private static bool BufferMode;
+
+    /// <summary>
+    /// A list of buffered packets that are queued for sending when buffer mode is active.
+    /// </summary>
+    private static readonly List<BufferedPacket> BufferedPackets = [];
+
+    /// <summary>
+    /// Executes a given action while in buffer mode, ensuring that any packets sent during the action are queued instead of sent immediately. After the action is executed, buffer mode is ended and all queued packets are processed and sent.
+    /// </summary>
+    /// <param name="action">The action to execute while in buffer mode.</param>
+    internal static void SendInBufferMode(Action action)
+    {
+        StartBufferMode();
+        try
+        {
+            action.Invoke();
+        }
+        catch (Exception ex)
+        {
+            ReplantedOnlineMod.Logger.Error(typeof(NetworkManager), $"Exception in SendInBufferMode: {ex}");
+        }
+        EndBufferMode();
+    }
+
+    /// <summary>
+    /// Enables buffer mode, allowing packets to be queued instead of sent immediately.
+    /// </summary>
+    internal static void StartBufferMode()
+    {
+        if (BufferMode)
+            return;
+        BufferMode = true;
+        BufferedPackets.Clear();
+    }
+
+    /// <summary>
+    /// Disables buffer mode and processes all buffered packets, sending them to their respective targets. Local packets are processed immediately, while remote packets are grouped and sent in batches.
+    /// </summary>
+    internal static void EndBufferMode()
+    {
+        if (!BufferMode)
+            return;
+        BufferMode = false;
+
+        foreach (var bufferedPacket in BufferedPackets)
+        {
+            if (!bufferedPacket.IsLocal)
+                continue;
+
+            ProcessPacketData(ReloadedClientData.LocalClient, bufferedPacket.PacketBytes);
+        }
+
+        var groupedPackets = BufferedPackets.Where(p => !p.IsLocal).GroupBy(p => (p.TargetId, p.PacketChannel));
+
+        int index = 1;
+        foreach (var group in groupedPackets)
+        {
+            var targetId = group.Key.TargetId;
+            var packetChannel = group.Key.PacketChannel;
+
+            List<byte> bytesToSend = [];
+            foreach (var bufferedPacket in group)
+            {
+                bytesToSend.AddRange(bufferedPacket.PacketBytes);
+            }
+
+            var packetWriter = PacketWriter.Get([.. bytesToSend]);
+            try
+            {
+                SendTo(targetId, packetWriter, packetChannel, false);
+                if (targetId.TryGetClientData(out var client))
+                {
+                    ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent {index}/{groupedPackets.Count()} bufferd packets to {client.Name} -> Size: {packetWriter.Length} bytes");
+                }
+            }
+            finally
+            {
+                index++;
+                packetWriter.Recycle();
+            }
+        }
+
+        BufferedPackets.Clear();
     }
 
     private static object? ListeningToken;

@@ -8,6 +8,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Managers.Reloaded;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine.InputSystem;
@@ -137,92 +138,95 @@ internal sealed class DebugArena : IArena, IArenaData
             networkobject.DespawnAndDestroy();
         }
 
-        switch (Mode)
+        NetworkManager.SendInBufferMode(() =>
         {
-            case DebugModes.Default:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
+            switch (Mode)
+            {
+                case DebugModes.Default:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
 
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
-                break;
-            case DebugModes.Gargantuar:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 1, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Gatlingpea, 0, 1, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+                    break;
+                case DebugModes.Gargantuar:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 1, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Gatlingpea, 0, 1, true);
 
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 3, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 3, true);
-                break;
-            case DebugModes.Yeti:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Yeti, 8, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
-                break;
-            case DebugModes.Pogo:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Pogo, 7, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
-                break;
-            case DebugModes.Catapult:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Catapult, 8, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 2, true);
-                break;
-            case DebugModes.Bobsled:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 8, 2, true);
-                break;
-            case DebugModes.Polevaulter:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Polevaulter, 7, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
-                break;
-            case DebugModes.Ladder:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Ladder, 7, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
-                break;
-            case DebugModes.Bungee:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, 4, 2, true);
-                break;
-            case DebugModes.Dancers:
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Dancer, 9, 2, true);
-                break;
-            case DebugModes.Flag:
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 0, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 2, 2, true);
-                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 3, 4, true);
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, true);
-                break;
-            case DebugModes.Garlic:
-                for (int column = 0; column < 6; column++)
-                {
-                    for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Gargantuar, 8, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 3, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 3, true);
+                    break;
+                case DebugModes.Yeti:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Yeti, 8, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
+                    break;
+                case DebugModes.Pogo:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Pogo, 7, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 1, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 2, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 3, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
+                    break;
+                case DebugModes.Catapult:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Catapult, 8, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 0, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 2, true);
+                    break;
+                case DebugModes.Bobsled:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Zamboni, 8, 2, true);
+                    break;
+                case DebugModes.Polevaulter:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Polevaulter, 7, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
+                    break;
+                case DebugModes.Ladder:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Ladder, 7, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 4, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Wallnut, 5, 2, true);
+                    break;
+                case DebugModes.Bungee:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Bungee, 4, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Umbrella, 4, 2, true);
+                    break;
+                case DebugModes.Dancers:
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Dancer, 9, 2, true);
+                    break;
+                case DebugModes.Flag:
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 1, 0, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 2, 2, true);
+                    SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 3, 4, true);
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Flag, 9, 2, true);
+                    break;
+                case DebugModes.Garlic:
+                    for (int column = 0; column < 6; column++)
                     {
-                        SeedPacketDefinitions.SpawnPlant(SeedType.Garlic, column, row, true);
+                        for (int row = 0; row < Instances.GameplayActivity.Board.GetNumRows(); row++)
+                        {
+                            SeedPacketDefinitions.SpawnPlant(SeedType.Garlic, column, row, true);
+                        }
                     }
-                }
-                SeedPacketDefinitions.SpawnZombie(ZombieType.Normal, 7, 2, true);
-                break;
-            case DebugModes.Test:
-                break;
-            default:
-                break;
-        }
+                    SeedPacketDefinitions.SpawnZombie(ZombieType.Normal, 7, 2, true);
+                    break;
+                case DebugModes.Test:
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 }
 #endif

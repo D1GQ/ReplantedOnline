@@ -7,6 +7,7 @@ using ReplantedOnline.Interfaces.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Modules.Unity;
 using ReplantedOnline.Network.Reloaded.Client;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Structs.Reloaded;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
@@ -75,25 +76,28 @@ internal sealed class ChinaArena : IArena, IArenaData
     {
         if (ReloadedLobby.AmLobbyHost())
         {
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
-
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
-            SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
-
-            for (int column = 0; column < 3; column++)
+            NetworkManager.SendInBufferMode(() =>
             {
-                for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
-                {
-                    SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
-                }
-            }
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 0, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 2, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 3, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Target, 8, 4, true);
 
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
-            SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 1, true);
+                SeedPacketDefinitions.SpawnZombie(ZombieType.Gravestone, 8, 3, true);
+
+                for (int column = 0; column < 3; column++)
+                {
+                    for (int row = 0; row < versusMode.m_board.GetNumRows(); row++)
+                    {
+                        SeedPacketDefinitions.SpawnPlant(SeedType.Flowerpot, column, row, true);
+                    }
+                }
+
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 1, true);
+                SeedPacketDefinitions.SpawnPlant(SeedType.Sunflower, 0, 3, true);
+            });
         }
 
         // Add bowling line

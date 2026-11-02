@@ -18,7 +18,7 @@ internal sealed class NetworkObjectDespawnPacket : IPacketMessage<NetworkObject,
     {
         PacketWriter packetWriter = NetworkManager.StartPacket(PacketType.NetworkObjectDespawn);
         Message<NetworkObjectDespawnMessage>.Singleton.Serialize(packetWriter, networkObj, waitToBeReady);
-        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Despawn Network Object with ID: {networkObj.NetworkId}");
+        ReplantedOnlineMod.Logger.Msg(typeof(NetworkManager), $"Sent Despawn Network Object  : {networkObj.NetworkId}");
         NetworkManager.EndPacketAndSend(packetWriter, PacketChannel.Main, true, false);
 
         ReloadedLobby.LobbyData!.OnNetworkObjectDespawn(networkObj);

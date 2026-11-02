@@ -4,6 +4,7 @@ using ReplantedOnline.Enums.Network;
 using ReplantedOnline.Enums.Versus;
 using ReplantedOnline.Modules.Modded.Instance;
 using ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.Components;
+using ReplantedOnline.Network.Reloaded.Client.Routing;
 using ReplantedOnline.Utilities.Modded;
 using UnityEngine;
 
@@ -131,19 +132,22 @@ internal sealed class ChinaJalapenoNetworkComponent : PlantSpecialNetworkCompone
 
     protected override void DoSpecial_PlantSide()
     {
-        foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
+        NetworkManager.SendInBufferMode(() =>
         {
-            if (zombie.mRow != Net.BoardUnitY.Grid) continue;
-            if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
-            if (zombie.IsDeadOrDying()) continue;
-            if (zombie.mVelX <= 0f) continue;
-
-            if (zombie.mBodyHealth - 25 > 10)
+            foreach (var zombie in Instances.GameplayActivity.Board.GetZombies())
             {
-                zombie.TakeDamage(zombie.mBodyHealth - 25, DamageFlags.BypassesShield);
-            }
+                if (zombie.mRow != Net.BoardUnitY.Grid) continue;
+                if (zombie.mZombieType.IsGravestoneOrTarget()) continue;
+                if (zombie.IsDeadOrDying()) continue;
+                if (zombie.mVelX <= 0f) continue;
 
-            zombie.ApplyBurn();
-        }
+                if (zombie.mBodyHealth - 25 > 10)
+                {
+                    zombie.TakeDamage(zombie.mBodyHealth - 25, DamageFlags.BypassesShield);
+                }
+
+                zombie.ApplyBurn();
+            }
+        });
     }
 }
