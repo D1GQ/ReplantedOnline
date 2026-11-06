@@ -14,14 +14,33 @@ namespace ReplantedOnline.Network.Reloaded.Client.Object.Gameplay.ZombieComponen
 internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
 {
     private bool _hasJumped;
+    private bool _hasBeenBlocked;
     internal sealed override void OnUpdate(Zombie zombie)
     {
         if (Net.AmOwner)
         {
-            if (zombie.mZombiePhase == ZombiePhase.DolphinInJump && !_hasJumped)
+            if (zombie.mZombiePhase == ZombiePhase.DolphinInJump)
             {
-                _hasJumped = true;
-                RpcJump();
+                if (!_hasJumped)
+                {
+                    _hasJumped = true;
+                    RpcJump();
+                }
+            }
+            else if (zombie.mZombiePhase == ZombiePhase.DolphinWalkingInPool)
+            {
+                if (_hasJumped && !_hasBeenBlocked)
+                {
+                    if (zombie.mZombieHeight == ZombieHeight.Falling)
+                    {
+                        Plant target = zombie.FindPlantTarget(ZombieAttackType.Vault);
+                        if (target != null && target.mSeedType == SeedType.Tallnut)
+                        {
+                            _hasBeenBlocked = true;
+                            RpcBlocked(target);
+                        }
+                    }
+                }
             }
         }
         else
@@ -60,6 +79,31 @@ internal sealed class DolphinRiderNetworkComponent : ZombieNetworkComponent
             Net.Zombie.mZombiePhase = ZombiePhase.DolphinInJump;
             Net.Zombie.mVelX = 0.5f;
             Net.Zombie.PlayZombieReanim(Animations.DOLPHINRIDER_JUMP.Anim, ReanimLoopType.PlayOnceAndHold, Animations.DOLPHINRIDER_JUMP.Blend, Animations.DOLPHINRIDER_JUMP.Fps);
+        }
+    }
+
+    [MethodRpc(LocalExecution.None)]
+    private void RpcBlocked(Plant target)
+    {
+        if (target == null)
+            return;
+
+        var zombie = Net.Zombie;
+        if (zombie == null)
+            return;
+
+        if (!_hasBeenBlocked && _hasJumped)
+        {
+            _hasBeenBlocked = true;
+            zombie.mApp.m_audioService.PlayFoley(FoleyType.Bonk);
+            zombie.mApp.AddTodParticle(target.mX + 12f, target.mY - 20f, zombie.mRenderOrder + 1, ParticleEffect.TallNutBlock);
+            zombie.mZombieHeight = ZombieHeight.Falling;
+            zombie.mVelX = 0f;
+            zombie.mVelZ = 0f;
+            zombie.mPosX = target.mX + 1f;
+            zombie.mPosY -= 24f;
+            zombie.mZombiePhase = ZombiePhase.DolphinWalkingInPool;
+            zombie.StartWalkAnim(0);
         }
     }
 }
