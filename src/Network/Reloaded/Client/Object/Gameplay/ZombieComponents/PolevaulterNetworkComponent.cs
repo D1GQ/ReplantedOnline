@@ -47,14 +47,15 @@ internal sealed class PolevaulterNetworkComponent : ZombieNetworkComponent
     [MethodRpc(LocalExecution.None)]
     private void RpcVault()
     {
-        if (Net.Zombie == null)
+        var zombie = Net.Zombie;
+        if (zombie == null)
             return;
 
         if (!_hasVaulted)
         {
             _hasVaulted = true;
-            Net.Zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
-            Net.Zombie.PlayZombieReanim(Animations.POLEVAULTER_VAULT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.POLEVAULTER_VAULT.Blend, Animations.POLEVAULTER_VAULT.Fps);
+            zombie.mZombiePhase = ZombiePhase.PolevaulterInVault;
+            zombie.PlayZombieReanim(Animations.POLEVAULTER_VAULT.Anim, ReanimLoopType.PlayOnceAndHold, Animations.POLEVAULTER_VAULT.Blend, Animations.POLEVAULTER_VAULT.Fps);
         }
     }
 }
