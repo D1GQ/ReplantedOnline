@@ -160,6 +160,11 @@ internal partial class ReplantedOnlineMod
             /// Name for BloomEngine.
             /// </summary>
             internal const string BLOOM_ENGINE_NAME = "BloomEngine";
+
+            /// <summary>
+            /// The current supported versions, separate by ",".
+            /// </summary>
+            internal const string SUPPORTED_VERSIONS = "0.4.1*";
         }
 
         /// <summary>

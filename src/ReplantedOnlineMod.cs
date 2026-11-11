@@ -48,7 +48,7 @@ internal partial class ReplantedOnlineMod : MelonMod
 
         if (!hasVer)
         {
-            Logger.Error(typeof(ReplantedOnlineMod), $"Plants vs. Zombies: Replanted v{Application.version} does not support Replanted Online v{ModInfo.MOD_VERSION_FORMATTED}");
+            Logger.Error(typeof(ReplantedOnlineMod), $"Replanted Online v{ModInfo.MOD_VERSION_FORMATTED} does not support Plants vs. Zombies: Replanted v{Application.version}");
             LoadFailed = true;
         }
     }
@@ -60,6 +60,36 @@ internal partial class ReplantedOnlineMod : MelonMod
 
         try
         {
+            var bloomEngineMod = RegisteredMelons.FirstOrDefault(m => m.Info.Name == ModInfo.BloomEngine.BLOOM_ENGINE_NAME);
+
+            if (bloomEngineMod != null)
+            {
+                bool hasVer = false;
+                foreach (var ver in ModInfo.BloomEngine.SUPPORTED_VERSIONS.Split(", "))
+                {
+                    if (TextHandler.CheckWildcardPrefix(bloomEngineMod.Info.Version, ver))
+                    {
+                        hasVer = true;
+                        break;
+                    }
+                }
+
+                if (!hasVer)
+                {
+                    Logger.BigError(typeof(ReplantedOnlineMod), $"Replanted Online v{ModInfo.MOD_VERSION_FORMATTED} does not support BloomEngine v{bloomEngineMod.Info.Version}" +
+                        $"\nPlease download one of the supported versions of BloomEngine: {ModInfo.BloomEngine.SUPPORTED_VERSIONS}");
+                    LoadFailed = true;
+                    return;
+                }
+            }
+            else
+            {
+                Logger.BigError(typeof(ReplantedOnlineMod), $"Replanted Online requires BloomEngine to be installed!" +
+                    $"\nPlease download one of the supported versions of BloomEngine: {ModInfo.BloomEngine.SUPPORTED_VERSIONS}");
+                LoadFailed = true;
+                return;
+            }
+
             if (!PatchManager.PatchAll())
             {
                 LoadFailed = true;
