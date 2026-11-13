@@ -29,7 +29,7 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
             zombie.mController.SetImageOverride(Animations.WHITEWATER_OBJECT.Slot, Animations.WHITEWATER_OBJECT.Image);
         }
 
-        WhiteWaterEffect ??= WhiteWaterEffect.Create(zombie.mController, false);
+        WhiteWaterEffect = WhiteWaterEffect.Create(zombie.mController, false);
     }
 
     internal sealed override void OnDestroyed()
@@ -166,9 +166,15 @@ internal sealed class ZombieCustomPoolLogicNetworkComponent : ZombieNetworkCompo
         if (zombie == null)
             return false;
 
-        bool typeCheck = zombie.mZombieType is not (ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel);
-        bool phaseCheck = zombie.mZombiePhase is not (ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping
-            or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding);
-        return typeCheck && phaseCheck && zombie.mController?.gameObject.active == true;
+        if (zombie.mController?.gameObject.active != true)
+            return false;
+
+        if (zombie.mZombieType is ZombieType.Gravestone or ZombieType.Bungee or ZombieType.DolphinRider or ZombieType.Snorkel)
+            return false;
+
+        if (zombie.mZombiePhase is ZombiePhase.BalloonFlying or ZombiePhase.BalloonPopping or ZombiePhase.ImpGettingThrown or ZombiePhase.ImpLanding)
+            return false;
+
+        return true;
     }
 }

@@ -17,7 +17,7 @@ namespace ReplantedOnline.MonoScripts.Modded;
 [RegisterTypeInIl2Cpp]
 internal sealed class TimerPanel : MonoBehaviour
 {
-    private readonly Color[] TimerColors = [Color.green, Color.yellow, Color.red];
+    private static readonly Color[] TimerColors = [Color.green, Color.yellow, Color.red];
     private bool _init;
     private TextMeshProUGUI _text = null!;
     private RectTransform _shovelContainer = null!;
