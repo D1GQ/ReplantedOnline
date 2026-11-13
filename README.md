@@ -147,4 +147,4 @@ replantedonlineofficial@gmail.com
 
 ## Disclaimer
 
-**ReplantedOnline** is an unofficial modification of **Plants vs. Zombies: Replanted** and is not affiliated with **PopCap Games** or **Electronic Arts**.
+This is an unofficial Mod permitted under the Plants vs. Zombies Mod Policy. Plant vs. Zombies game materials, copyrights, and trademarks are the property of Electronic Arts Inc. Electronic Arts and PopCap have not endorsed and are not responsible for the operation or content of this Mod.
