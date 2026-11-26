@@ -42,7 +42,7 @@ internal sealed class GithubAPI : MonoBehaviour
     private IEnumerator CoConnect()
     {
         string manifestJson = string.Empty;
-        yield return GitHubFile.CoDownloadManifest(GitUrlPath.RepositoryApi.Combine("manifest.json"), json =>
+        yield return GithubFile.CoDownloadManifest(GitUrlPath.RepositoryApi.Combine("manifest.json"), json =>
         {
             manifestJson = json;
             Progress = 1f / 2f;
@@ -80,7 +80,7 @@ internal sealed class GithubAPI : MonoBehaviour
     private IEnumerator CoDownloadVersusModeConfig(string fileName)
     {
         string configJson = string.Empty;
-        yield return GitHubFile.CoDownloadManifest(GitUrlPath.RepositoryConfigs.Combine(fileName), json =>
+        yield return GithubFile.CoDownloadManifest(GitUrlPath.RepositoryConfigs.Combine(fileName), json =>
         {
             configJson = json;
             Progress = 1f;

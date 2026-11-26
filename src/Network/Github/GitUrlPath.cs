@@ -62,7 +62,7 @@ internal readonly struct GitUrlPath(string folder)
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
     internal IEnumerator CoDownloadFile(string path, string localFilePath, Action<string>? callback = null)
     {
-        return GitHubFile.CoDownloadFile(Combine(path), localFilePath, callback);
+        return GithubFile.CoDownloadFile(Combine(path), localFilePath, callback);
     }
 
     /// <summary>
@@ -73,6 +73,6 @@ internal readonly struct GitUrlPath(string folder)
     /// <returns>An IEnumerator suitable for use with StartCoroutine.</returns>
     internal IEnumerator CoDownloadManifest(string path, Action<string> Callback)
     {
-        return GitHubFile.CoDownloadManifest(Combine(path), Callback);
+        return GithubFile.CoDownloadManifest(Combine(path), Callback);
     }
 }
