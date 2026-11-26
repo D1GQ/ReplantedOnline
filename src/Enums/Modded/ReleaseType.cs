@@ -6,9 +6,14 @@
 internal enum ReleaseType
 {
     /// <summary>
-    /// A stable, production-ready release.
+    /// A stable, production ready release.
     /// </summary>
     release,
+
+    /// <summary>
+    ///  A non stable, production ready release.
+    /// </summary>
+    prerelease,
 
     /// <summary>
     /// A beta release for testing purposes.
